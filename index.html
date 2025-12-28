@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Pethgam Wagoora Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background: linear-gradient(to bottom, #74ebd5, #acb6e5); margin: 0; padding: 20px; text-align: center; }
+        .phone-container { background: white; width: 320px; border: 12px solid #333; border-radius: 40px; margin: auto; height: 600px; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .header { background: #fff; padding: 15px; border-bottom: 2px solid #0056b3; }
+        .logo { width: 80px; }
+        h2 { color: #0056b3; margin: 10px 0; font-size: 1.2rem; }
+        .admin-panel { background: #fff; padding: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
+        .item { border: 1px solid #ddd; padding: 10px; border-radius: 8px; text-decoration: none; color: #333; transition: 0.3s; }
+        .item:hover { background: #f0f7ff; transform: scale(1.05); }
+        .item i { font-size: 24px; color: #007bff; display: block; margin-bottom: 5px; }
+        .item span { font-size: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        <div class="header">
+            <img src="https://via.placeholder.com/50" alt="Logo" class="logo">
+            <div style="color:#0056b3; font-weight:bold;">E-School Zone</div>
+            <h2>Admin Panel</h2>
+        </div>
+
+        <div class="admin-panel">
+            <div class="grid">
+                <a href="https://www.appsheet.com/start/22b1-6583-45#view=Student_Master" class="item">
+                    <i class="fas fa-user-check"></i><span>Attendance</span>
+                </a>
+                <a href="https://www.appsheet.com/start/22b1-6583-45#view=Results" class="item">
+                    <i class="fas fa-file-invoice"></i><span>Results</span>
+                </a>
+                <a href="https://www.appsheet.com/start/22b1-6583-45#view=MDM" class="item">
+                    <i class="fas fa-utensils"></i><span>MDM</span>
+                </a>
+                <a href="https://www.appsheet.com/start/22b1-6583-45#view=School_Plan" class="item">
+                    <i class="fas fa-calendar-alt"></i><span>School Plan</span>
+                </a>
+                <a href="https://www.appsheet.com/start/22b1-6583-45" class="item">
+                    <i class="fas fa-database"></i><span>Full DB</span>
+                </a>
+                <a href="#" class="item" onclick="alert('Module coming soon!')">
+                    <i class="fas fa-envelope"></i><span>Staff SMS</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+o
