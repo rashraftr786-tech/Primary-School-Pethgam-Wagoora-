@@ -1,66 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Admin Panel</title>
+    <title>GPS Pethgam Wagoora Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e9ecef; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .dashboard-container { background: white; width: 360px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
-        .header { background: #0056b3; color: white; padding: 20px; text-align: center; }
-        .header h1 { margin: 0; font-size: 1.2rem; }
-        .header p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.9; }
-        .admin-title { background: #fff; padding: 10px; text-align: center; font-weight: bold; border-bottom: 1px solid #ddd; color: #333; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #ddd; }
-        .grid-item { background: white; padding: 20px 10px; text-align: center; text-decoration: none; color: #333; transition: 0.2s; }
-        .grid-item:hover { background: #f8f9fa; }
-        .grid-item i { font-size: 28px; color: #007bff; display: block; margin-bottom: 8px; }
-        .grid-item span { font-size: 11px; font-weight: 600; display: block; }
-        .footer { padding: 15px; text-align: center; font-size: 0.7rem; color: #777; }
+        body { font-family: sans-serif; text-align: center; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 20px auto; }
+        .btn { background: white; padding: 20px 10px; border-radius: 10px; text-decoration: none; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: block; }
+        .btn i { font-size: 30px; color: #0056b3; margin-bottom: 10px; display: block; }
+        .btn span { font-size: 12px; font-weight: bold; }
+        h1 { color: #0056b3; font-size: 1.5rem; }
     </style>
 </head>
 <body>
-
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>GPS Pethgam Wagoora</h1>
-            <p>E-School Management System</p>
-        </div>
-        
-        <div class="admin-title">Admin Panel</div>
-
-        <div class="grid">
-            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Student_Master" class="grid-item" target="_blank">
-                <i class="fas fa-user-check"></i><span>Attendance</span>
-            </a>
-            
-            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=MDM" class="grid-item" target="_blank">
-                <i class="fas fa-utensils"></i><span>MDM</span>
-            </a>
-
-            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Results" class="grid-item" target="_blank">
-                <i class="fas fa-poll"></i><span>Results</span>
-            </a>
-
-            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=School_Plan" class="grid-item" target="_blank">
-                <i class="fas fa-calendar-alt"></i><span>School Plan</span>
-            </a>
-
-            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Dashboard" class="grid-item" target="_blank">
-                <i class="fas fa-users"></i><span>Visiter List</span>
-            </a>
-
-            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568" class="grid-item" target="_blank">
-                <i class="fas fa-database"></i><span>Full DB</span>
-            </a>
-        </div>
-
-        <div class="footer">
-            &copy; 2024 GPS Pethgam Wagoora Admin System
-        </div>
+    <h1>GPS Pethgam Wagoora</h1>
+    <div class="grid">
+        <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Student_Master" class="btn" target="_blank">
+            <i class="fas fa-user-check"></i><span>Attendance</span>
+        </a>
+        <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=MDM" class="btn" target="_blank">
+            <i class="fas fa-utensils"></i><span>MDM</span>
+        </a>
+        <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Results" class="btn" target="_blank">
+            <i class="fas fa-poll"></i><span>Results</span>
+        </a>
     </div>
-
 </body>
 </html>
 
