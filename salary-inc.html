@@ -4,21 +4,20 @@
     <meta charset="UTF-8">
     <title>Salary Increment Application Form</title>
     <style>
-        /* Base styles preserved */
         body { font-family: 'Times New Roman', serif; background-color: #f0f0f0; padding: 0; margin: 0; color: #333; }
         
         .page { 
             background: white; 
             width: 210mm; 
-            height: 297mm; /* Fixed A4 Height */
+            height: 297mm; 
             margin: auto; 
-            padding: 10mm 15mm; /* Balanced margins for single page fit */
+            padding: 10mm 15mm; 
             box-sizing: border-box; 
             border: 1px solid #ccc; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1); 
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Prevents overflow to 2nd page */
+            overflow: hidden; 
         }
 
         h1 { text-align: center; font-size: 1.2em; text-decoration: underline; margin-bottom: 10px; margin-top: 0; }
@@ -45,11 +44,17 @@
             display: inline-block;
         }
 
+        /* IMPROVED SUBJECT SETTINGS */
+        .subject-container {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
         .subject-line {
             display: flex;
-            align-items: flex-end;
-            font-weight: bold;
+            align-items: baseline; /* Ensures text and inputs sit on the same line */
             width: 100%;
+            margin-bottom: 2px;
         }
 
         .flex-fill-input {
@@ -58,9 +63,9 @@
             border-bottom: 1px dotted #000;
             margin-left: 5px;
             text-align: left;
+            height: 1.2em;
         }
 
-        /* Fixed Character Widths */
         .w-name { width: 25ch; }
         .w-desig { width: 17ch; }
         .w-date { width: 11ch; }
@@ -74,7 +79,6 @@
         .results-table th, .results-table td { border: 1px solid black; text-align: center; padding: 2px; font-size: 0.8em; }
         .results-table input { width: 95%; }
 
-        /* Signature Settings */
         .sig-row { display: flex; justify-content: flex-end; margin-top: 2px; }
         .sig-box { text-align: center; width: 180px; }
         .sig-line { border-top: 1px solid #000; margin-top: 22px; padding-top: 2px; font-weight: bold; font-size: 0.85em; }
@@ -107,11 +111,16 @@
         <p style="margin: 2px 0; border-bottom: 1px dotted #000; width: 250px;">&nbsp;</p>
 
         <div class="letter-body">
-            <div class="subject-line">
-                Subject: - Request for sanction of Annual Increment in favour Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <input type="text" class="flex-fill-input">
-            </div>
-            <div class="subject-line" style="justify-content: flex-end;">
-                w.e.f <input type="text" class="inline-input w-date">
+            <div class="subject-container">
+                <div class="subject-line">
+                    Subject: - Request for sanction of Annual Increment in favour
+                </div>
+                <div class="subject-line">
+                    Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <input type="text" class="flex-fill-input">
+                </div>
+                <div class="subject-line" style="justify-content: flex-end;">
+                    w.e.f <input type="text" class="inline-input w-date">
+                </div>
             </div>
 
             <p style="margin: 4px 0 2px 0;"><strong>Sir,</strong></p>
@@ -179,4 +188,5 @@
 
 </body>
 </html>
-        
+                    
+            
