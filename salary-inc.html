@@ -11,16 +11,18 @@
             width: 210mm; 
             min-height: 297mm;
             margin: auto; 
-            padding: 20px 40px; 
+            padding: 15mm 20mm; /* Adjusted padding for better A4 printable area */
             box-sizing: border-box; 
             border: 1px solid #ccc; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+            display: flex;
+            flex-direction: column;
         }
 
         h1 { text-align: center; font-size: 1.3em; text-decoration: underline; margin-bottom: 10px; margin-top: 0; }
         
-        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .info-table td { border: 1px solid black; padding: 6px; font-weight: bold; font-size: 0.95em; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .info-table td { border: 1px solid black; padding: 5px; font-weight: bold; font-size: 0.95em; }
         
         input[type="text"], input[type="tel"], input[type="number"] { 
             border: none; 
@@ -31,7 +33,7 @@
         
         input:focus { outline: none; background: #fffde7; }
 
-        .letter-body { line-height: 1.8; text-align: left; margin-top: 10px; font-size: 1.05em; }
+        .letter-body { line-height: 1.6; text-align: left; margin-top: 5px; font-size: 1.05em; }
         
         .inline-input { 
             border: none; 
@@ -48,20 +50,27 @@
         .w-month { width: 9ch; }
         .w-treasury { width: 12ch; }
         
-        .office-section { border: 2px solid black; margin-top: 15px; padding: 8px; }
+        .office-section { border: 2px solid black; margin-top: 10px; padding: 8px; flex-grow: 1; }
         .office-header { text-align: center; font-weight: bold; border-bottom: 2px solid black; margin: -8px -8px 8px -8px; padding: 3px; background: #eee; }
         
-        .results-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-        .results-table th, .results-table td { border: 1px solid black; text-align: center; padding: 4px; font-size: 0.85em; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+        .results-table th, .results-table td { border: 1px solid black; text-align: center; padding: 3px; font-size: 0.85em; }
         .results-table input { width: 95%; }
 
-        .sig-row { display: flex; justify-content: flex-end; margin-top: 5px; font-size: 0.95em; font-weight: bold; }
+        /* Signature Space Styling */
+        .sig-row { 
+            display: flex; 
+            justify-content: flex-end; 
+            margin-top: 40px; /* Created space for actual signature/stamp */
+            font-size: 0.95em; 
+            font-weight: bold; 
+        }
         
-        .order-box { border-top: 1px solid black; margin-top: 10px; padding-top: 5px; }
+        .order-box { border-top: 1px solid black; margin-top: 15px; padding-top: 5px; }
         
         @media print {
             body { background: none; padding: 0; }
-            .page { border: none; box-shadow: none; width: 100%; height: 100%; margin: 0; padding: 10mm 15mm; }
+            .page { border: none; box-shadow: none; width: 210mm; height: 297mm; margin: 0; padding: 15mm 20mm; }
             .no-print { display: none; }
             @page { size: A4; margin: 0; }
         }
@@ -85,21 +94,24 @@
         <p style="margin: 5px 0; border-bottom: 1px dotted #000; width: 300px;">&nbsp;</p>
 
         <div class="letter-body">
-            <strong>Subject: - Request for sanction of Annual/Periodical Increment in favour 
+            <strong>Subject: - Request for sanction of Annual/Periodical Increment in favour <br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master..........................................w.e.f.<input type="text" class="inline-input w-date"></strong>
             
-            <p style="margin: 10px 0 5px 0;"><strong>Sir,</strong></p>
+            <p style="margin: 8px 0 3px 0;"><strong>Sir,</strong></p>
             <p style="margin: 0;">Kindly, refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -</p>
             
             <p style="margin: 5px 0;">
                 I have been working as <input type="text" class="inline-input w-desig"> In the present place of posting since <input type="text" class="inline-input w-date">. My annual increment falls in the month of <input type="text" class="inline-input w-month">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District Treasury <input type="text" class="inline-input w-treasury"> for payment and oblige.
             </p>
             
-            <p><strong>Hoping for a kind response.</strong></p>
+            <p style="margin: 5px 0;"><strong>Hoping for a kind response.</strong></p>
             
-            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
                 <span><strong>Date: -</strong> <input type="text" class="inline-input w-date"></span>
-                <span style="text-align: right;"><strong>Yours Sincerely,</strong><br><br>____________________</span>
+                <span style="text-align: right; min-width: 200px;">
+                    <strong>Yours Sincerely,</strong>
+                    <div style="height: 40px;"></div> ____________________
+                </span>
             </div>
         </div>
 
@@ -131,23 +143,24 @@
                 </tbody>
             </table>
             
-            <div class="sig-row">Sign of I/C Exams</div>
+            <div class="sig-row" style="margin-top: 15px;">Sign of I/C Exams</div>
             
-            <p style="font-size: 0.95em; margin: 15px 0 5px 0;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="inline-input w-date"></p>
-            <div class="sig-row" style="margin-top: 20px;">Sign of HOI</div>
+            <p style="font-size: 0.95em; margin: 10px 0 5px 0;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="inline-input w-date"></p>
+            <div class="sig-row" style="margin-top: 30px;">Sign of HOI</div>
 
             <div class="order-box">
-                <p style="text-align: center; font-weight: bold; margin: 5px 0;">Order</p>
-                <p style="font-size: 0.95em; margin: 5px 0;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual/Periodical Increment w.e.f <input type="text" class="inline-input w-date"></p>
-                <div class="sig-row" style="margin-top: 25px;">Sign of DDO</div>
+                <p style="text-align: center; font-weight: bold; margin: 3px 0;">Order</p>
+                <p style="font-size: 0.95em; margin: 3px 0;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual/Periodical Increment w.e.f <input type="text" class="inline-input w-date"></p>
+                <div class="sig-row" style="margin-top: 35px;">Sign of DDO</div>
             </div>
         </div>
     </div>
 
-    <div style="text-align: center; margin-top: 20px;" class="no-print">
+    <div style="text-align: center; margin-top: 10px;" class="no-print">
         <button type="button" onclick="window.print()" style="padding: 10px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 5px; font-weight: bold;">Print Application (A4)</button>
     </div>
 </form>
 
 </body>
 </html>
+        
