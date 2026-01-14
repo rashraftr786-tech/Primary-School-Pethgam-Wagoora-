@@ -11,7 +11,7 @@
             width: 210mm; 
             min-height: 297mm;
             margin: auto; 
-            padding: 8mm 15mm; /* Reduced padding to fit A4 better */
+            padding: 8mm 15mm; 
             box-sizing: border-box; 
             border: 1px solid #ccc; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1); 
@@ -43,6 +43,23 @@
             display: inline-block;
         }
 
+        /* Subject Line Container to facilitate the full-width input */
+        .subject-line {
+            display: flex;
+            align-items: flex-end;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        /* The flex input after Teacher/Master */
+        .flex-fill-input {
+            flex-grow: 1;
+            border: none;
+            border-bottom: 1px dotted #000;
+            margin-left: 5px;
+            text-align: left;
+        }
+
         /* Specific Width Constraints */
         .w-name { width: 25ch; }
         .w-desig { width: 17ch; }
@@ -57,7 +74,6 @@
         .results-table th, .results-table td { border: 1px solid black; text-align: center; padding: 2px; font-size: 0.8em; }
         .results-table input { width: 95%; }
 
-        /* Signature Space Management - Tightened for A4 fit */
         .sig-row { display: flex; justify-content: flex-end; margin-top: 5px; }
         .sig-box { text-align: center; width: 180px; }
         .sig-line { border-top: 1px solid #000; margin-top: 25px; padding-top: 2px; font-weight: bold; font-size: 0.85em; }
@@ -90,8 +106,16 @@
         <p style="margin: 2px 0; border-bottom: 1px dotted #000; width: 250px;">&nbsp;</p>
 
         <div class="letter-body">
-            <strong>Subject: - Request for sanction of Annual/Periodical Increment in favour 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <input type="text" class="inline-input w-date"></strong>
+            <div class="subject-line">
+                Subject: - Request for sanction of Annual/Periodical Increment in favour 
+            </div>
+            <div class="subject-line">
+                Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <input type="text" class="flex-fill-input">
+            </div>
+            <div class="subject-line" style="justify-content: flex-end;">
+                w.e.f <input type="text" class="inline-input w-date">
+            </div>
+
             <p style="margin: 5px 0 2px 0;"><strong>Sir,</strong></p>
             <p style="margin: 0;">Kindly, refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -</p>
             
@@ -151,7 +175,7 @@
     </div>
 
     <div style="text-align: center; margin-top: 10px;" class="no-print">
-        <button type="button" onclick="window.print()" style="padding: 8px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px;">Print to Single A4 Page</button>
+        <button type="button" onclick="window.print()" style="padding: 8px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px;">Print Application</button>
     </div>
 </form>
 
