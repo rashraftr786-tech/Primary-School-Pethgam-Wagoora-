@@ -14,7 +14,6 @@
             padding: 10mm 15mm; 
             box-sizing: border-box; 
             border: 1px solid #ccc; 
-            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
             display: flex;
             flex-direction: column;
             overflow: hidden; 
@@ -25,75 +24,53 @@
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
         .info-table td { border: 1px solid black; padding: 4px; font-weight: bold; font-size: 0.9em; }
         
-        input[type="text"], input[type="tel"], input[type="number"] { 
-            border: none; 
-            font-family: inherit; 
-            font-size: 1em; 
-            background: transparent; 
-        }
+        input[type="text"] { border: none; font-family: inherit; font-size: 1em; background: transparent; }
         
-        input:focus { outline: none; background: #fffde7; }
-
         .letter-body { line-height: 1.45; text-align: left; margin-top: 5px; font-size: 1em; }
         
         .inline-input { 
             border: none; 
             border-bottom: 1px dotted #000; 
             text-align: center; 
-            margin: 0 2px;
             display: inline-block;
         }
 
-        /* SUBJECT AREA ADJUSTMENTS */
+        /* CORRECTED SUBJECT AREA: Matches Image 1000208002.jpg */
         .subject-container {
             font-weight: bold;
             margin-bottom: 10px;
+            text-align: justify;
         }
 
-        .subject-row-1 {
+        .subject-line-flex {
             display: flex;
             align-items: baseline;
             width: 100%;
         }
 
-        /* This field now grows to the right margin */
-        .flex-fill-end {
+        .fill-line {
             flex-grow: 1;
-            border: none;
             border-bottom: 1px dotted #000;
             margin-left: 5px;
             height: 1.2em;
         }
 
-        .subject-row-2 {
-            display: block;
-            margin-top: 2px;
-            text-align: left;
-        }
-
-        /* Specific Width Constraints */
         .w-name { width: 25ch; }
-        .w-desig { width: 17ch; }
-        .w-date { width: 11ch; }
-        .w-month { width: 9ch; }
-        .w-treasury { width: 12ch; }
+        .w-date { width: 12ch; }
         
+        /* Office Section Settings */
         .office-section { border: 1px solid black; margin-top: 8px; padding: 6px; }
         .office-header { text-align: center; font-weight: bold; border-bottom: 1px solid black; margin: -6px -6px 6px -6px; padding: 2px; background: #eee; }
         
         .results-table { width: 100%; border-collapse: collapse; margin: 4px 0; }
         .results-table th, .results-table td { border: 1px solid black; text-align: center; padding: 2px; font-size: 0.8em; }
-        .results-table input { width: 95%; }
 
         .sig-row { display: flex; justify-content: flex-end; margin-top: 2px; }
-        .sig-box { text-align: center; width: 180px; }
-        .sig-line { border-top: 1px solid #000; margin-top: 22px; padding-top: 2px; font-weight: bold; font-size: 0.85em; }
-        
-        .order-box { border-top: 1px solid black; margin-top: 8px; padding-top: 4px; }
+        .sig-box { text-align: center; width: 180px; border-top: 1px solid #000; margin-top: 20px; padding-top: 2px; font-weight: bold; font-size: 0.85em; }
         
         @media print {
             body { background: none; }
-            .page { border: none; box-shadow: none; width: 100%; height: 297mm; margin: 0; }
+            .page { border: none; width: 100%; height: 297mm; margin: 0; }
             .no-print { display: none; }
             @page { size: A4; margin: 0; }
         }
@@ -110,7 +87,7 @@
             <tr><td>Designation</td><td><input type="text" style="width: 100%;"></td></tr>
             <tr><td>CPIS No.</td><td><input type="text" style="width: 100%;"></td></tr>
             <tr><td>Address</td><td><input type="text" style="width: 100%;"></td></tr>
-            <tr><td>Mobile No.</td><td><input type="tel" style="width: 100%;"></td></tr>
+            <tr><td>Mobile No.</td><td><input type="text" style="width: 100%;"></td></tr>
         </table>
 
         <p style="margin: 2px 0; font-size: 0.95em;"><strong>To,<br>The DDO/ZEO/Principal,</strong></p>
@@ -118,77 +95,52 @@
 
         <div class="letter-body">
             <div class="subject-container">
-                <div class="subject-row-1">
-                    Subject: - Request for sanction of Annual Increment in favour Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <input type="text" class="flex-fill-end">
+                <div class="subject-line-flex">
+                    Subject: - Request for sanction of Annual/Periodical Increment in favour
                 </div>
-                <div class="subject-row-2">
+                <div class="subject-line-flex">
+                    Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <div class="fill-line"></div>
+                </div>
+                <div style="text-align: right; width: 100%;">
                     w.e.f <input type="text" class="inline-input w-date">
                 </div>
             </div>
 
-            <p style="margin: 4px 0 2px 0;"><strong>Sir,</strong></p>
+            <p style="margin: 4px 0;"><strong>Sir,</strong></p>
             <p style="margin: 0;">Kindly, refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -</p>
             
-            <p style="margin: 4px 0;">
-                I have been working as <input type="text" class="inline-input w-desig"> In the present place of posting since <input type="text" class="inline-input w-date">. My annual increment falls in the month of <input type="text" class="inline-input w-month">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District Treasury <input type="text" class="inline-input w-treasury"> for payment and oblige.
+            <p style="margin: 5px 0;">
+                I have been working as <input type="text" class="inline-input" style="width:15ch"> in the present place of posting since <input type="text" class="inline-input w-date">. My annual increment falls in the month of <input type="text" class="inline-input" style="width:10ch">. Hence, I request your good self to sanction my periodical increment and issue necessary orders.
             </p>
             
-            <p style="margin: 4px 0;"><strong>Hoping for a kind response.</strong></p>
-            
-            <div style="display: flex; justify-content: space-between; margin-top: 5px; align-items: flex-end;">
-                <span style="font-size: 0.95em;"><strong>Date: -</strong> <input type="text" class="inline-input w-date"></span>
-                <div class="sig-box">
-                    <div class="sig-line">Yours Sincerely,</div>
-                </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <span><strong>Date: -</strong> <input type="text" class="inline-input w-date"></span>
+                <div class="sig-box">Yours Sincerely,</div>
             </div>
         </div>
 
         <div class="office-section">
             <div class="office-header">For Office Use Only</div>
-            <p style="font-size: 0.9em; margin: 2px 0;"><strong>Examination I/C:</strong> <input type="text" class="inline-input" style="width: 200px;"></p>
-            <p style="font-size: 0.9em; margin: 2px 0;"><strong>Subject Wise result of the employee: -</strong></p>
-            
             <table class="results-table">
                 <thead>
-                    <tr>
-                        <th rowspan="2">S.No.</th>
-                        <th rowspan="2">Class</th>
-                        <th rowspan="2">Subject Taught</th>
-                        <th colspan="2">No. of Students</th>
-                        <th rowspan="2">Pass %age</th>
-                    </tr>
-                    <tr>
-                        <th>appeared</th>
-                        <th>Passed</th>
-                    </tr>
+                    <tr><th>S.No.</th><th>Class</th><th>Subject Taught</th><th>Appeared</th><th>Passed</th><th>Pass %age</th></tr>
                 </thead>
                 <tbody>
-                    <script>
-                        for(let i=1; i<=6; i++) {
-                            document.write(`<tr><td>${i}</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>`);
-                        }
-                    </script>
+                    <script>for(let i=1; i<=6; i++) { document.write(`<tr><td>${i}</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`); }</script>
                 </tbody>
             </table>
-            
-            <div class="sig-row"><div class="sig-box"><div class="sig-line">Sign of I/C Exams</div></div></div>
-            
-            <p style="font-size: 0.9em; margin: 4px 0 2px 0;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="inline-input w-date"></p>
-            <div class="sig-row"><div class="sig-box"><div class="sig-line">Sign of HOI</div></div></div>
-
-            <div class="order-box">
-                <p style="text-align: center; font-weight: bold; margin: 2px 0; font-size: 0.95em;">Order</p>
-                <p style="font-size: 0.9em; margin: 2px 0;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual Increment w.e.f <input type="text" class="inline-input w-date"></p>
-                <div class="sig-row"><div class="sig-box"><div class="sig-line" style="margin-top: 15px;">Sign of DDO</div></div></div>
+            <div class="sig-row"><div class="sig-box">Sign of I/C Exams</div></div>
+            <p style="font-size: 0.9em; margin-top: 10px;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f __________</p>
+            <div class="sig-row"><div class="sig-box">Sign of HOI</div></div>
+            <div style="border-top: 1px solid black; margin-top: 10px; padding-top: 5px;">
+                <p style="text-align: center; font-weight: bold; margin: 0;">Order</p>
+                <p style="font-size: 0.9em;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018.</p>
+                <div class="sig-row"><div class="sig-box">Sign of DDO</div></div>
             </div>
         </div>
-    </div>
-
-    <div style="text-align: center; margin-top: 10px;" class="no-print">
-        <button type="button" onclick="window.print()" style="padding: 8px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 5px; font-weight: bold;">Print Application</button>
     </div>
 </form>
 
 </body>
 </html>
-                    
+                        
