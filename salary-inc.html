@@ -44,26 +44,34 @@
             display: inline-block;
         }
 
-        /* UPDATED SUBJECT SETTINGS - No line break between favour and of */
+        /* SUBJECT AREA ADJUSTMENTS */
         .subject-container {
             font-weight: bold;
             margin-bottom: 10px;
         }
 
-        .subject-full-flow {
-            display: block;
+        .subject-row-1 {
+            display: flex;
+            align-items: baseline;
             width: 100%;
-            text-align: left;
         }
 
-        .flex-fill-input {
+        /* This field now grows to the right margin */
+        .flex-fill-end {
+            flex-grow: 1;
             border: none;
             border-bottom: 1px dotted #000;
-            width: 150px; /* Base width that expands as needed */
-            min-width: 100px;
+            margin-left: 5px;
+            height: 1.2em;
+        }
+
+        .subject-row-2 {
+            display: block;
+            margin-top: 2px;
             text-align: left;
         }
 
+        /* Specific Width Constraints */
         .w-name { width: 25ch; }
         .w-desig { width: 17ch; }
         .w-date { width: 11ch; }
@@ -110,12 +118,12 @@
 
         <div class="letter-body">
             <div class="subject-container">
-                <span class="subject-full-flow">
-                    Subject: - Request for sanction of Annual Increment in favour Of Mr/Mtr. 
-                    <input type="text" class="inline-input w-name"> Teacher/Master 
-                    <input type="text" class="inline-input" style="width: 180px;"> 
+                <div class="subject-row-1">
+                    Subject: - Request for sanction of Annual Increment in favour Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <input type="text" class="flex-fill-end">
+                </div>
+                <div class="subject-row-2">
                     w.e.f <input type="text" class="inline-input w-date">
-                </span>
+                </div>
             </div>
 
             <p style="margin: 4px 0 2px 0;"><strong>Sir,</strong></p>
@@ -124,6 +132,8 @@
             <p style="margin: 4px 0;">
                 I have been working as <input type="text" class="inline-input w-desig"> In the present place of posting since <input type="text" class="inline-input w-date">. My annual increment falls in the month of <input type="text" class="inline-input w-month">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District Treasury <input type="text" class="inline-input w-treasury"> for payment and oblige.
             </p>
+            
+            <p style="margin: 4px 0;"><strong>Hoping for a kind response.</strong></p>
             
             <div style="display: flex; justify-content: space-between; margin-top: 5px; align-items: flex-end;">
                 <span style="font-size: 0.95em;"><strong>Date: -</strong> <input type="text" class="inline-input w-date"></span>
@@ -181,4 +191,4 @@
 
 </body>
 </html>
-                                
+                    
