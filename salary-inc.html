@@ -22,19 +22,30 @@
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
         .info-table td { border: 1px solid black; padding: 6px; font-weight: bold; font-size: 0.95em; }
         
-        input[type="text"], input[type="tel"], input[type="number"] { width: 95%; border: none; font-family: inherit; font-size: 1em; background: transparent; }
+        /* UPDATED: Set standard input fields to a 20-character equivalent width (approx 160px) */
+        input[type="text"], input[type="tel"], input[type="number"] { 
+            width: 160px; 
+            border: none; 
+            font-family: inherit; 
+            font-size: 1em; 
+            background: transparent; 
+        }
+        
+        /* Keep table inputs flexible so they fill their small cells */
+        .results-table input { width: 95% !important; }
+
         input:focus { outline: none; background: #fffde7; }
 
-        /* FIX: Changed text-align from justify to left to prevent word stretching */
         .letter-body { line-height: 1.6; text-align: left; margin-top: 10px; font-size: 1em; }
         
-        /* Updated style for dotted lines to ensure they don't force gaps */
+        /* UPDATED: Set inline dotted lines to approx 20 characters */
         .inline-input { 
             border: none; 
             border-bottom: 1px dotted #000; 
-            width: 140px; 
+            width: 160px; 
             text-align: center; 
             margin: 0 2px;
+            display: inline-block;
         }
         
         .office-section { border: 2px solid black; margin-top: 15px; padding: 8px; }
@@ -66,16 +77,16 @@
         </table>
 
         <p style="margin: 5px 0;"><strong>To,<br>The DDO/ZEO/Principal,</strong></p>
-        <p style="margin: 5px 0;"><input type="text" name="office_location" placeholder="Enter Location" style="width: 300px; border-bottom: 1px dotted #000;"></p>
+        <p style="margin: 5px 0;"><input type="text" name="office_location" placeholder="Enter Location" style="width: 160px; border-bottom: 1px dotted #000;"></p>
 
         <div class="letter-body">
             <strong>Subject: - Request for sanction of Annual/Periodical Increment in favour of Mr/Ms. 
-            <input type="text" name="subj_name" class="inline-input" style="width: 220px;"> Teacher/Master w.e.f <input type="text" name="wef_date" class="inline-input"></strong>
+            <input type="text" name="subj_name" class="inline-input"> Teacher/Master w.e.f <input type="text" name="wef_date" class="inline-input"></strong>
             
             <p style="margin: 15px 0 8px 0;">Sir, Kindly refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -</p>
             
             <p style="margin: 8px 0; text-align: left;">
-                I have been working as <input type="text" name="role" class="inline-input" style="width: 180px;"> in the present place of posting since <input type="text" name="posting_since" class="inline-input">. 
+                I have been working as <input type="text" name="role" class="inline-input"> in the present place of posting since <input type="text" name="posting_since" class="inline-input">. 
                 My annual increment falls in the month of <input type="text" name="increment_month" class="inline-input">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District Treasury for payment and oblige.
             </p>
             
@@ -87,7 +98,7 @@
 
         <div class="office-section">
             <div class="office-header">For Office Use Only</div>
-            <p style="font-size: 0.9em; margin: 5px 0;"><strong>Examination I/C:</strong> <input type="text" style="width:200px; border-bottom:1px dotted #000;"></p>
+            <p style="font-size: 0.9em; margin: 5px 0;"><strong>Examination I/C:</strong> <input type="text" style="width:160px; border-bottom:1px dotted #000;"></p>
             
             <table class="results-table">
                 <thead>
@@ -106,6 +117,37 @@
                             document.write(`
                                 <tr>
                                     <td>${i}</td>
+                                    <td><input type="text"></td>
+                                    <td><input type="text"></td>
+                                    <td><input type="number"></td>
+                                    <td><input type="number"></td>
+                                    <td><input type="text" readonly></td>
+                                </tr>
+                            `);
+                        }
+                    </script>
+                </tbody>
+            </table>
+            
+            <div style="text-align: right; font-size: 0.85em; margin-bottom: 10px;"><strong>Sign of I/C Exams</strong></div>
+            <p style="font-size: 0.9em; margin: 10px 0;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" name="cert_date" class="inline-input"></p>
+            <div style="text-align: right; font-size: 0.85em;"><strong>Sign of HOI</strong></div>
+
+            <div class="order-box">
+                <p style="text-align: center; font-weight: bold; margin: 5px 0;">Order</p>
+                <p style="font-size: 0.9em; margin: 5px 0;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, w.e.f <input type="text" name="order_date" class="inline-input"></p>
+                <div style="text-align: right; margin-top: 15px; font-size: 0.85em;"><strong>Sign of DDO</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;" class="no-print">
+        <button type="button" onclick="window.print()" style="padding: 10px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 5px;">Print to PDF (A4)</button>
+    </div>
+</form>
+
+</body>
+</html>
                                     <td><input type="text"></td>
                                     <td><input type="text"></td>
                                     <td><input type="number"></td>
