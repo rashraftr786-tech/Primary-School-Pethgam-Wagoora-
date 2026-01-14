@@ -44,26 +44,24 @@
             display: inline-block;
         }
 
-        /* IMPROVED SUBJECT SETTINGS */
+        /* UPDATED SUBJECT SETTINGS - No line break between favour and of */
         .subject-container {
             font-weight: bold;
             margin-bottom: 10px;
         }
 
-        .subject-line {
-            display: flex;
-            align-items: baseline; /* Ensures text and inputs sit on the same line */
+        .subject-full-flow {
+            display: block;
             width: 100%;
-            margin-bottom: 2px;
+            text-align: left;
         }
 
         .flex-fill-input {
-            flex-grow: 1;
             border: none;
             border-bottom: 1px dotted #000;
-            margin-left: 5px;
+            width: 150px; /* Base width that expands as needed */
+            min-width: 100px;
             text-align: left;
-            height: 1.2em;
         }
 
         .w-name { width: 25ch; }
@@ -112,15 +110,12 @@
 
         <div class="letter-body">
             <div class="subject-container">
-                <div class="subject-line">
-                    Subject: - Request for sanction of Annual Increment in favour
-                </div>
-                <div class="subject-line">
-                    Of Mr/Mtr.<input type="text" class="inline-input w-name"> Teacher/Master <input type="text" class="flex-fill-input">
-                </div>
-                <div class="subject-line" style="justify-content: flex-end;">
+                <span class="subject-full-flow">
+                    Subject: - Request for sanction of Annual Increment in favour Of Mr/Mtr. 
+                    <input type="text" class="inline-input w-name"> Teacher/Master 
+                    <input type="text" class="inline-input" style="width: 180px;"> 
                     w.e.f <input type="text" class="inline-input w-date">
-                </div>
+                </span>
             </div>
 
             <p style="margin: 4px 0 2px 0;"><strong>Sir,</strong></p>
@@ -188,5 +183,4 @@
 
 </body>
 </html>
-                    
-            
+                                
