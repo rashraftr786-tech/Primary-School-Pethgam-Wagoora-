@@ -6,15 +6,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: sans-serif; text-align: center; background-color: #f4f4f4; margin: 0; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 20px auto; }
-        .btn { background: white; padding: 20px 10px; border-radius: 10px; text-decoration: none; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: block; }
-        .btn i { font-size: 30px; color: #0056b3; margin-bottom: 10px; display: block; }
-        .btn span { font-size: 12px; font-weight: bold; }
-        h1 { color: #0056b3; font-size: 1.5rem; }
+        /* Grid adjusted to handle multiple rows gracefully */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            max-width: 500px; 
+            margin: 20px auto; 
+        }
+        .btn { 
+            background: white; 
+            padding: 20px 10px; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            color: #333; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .btn i { font-size: 30px; color: #0056b3; margin-bottom: 10px; }
+        .btn span { font-size: 12px; font-weight: bold; line-height: 1.2; }
+        h1 { color: #0056b3; font-size: 1.5rem; margin-bottom: 5px; }
+        p { color: #666; font-size: 0.9rem; margin-top: 0; }
     </style>
 </head>
 <body>
     <h1>GPS Pethgam Wagoora</h1>
+    <p>School Administration Portal</p>
+
     <div class="grid">
         <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Student_Master" class="btn" target="_blank">
             <i class="fas fa-user-check"></i><span>Attendance</span>
@@ -25,7 +51,10 @@
         <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Results" class="btn" target="_blank">
             <i class="fas fa-poll"></i><span>Results</span>
         </a>
+
+        <a href="salary-inc.html" class="btn">
+            <i class="fas fa-file-invoice-dollar"></i><span>Salary Increment</span>
+        </a>
     </div>
 </body>
 </html>
-
