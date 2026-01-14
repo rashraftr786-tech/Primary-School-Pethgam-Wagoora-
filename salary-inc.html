@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <title>Salary Increment Application Form</title>
     <style>
-        body { font-family: 'Times New Roman', serif; background-color: #f0f0f0; padding: 2px; color: #333; }
+        /* Base styles preserved */
+        body { font-family: 'Times New Roman', serif; background-color: #f0f0f0; padding: 0; margin: 0; color: #333; }
         
         .page { 
             background: white; 
             width: 210mm; 
-            min-height: 297mm;
+            height: 297mm; /* Fixed A4 Height */
             margin: auto; 
-            padding: 8mm 15mm; 
+            padding: 10mm 15mm; /* Balanced margins for single page fit */
             box-sizing: border-box; 
             border: 1px solid #ccc; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1); 
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* Prevents overflow to 2nd page */
         }
 
-        h1 { text-align: center; font-size: 1.25em; text-decoration: underline; margin-bottom: 8px; margin-top: 0; }
+        h1 { text-align: center; font-size: 1.2em; text-decoration: underline; margin-bottom: 10px; margin-top: 0; }
         
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
         .info-table td { border: 1px solid black; padding: 4px; font-weight: bold; font-size: 0.9em; }
@@ -33,7 +35,7 @@
         
         input:focus { outline: none; background: #fffde7; }
 
-        .letter-body { line-height: 1.5; text-align: left; margin-top: 5px; font-size: 1em; }
+        .letter-body { line-height: 1.45; text-align: left; margin-top: 5px; font-size: 1em; }
         
         .inline-input { 
             border: none; 
@@ -43,7 +45,6 @@
             display: inline-block;
         }
 
-        /* Subject Line Container to facilitate the full-width input */
         .subject-line {
             display: flex;
             align-items: flex-end;
@@ -51,7 +52,6 @@
             width: 100%;
         }
 
-        /* The flex input after Teacher/Master */
         .flex-fill-input {
             flex-grow: 1;
             border: none;
@@ -60,29 +60,30 @@
             text-align: left;
         }
 
-        /* Specific Width Constraints */
+        /* Fixed Character Widths */
         .w-name { width: 25ch; }
         .w-desig { width: 17ch; }
         .w-date { width: 11ch; }
         .w-month { width: 9ch; }
         .w-treasury { width: 12ch; }
         
-        .office-section { border: 1px solid black; margin-top: 8px; padding: 6px; flex-grow: 0; }
+        .office-section { border: 1px solid black; margin-top: 8px; padding: 6px; }
         .office-header { text-align: center; font-weight: bold; border-bottom: 1px solid black; margin: -6px -6px 6px -6px; padding: 2px; background: #eee; }
         
-        .results-table { width: 100%; border-collapse: collapse; margin: 5px 0; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 4px 0; }
         .results-table th, .results-table td { border: 1px solid black; text-align: center; padding: 2px; font-size: 0.8em; }
         .results-table input { width: 95%; }
 
-        .sig-row { display: flex; justify-content: flex-end; margin-top: 5px; }
+        /* Signature Settings */
+        .sig-row { display: flex; justify-content: flex-end; margin-top: 2px; }
         .sig-box { text-align: center; width: 180px; }
-        .sig-line { border-top: 1px solid #000; margin-top: 25px; padding-top: 2px; font-weight: bold; font-size: 0.85em; }
+        .sig-line { border-top: 1px solid #000; margin-top: 22px; padding-top: 2px; font-weight: bold; font-size: 0.85em; }
         
-        .order-box { border-top: 1px solid black; margin-top: 8px; padding-top: 5px; }
+        .order-box { border-top: 1px solid black; margin-top: 8px; padding-top: 4px; }
         
         @media print {
-            body { background: none; padding: 0; }
-            .page { border: none; box-shadow: none; width: 100%; height: 297mm; margin: 0; padding: 8mm 12mm; }
+            body { background: none; }
+            .page { border: none; box-shadow: none; width: 100%; height: 297mm; margin: 0; }
             .no-print { display: none; }
             @page { size: A4; margin: 0; }
         }
@@ -113,7 +114,7 @@
                 w.e.f <input type="text" class="inline-input w-date">
             </div>
 
-            <p style="margin: 5px 0 2px 0;"><strong>Sir,</strong></p>
+            <p style="margin: 4px 0 2px 0;"><strong>Sir,</strong></p>
             <p style="margin: 0;">Kindly, refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -</p>
             
             <p style="margin: 4px 0;">
@@ -160,22 +161,22 @@
             
             <div class="sig-row"><div class="sig-box"><div class="sig-line">Sign of I/C Exams</div></div></div>
             
-            <p style="font-size: 0.9em; margin: 5px 0 2px 0;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="inline-input w-date"></p>
+            <p style="font-size: 0.9em; margin: 4px 0 2px 0;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="inline-input w-date"></p>
             <div class="sig-row"><div class="sig-box"><div class="sig-line">Sign of HOI</div></div></div>
 
             <div class="order-box">
                 <p style="text-align: center; font-weight: bold; margin: 2px 0; font-size: 0.95em;">Order</p>
                 <p style="font-size: 0.9em; margin: 2px 0;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual Increment w.e.f <input type="text" class="inline-input w-date"></p>
-                <div class="sig-row"><div class="sig-box"><div class="sig-line" style="margin-top: 20px;">Sign of DDO</div></div></div>
+                <div class="sig-row"><div class="sig-box"><div class="sig-line" style="margin-top: 15px;">Sign of DDO</div></div></div>
             </div>
         </div>
     </div>
 
     <div style="text-align: center; margin-top: 10px;" class="no-print">
-        <button type="button" onclick="window.print()" style="padding: 8px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px;">Print Application</button>
+        <button type="button" onclick="window.print()" style="padding: 8px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 5px; font-weight: bold;">Print Application</button>
     </div>
 </form>
 
 </body>
 </html>
-                
+        
