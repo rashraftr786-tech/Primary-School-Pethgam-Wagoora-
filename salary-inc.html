@@ -4,56 +4,56 @@
     <meta charset="UTF-8">
     <title>Salary Increment Application Form</title>
     <style>
-        /* Base styles preserved as per your layout */
         body { font-family: 'Times New Roman', serif; background-color: #f0f0f0; padding: 10px; color: #333; }
         
-        /* Updated for A4 fit: Reduced padding and strict sizing */
         .page { 
             background: white; 
             width: 210mm; 
-            min-height: 297mm; /* Standard A4 height */
+            min-height: 297mm;
             margin: auto; 
-            padding: 25px 40px; /* Reduced vertical padding from 40px to 25px */
+            padding: 25px 40px; 
             box-sizing: border-box; 
             border: 1px solid #ccc; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1); 
-            overflow: hidden;
         }
 
         h1 { text-align: center; font-size: 1.3em; text-decoration: underline; margin-bottom: 15px; }
         
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
         .info-table td { border: 1px solid black; padding: 6px; font-weight: bold; font-size: 0.95em; }
-        .info-table td:last-child { width: 70%; font-weight: normal; }
         
         input[type="text"], input[type="tel"], input[type="number"] { width: 95%; border: none; font-family: inherit; font-size: 1em; background: transparent; }
         input:focus { outline: none; background: #fffde7; }
 
-        .letter-body { line-height: 1.5; text-align: justify; margin-top: 10px; font-size: 0.95em; }
-        .inline-input { border: none; border-bottom: 1px dotted #000; width: 140px; text-align: center; }
+        /* FIX: Changed text-align from justify to left to prevent word stretching */
+        .letter-body { line-height: 1.6; text-align: left; margin-top: 10px; font-size: 1em; }
         
-        /* Compressed Office Section */
+        /* Updated style for dotted lines to ensure they don't force gaps */
+        .inline-input { 
+            border: none; 
+            border-bottom: 1px dotted #000; 
+            width: 140px; 
+            text-align: center; 
+            margin: 0 2px;
+        }
+        
         .office-section { border: 2px solid black; margin-top: 15px; padding: 8px; }
         .office-header { text-align: center; font-weight: bold; border-bottom: 2px solid black; margin: -8px -8px 8px -8px; padding: 3px; background: #eee; }
         
         .results-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
         .results-table th, .results-table td { border: 1px solid black; text-align: center; padding: 4px; font-size: 0.85em; }
-        .calc-field { background-color: #f9f9f9 !important; font-weight: bold; }
-        
-        .order-box { border-top: 1px solid black; margin-top: 10px; padding-top: 5px; }
         
         @media print {
             body { background: none; padding: 0; }
             .page { border: none; box-shadow: none; width: 100%; height: 100%; margin: 0; padding: 15mm; }
             .no-print { display: none; }
-            /* Force A4 scaling */
             @page { size: A4; margin: 0; }
         }
     </style>
 </head>
 <body>
 
-<form action="salary-inc.html" method="GET" id="incrementForm">
+<form action="salary-inc.html" method="GET">
     <div class="page">
         <h1>Salary Increment Application</h1>
 
@@ -72,11 +72,14 @@
             <strong>Subject: - Request for sanction of Annual/Periodical Increment in favour of Mr/Ms. 
             <input type="text" name="subj_name" class="inline-input" style="width: 220px;"> Teacher/Master w.e.f <input type="text" name="wef_date" class="inline-input"></strong>
             
-            <p style="margin: 8px 0;">Sir, Kindly refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -</p>
-            <p style="margin: 8px 0;">I have been working as <input type="text" name="role" class="inline-input"> in the present place of posting since <input type="text" name="posting_since" class="inline-input">. 
-            My annual increment falls in the month of <input type="text" name="increment_month" class="inline-input">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District Treasury for payment and oblige.</p>
+            <p style="margin: 15px 0 8px 0;">Sir, Kindly refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -</p>
             
-            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+            <p style="margin: 8px 0; text-align: left;">
+                I have been working as <input type="text" name="role" class="inline-input" style="width: 180px;"> in the present place of posting since <input type="text" name="posting_since" class="inline-input">. 
+                My annual increment falls in the month of <input type="text" name="increment_month" class="inline-input">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District Treasury for payment and oblige.
+            </p>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
                 <span><strong>Date: -</strong> <input type="text" name="current_date" class="inline-input"></span>
                 <span style="text-align: right;"><strong>Yours Sincerely,</strong><br><br>____________________</span>
             </div>
@@ -103,11 +106,11 @@
                             document.write(`
                                 <tr>
                                     <td>${i}</td>
-                                    <td><input type="text" name="class_${i}"></td>
-                                    <td><input type="text" name="subj_${i}"></td>
-                                    <td><input type="number" name="app_${i}" id="app_${i}" oninput="calculatePercent(${i})"></td>
-                                    <td><input type="number" name="pass_${i}" id="pass_${i}" oninput="calculatePercent(${i})"></td>
-                                    <td><input type="text" name="perc_${i}" id="perc_${i}" class="calc-field" readonly></td>
+                                    <td><input type="text"></td>
+                                    <td><input type="text"></td>
+                                    <td><input type="number"></td>
+                                    <td><input type="number"></td>
+                                    <td><input type="text" readonly></td>
                                 </tr>
                             `);
                         }
@@ -115,8 +118,7 @@
                 </tbody>
             </table>
             
-            <div style="text-align: right; font-size: 0.85em;"><strong>Sign of I/C Exams</strong></div>
-            
+            <div style="text-align: right; font-size: 0.85em; margin-bottom: 10px;"><strong>Sign of I/C Exams</strong></div>
             <p style="font-size: 0.9em; margin: 10px 0;">This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" name="cert_date" class="inline-input"></p>
             <div style="text-align: right; font-size: 0.85em;"><strong>Sign of HOI</strong></div>
 
@@ -133,19 +135,6 @@
     </div>
 </form>
 
-<script>
-    function calculatePercent(rowId) {
-        const appeared = document.getElementById(`app_${rowId}`).value;
-        const passed = document.getElementById(`pass_${rowId}`).value;
-        const percField = document.getElementById(`perc_${rowId}`);
-        if (appeared > 0 && passed >= 0) {
-            percField.value = ((passed / appeared) * 100).toFixed(1) + "%";
-        } else {
-            percField.value = "";
-        }
-    }
-</script>
-
 </body>
 </html>
-    
+                                    
