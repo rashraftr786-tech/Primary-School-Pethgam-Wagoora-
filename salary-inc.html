@@ -9,7 +9,7 @@
         
         @media screen {
             body { background-color: #f0f0f0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-            .control-panel { background: #fff; padding: 10px 20px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 210mm; text-align: center; }
+            .control-panel { background: #fff; padding: 10px 20px; margin-bottom: 10px; border-radius: 8px; width: 210mm; text-align: center; }
         }
 
         .btn { padding: 8px 15px; margin: 0 5px; cursor: pointer; font-weight: bold; border-radius: 4px; border: none; color: white; font-family: sans-serif; }
@@ -19,43 +19,43 @@
         .page {
             width: 210mm;
             height: 297mm;
-            padding: 8mm 12mm; /* Tightened top/bottom margins */
+            padding: 6mm 10mm; 
             background: white;
             font-family: Arial, sans-serif;
             font-size: 10.5pt;
-            line-height: 1.15; /* Compact line spacing */
+            line-height: 1.1; 
             color: #000;
             overflow: hidden;
-            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
         }
 
         @media print {
             body { background: none; padding: 0; margin: 0; }
             .control-panel { display: none; }
-            .page { border: 1px solid black; margin: 0; width: 210mm; height: 297mm; }
+            .page { border: none; margin: 0; width: 210mm; height: 297mm; }
             @page { size: A4; margin: 0; }
         }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
-        th, td { border: 1px solid #000; padding: 3px 6px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
+        th, td { border: 1px solid #000; padding: 2px 6px; text-align: left; }
         .header-title { text-align: center; font-size: 12pt; text-transform: uppercase; padding: 4px; font-weight: bold; }
 
         .input-field { width: 100%; border: none; outline: none; font-size: 10.5pt; background: transparent; }
-        .dotted-input { border: none; border-bottom: 1px dotted #000; outline: none; padding: 0 2px; }
+        .dotted-input { border: none; border-bottom: 1px dotted #000; outline: none; padding: 0 2px; font-family: inherit; font-size: 10.5pt; }
 
-        .text-section { margin: 5px 0; text-align: justify; }
+        .text-section { margin: 4px 0; text-align: justify; }
         
-        /* Strict 2-line Subject formatting */
-        .subject-block { font-weight: bold; margin: 8px 0; }
-        .subject-line { display: flex; align-items: flex-end; width: 100%; margin-bottom: 2px; }
+        /* Fixed 2-Line Subject Header */
+        .subject-container { font-weight: bold; margin: 6px 0; line-height: 1.4; }
+        .subject-row { display: flex; align-items: flex-end; width: 100%; }
 
-        .office-use { text-align: center; font-weight: bold; border: 1px solid #000; padding: 2px; margin: 5px 0; }
+        .office-use { text-align: center; font-weight: bold; border: 1px solid #000; padding: 2px; margin: 4px 0; }
         .result-table th { font-size: 9pt; text-align: center; font-weight: bold; }
         
-        .order-box { border: 1px solid #000; padding: 5px; margin-top: 5px; }
+        .order-box { border: 1px solid #000; padding: 6px; margin-top: 5px; flex-grow: 0; }
 
-        .sig-container { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; margin-bottom: 5px; }
-        .sig-spot { text-align: right; font-weight: bold; margin-top: 35px; } /* Enhanced space for signatures */
+        .sig-block { text-align: right; font-weight: bold; margin-top: 30px; margin-bottom: 2px; }
     </style>
 </head>
 <body>
@@ -77,36 +77,36 @@
 
     <div class="text-section">
         <strong>To,</strong><br>
-        <strong>The DDO/ZEO/Principal,</strong><br>
-        <input type="text" class="dotted-input save-data" id="f6" style="width: 100%;">
+        <strong>The DDO/ZEO/Principal,</strong> <input type="text" class="dotted-input save-data" id="f6" style="width: 70%;">
     </div>
 
-    <div class="subject-block">
-        <div class="subject-line">
+    <div class="subject-container">
+        <div class="subject-row">
             Subject: - Request for sanction of Annual/Periodical Increment in favour of Mr/Mtr.&nbsp;
-            <input type="text" class="dotted-input save-data" id="f7" style="flex-grow: 1;">
+            <input type="text" class="dotted-input save-data" id="f7_name" style="flex-grow: 1;" placeholder="First & Middle Name">
         </div>
-        <div class="subject-line">
-            Teacher/Master.&nbsp;<input type="text" class="dotted-input save-data" id="f8" style="flex-grow: 1;">&nbsp;w.e.f.&nbsp;
-            <input type="text" class="dotted-input save-data" id="f9" style="width: 150px;">
+        <div class="subject-row">
+            <input type="text" class="dotted-input save-data" id="f7_surname" style="width: 200px;" placeholder="Surname">
+            &nbsp;Teacher/Master.&nbsp;<input type="text" class="dotted-input save-data" id="f8" style="flex-grow: 1;">
+            &nbsp;w.e.f.&nbsp;<input type="text" class="dotted-input save-data" id="f9" style="width: 120px;">
         </div>
     </div>
 
     <div class="text-section">
-        Sir, Kindly refer to the subject cited above. In this connection, I would like to put the following few lines for your kind consideration: I have been working as <input type="text" class="dotted-input save-data" id="f10" style="width: 220px;"> in the present place of posting since <input type="text" class="dotted-input save-data" id="f11" style="width: 130px;">. My annual increment falls in the month of <input type="text" class="dotted-input save-data" id="f12" style="width: 130px;">. Hence, I request your good self to sanction my periodical increment and issue necessary orders before to present bills to District Treasury <input type="text" class="dotted-input save-data" id="f13" style="width: 140px;"> for payment and oblige.
+        Sir, Kindly refer to the subject cited above. In this connection, I would like to put the following few lines for your kind consideration: I have been working as <input type="text" class="dotted-input save-data" id="f10" style="width: 220px;"> in the present place of posting since <input type="text" class="dotted-input save-data" id="f11" style="width: 110px;">. My annual increment falls in the month of <input type="text" class="dotted-input save-data" id="f12" style="width: 110px;">. Hence, I request your good self to sanction my periodical increment and issue necessary orders before to present bills to District Treasury <input type="text" class="dotted-input save-data" id="f13" style="width: 130px;"> for payment and oblige.
     </div>
 
-    <p style="margin: 3px 0;">Hoping for a kind response.</p>
+    <p style="margin: 2px 0;">Hoping for a kind response.</p>
 
-    <div class="sig-container">
-        <div>Date: - <input type="text" class="dotted-input save-data" id="f14" style="width: 120px;"></div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px;">
+        <div>Date: - <input type="text" class="dotted-input save-data" id="f14" style="width: 100px;"></div>
         <div style="text-align: center;">Yours Sincerely,<br><br><br>____________________</div>
     </div>
 
     <div class="office-use">For Office Use Only</div>
 
-    <div style="margin-bottom: 3px;">
-        <strong>Examination I/C:</strong> <input type="text" class="dotted-input save-data" id="f15" style="width: 400px;"><br>
+    <div style="margin-bottom: 2px;">
+        <strong>Examination I/C:</strong> <input type="text" class="dotted-input save-data" id="f15" style="width: 380px;"><br>
         <strong>Subject Wise result of the employee: -</strong>
     </div>
 
@@ -137,18 +137,18 @@
         </tbody>
     </table>
 
-    <div class="sig-spot">Sign of I/C Exams</div>
+    <div class="sig-block">Sign of I/C Exams</div>
 
     <div style="margin-top: 10px;">
-        This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f16" style="width: 150px;">
+        This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f16" style="width: 140px;">
     </div>
 
-    <div class="sig-spot">Sign of HOI</div>
+    <div class="sig-block">Sign of HOI</div>
 
     <div class="order-box">
-        <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 3px;">Order</div>
-        <p style="margin: 0; font-size: 10.5pt;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual/Periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f17" style="width: 250px;"></p>
-        <div class="sig-spot" style="margin-top: 20px;">Sign of DDO</div>
+        <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 2px;">Order</div>
+        <p style="margin: 0; font-size: 10.5pt;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual/Periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f17" style="width: 240px;"></p>
+        <div class="sig-block" style="margin-top: 25px;">Sign of DDO</div>
     </div>
 </div>
 
@@ -172,4 +172,4 @@
 
 </body>
 </html>
-                
+        
