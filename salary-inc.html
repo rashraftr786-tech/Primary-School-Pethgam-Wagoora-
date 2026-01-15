@@ -8,22 +8,22 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         @media screen {
-            body { background-color: #f0f0f0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-            .control-panel { background: #fff; padding: 12px; margin-bottom: 10px; border-radius: 8px; width: 210mm; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            body { background-color: #f0f0f0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+            .control-panel { background: #fff; padding: 8px; margin-bottom: 5px; border-radius: 8px; width: 210mm; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         }
 
-        .btn { padding: 8px 16px; margin: 0 5px; cursor: pointer; font-weight: bold; border-radius: 4px; border: none; color: white; font-family: sans-serif; font-size: 13px; }
+        .btn { padding: 6px 12px; margin: 0 5px; cursor: pointer; font-weight: bold; border-radius: 4px; border: none; color: white; font-family: sans-serif; font-size: 12px; }
         .btn-print { background-color: #007bff; }
         .btn-clear { background-color: #dc3545; }
 
         .page {
             width: 210mm;
             height: 297mm;
-            padding: 12mm 15mm; /* Professional A4 margins */
+            padding: 6mm 12mm; /* Further reduced top margin to pull text up */
             background: white;
             font-family: Arial, sans-serif;
-            font-size: 11pt; /* Increased text size to fill empty space */
-            line-height: 1.35; /* Increased spacing for better page coverage */
+            font-size: 11pt;
+            line-height: 1.25; /* Tightened line height to prevent overflow */
             color: #000;
             overflow: hidden; 
             border: 1px solid #ccc;
@@ -38,26 +38,27 @@
             @page { size: A4; margin: 0; }
         }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-        th, td { border: 1px solid #000; padding: 5px 8px; text-align: left; }
-        .header-title { text-align: center; font-size: 13pt; text-transform: uppercase; padding: 6px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+        th, td { border: 1px solid #000; padding: 4px 8px; text-align: left; }
+        .header-title { text-align: center; font-size: 12pt; text-transform: uppercase; padding: 4px; font-weight: bold; }
 
         .input-field { width: 100%; border: none; outline: none; font-size: 11pt; background: transparent; }
         .dotted-input { border: none; border-bottom: 1px dotted #000; outline: none; padding: 0 2px; font-family: inherit; font-size: 11pt; }
 
-        .text-section { margin: 8px 0; text-align: justify; }
+        .text-section { margin: 6px 0; text-align: justify; }
         
-        /* Subject block strictly 2 lines with name/surname layout */
-        .subject-block { font-weight: bold; margin: 12px 0; line-height: 1.6; }
+        .subject-block { font-weight: bold; margin: 8px 0; line-height: 1.5; }
         .subject-line { display: flex; align-items: flex-end; white-space: nowrap; }
 
-        .office-use { text-align: center; font-weight: bold; border: 1px solid #000; padding: 4px; margin: 12px 0; }
-        .result-table th { font-size: 9.5pt; text-align: center; font-weight: bold; padding: 6px 2px; }
+        .office-use { text-align: center; font-weight: bold; border: 1px solid #000; padding: 3px; margin: 8px 0; }
+        .result-table th { font-size: 9.5pt; text-align: center; font-weight: bold; padding: 4px 2px; }
         
-        .order-box { border: 1px solid #000; padding: 10px; margin-top: auto; } 
-
-        .sig-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; }
-        .sig-label { font-weight: bold; text-align: right; margin-top: 35px; }
+        /* Compact signature and sincerity section to remove empty space */
+        .sincerity-section { margin: 4px 0; }
+        .sig-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; }
+        
+        .order-box { border: 1px solid #000; padding: 8px; margin-top: auto; } 
+        .sig-label { font-weight: bold; text-align: right; margin-top: 25px; } /* Maintained space for actual signatures */
     </style>
 </head>
 <body>
@@ -86,7 +87,7 @@
     <div class="subject-block">
         <div class="subject-line">
             Subject: - Request for sanction of Annual/Periodical Increment in favour of Mr/Mtr.&nbsp;
-            <input type="text" class="dotted-input save-data" id="f7" placeholder="First Names" style="width: 260px;">
+            <input type="text" class="dotted-input save-data" id="f7" style="width: 260px;">
         </div>
         <div class="subject-line">
             <input type="text" class="dotted-input save-data" id="f7s" placeholder="Surname" style="width: 120px;">
@@ -100,16 +101,17 @@
         I have been working as <input type="text" class="dotted-input save-data" id="f10" style="width: 240px;"> in the present place of posting since <input type="text" class="dotted-input save-data" id="f11" style="width: 140px;">. My annual increment falls in the month of <input type="text" class="dotted-input save-data" id="f12" style="width: 160px;">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District/Tehsil Treasury <input type="text" class="dotted-input save-data" id="f13" style="width: 160px;"> for payment and oblige.
     </div>
 
-    <p style="margin-top: 5px;">Hoping for a kind response.</p>
-
-    <div class="sig-row">
-        <div>Date: - <input type="text" class="dotted-input save-data" id="f14" style="width: 130px;"></div>
-        <div style="text-align: center;"><strong>Yours Sincerely,</strong><br><br><br>____________________</div>
+    <div class="sincerity-section">
+        <p>Hoping for a kind response.</p>
+        <div class="sig-row">
+            <div>Date: - <input type="text" class="dotted-input save-data" id="f14" style="width: 130px;"></div>
+            <div style="text-align: center;"><strong>Yours Sincerely,</strong><br><br>____________________</div>
+        </div>
     </div>
 
     <div class="office-use">For Office Use Only</div>
 
-    <div style="margin-bottom: 5px;">
+    <div style="margin-bottom: 4px;">
         <strong>Examination I/C:</strong> <input type="text" class="dotted-input save-data" id="f15" style="width: 420px;"><br>
         <strong>Subject Wise result of the employee: -</strong>
     </div>
@@ -143,16 +145,16 @@
 
     <div class="sig-label">Sign of I/C Exams</div>
 
-    <div style="margin-top: 10px;">
+    <div style="margin-top: 8px;">
         This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f16" style="width: 160px;">
     </div>
 
     <div class="sig-label">Sign of HOI</div>
 
     <div class="order-box">
-        <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 4px;">Order</div>
+        <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 2px;">Order</div>
         <p style="margin: 0; font-size: 10.5pt;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual/Periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f17" style="width: 280px;"></p>
-        <div class="sig-label" style="margin-top: 30px;">Sign of DDO</div>
+        <div class="sig-label" style="margin-top: 20px;">Sign of DDO</div>
     </div>
 </div>
 
@@ -176,4 +178,4 @@
 
 </body>
 </html>
-        
+            
