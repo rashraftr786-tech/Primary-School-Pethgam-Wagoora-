@@ -5,199 +5,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salary Increment Application Form</title>
     <style>
-        /* Control Panel Styles - Hidden during print */
-        .control-panel {
-            background: #f8f9fa;
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        /* Global Reset to ensure strict sizing */
+        * { box-sizing: border-box; }
+        
+        @media screen {
+            body {
+                background-color: #f0f0f0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+            }
+            .control-panel {
+                background: #fff;
+                padding: 10px 20px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                position: sticky;
+                top: 10px;
+                z-index: 100;
+            }
         }
 
         .btn {
-            padding: 10px 20px;
-            margin: 0 10px;
+            padding: 8px 15px;
+            margin: 0 5px;
             cursor: pointer;
             font-weight: bold;
-            border-radius: 5px;
-            border: 1px solid #333;
-            transition: 0.3s;
+            border-radius: 4px;
+            border: none;
+            color: white;
         }
+        .btn-print { background-color: #007bff; }
+        .btn-clear { background-color: #dc3545; }
 
-        .btn-print { background-color: #007bff; color: white; border: none; }
-        .btn-pdf { background-color: #28a745; color: white; border: none; }
-        .btn:hover { opacity: 0.8; }
+        /* A4 Page Styling */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            padding: 12mm; /* Balanced margin for print */
+            background: white;
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.25; /* Tightened line height to prevent overflow */
+            color: #000;
+            border: 1px solid #ccc;
+            position: relative;
+            overflow: hidden; /* Strictly prevents content from spilling to page 2 */
+        }
 
         @media print {
-            @page {
-                size: A4;
-                margin: 15mm;
+            body { background: none; padding: 0; margin: 0; }
+            .control-panel { display: none; }
+            .page { 
+                border: 1px solid black; 
+                margin: 0; 
+                width: 210mm;
+                height: 297mm;
             }
-            body {
-                margin: 0;
-                padding: 0;
-                background-color: white;
-            }
-            .control-panel {
-                display: none; /* Hide buttons on the actual document */
-            }
-            .container {
-                border: none !important; /* Optional: remove outer border for cleaner print */
-                box-shadow: none !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-        }
-
-        /* Original Layout Styles preserved exactly */
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            line-height: 1.4;
-            color: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f0f0;
-            padding: 0;
-            margin: 0;
-        }
-
-        .container {
-            width: 210mm;
-            min-height: 297mm;
-            background: #fff;
-            padding: 10mm;
-            box-sizing: border-box;
-            border: 1px solid #000;
-            margin: 20px 0;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            @page { size: A4; margin: 0; }
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         th, td {
             border: 1px solid #000;
-            padding: 4px 8px;
+            padding: 4px 6px;
             text-align: left;
         }
 
         .header-title {
             text-align: center;
-            font-weight: bold;
-            font-size: 14px;
+            font-size: 13pt;
             text-transform: uppercase;
+            padding: 8px;
         }
 
         .input-field {
             width: 100%;
             border: none;
             outline: none;
-            font-family: inherit;
-            font-size: inherit;
+            font-size: 11pt;
             background: transparent;
         }
 
-        .text-section {
-            margin: 15px 0;
-            text-align: justify;
+        .dotted-input {
+            border: none;
+            border-bottom: 1px dotted #000;
+            outline: none;
+            padding: 0 3px;
         }
 
-        .office-use-header {
+        .text-section { margin: 10px 0; text-align: justify; }
+        .office-use {
             text-align: center;
             font-weight: bold;
             border: 1px solid #000;
-            padding: 5px;
-            margin-top: 10px;
+            padding: 3px;
+            margin: 8px 0;
         }
 
-        .subject-table th {
-            text-align: center;
-            font-size: 11px;
-            background-color: #f9f9f9;
-        }
-        
-        .order-section {
+        .result-table th { font-size: 9pt; text-align: center; }
+        .order-box {
             border: 1px solid #000;
-            padding: 10px;
-            margin-top: 10px;
+            padding: 8px;
+            margin-top: 5px;
         }
 
-        input[type="text"] {
-            border: none;
-            border-bottom: 1px dotted #000;
-            padding: 0 5px;
+        .signature-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="control-panel">
-    <button class="btn btn-print" onclick="window.print()">Print Form</button>
-    <button class="btn btn-pdf" onclick="window.print()">Download as PDF</button>
-    <p style="font-size: 11px; color: #666; margin-top: 5px;">Tip: For PDF, select "Save as PDF" in the printer destination dropdown.</p>
+    <button class="btn btn-print" onclick="window.print()">Print / Download PDF</button>
+    <button class="btn btn-clear" onclick="clearData()">Clear All Fields</button>
 </div>
 
-<div class="container">
+<div class="page">
     <table>
         <tr>
             <th colspan="2" class="header-title">Salary Increment Application</th>
         </tr>
-        <tr>
-            <td style="width: 30%;">Name of the Employee</td>
-            <td><input type="text" class="input-field"></td>
-        </tr>
-        <tr>
-            <td>Designation</td>
-            <td><input type="text" class="input-field"></td>
-        </tr>
-        <tr>
-            <td>CPIS No.</td>
-            <td><input type="text" class="input-field"></td>
-        </tr>
-        <tr>
-            <td>Address</td>
-            <td><input type="text" class="input-field"></td>
-        </tr>
-        <tr>
-            <td>Mobile No.</td>
-            <td><input type="text" class="input-field"></td>
-        </tr>
+        <tr><td style="width:30%">Name of the Employee</td><td><input type="text" class="input-field save-data" id="f1"></td></tr>
+        <tr><td>Designation</td><td><input type="text" class="input-field save-data" id="f2"></td></tr>
+        <tr><td>CPIS No.</td><td><input type="text" class="input-field save-data" id="f3"></td></tr>
+        <tr><td>Address</td><td><input type="text" class="input-field save-data" id="f4"></td></tr>
+        <tr><td>Mobile No.</td><td><input type="text" class="input-field save-data" id="f5"></td></tr>
     </table>
 
     <div class="text-section">
         <strong>To,</strong><br>
         <strong>The DDO/ZEO/Principal,</strong><br>
-        <input type="text" style="width: 100%; border: none; border-bottom: 1px dotted #000; margin-top: 5px;">
+        <input type="text" class="dotted-input save-data" id="f6" style="width: 100%;">
     </div>
 
     <div class="text-section">
         <strong>Subject: - Request for sanction of Annual/Periodical Increment in favour <br>
-        Of Mr/Mtr.<input type="text" style="width: 250px;"> Teacher/Master.<input type="text" style="width: 200px;"> w.e.f.<input type="text" style="width: 100px;"></strong>
+        Of Mr/Mtr.<input type="text" class="dotted-input save-data" id="f7" style="width: 220px;"> Teacher/Master.<input type="text" class="dotted-input save-data" id="f8" style="width: 180px;"> w.e.f.<input type="text" class="dotted-input save-data" id="f9" style="width: 100px;"></strong>
     </div>
 
     <div class="text-section">
-        Sir,<br>
-        Kindly, refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -<br>
-        I have been working as <input type="text" style="width: 280px;"> in the present place of posting since <input type="text" style="width: 150px;">. My annual increment falls in the month of <input type="text" style="width: 200px;">. Hence, I request your good self to sanction my periodical increment and issue necessary orders at an earliest date before to present bills to District Treasury <input type="text" style="width: 200px;"> for payment and oblige.
+        Sir, Kindly, refer to the subject cited above, in this connection, I would like to put the following few lines for your kind consideration: -<br>
+        I have been working as <input type="text" class="dotted-input save-data" id="f10" style="width: 250px;"> in the present place of posting since <input type="text" class="dotted-input save-data" id="f11" style="width: 150px;">. My annual increment falls in the month of <input type="text" class="dotted-input save-data" id="f12" style="width: 180px;">. Hence, I request your good self to sanction my periodical increment and issue necessary orders before to present bills to District Treasury <input type="text" class="dotted-input save-data" id="f13" style="width: 180px;"> for payment and oblige.
     </div>
 
-    <p>Hoping for a kind response.</p>
+    <p style="margin: 5px 0;">Hoping for a kind response.</p>
 
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px;">
-        <div>Date: - <input type="text" style="width: 120px;"></div>
-        <div style="text-align: center;">
-            Yours Sincerely,<br><br><br>
-            _________________________
-        </div>
+    <div class="signature-row">
+        <div>Date: - <input type="text" class="dotted-input save-data" id="f14" style="width: 120px;"></div>
+        <div style="text-align: center;">Yours Sincerely,<br><br>____________________</div>
+    </div>
+
+    <div class="office-use">For Office Use Only</div>
+
+    <div style="margin-bottom: 5px;">
+        <strong>Examination I/C:</strong> <input type="text" class="dotted-input save-data" id="f15" style="width: 400px;"><br>
+        <strong>Subject Wise result of the employee: -</strong>
+    </div>
+
+    <table class="result-table">
+        <thead>
+            <tr>
+                <th style="width:40px">S.No.</th>
+                <th>Class</th>
+                <th>Subject Taught</th>
+                <th>No. appeared</th>
+                <th>No. Passed</th>
+                <th>Pass %age</th>
+            </tr>
+        </thead>
+        <tbody>
+            <script>
+                for(let i=1; i<=6; i++) {
+                    document.write(`<tr>
+                        <td style="text-align:center">${i}</td>
+                        <td><input type="text" class="input-field save-data" id="r${i}c1"></td>
+                        <td><input type="text" class="input-field save-data" id="r${i}c2"></td>
+                        <td><input type="text" class="input-field save-data" id="r${i}c3"></td>
+                        <td><input type="text" class="input-field save-data" id="r${i}c4"></td>
+                        <td><input type="text" class="input-field save-data" id="r${i}c5"></td>
+                    </tr>`);
+                }
+            </script>
+        </tbody>
+    </table>
+
+    <div style="text-align: right; margin-bottom: 10px; font-weight: bold;">Sign of I/C Exams</div>
+
+    <div style="margin-bottom: 15px;">
+        This is to certify that the said official is eligible for Annual/periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f16" style="width: 150px;">
+    </div>
+
+    <div style="text-align: right; margin-bottom: 10px; font-weight: bold;">Sign of HOI</div>
+
+    <div class="order-box">
+        <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 5px;">Order</div>
+        <p style="margin: 0; font-size: 10.5pt;">Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual/Periodical increment w.e.f <input type="text" class="dotted-input save-data" id="f17" style="width: 250px;"></p>
+        <br>
+        <div style="text-align: right; font-weight: bold;">Sign of DDO</div>
+    </div>
+</div>
+
+<script>
+    // Save data automatically
+    document.querySelectorAll('.save-data').forEach(input => {
+        input.addEventListener('input', () => localStorage.setItem(input.id, input.value));
+    });
+
+    // Load data on refresh
+    window.addEventListener('load', () => {
+        document.querySelectorAll('.save-data').forEach(input => {
+            const savedValue = localStorage.getItem(input.id);
+            if (savedValue) input.value = savedValue;
+        });
+    });
+
+    function clearData() {
+        if(confirm("Clear all entries?")) {
+            localStorage.clear();
+            document.querySelectorAll('.save-data').forEach(input => input.value = "");
+        }
+    }
+</script>
+
+</body>
+</html>
+                        <td>CPIS No.</td>
+            
     </div>
 
     <div class="office-use-header">For Office Use Only</div>
@@ -212,18 +257,7 @@
             <tr>
                 <th style="width: 50px;">S.No.</th>
                 <th>Class</th>
-                <th>Subject Taught</th>
-                <th style="width: 80px;">No. of Students appeared</th>
-                <th style="width: 80px;">No. of Students Passed</th>
-                <th style="width: 80px;">Pass %age</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>1</td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td></tr>
-            <tr><td>2</td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td></tr>
-            <tr><td>3</td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td></tr>
-            <tr><td>4</td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td></tr>
-            <tr><td>5</td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td></tr>
+                
             <tr><td>6</td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td><td><input type="text" class="input-field"></td></tr>
         </tbody>
     </table>
