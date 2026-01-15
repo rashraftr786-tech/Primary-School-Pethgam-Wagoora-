@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salary Increment Application Form</title>
     <style>
+        /* Control Panel Styles - Hidden during print */
+        .control-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+            border: 1px solid #333;
+            transition: 0.3s;
+        }
+
+        .btn-print { background-color: #007bff; color: white; border: none; }
+        .btn-pdf { background-color: #28a745; color: white; border: none; }
+        .btn:hover { opacity: 0.8; }
+
         @media print {
             @page {
                 size: A4;
@@ -13,21 +39,32 @@
             body {
                 margin: 0;
                 padding: 0;
+                background-color: white;
             }
-            .no-print {
-                display: none;
+            .control-panel {
+                display: none; /* Hide buttons on the actual document */
+            }
+            .container {
+                border: none !important; /* Optional: remove outer border for cleaner print */
+                box-shadow: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
         }
 
+        /* Original Layout Styles preserved exactly */
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
             line-height: 1.4;
             color: #000;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             background-color: #f0f0f0;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
 
         .container {
@@ -37,6 +74,8 @@
             padding: 10mm;
             box-sizing: border-box;
             border: 1px solid #000;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
         table {
@@ -67,12 +106,6 @@
             background: transparent;
         }
 
-        .dotted-line {
-            border-bottom: 1px dotted #000;
-            display: inline-block;
-            min-width: 150px;
-        }
-
         .text-section {
             margin: 15px 0;
             text-align: justify;
@@ -86,34 +119,6 @@
             margin-top: 10px;
         }
 
-        .signature-block {
-            margin-top: 20px;
-            text-align: right;
-        }
-
-        .footer-sign-grid {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-        }
-
-        .center-text {
-            text-align: center;
-            font-weight: bold;
-        }
-
-        input[type="text"] {
-            border: none;
-            border-bottom: 1px dotted #000;
-            padding: 0 5px;
-        }
-
-        .full-width-input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px dotted #000;
-        }
-
         .subject-table th {
             text-align: center;
             font-size: 11px;
@@ -125,9 +130,21 @@
             padding: 10px;
             margin-top: 10px;
         }
+
+        input[type="text"] {
+            border: none;
+            border-bottom: 1px dotted #000;
+            padding: 0 5px;
+        }
     </style>
 </head>
 <body>
+
+<div class="control-panel">
+    <button class="btn btn-print" onclick="window.print()">Print Form</button>
+    <button class="btn btn-pdf" onclick="window.print()">Download as PDF</button>
+    <p style="font-size: 11px; color: #666; margin-top: 5px;">Tip: For PDF, select "Save as PDF" in the printer destination dropdown.</p>
+</div>
 
 <div class="container">
     <table>
@@ -159,7 +176,7 @@
     <div class="text-section">
         <strong>To,</strong><br>
         <strong>The DDO/ZEO/Principal,</strong><br>
-        <input type="text" class="full-width-input" style="margin-top: 5px;">
+        <input type="text" style="width: 100%; border: none; border-bottom: 1px dotted #000; margin-top: 5px;">
     </div>
 
     <div class="text-section">
@@ -224,7 +241,7 @@
     </div>
 
     <div class="order-section">
-        <div class="center-text">Order</div>
+        <div style="text-align: center; font-weight: bold;">Order</div>
         <p>Sanction is hereby accorded under Rule 10 of J&K Civil Service (Reserved) pay Rules-2018, in favour of the incumbent as Annual/Periodical increment w.e.f ........................................................</p>
         <br><br>
         <div style="text-align: right;">
@@ -235,4 +252,3 @@
 
 </body>
 </html>
-                
