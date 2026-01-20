@@ -3,212 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Letterhead</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Letterhead - GPS Pethgam Wagoora</title>
     <style>
+        /* CSS STYLES */
         :root {
-            --primary-blue: #0056b3;
-            --page-width: 210mm;
-            --page-height: 297mm;
+            --primary-orange: #f8c27d;
+            --dark-teal: #16363b;
+            --text-gray: #333;
         }
 
         body {
             margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+            background-color: #e0e0e0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
         }
 
-        /* A4 Page Layout */
+        /* Container designed for A4 Dimensions */
         .letterhead-container {
-            width: var(--page-width);
-            height: var(--page-height);
-            margin: 20px auto;
+            width: 210mm;
+            min-height: 297mm;
             background: white;
             position: relative;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
-        /* Curved Blue Header Section */
-        header {
-            position: relative;
-            height: 160px; 
-        }
-
-        .blue-header {
-            background-color: var(--primary-blue);
-            height: 110px; 
-            width: 100%;
-            position: relative;
-            display: flex;
-            justify-content: flex-end; 
-            align-items: center;
-            padding: 0 40px;
-            box-sizing: border-box;
-        }
-
-        /* Styling for Urdu School Name */
-        .urdu-text {
-            color: white;
-            font-family: 'Noto Nastaliq Urdu', serif;
-            font-size: 2rem;
-            line-height: 1.4;
-            direction: rtl;
-            white-space: nowrap;
-        }
-
-        /* Identity Row with School Logo */
-        .identity-row {
-            padding: 0 50px;
-            display: flex;
-            align-items: center;
-            margin-top: -55px; 
-            position: relative;
-            z-index: 10;
-        }
-
-        .school-logo {
-            width: 100px;
-            height: 100px;
-            background: white;
-            border-radius: 50%;
-            padding: 5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            object-fit: contain;
-        }
-
-        .school-info-english {
-            margin-left: 20px;
-            margin-top: 55px;
-        }
-
-        .school-info-english h1 {
-            margin: 0;
-            font-size: 22px;
-            color: #222;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        /* Content Body Area */
-        .content-body {
-            flex-grow: 1;
-            padding: 40px 60px;
+        /* Header Section */
+        .header-bg {
+            background-color: var(--primary-orange);
+            padding-top: 20px;
             position: relative;
         }
 
-        .ref-date-row {
+        .header-content {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 50px;
-            font-weight: 600;
-            color: #444;
-        }
-
-        /* Light Watermark for official look */
-        .watermark {
-            position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 500px;
-            opacity: 0.05;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* Blue Footer with Contact Details */
-        footer {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 15px 50px;
-            font-size: 13px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 15px;
             align-items: center;
+            padding: 0 40px 15px 40px;
         }
 
-        /* Print-specific Button */
-        .print-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background: var(--primary-blue);
+        .branding-side {
+            flex: 1;
+            z-index: 5;
+        }
+
+        .left-side { text-align: left; }
+        .right-side { text-align: right; }
+
+        h1 { 
+            margin: 0; 
+            font-size: 19px; 
+            color: var(--dark-teal); 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        h2 { 
+            margin: 2px 0; 
+            font-size: 17px; 
+            color: var(--dark-teal);
+        }
+
+        .urdu-text {
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Urdu Typesetting', 'Amiri', 'Traditional Arabic', serif;
+        }
+
+        .address {
+            font-size: 11px;
+            color: #444;
+            margin-top: 4px;
+        }
+
+        /* Center Logo Styling */
+        .logo-wrapper {
+            width: 110px;
+            height: 100px;
+            background: white;
+            border: 4px solid var(--dark-teal);
+            border-radius: 55px 55px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 20px;
+            position: relative;
+            top: 25px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: #eee;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* Dark Contact Bar */
+        .contact-bar {
+            background-color: var(--dark-teal);
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
+            padding: 8px 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            font-size: 13px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
+        .contact-item { display: flex; align-items: center; gap: 8px; }
+
+        /* Document Details (Ref & Date) */
+        .doc-meta {
+            display: flex;
+            justify-content: space-between;
+            padding: 30px 50px 10px 50px;
+            font-size: 15px;
+            color: #222;
+        }
+
+        /* Letter Body Area */
+        .content-area {
+            flex-grow: 1;
+            padding: 20px 60px;
+        }
+
+        /* Footer Decoration */
+        .footer-wrapper {
+            position: relative;
+            height: 100px;
+            width: 100%;
+        }
+
+        .footer-dark-v {
+            position: absolute;
+            bottom: 25px;
+            width: 100%;
+            height: 30px;
+            background-color: var(--dark-teal);
+            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+        }
+
+        .footer-orange-v {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--primary-orange);
+            clip-path: polygon(0 45%, 50% 0, 100% 45%, 100% 100%, 0 100%);
+        }
+
+        /* Print Settings */
         @media print {
-            body { background: none; }
-            .print-btn { display: none; }
-            .letterhead-container { 
-                margin: 0; 
-                box-shadow: none; 
-                width: 100%;
+            body { background: none; padding: 0; }
+            .letterhead-container { box-shadow: none; margin: 0; width: 100%; height: 100vh; }
+            .header-bg, .contact-bar, .footer-orange-v, .footer-dark-v {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            @page { size: A4; margin: 0; }
         }
     </style>
 </head>
 <body>
 
-    <button class="print-btn" onclick="printLetterhead()">Print Letterhead</button>
-
-    <div class="letterhead-container" id="letterhead">
-        <header>
-            <div class="blue-header">
-                <div class="urdu-text">گورنمنٹ پرائمری سکول پیٹھگام واگورہ</div>
-            </div>
-            <div class="identity-row">
-                <img src="logo.png" alt="School Logo" class="school-logo" onerror="this.src='https://via.placeholder.com/100?text=LOGO';">
-                <div class="school-info-english">
+    <div class="letterhead-container">
+        <div class="header-bg">
+            <div class="header-content">
+                <div class="branding-side left-side">
                     <h1>Government Primary School</h1>
-                    <div style="color: #444; font-weight: 500;">Pethgam Wagoora, Baramulla</div>
+                    <h2>Pethgam Wagoora</h2>
+                    <div class="address">Zone: Wagoora, District: Baramulla<br>J&K, India - 193101</div>
+                </div>
+
+                <div class="logo-wrapper">
+                    <div class="logo-placeholder">
+                        SCHOOL<br>LOGO
+                    </div>
+                </div>
+
+                <div class="branding-side right-side">
+                    <div class="urdu-text">گورنمنٹ پرائمری سکول</div>
+                    <div class="urdu-text">پیٹھگام واگورہ</div>
+                    <div class="address">زون: واگورہ، ضلع: بارہمولہ</div>
                 </div>
             </div>
-        </header>
 
-        <main class="content-body">
-            <img src="logo.png" class="watermark" alt="watermark" onerror="this.style.display='none';">
+            <div class="contact-bar">
+                <div class="contact-item">📞 +91 9419XXXXXX</div>
+                <div class="contact-item">✉️ gpspethgamwagoora@gmail.com</div>
+            </div>
+        </div>
 
-            <div class="ref-date-row">
-                <span>Ref No: ________________</span>
-                <span>Date: ________________</span>
+        <div class="doc-meta">
+            <div><strong>Ref. no:</strong> _________________</div>
+            <div><strong>Date:</strong> _________________</div>
+        </div>
+
+        <div class="content-area">
             </div>
 
-            <div class="document-content">
-                </div>
-        </main>
-
-        <footer>
-            <div class="footer-grid">
-                <div><strong>Address:</strong> Pethgam, Wagoora, Baramulla, J&K 193109</div>
-                <div style="text-align: center;"><strong>Email:</strong> pspethgam@gmail.com</div>
-                <div style="text-align: right;"><strong>Phone:</strong> +91 9596449881</div>
-            </div>
-        </footer>
+        <div class="footer-wrapper">
+            <div class="footer-dark-v"></div>
+            <div class="footer-orange-v"></div>
+        </div>
     </div>
 
     <script>
-        /**
-         * Triggers the browser's print dialog.
-         */
-        function printLetterhead() {
-            window.print();
-        }
+        // Optional: Function to print the page
+        window.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                console.log("Preparing document for high-quality print...");
+            }
+        });
+
+        // You could add a function here to dynamically fill the Ref or Date
+        // if you were using this in a web app.
     </script>
 </body>
 </html>
-
-                    
+                                    
