@@ -31,32 +31,35 @@
             overflow: hidden;
         }
 
-        /* Split Header Layout */
+        /* Split Header Layout - Background blocks fixed in place */
         .header-bg {
             display: flex;
             position: relative;
             height: 160px; 
         }
 
-        /* English Side - Raised 10px */
         .left-orange-side {
             background-color: var(--primary-orange);
             flex: 1;
-            padding: 15px 20px 35px 50px; /* Reduced top padding to raise text */
+            padding: 25px 20px 25px 50px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        /* Urdu Side - Raised 10px */
         .right-white-side {
             background-color: var(--white);
             flex: 1;
-            padding: 15px 50px 35px 20px; /* Reduced top padding to raise text */
+            padding: 25px 50px 25px 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             text-align: right;
+        }
+
+        /* Raising only the text by 10px without moving the blocks */
+        .raised-text {
+            transform: translateY(-10px);
         }
 
         h1 { margin: 0; font-size: 20px; color: var(--dark-teal); text-transform: uppercase; }
@@ -136,17 +139,17 @@
 
         .content-area { flex-grow: 1; }
 
-        /* Synced V-Shape Footer */
+        /* Footer Wrapper */
         .footer-wrapper {
             position: relative;
             height: 140px;
             width: 100%;
         }
 
-        /* Black V line - Lowered by 15px (from bottom: 40px to 25px) */
+        /* Black V line - Lowered by another 10px (now at bottom: 15px) */
         .footer-margin-line {
             position: absolute;
-            bottom: 25px; 
+            bottom: 15px; 
             width: 100%;
             height: 60px;
             background-color: var(--dark-teal);
@@ -167,7 +170,7 @@
         @media print {
             body { background: none; padding: 0; }
             .letterhead-container { box-shadow: none; margin: 0; width: 100%; height: 297mm; }
-            .left-orange-side, .contact-bar, .footer-orange-v, .footer-margin-line, .white-divider {
+            .left-orange-side, .contact-bar, .footer-orange-v, .footer-margin-line, .white-divider, .right-white-side {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -186,15 +189,19 @@
                 </div>
 
                 <div class="left-orange-side">
-                    <h1>Government Primary School</h1>
-                    <h2>Pethgam Wagoora</h2>
-                    <div class="address">Zone: Wagoora, District: Baramulla<br>J&K, India - 193109</div>
+                    <div class="raised-text">
+                        <h1>Government Primary School</h1>
+                        <h2>Pethgam Wagoora</h2>
+                        <div class="address">Zone: Wagoora, District: Baramulla<br>J&K, India - 193109</div>
+                    </div>
                 </div>
 
                 <div class="right-white-side">
-                    <div class="urdu-text">گورنمنٹ پرائمری سکول</div>
-                    <div class="urdu-text">پیٹھگام واگورہ</div>
-                    <div class="address">زون: واگورہ، ضلع: بارہمولہ ١٩٣١٠٩</div>
+                    <div class="raised-text">
+                        <div class="urdu-text">گورنمنٹ پرائمری سکول</div>
+                        <div class="urdu-text">پیٹھگام واگورہ</div>
+                        <div class="address">زون: واگورہ، ضلع: بارہمولہ ١٩٣١٠٩</div>
+                    </div>
                 </div>
             </div>
 
@@ -225,5 +232,4 @@
 
 </body>
 </html>
-
-                            
+                        clip-path: polygon(0 40%, 50% 100%, 100% 40                            
