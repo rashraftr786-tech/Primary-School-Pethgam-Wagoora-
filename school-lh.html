@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letterhead - GPS Pethgam Wagoora</title>
     <style>
-        /* CSS STYLES */
         :root {
             --primary-orange: #f8c27d;
-            --dark-teal: #16363b;
-            --text-gray: #333;
+            --dark-teal: #16363b; /* The "Black/Dark" bar color */
+            --white: #ffffff;
         }
 
         body {
@@ -21,7 +20,6 @@
             justify-content: center;
         }
 
-        /* Container designed for A4 Dimensions */
         .letterhead-container {
             width: 210mm;
             min-height: 297mm;
@@ -33,141 +31,133 @@
             overflow: hidden;
         }
 
-        /* Header Section */
+        /* Header Layout */
         .header-bg {
             background-color: var(--primary-orange);
-            padding-top: 20px;
             position: relative;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 0 40px 15px 40px;
+            align-items: stretch; /* Allows the white box to fill height */
+            padding: 0;
         }
 
         .branding-side {
             flex: 1;
-            z-index: 5;
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .left-side { text-align: left; }
-        .right-side { text-align: right; }
-
-        h1 { 
-            margin: 0; 
-            font-size: 19px; 
-            color: var(--dark-teal); 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* White background for Urdu side */
+        .right-side {
+            background-color: var(--white);
+            text-align: right;
+            border-bottom-left-radius: 0; 
+            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%); /* Slight slant for design */
         }
 
-        h2 { 
-            margin: 2px 0; 
-            font-size: 17px; 
-            color: var(--dark-teal);
-        }
+        h1 { margin: 0; font-size: 19px; color: var(--dark-teal); text-transform: uppercase; }
+        h2 { margin: 2px 0; font-size: 17px; color: var(--dark-teal); }
 
         .urdu-text {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            font-family: 'Urdu Typesetting', 'Amiri', 'Traditional Arabic', serif;
+            font-family: 'Urdu Typesetting', 'Amiri', serif;
+            line-height: 1.2;
         }
 
-        .address {
-            font-size: 11px;
-            color: #444;
-            margin-top: 4px;
-        }
+        .address { font-size: 11px; color: #444; margin-top: 4px; }
 
-        /* Center Logo Styling */
+        /* Center Logo */
         .logo-wrapper {
-            width: 110px;
-            height: 100px;
+            width: 120px;
+            height: 110px;
             background: white;
             border: 4px solid var(--dark-teal);
-            border-radius: 55px 55px 0 0;
+            border-radius: 60px 60px 0 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 20px;
+            margin: 0 -10px; /* Slight overlap */
             position: relative;
-            top: 25px;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            top: 35px;
+            z-index: 10;
         }
 
-        .logo-placeholder {
-            width: 80px;
-            height: 80px;
-            background: #eee;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 10px;
-            text-align: center;
+        .logo-wrapper img {
+            width: 90%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* White Separator Line */
+        .white-divider {
+            height: 4px;
+            background-color: var(--white);
+            width: 100%;
+            z-index: 5;
+            position: relative;
         }
 
         /* Dark Contact Bar */
         .contact-bar {
             background-color: var(--dark-teal);
             color: white;
-            padding: 8px 0;
+            padding: 10px 0;
             display: flex;
             justify-content: center;
             gap: 40px;
             font-size: 13px;
-            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
-        .contact-item { display: flex; align-items: center; gap: 8px; }
-
-        /* Document Details (Ref & Date) */
+        /* Ref & Date */
         .doc-meta {
             display: flex;
             justify-content: space-between;
-            padding: 30px 50px 10px 50px;
+            padding: 40px 50px 10px 50px;
             font-size: 15px;
-            color: #222;
         }
 
-        /* Letter Body Area */
-        .content-area {
-            flex-grow: 1;
-            padding: 20px 60px;
-        }
+        .content-area { flex-grow: 1; padding: 20px 60px; }
 
-        /* Footer Decoration */
+        /* Improved Footer Geometry */
         .footer-wrapper {
             position: relative;
-            height: 100px;
+            height: 120px;
             width: 100%;
         }
 
-        .footer-dark-v {
+        /* The Deep Black Margin Line Over Footer */
+        .footer-margin-line {
             position: absolute;
-            bottom: 25px;
+            bottom: 65px; /* Raised on sides */
             width: 100%;
-            height: 30px;
+            height: 40px;
             background-color: var(--dark-teal);
-            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+            /* Deep V shape in center, raised on left/right */
+            clip-path: polygon(0 0, 50% 100%, 100% 0, 100% 15%, 50% 115%, 0 15%);
+            z-index: 2;
         }
 
         .footer-orange-v {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 80px;
+            height: 90px;
             background-color: var(--primary-orange);
-            clip-path: polygon(0 45%, 50% 0, 100% 45%, 100% 100%, 0 100%);
+            /* Matching V geometry */
+            clip-path: polygon(0 35%, 50% 0, 100% 35%, 100% 100%, 0 100%);
+            z-index: 1;
         }
 
-        /* Print Settings */
         @media print {
             body { background: none; padding: 0; }
             .letterhead-container { box-shadow: none; margin: 0; width: 100%; height: 100vh; }
-            .header-bg, .contact-bar, .footer-orange-v, .footer-dark-v {
+            .header-bg, .contact-bar, .footer-orange-v, .footer-margin-line, .right-side, .white-divider {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -186,9 +176,7 @@
                 </div>
 
                 <div class="logo-wrapper">
-                    <div class="logo-placeholder">
-                        SCHOOL<br>LOGO
-                    </div>
+                    <img src="logo.png" alt="School Logo" onerror="this.style.display='none'; this.parentNode.innerHTML='LOGO.PNG MISSING'">
                 </div>
 
                 <div class="branding-side right-side">
@@ -198,9 +186,11 @@
                 </div>
             </div>
 
+            <div class="white-divider"></div>
+
             <div class="contact-bar">
-                <div class="contact-item"><strong>>📞 +91 9596449881</div>
-                <div class="contact-item">✉️ pspethgam@gmail.com</strong</div>
+                <div class="contact-item"><strong>📞 +91 9596449881</strong></div>
+                <div class="contact-item"><strong>✉️ pspethgam@gmail.com</strong></div>
             </div>
         </div>
 
@@ -209,26 +199,16 @@
             <div><strong>Date:</strong> _________________</div>
         </div>
 
-        <div class="content-area">
-            </div>
+        <div class="content-area"></div>
 
         <div class="footer-wrapper">
-            <div class="footer-dark-v"></div>
+            <div class="footer-margin-line"></div>
             <div class="footer-orange-v"></div>
         </div>
     </div>
 
-    <script>
-        // Optional: Function to print the page
-        window.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-                console.log("Preparing document for high-quality print...");
-            }
-        });
-
-        // You could add a function here to dynamically fill the Ref or Date
-        // if you were using this in a web app.
-    </script>
 </body>
 </html>
-                                    
+                    
+
+        
