@@ -6,48 +6,75 @@
     <title>School Letterhead - Pethgam Wagoora</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-blue: #0056b3;
-            --page-width: 210mm;
-            --page-height: 297mm;
-        }
+        /* Custom CSS Variables for easy color changes */
+:root {
+    --primary-color: #004a99; /* Example School Blue */
+    --text-color: #333;
+    --divider-color: #ddd;
+}
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            font-family: 'Poppins', sans-serif;
-        }
+.letterhead {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: sans-serif;
+    color: var(--text-color);
+    border: 1px solid var(--divider-color); /* Optional border for visual separation on screen */
+}
 
-        .letterhead-container {
-            width: var(--page-width);
-            height: var(--page-height);
-            margin: 20px auto;
-            background: white;
-            position: relative;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+.header-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
 
-        /* Adjusted Header Heights (Reduced by 33%) */
-        header {
-            position: relative;
-            height: 147px; 
-        }
+.logo {
+    height: 80px; /* Adjust logo size as needed */
+    width: auto;
+    margin-right: 20px;
+}
 
-        .blue-header {
-            background-color: var(--primary-blue);
-            height: 107px; 
-            width: 100%;
-            position: relative;
-            display: flex;
-            justify-content: flex-end; 
-            align-items: center;
-            padding: 0 40px;
-            box-sizing: border-box;
-        }
+.school-info h1 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 24px;
+}
+
+.school-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.contact-info {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.contact-info a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.divider {
+    border: none;
+    border-top: 2px solid var(--primary-color);
+    margin: 15px 0;
+}
+
+/* Media query for responsiveness, stacks elements on smaller screens */
+@media screen and (max-width: 600px) {
+    .header-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .logo {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
 
         .urdu-text {
             color: white;
