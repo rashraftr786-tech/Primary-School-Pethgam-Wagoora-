@@ -6,34 +6,35 @@
     <title>Work and Behavior Certificate Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        /* Base page setup */
         body {
             background-color: #f0f0f0;
             font-family: 'Times New Roman', Times, serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 20px 0;
             margin: 0;
         }
 
-        /* A4 Size Styling - Optimized Margins */
+        /* Strict A4 Dimensions */
         .certificate-container {
             width: 210mm;
-            height: 297mm; /* Fixed height for single page */
-            padding: 10mm; 
+            height: 297mm;
+            padding: 12mm; 
             background: white;
-            border: 2px solid #333;
+            border: 1px solid #ccc;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-            box-sizing: border-box;
-            overflow: hidden; /* Prevents spillover */
+            box-sizing: border-box; /* Crucial: padding won't increase width/height */
+            display: flex;
+            flex-direction: column;
         }
 
         /* Inner Border */
         .inner-border {
-            border: 1px solid #555;
-            height: 100%;
-            padding: 8mm;
+            border: 2px solid #333;
+            padding: 10mm;
+            height: 100%; /* Spans the full remaining height of container */
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -42,104 +43,117 @@
         header {
             text-align: center;
             border-bottom: 2px solid #000;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
             position: relative;
-            min-height: 90px;
         }
 
         .logo {
             position: absolute;
             left: 0;
             top: 0;
-            width: 75px;
-            height: 75px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
         }
 
-        .header-text h1 { margin: 0; font-size: 19px; text-transform: uppercase; }
-        .header-text p { margin: 1px 0; font-size: 12px; font-weight: bold; }
+        .header-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .header-text p { margin: 2px 0; font-size: 13px; font-weight: bold; }
 
         .meta-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         h2.title {
             text-align: center;
             text-decoration: underline;
-            margin-bottom: 25px;
-            font-size: 20px;
-        }
-
-        .content {
-            line-height: 1.6;
-            font-size: 16px;
-            text-align: justify;
-            flex-grow: 1; /* Allows content to take available space */
-        }
-
-        .section-title { font-weight: bold; margin-top: 10px; display: block; }
-
-        footer {
-            margin-top: 20px;
-            text-align: right;
-        }
-
-        .signature-line {
-            display: inline-block;
-            text-align: center;
+            margin-bottom: 30px;
+            font-size: 22px;
             font-weight: bold;
         }
 
-        /* UI Controls */
+        .content {
+            line-height: 1.8;
+            font-size: 17px;
+            text-align: justify;
+            flex-grow: 1; /* Pushes the footer to the bottom */
+        }
+
+        .section-title { font-weight: bold; text-decoration: underline; margin-right: 5px; }
+
+        footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .signature-block {
+            text-align: center;
+            width: 250px;
+        }
+
+        .signature-space {
+            height: 60px; /* Space for physical signature/stamp */
+        }
+
+        /* UI Buttons */
         .controls {
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             position: sticky;
             top: 0;
             z-index: 100;
             background: #f0f0f0;
-            padding: 5px;
-            display: flex;
-            gap: 10px;
+            padding: 10px;
         }
 
         button {
-            padding: 10px 20px;
-            font-size: 14px;
+            padding: 12px 25px;
+            font-size: 15px;
             background: #27ae60;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        [contenteditable="true"] {
-            border-bottom: 1px dashed #bbb;
+        button:hover { background: #219150; }
+
+        [contenteditable="true"]:focus {
+            outline: 2px solid #27ae60;
+            background: #f9f9f9;
         }
 
         @media print {
             .controls { display: none; }
             body { background: none; padding: 0; }
-            .certificate-container { box-shadow: none; border: 2px solid #000; }
+            .certificate-container { 
+                box-shadow: none; 
+                border: none; 
+                margin: 0;
+                width: 210mm;
+                height: 297mm;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <button onclick="downloadPDF()">📥 Download Single Page PDF</button>
+        <button onclick="downloadPDF()">📥 Download A4 PDF</button>
     </div>
 
     <div id="certificate" class="certificate-container">
         <div class="inner-border">
             <header>
-                <img src="logo.png" alt="School Logo" class="logo" onerror="this.style.display='none'">
+                <img src="logo.png" alt="Logo" class="logo" onerror="this.style.visibility='hidden'">
                 <div class="header-text">
-                    <p>Office Of The</p>
+                    <p>OFFICE OF THE</p>
                     <h1 contenteditable="true">HEADMASTER GOVERNMENT PRIMARY SCHOOL</h1>
                     <p contenteditable="true">Pethgam Wagoora | Zone: Wagoora | District: Baramulla</p>
                     <p contenteditable="true">Wagoora Babareshi Road, Near ZEO Office Wagoora - 193109</p>
@@ -148,31 +162,31 @@
             </header>
 
             <div class="meta-info">
-                <div>Ref No: <span contenteditable="true">PS/PW/01/2026</span></div>
-                <div>Dated: <span contenteditable="true">06/01/2026</span></div>
+                <div>Ref No: <span contenteditable="true">PS/PW/W&B/2026/____</span></div>
+                <div>Dated: <span contenteditable="true">20/01/2026</span></div>
             </div>
 
             <h2 class="title">WORK AND BEHAVIOR CERTIFICATE</h2>
 
             <div class="content">
-                <p>This is to certify that Mr. <strong contenteditable="true">Mohmad Ashraf Rather</strong>, Teacher, posted at <strong contenteditable="true">Government Primary School Pethgam Wagoora</strong>, has performed his professional duties with high dedication and sincerity during the academic year 2025.</p>
+                <p>This is to certify that Mr./Ms. <strong contenteditable="true">Mohmad Ashraf Rather</strong>, Designation: <strong contenteditable="true">Teacher</strong>, posted at <strong contenteditable="true">Government Primary School Pethgam Wagoora</strong>, has performed his/her professional duties with high dedication and sincerity during the academic session.</p>
 
-                <p>His performance and conduct throughout the year are summarized as follows:</p>
+                <p>His/Her performance and conduct are summarized as follows:</p>
 
-                <p><span class="section-title">Work Performance:</span> <span contenteditable="true">He has demonstrated excellent teaching skills, ensuring the academic growth of his students. He has been diligent in maintaining classroom records, implementing the curriculum, and participating in school development initiatives.</span></p>
+                <p><span class="section-title">Work Performance:</span> <span contenteditable="true">The official has demonstrated excellent teaching skills, ensuring the academic growth of students. Diligent in maintaining classroom records and active in school development initiatives.</span></p>
 
-                <p><span class="section-title">Behavior and Conduct:</span> <span contenteditable="true">His conduct toward his colleagues, students, and the community has been exemplary. He is a disciplined professional with high moral character and integrity.</span></p>
+                <p><span class="section-title">Behavior and Conduct:</span> <span contenteditable="true">Conduct toward colleagues, students, and the community has been exemplary. He/she is a disciplined professional with high moral character and integrity.</span></p>
 
-                <p><span class="section-title">Punctuality:</span> <span contenteditable="true">He has been highly regular and punctual in his attendance and all assigned school duties.</span></p>
+                <p><span class="section-title">Punctuality:</span> <span contenteditable="true">The official has been highly regular and punctual in attendance and all assigned school duties.</span></p>
 
-                <p>To the best of my knowledge and the records available in this office, there is nothing adverse against him. I find his work and behavior during the year 2025 to be <strong contenteditable="true">Excellent</strong>.</p>
+                <p>To the best of my knowledge and the records available in this office, there is nothing adverse against him/her. I find his/her work and behavior to be <strong contenteditable="true">Excellent</strong>.</p>
             </div>
 
             <footer>
-                <div class="signature-line">
-                    <br><br>
-                    <p>Headmaster PS Pethgam</p>
-                    <p>Official Seal & Signature</p>
+                <div class="signature-block">
+                    <div class="signature-space"></div>
+                    <p><strong>Headmaster</strong></p>
+                    <p>PS Pethgam Wagoora</p>
                 </div>
             </footer>
         </div>
@@ -181,14 +195,16 @@
     <script>
         function downloadPDF() {
             const element = document.getElementById('certificate');
+            
+            // Adjust options for strict A4 output
             const opt = {
-                margin: 0, // No PDF-level margins to ensure it fits the A4 CSS
+                margin: 0, 
                 filename: 'Work_Behavior_Certificate.pdf',
-                image: { type: 'jpeg', quality: 1 },
+                image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { 
                     scale: 2, 
                     useCORS: true,
-                    logging: false
+                    letterRendering: true
                 },
                 jsPDF: { 
                     unit: 'mm', 
@@ -196,9 +212,11 @@
                     orientation: 'portrait' 
                 }
             };
-            html2pdf().set(opt).from(element).save();
+
+            // Run html2pdf
+            html2pdf().from(element).set(opt).save();
         }
     </script>
 </body>
 </html>
-                        
+                            
