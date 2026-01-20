@@ -31,7 +31,7 @@
             overflow: hidden;
         }
 
-        /* Split Header Layout - Background blocks fixed in place */
+        /* Split Header Layout */
         .header-bg {
             display: flex;
             position: relative;
@@ -57,7 +57,7 @@
             text-align: right;
         }
 
-        /* Raising only the text by 10px without moving the blocks */
+        /* Text raised by 10px within fixed blocks */
         .raised-text {
             transform: translateY(-10px);
         }
@@ -74,11 +74,11 @@
 
         .address { font-size: 12px; color: #444; margin-top: 4px; }
 
-        /* Lowered Center Logo */
+        /* Logo raised by 10px (changed from 55px to 45px) */
         .logo-container {
             position: absolute;
             left: 50%;
-            top: 55px; 
+            top: 45px; 
             transform: translateX(-50%);
             z-index: 20;
         }
@@ -139,14 +139,13 @@
 
         .content-area { flex-grow: 1; }
 
-        /* Footer Wrapper */
         .footer-wrapper {
             position: relative;
             height: 140px;
             width: 100%;
         }
 
-        /* Black V line - Lowered by another 10px (now at bottom: 15px) */
+        /* Black V line - kept at 15px from bottom */
         .footer-margin-line {
             position: absolute;
             bottom: 15px; 
@@ -231,4 +230,5 @@
     </div>
 
 </body>
-</html>                       
+</html>
+                        
