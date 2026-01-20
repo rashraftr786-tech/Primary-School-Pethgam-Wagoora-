@@ -35,44 +35,46 @@
         /* Header Section */
         header {
             position: relative;
-            height: 190px;
+            height: 220px; /* Increased to prevent Urdu clipping */
         }
 
-        .blue-wave {
+        .blue-header {
             background-color: var(--primary-blue);
-            height: 150px;
+            height: 160px; /* Deeper blue section for better visibility */
             width: 100%;
             position: relative;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3%3Cpath fill='%230056b3' fill-opacity='1' d='M0,224L80,213.3C160,203,320,181,480,181.3C640,181,800,203,960,213.3C1120,224,1280,224,1360,224L1440,224L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: cover;
             display: flex;
-            justify-content: flex-end; /* Aligns Urdu to the right */
+            justify-content: flex-end; 
             align-items: center;
             padding: 0 40px;
+            box-sizing: border-box;
         }
 
         .urdu-text {
             color: white;
             font-family: 'Noto Nastaliq Urdu', serif;
-            font-size: 2.2rem; /* Increased size */
-            line-height: 1.8;
+            font-size: 2.4rem; /* Prominent size */
+            line-height: 1.6;
             direction: rtl;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            width: 80%; /* Allows text to span more of the top area */
+            white-space: nowrap; /* Keeps text on one line */
+            width: auto;
+            max-width: 90%;
+            text-align: right;
+            margin-top: -10px; /* Centering adjustment for Nastaliq baseline */
         }
 
         .identity-row {
             padding: 0 50px;
             display: flex;
             align-items: center;
-            margin-top: -45px; /* Pulls logo up into the curve area */
+            margin-top: -50px; /* Higher placement for professional look */
             position: relative;
             z-index: 10;
         }
 
         .school-logo {
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             background: white;
             border-radius: 50%;
             padding: 5px;
@@ -82,7 +84,7 @@
 
         .school-name-english {
             margin-left: 20px;
-            margin-top: 40px;
+            margin-top: 45px;
         }
 
         .school-name-english h1 {
@@ -110,11 +112,11 @@
 
         .watermark {
             position: absolute;
-            top: 50%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 450px;
-            opacity: 0.04;
+            width: 500px;
+            opacity: 0.10;
             z-index: 0;
             pointer-events: none;
         }
@@ -154,7 +156,7 @@
 
     <div class="letterhead-container">
         <header>
-            <div class="blue-wave">
+            <div class="blue-header">
                 <div class="urdu-text">گورنمنٹ پرائمری سکول پیٹھگام واگورہ</div>
             </div>
             <div class="identity-row">
@@ -195,4 +197,4 @@
 
 </body>
 </html>
-        .                
+                            
