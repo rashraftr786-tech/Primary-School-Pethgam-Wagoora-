@@ -35,22 +35,24 @@
         .header-bg {
             display: flex;
             position: relative;
-            height: 160px; /* Increased height to accommodate lower logo */
+            height: 160px; 
         }
 
+        /* English Side - Raised 10px */
         .left-orange-side {
             background-color: var(--primary-orange);
             flex: 1;
-            padding: 25px 20px 25px 50px;
+            padding: 15px 20px 35px 50px; /* Reduced top padding to raise text */
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
+        /* Urdu Side - Raised 10px */
         .right-white-side {
             background-color: var(--white);
             flex: 1;
-            padding: 25px 50px 25px 20px;
+            padding: 15px 50px 35px 20px; /* Reduced top padding to raise text */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -73,7 +75,7 @@
         .logo-container {
             position: absolute;
             left: 50%;
-            top: 40px; /* Lowered from 30px to 55px */
+            top: 55px; 
             transform: translateX(-50%);
             z-index: 20;
         }
@@ -104,7 +106,6 @@
             z-index: 5;
         }
 
-        /* Large Contact Bar */
         .contact-bar {
             background-color: var(--dark-teal);
             color: white;
@@ -126,7 +127,6 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* Meta Info */
         .doc-meta {
             display: flex;
             justify-content: space-between;
@@ -143,14 +143,13 @@
             width: 100%;
         }
 
-        /* The Black Line following deep V */
+        /* Black V line - Lowered by 15px (from bottom: 40px to 25px) */
         .footer-margin-line {
             position: absolute;
-            bottom: 40px; 
+            bottom: 25px; 
             width: 100%;
             height: 60px;
             background-color: var(--dark-teal);
-            /* Deep V path from top */
             clip-path: polygon(0 0, 50% 100%, 100% 0, 100% 15%, 50% 115%, 0 15%);
             z-index: 2;
         }
@@ -161,7 +160,6 @@
             width: 100%;
             height: 100px;
             background-color: var(--primary-orange);
-            /* Now also V-shaped from the top to match the black line */
             clip-path: polygon(0 40%, 50% 100%, 100% 40%, 100% 100%, 0 100%);
             z-index: 1;
         }
@@ -228,4 +226,4 @@
 </body>
 </html>
 
-                        
+                            
