@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Letterhead</title>
+    <title>GPS Pethgam Wagoora - Professional Letterhead</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-blue: #0056b3;
+            --text-dark: #222;
+            --text-grey: #444;
             --page-width: 210mm;
             --page-height: 297mm;
         }
@@ -31,39 +33,43 @@
             flex-direction: column;
         }
 
-        /* Curved Blue Header inspired by reference design */
+        /* Curved Header Section */
         header {
             position: relative;
-            height: 180px; 
+            height: 147px; 
         }
 
-        .blue-wave {
+        .blue-header {
             background-color: var(--primary-blue);
-            height: 140px;
+            height: 107px; 
             width: 100%;
             position: relative;
-            /* Curved wave effect created using an SVG background */
+            display: flex;
+            justify-content: flex-end; 
+            align-items: center;
+            padding: 0 40px;
+            box-sizing: border-box;
+            /* Curved effect using a simple SVG overlay */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3%3Cpath fill='%230056b3' fill-opacity='1' d='M0,224L80,213.3C160,203,320,181,480,181.3C640,181,800,203,960,213.3C1120,224,1280,224,1360,224L1440,224L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z'%3E%3C/path%3E%3C/svg%3E");
             background-size: cover;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 0 50px;
         }
 
         .urdu-text {
             color: white;
             font-family: 'Noto Nastaliq Urdu', serif;
             font-size: 2rem;
-            line-height: 2.2;
+            line-height: 1.4;
             direction: rtl;
+            white-space: nowrap;
+            text-align: right;
         }
 
+        /* Identity and School Logo Row */
         .identity-row {
             padding: 0 50px;
             display: flex;
             align-items: center;
-            margin-top: -35px; 
+            margin-top: -55px; 
             position: relative;
             z-index: 10;
         }
@@ -78,19 +84,20 @@
             object-fit: contain;
         }
 
-        .school-name-english {
+        .school-info {
             margin-left: 20px;
-            margin-top: 35px;
+            margin-top: 55px;
         }
 
-        .school-name-english h1 {
+        .school-info h1 {
             margin: 0;
             font-size: 22px;
-            color: #222;
+            color: var(--text-dark);
             font-weight: 700;
+            text-transform: uppercase;
         }
 
-        /* Content Body with Light Watermark */
+        /* Content Body and Watermark */
         .content-body {
             flex-grow: 1;
             padding: 40px 60px;
@@ -102,21 +109,21 @@
             justify-content: space-between;
             margin-bottom: 50px;
             font-weight: 600;
-            color: #444;
+            color: var(--text-grey);
         }
 
         .watermark {
             position: absolute;
-            top: 50%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 450px;
-            opacity: 0.05; /* Light watermark as requested */
+            width: 500px;
+            opacity: 0.05;
             z-index: 0;
             pointer-events: none;
         }
 
-        /* Blue Footer Block with Contact Information */
+        /* Footer Section */
         footer {
             background-color: var(--primary-blue);
             color: white;
@@ -131,7 +138,6 @@
             align-items: center;
         }
 
-        /* Print-ready adjustments */
         @media print {
             body { background: none; }
             .letterhead-container { 
@@ -151,14 +157,14 @@
 
     <div class="letterhead-container">
         <header>
-            <div class="blue-wave">
+            <div class="blue-header">
                 <div class="urdu-text">گورنمنٹ پرائمری سکول پیٹھگام واگورہ</div>
             </div>
             <div class="identity-row">
                 <img src="logo.png" alt="School Logo" class="school-logo" onerror="this.src='https://via.placeholder.com/100?text=LOGO';">
-                <div class="school-name-english">
+                <div class="school-info">
                     <h1>Government Primary School</h1>
-                    <div style="color: #444; font-weight: 500;">Pethgam Wagoora, Zone Wagoora</div>
+                    <div style="color: var(--text-grey); font-weight: 500;">Pethgam Wagoora, Baramulla</div>
                 </div>
             </div>
         </header>
@@ -170,18 +176,27 @@
                 <span>Ref No: ________________</span>
                 <span>Date: ________________</span>
             </div>
-            
-            </main>
+
+            <div class="letter-text">
+                </div>
+        </main>
 
         <footer>
             <div class="footer-grid">
-                <div><strong>Address:</strong> Pethgam, Wagoora, Baramulla, J&K 193109</div>
-                <div style="text-align: center;"><strong>Email:</strong> pspethgam@gmail.com</div>
-                <div style="text-align: right;"><strong>Phone:</strong> +91 9596449881</div>
+                <div>
+                    <strong>Address:</strong> Pethgam, Wagoora, Baramulla, J&K 193109
+                </div>
+                <div style="text-align: center;">
+                    <strong>Email:</strong> pspethgam@gmail.com
+                </div>
+                <div style="text-align: right;">
+                    <strong>Phone:</strong> +91 9596449881
+                </div>
             </div>
         </footer>
     </div>
 
 </body>
 </html>
+   
         
