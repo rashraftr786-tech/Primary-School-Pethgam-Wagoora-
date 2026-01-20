@@ -1,198 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work and Behavior Certificate Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <title>GPS Pethgam Wagoora Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f0f0f0;
-            font-family: 'Times New Roman', Times, serif;
+        /* Base Styling */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background-color: #f4f4f4; 
+            margin: 0; 
+            padding: 20px; 
+        }
+
+        /* A4 Page Formatting for Printing */
+        @media print {
+            body { 
+                background-color: white; 
+                padding: 0; 
+            }
+            .page-container {
+                width: 210mm;
+                height: 297mm;
+                margin: auto;
+                padding: 20mm;
+                box-sizing: border-box;
+                box-shadow: none;
+            }
+            .btn { 
+                border: 1px solid #ddd !important; 
+                -webkit-print-color-adjust: exact; 
+            }
+        }
+
+        .page-container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Logo Styling */
+        .logo-container { margin-bottom: 15px; }
+        .school-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #0056b3;
+            padding: 3px;
+        }
+
+        h1 { color: #0056b3; font-size: 1.6rem; margin: 10px 0 5px 0; }
+        p.subtitle { color: #666; font-size: 1rem; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+
+        /* Responsive Grid */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+        }
+
+        @media (max-width: 500px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Button Styling */
+        .btn { 
+            background: #fff; 
+            padding: 20px 5px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            color: #333; 
+            border: 1px solid #eee;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
 
-        /* A4 Size Styling */
-        .certificate-container {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 20mm;
-            background: white;
-            border: 2px solid #333;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-            box-sizing: border-box;
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-color: #0056b3;
         }
 
-        /* Inner Border */
-        .inner-border {
-            border: 1px solid #555;
-            height: 100%;
-            padding: 10mm;
-            box-sizing: border-box;
-            min-height: 257mm;
-        }
+        .btn i { font-size: 28px; margin-bottom: 10px; }
+        
+        /* Icon Colors */
+        .fa-user-check { color: #2ecc71; }
+        .fa-utensils { color: #e67e22; }
+        .fa-poll { color: #9b59b6; }
+        .fa-file-invoice-dollar { color: #27ae60; }
+        .fa-file-signature { color: #2980b9; }
+        .fa-medal { color: #f1c40f; }
 
-        header {
-            text-align: center;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            position: relative;
-        }
+        .btn span { font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .logo {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 80px;
-        }
-
-        .header-text h1 { margin: 0; font-size: 22px; text-transform: uppercase; }
-        .header-text p { margin: 2px 0; font-size: 14px; font-weight: bold; }
-
-        .meta-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            font-weight: bold;
-        }
-
-        h2.title {
-            text-align: center;
-            text-decoration: underline;
-            margin-bottom: 40px;
-            font-size: 20px;
-        }
-
-        .content {
-            line-height: 1.6;
-            font-size: 16px;
-            text-align: justify;
-        }
-
-        .section-title { font-weight: bold; margin-top: 15px; display: block; }
-
-        footer {
-            margin-top: 80px;
-            text-align: right;
-        }
-
-        .signature-line {
-            display: inline-block;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        /* Editable Input Styling */
-        [contenteditable="true"] {
-            border-bottom: 1px dashed #ccc;
-            padding: 0 5px;
-            transition: background 0.3s;
-        }
-        [contenteditable="true"]:hover { background: #fffde7; }
-        [contenteditable="true"]:focus { background: #fff9c4; outline: none; border-bottom: 1px solid blue; }
-
-        .controls {
-            margin-bottom: 20px;
-            position: sticky;
-            top: 20px;
-            z-index: 100;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        button:hover { background: #34495e; }
-
-        @media print {
-            .controls { display: none; }
-            body { background: none; padding: 0; }
-            .certificate-container { box-shadow: none; border: none; }
-        }
+        .footer-note { margin-top: 30px; font-size: 0.8rem; color: #999; }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <button onclick="downloadPDF()">📥 Download Certificate (PDF)</button>
-    </div>
-
-    <div id="certificate" class="certificate-container">
-        <div class="inner-border">
-            <header>
-                <div class="logo">
-                    <svg viewBox="0 0 100 100" width="80">
-                        <path d="M50 5 L90 30 V70 L50 95 L10 70 V30 Z" fill="none" stroke="black" stroke-width="2"/>
-                        <circle cx="50" cy="50" r="20" fill="none" stroke="black" stroke-width="2"/>
-                    </svg>
-                </div>
-                <div class="header-text">
-                    <p>Office Of The</p>
-                    <h1 contenteditable="true">HEADMASTER GOVERNMENT PRIMARY SCHOOL</h1>
-                    <p contenteditable="true">Pethgam Wagoora | Zone: Wagoora | District: Baramulla</p>
-                    <p contenteditable="true">Wagoora Babareshi Road, Near ZEO Office Wagoora - 193109</p>
-                    <p>UDISE Code: <span contenteditable="true">01022202207</span> | Email: <span contenteditable="true">pspethgam@gmail.com</span></p>
-                </div>
-            </header>
-
-            <div class="meta-info">
-                <div>Ref No: <span contenteditable="true">PS/PW/01/2026</span></div>
-                <div>Dated: <span contenteditable="true">06/01/2026</span></div>
-            </div>
-
-            <h2 class="title">WORK AND BEHAVIOR CERTIFICATE</h2>
-
-            <div class="content">
-                <p>This is to certify that Mr. <strong contenteditable="true">Mohmad Ashraf Rather</strong>, Teacher, posted at <strong contenteditable="true">Government Primary School Pethgam Wagoora</strong>, has performed his professional duties with high dedication and sincerity during the academic year 2025.</p>
-
-                <p>His performance and conduct throughout the year are summarized as follows:</p>
-
-                <p><span class="section-title">Work Performance:</span> <span contenteditable="true">He has demonstrated excellent teaching skills, ensuring the academic growth of his students. He has been diligent in maintaining classroom records, implementing the curriculum, and participating in school development initiatives.</span></p>
-
-                <p><span class="section-title">Behavior and Conduct:</span> <span contenteditable="true">His conduct toward his colleagues, students, and the community has been exemplary. He is a disciplined professional with high moral character and integrity.</span></p>
-
-                <p><span class="section-title">Punctuality:</span> <span contenteditable="true">He has been highly regular and punctual in his attendance and all assigned school duties.</span></p>
-
-                <p>To the best of my knowledge and the records available in this office, there is nothing adverse against him. I find his work and behavior during the year 2025 to be <strong contenteditable="true">Excellent</strong>.</p>
-            </div>
-
-            <footer>
-                <div class="signature-line">
-                    <br><br>
-                    <p>Headmaster PS Pethgam</p>
-                    <p>Official Seal & Signature</p>
-                </div>
-            </footer>
+    <div class="page-container">
+        <div class="logo-container">
+            <img src="logo.png" alt="School Logo" class="school-logo" onerror="this.src='https://via.placeholder.com/90?text=Logo'">
         </div>
+
+        <h1>Government Primary School Pethgam Wagoora</h1>
+        <p class="subtitle">School Administration Portal</p>
+
+        <div class="grid">
+            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Student_Master" class="btn" target="_blank">
+                <i class="fas fa-user-check"></i><span>Attendance</span>
+            </a>
+            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=MDM" class="btn" target="_blank">
+                <i class="fas fa-utensils"></i><span>MDM</span>
+            </a>
+            <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Results" class="btn" target="_blank">
+                <i class="fas fa-poll"></i><span>Results</span>
+            </a>
+
+            <a href="salary-inc.html" class="btn">
+                <i class="fas fa-file-invoice-dollar"></i><span>Salary Inc.</span>
+            </a>
+
+            <a href="duty-certificate.html" class="btn">
+                <i class="fas fa-file-signature"></i><span>Duty Cert.</span>
+            </a>
+
+            <a href="work-behaviour.html" class="btn">
+                <i class="fas fa-medal"></i><span>Work & Behavior</span>
+            </a>
+        </div>
+
+        <p class="footer-note">© 2026 GPS Pethgam Wagoora - Internal Admin Use Only</p>
     </div>
 
-    <script>
-        function downloadPDF() {
-            const element = document.getElementById('certificate');
-            const opt = {
-                margin: 0,
-                filename: 'Certificate_Work_Behavior.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, logging: true, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            // New Promise-based usage:
-            html2pdf().set(opt).from(element).save();
-        }
-    </script>
 </body>
 </html>
-
+        
+                
