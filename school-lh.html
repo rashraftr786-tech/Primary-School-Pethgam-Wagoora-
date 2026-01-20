@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Professional Letterhead</title>
+    <title>GPS Pethgam Wagoora - Letterhead</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-blue: #0056b3;
-            --text-dark: #222;
-            --text-grey: #444;
             --page-width: 210mm;
             --page-height: 297mm;
         }
@@ -21,6 +19,7 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        /* A4 Page Layout */
         .letterhead-container {
             width: var(--page-width);
             height: var(--page-height);
@@ -33,15 +32,15 @@
             flex-direction: column;
         }
 
-        /* Curved Header Section */
+        /* Curved Blue Header Section */
         header {
             position: relative;
-            height: 147px; 
+            height: 160px; 
         }
 
         .blue-header {
             background-color: var(--primary-blue);
-            height: 107px; 
+            height: 110px; 
             width: 100%;
             position: relative;
             display: flex;
@@ -49,11 +48,9 @@
             align-items: center;
             padding: 0 40px;
             box-sizing: border-box;
-            /* Curved effect using a simple SVG overlay */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3%3Cpath fill='%230056b3' fill-opacity='1' d='M0,224L80,213.3C160,203,320,181,480,181.3C640,181,800,203,960,213.3C1120,224,1280,224,1360,224L1440,224L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: cover;
         }
 
+        /* Styling for Urdu School Name */
         .urdu-text {
             color: white;
             font-family: 'Noto Nastaliq Urdu', serif;
@@ -61,10 +58,9 @@
             line-height: 1.4;
             direction: rtl;
             white-space: nowrap;
-            text-align: right;
         }
 
-        /* Identity and School Logo Row */
+        /* Identity Row with School Logo */
         .identity-row {
             padding: 0 50px;
             display: flex;
@@ -84,20 +80,20 @@
             object-fit: contain;
         }
 
-        .school-info {
+        .school-info-english {
             margin-left: 20px;
             margin-top: 55px;
         }
 
-        .school-info h1 {
+        .school-info-english h1 {
             margin: 0;
             font-size: 22px;
-            color: var(--text-dark);
+            color: #222;
             font-weight: 700;
             text-transform: uppercase;
         }
 
-        /* Content Body and Watermark */
+        /* Content Body Area */
         .content-body {
             flex-grow: 1;
             padding: 40px 60px;
@@ -109,9 +105,10 @@
             justify-content: space-between;
             margin-bottom: 50px;
             font-weight: 600;
-            color: var(--text-grey);
+            color: #444;
         }
 
+        /* Light Watermark for official look */
         .watermark {
             position: absolute;
             top: 55%;
@@ -123,7 +120,7 @@
             pointer-events: none;
         }
 
-        /* Footer Section */
+        /* Blue Footer with Contact Details */
         footer {
             background-color: var(--primary-blue);
             color: white;
@@ -138,33 +135,46 @@
             align-items: center;
         }
 
+        /* Print-specific Button */
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
         @media print {
             body { background: none; }
+            .print-btn { display: none; }
             .letterhead-container { 
                 margin: 0; 
                 box-shadow: none; 
                 width: 100%;
-                height: 100%;
             }
-            @page {
-                size: A4;
-                margin: 0;
-            }
+            @page { size: A4; margin: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="letterhead-container">
+    <button class="print-btn" onclick="printLetterhead()">Print Letterhead</button>
+
+    <div class="letterhead-container" id="letterhead">
         <header>
             <div class="blue-header">
                 <div class="urdu-text">گورنمنٹ پرائمری سکول پیٹھگام واگورہ</div>
             </div>
             <div class="identity-row">
                 <img src="logo.png" alt="School Logo" class="school-logo" onerror="this.src='https://via.placeholder.com/100?text=LOGO';">
-                <div class="school-info">
+                <div class="school-info-english">
                     <h1>Government Primary School</h1>
-                    <div style="color: var(--text-grey); font-weight: 500;">Pethgam Wagoora, Baramulla</div>
+                    <div style="color: #444; font-weight: 500;">Pethgam Wagoora, Baramulla</div>
                 </div>
             </div>
         </header>
@@ -177,26 +187,28 @@
                 <span>Date: ________________</span>
             </div>
 
-            <div class="letter-text">
+            <div class="document-content">
                 </div>
         </main>
 
         <footer>
             <div class="footer-grid">
-                <div>
-                    <strong>Address:</strong> Pethgam, Wagoora, Baramulla, J&K 193109
-                </div>
-                <div style="text-align: center;">
-                    <strong>Email:</strong> pspethgam@gmail.com
-                </div>
-                <div style="text-align: right;">
-                    <strong>Phone:</strong> +91 9596449881
-                </div>
+                <div><strong>Address:</strong> Pethgam, Wagoora, Baramulla, J&K 193109</div>
+                <div style="text-align: center;"><strong>Email:</strong> pspethgam@gmail.com</div>
+                <div style="text-align: right;"><strong>Phone:</strong> +91 9596449881</div>
             </div>
         </footer>
     </div>
 
+    <script>
+        /**
+         * Triggers the browser's print dialog.
+         */
+        function printLetterhead() {
+            window.print();
+        }
+    </script>
 </body>
 </html>
-   
-        
+
+                    
