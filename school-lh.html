@@ -7,7 +7,7 @@
     <style>
         :root {
             --primary-orange: #f8c27d;
-            --dark-teal: #16363b; /* The "Black/Dark" bar color */
+            --dark-teal: #16363b;
             --white: #ffffff;
         }
 
@@ -31,114 +31,115 @@
             overflow: hidden;
         }
 
-        /* Header Layout */
+        /* Split Header Layout */
         .header-bg {
-            background-color: var(--primary-orange);
-            position: relative;
-        }
-
-        .header-content {
             display: flex;
-            justify-content: space-between;
-            align-items: stretch; /* Allows the white box to fill height */
-            padding: 0;
+            position: relative;
+            height: 140px; /* Fixed height for symmetry */
         }
 
-        .branding-side {
+        .left-orange-side {
+            background-color: var(--primary-orange);
             flex: 1;
-            padding: 20px 40px;
+            padding: 25px 20px 25px 50px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        /* White background for Urdu side */
-        .right-side {
+        .right-white-side {
             background-color: var(--white);
+            flex: 1;
+            padding: 25px 50px 25px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             text-align: right;
-            border-bottom-left-radius: 0; 
-            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%); /* Slight slant for design */
         }
 
         h1 { margin: 0; font-size: 19px; color: var(--dark-teal); text-transform: uppercase; }
         h2 { margin: 2px 0; font-size: 17px; color: var(--dark-teal); }
 
         .urdu-text {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: bold;
             font-family: 'Urdu Typesetting', 'Amiri', serif;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         .address { font-size: 11px; color: #444; margin-top: 4px; }
 
-        /* Center Logo */
+        /* Center Logo - Positioned exactly on the split line */
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            top: 25px;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
         .logo-wrapper {
-            width: 120px;
-            height: 110px;
+            width: 110px;
+            height: 100px;
             background: white;
             border: 4px solid var(--dark-teal);
-            border-radius: 60px 60px 0 0;
+            border-radius: 55px 55px 0 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 -10px; /* Slight overlap */
-            position: relative;
-            top: 35px;
-            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .logo-wrapper img {
-            width: 90%;
+            width: 85%;
             height: auto;
             object-fit: contain;
         }
 
-        /* White Separator Line */
+        /* Horizontal Elements */
         .white-divider {
-            height: 4px;
+            height: 5px;
             background-color: var(--white);
             width: 100%;
-            z-index: 5;
             position: relative;
+            z-index: 5;
         }
 
-        /* Dark Contact Bar */
         .contact-bar {
             background-color: var(--dark-teal);
             color: white;
             padding: 10px 0;
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 50px;
             font-size: 13px;
         }
 
-        /* Ref & Date */
+        /* Body Sections */
         .doc-meta {
             display: flex;
             justify-content: space-between;
-            padding: 40px 50px 10px 50px;
+            padding: 50px 60px 20px 60px;
             font-size: 15px;
         }
 
-        .content-area { flex-grow: 1; padding: 20px 60px; }
+        .content-area { flex-grow: 1; }
 
-        /* Improved Footer Geometry */
+        /* Synced Deep-V Footer */
         .footer-wrapper {
             position: relative;
-            height: 120px;
+            height: 130px;
             width: 100%;
         }
 
-        /* The Deep Black Margin Line Over Footer */
+        /* The Black Line following the same deep V path */
         .footer-margin-line {
             position: absolute;
-            bottom: 65px; /* Raised on sides */
+            bottom: 40px; 
             width: 100%;
-            height: 40px;
+            height: 60px;
             background-color: var(--dark-teal);
-            /* Deep V shape in center, raised on left/right */
+            /* Deep V path: Starts high (0 0), dips deep (50% 100%), ends high (100% 0) */
             clip-path: polygon(0 0, 50% 100%, 100% 0, 100% 15%, 50% 115%, 0 15%);
             z-index: 2;
         }
@@ -147,17 +148,17 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 90px;
+            height: 95px;
             background-color: var(--primary-orange);
-            /* Matching V geometry */
-            clip-path: polygon(0 35%, 50% 0, 100% 35%, 100% 100%, 0 100%);
+            /* Same geometry as the line for perfect alignment */
+            clip-path: polygon(0 40%, 50% 0, 100% 40%, 100% 100%, 0 100%);
             z-index: 1;
         }
 
         @media print {
             body { background: none; padding: 0; }
-            .letterhead-container { box-shadow: none; margin: 0; width: 100%; height: 100vh; }
-            .header-bg, .contact-bar, .footer-orange-v, .footer-margin-line, .right-side, .white-divider {
+            .letterhead-container { box-shadow: none; margin: 0; width: 100%; height: 297mm; }
+            .left-orange-side, .contact-bar, .footer-orange-v, .footer-margin-line, .white-divider {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -167,19 +168,21 @@
 <body>
 
     <div class="letterhead-container">
-        <div class="header-bg">
-            <div class="header-content">
-                <div class="branding-side left-side">
+        <header>
+            <div class="header-bg">
+                <div class="logo-container">
+                    <div class="logo-wrapper">
+                        <img src="logo.png" alt="School Logo" onerror="this.style.display='none'; this.parentNode.innerHTML='logo.png'">
+                    </div>
+                </div>
+
+                <div class="left-orange-side">
                     <h1>Government Primary School</h1>
                     <h2>Pethgam Wagoora</h2>
                     <div class="address">Zone: Wagoora, District: Baramulla<br>J&K, India - 193109</div>
                 </div>
 
-                <div class="logo-wrapper">
-                    <img src="logo.png" alt="School Logo" onerror="this.style.display='none'; this.parentNode.innerHTML='LOGO.PNG MISSING'">
-                </div>
-
-                <div class="branding-side right-side">
+                <div class="right-white-side">
                     <div class="urdu-text">گورنمنٹ پرائمری سکول</div>
                     <div class="urdu-text">پیٹھگام واگورہ</div>
                     <div class="address">زون: واگورہ، ضلع: بارہمولہ ١٩٣١٠٩</div>
@@ -192,7 +195,7 @@
                 <div class="contact-item"><strong>📞 +91 9596449881</strong></div>
                 <div class="contact-item"><strong>✉️ pspethgam@gmail.com</strong></div>
             </div>
-        </div>
+        </header>
 
         <div class="doc-meta">
             <div><strong>Ref. no:</strong> _________________</div>
@@ -201,12 +204,12 @@
 
         <div class="content-area"></div>
 
-        <div class="footer-wrapper">
+        <footer class="footer-wrapper">
             <div class="footer-margin-line"></div>
             <div class="footer-orange-v"></div>
-        </div>
+        </footer>
     </div>
 
 </body>
 </html>
-                        
+            
