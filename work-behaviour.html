@@ -12,78 +12,80 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
             margin: 0;
         }
 
-        /* A4 Size Styling */
+        /* A4 Size Styling - Optimized Margins */
         .certificate-container {
             width: 210mm;
-            min-height: 297mm;
-            padding: 15mm; /* Slightly reduced to fit better in A4 PDF */
+            height: 297mm; /* Fixed height for single page */
+            padding: 10mm; 
             background: white;
             border: 2px solid #333;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             position: relative;
             box-sizing: border-box;
+            overflow: hidden; /* Prevents spillover */
         }
 
         /* Inner Border */
         .inner-border {
             border: 1px solid #555;
             height: 100%;
-            padding: 10mm;
+            padding: 8mm;
             box-sizing: border-box;
-            min-height: 265mm;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
             text-align: center;
             border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
             position: relative;
-            min-height: 100px;
+            min-height: 90px;
         }
 
-        /* Logo Styling for logo.png */
         .logo {
             position: absolute;
             left: 0;
             top: 0;
-            width: 85px;
-            height: 85px;
+            width: 75px;
+            height: 75px;
             object-fit: contain;
         }
 
-        .header-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; }
-        .header-text p { margin: 2px 0; font-size: 13px; font-weight: bold; }
+        .header-text h1 { margin: 0; font-size: 19px; text-transform: uppercase; }
+        .header-text p { margin: 1px 0; font-size: 12px; font-weight: bold; }
 
         .meta-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         h2.title {
             text-align: center;
             text-decoration: underline;
-            margin-bottom: 40px;
-            font-size: 22px;
+            margin-bottom: 25px;
+            font-size: 20px;
         }
 
         .content {
-            line-height: 1.8;
-            font-size: 17px;
+            line-height: 1.6;
+            font-size: 16px;
             text-align: justify;
+            flex-grow: 1; /* Allows content to take available space */
         }
 
-        .section-title { font-weight: bold; margin-top: 15px; display: block; }
+        .section-title { font-weight: bold; margin-top: 10px; display: block; }
 
         footer {
-            margin-top: 60px;
+            margin-top: 20px;
             text-align: right;
         }
 
@@ -95,37 +97,29 @@
 
         /* UI Controls */
         .controls {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             position: sticky;
             top: 0;
             z-index: 100;
             background: #f0f0f0;
-            padding: 10px;
-            width: 100%;
+            padding: 5px;
             display: flex;
-            justify-content: center;
+            gap: 10px;
         }
 
         button {
-            padding: 12px 25px;
-            font-size: 16px;
+            padding: 10px 20px;
+            font-size: 14px;
             background: #27ae60;
             color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 5px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: 0.3s;
         }
 
-        button:hover { background: #219150; transform: translateY(-2px); }
-
-        /* Editable Input Styling */
         [contenteditable="true"] {
             border-bottom: 1px dashed #bbb;
-            padding: 0 2px;
         }
-        [contenteditable="true"]:focus { background: #fffde7; outline: none; border-bottom: 1px solid #27ae60; }
 
         @media print {
             .controls { display: none; }
@@ -137,14 +131,13 @@
 <body>
 
     <div class="controls">
-        <button onclick="downloadPDF()">📥 Download A4 Certificate (PDF)</button>
+        <button onclick="downloadPDF()">📥 Download Single Page PDF</button>
     </div>
 
     <div id="certificate" class="certificate-container">
         <div class="inner-border">
             <header>
                 <img src="logo.png" alt="School Logo" class="logo" onerror="this.style.display='none'">
-                
                 <div class="header-text">
                     <p>Office Of The</p>
                     <h1 contenteditable="true">HEADMASTER GOVERNMENT PRIMARY SCHOOL</h1>
@@ -188,16 +181,14 @@
     <script>
         function downloadPDF() {
             const element = document.getElementById('certificate');
-            
-            // Configuration for perfect A4 output
             const opt = {
-                margin: [10, 10, 10, 10], // 10mm margins for printer safety
+                margin: 0, // No PDF-level margins to ensure it fits the A4 CSS
                 filename: 'Work_Behavior_Certificate.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
+                image: { type: 'jpeg', quality: 1 },
                 html2canvas: { 
-                    scale: 3, // Higher scale for sharper text
-                    letterRendering: true,
-                    useCORS: true 
+                    scale: 2, 
+                    useCORS: true,
+                    logging: false
                 },
                 jsPDF: { 
                     unit: 'mm', 
@@ -205,9 +196,9 @@
                     orientation: 'portrait' 
                 }
             };
-
             html2pdf().set(opt).from(element).save();
         }
     </script>
 </body>
 </html>
+                        
