@@ -24,15 +24,15 @@
 
     @page{
       size:A4;
-      margin:4mm; /* Reduced slightly to ensure single page fit */
+      margin:5mm;
     }
 
     .no-print{
       background:#123a1e;
       color:#fff;
-      padding:8px 12px;
+      padding:10px 14px;
       display:flex;
-      gap:10px;
+      gap:12px;
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
@@ -45,8 +45,8 @@
       color:#fff;
       text-decoration:none;
       font-weight:700;
-      font-size:11px;
-      padding:6px 10px;
+      font-size:12px;
+      padding:8px 12px;
       border-radius:5px;
       border:none;
       background:rgba(255,255,255,.12);
@@ -61,9 +61,9 @@
     .paper{
       width:210mm;
       min-height:297mm;
-      margin:5px auto;
+      margin:10px auto;
       background:var(--paper);
-      padding:5mm 7mm; /* Reduced paddings to fit content */
+      padding:8mm 8mm 7mm 8mm;
       box-shadow:0 2px 16px rgba(0,0,0,.15);
       position:relative;
       overflow:hidden;
@@ -71,23 +71,23 @@
 
     .header{
       display:grid;
-      grid-template-columns:20mm 1fr;
-      gap:3mm;
-      align-items:center;
+      grid-template-columns:24mm 1fr;
+      gap:4mm;
+      align-items:start;
       border-bottom:1px solid var(--line);
-      padding-bottom:1mm;
-      margin-bottom:1.5mm;
+      padding-bottom:1.5mm;
+      margin-bottom:2mm;
     }
 
     .logo-wrap{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:center;
     }
 
     .school-logo{
-      width:18mm;
-      height:18mm;
+      width:20mm;
+      height:20mm;
       object-fit:contain;
     }
 
@@ -97,46 +97,47 @@
     }
 
     .head-text .school-name{
-      font-size:6mm; /* Sized down slightly */
+      font-size:8mm;
       font-weight:800;
       letter-spacing:.2px;
       text-transform:uppercase;
+      margin-top:.6mm;
     }
 
     .head-text .address{
-      font-size:3.5mm;
+      font-size:4.2mm;
       font-weight:700;
-      margin-top:.2mm;
+      margin-top:.4mm;
     }
 
     .head-text .meta{
-      font-size:3.2mm;
-      margin-top:.4mm;
+      font-size:3.7mm;
+      margin-top:.7mm;
       letter-spacing:.1px;
     }
 
     .title{
       text-align:center;
-      font-size:5.5mm;
+      font-size:6.5mm;
       font-weight:800;
       letter-spacing:.2px;
       text-transform:uppercase;
       text-decoration:underline;
-      margin:1mm 0 2mm;
+      margin:2mm 0 3mm;
     }
 
     .top-grid{
       display:grid;
-      grid-template-columns:1fr 32mm;
-      gap:3mm;
+      grid-template-columns:1fr 34mm;
+      gap:4mm;
       align-items:start;
     }
 
     .photo-box{
-      width:30mm;
-      height:36mm; /* Reduced photo box height to pull things up */
+      width:31mm;
+      height:43mm;
       border:1px solid var(--line);
-      border-radius:3mm;
+      border-radius:5mm;
       margin-left:auto;
       overflow:hidden;
       display:flex;
@@ -155,55 +156,55 @@
     }
 
     .section-label{
-      font-size:3.6mm;
+      font-size:4.2mm;
       font-weight:700;
-      margin:1mm 0 0.5mm;
+      margin:1.4mm 0 1mm;
     }
 
     .name-heads{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
-      gap:1.5mm;
-      margin-bottom:.2mm;
+      gap:2mm;
+      margin-bottom:.6mm;
     }
 
     .name-heads span{
-      font-size:3.2mm;
+      font-size:3.7mm;
       font-weight:700;
     }
 
     .grid-3{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
-      gap:1.5mm;
-      margin-bottom:0.8mm;
+      gap:2mm;
+      margin-bottom:1.2mm;
     }
 
     .grid-2{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:2mm;
-      margin-bottom:0.8mm;
+      gap:3mm;
+      margin-bottom:1.2mm;
     }
 
     .pair-labels{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:2mm;
-      margin-top:.1mm;
-      margin-bottom:.2mm;
+      gap:3mm;
+      margin-top:.2mm;
+      margin-bottom:.5mm;
     }
 
     .pair-labels div{
-      font-size:3.6mm;
+      font-size:4.2mm;
       font-weight:700;
     }
 
     .single-label{
-      font-size:3.6mm;
+      font-size:4.2mm;
       font-weight:700;
-      margin-top:.2mm;
-      margin-bottom:.2mm;
+      margin-top:.4mm;
+      margin-bottom:.7mm;
     }
 
     .boxed-input,
@@ -216,16 +217,17 @@
       background:#fff;
     }
 
-    /* FIX: Monospace alignment & Box fitting */
+    /* FIX 1: Character overlap & box placement */
     .boxed-input{
       --cells:18;
       --cell-size: calc(100% / var(--cells));
-      height:7mm;
+      height:8.2mm;
       border:1px solid var(--line);
-      font: 3.8mm/6.8mm "Courier New", monospace;
+      font: 4.2mm/8mm "Courier New", monospace;
       padding:0;
       text-align: left;
-      letter-spacing: calc(var(--cell-size) - 0.61em); /* Mathematical alignment fix */
+      /* Letter spacing calculation forces characters directly into the drawn cells */
+      letter-spacing: calc(var(--cell-size) - 0.61em);
       text-indent: calc(var(--cell-size) / 4);
       background-image:
         repeating-linear-gradient(
@@ -239,15 +241,15 @@
     }
 
     .boxed-input.tight{ 
-      letter-spacing: calc(var(--cell-size) - 0.65em);
+      letter-spacing: calc(var(--cell-size) - 0.65em); 
     }
     .boxed-input.center{ text-align:center; text-indent: 0; }
 
     .line-input{
-      height:7mm;
+      height:8mm;
       border:none;
       border-bottom:1px solid var(--line);
-      font-size:3.5mm;
+      font-size:4mm;
       padding:0 1mm;
     }
 
@@ -259,9 +261,9 @@
     }
 
     .mini-date{
-      height:7mm;
+      height:8.2mm;
       border:1px solid var(--line);
-      font: 3.8mm/6.8mm "Courier New", monospace;
+      font: 4.2mm/8mm "Courier New", monospace;
       text-align:center;
       letter-spacing:.25em;
       padding:0 1mm;
@@ -287,115 +289,115 @@
     }
 
     .slash{
-      font-size:4.5mm;
+      font-size:5mm;
       font-weight:700;
-      padding-bottom:1mm;
+      padding-bottom:1.2mm;
     }
 
     .rule{
       border-top:1px solid var(--line);
-      margin:1.5mm 0;
+      margin:3mm 0;
     }
 
     .choice-row{
       display:grid;
       grid-template-columns:1.15fr .85fr;
-      gap:2mm;
-      margin-bottom:0.8mm;
+      gap:3mm;
+      margin-bottom:1.2mm;
       align-items:end;
     }
 
     .choice-box{
       border:1px solid var(--line);
-      min-height:7mm;
+      min-height:8.2mm;
       display:flex;
       align-items:center;
-      gap:3mm;
+      gap:4mm;
       padding:0 2mm;
-      font-size:3.5mm;
+      font-size:4mm;
       flex-wrap:wrap;
     }
 
     .choice{
       display:inline-flex;
       align-items:center;
-      gap:1mm;
-      font-size:3.5mm;
+      gap:1.4mm;
+      font-size:4mm;
     }
 
     .choice input{
-      width:3.2mm;
-      height:3.2mm;
+      width:3.6mm;
+      height:3.6mm;
       margin:0;
       accent-color:#000;
     }
 
     .declaration-title{
-      font-size:3.6mm;
+      font-size:4.2mm;
       font-weight:700;
-      margin-top:1mm;
-      margin-bottom:.5mm;
+      margin-top:1.4mm;
+      margin-bottom:.9mm;
     }
 
     .declaration-text{
-      font-size:2.8mm;
-      line-height:1.2;
+      font-size:3.15mm;
+      line-height:1.25;
       text-align:justify;
-      margin-bottom:1mm;
+      margin-bottom:2mm;
     }
 
     .office-title{
-      font-size:3.5mm;
+      font-size:3.7mm;
       font-weight:700;
-      margin-bottom:.5mm;
+      margin-bottom:.8mm;
     }
 
     .office-box{
-      font-size:2.8mm;
-      line-height:1.2;
+      font-size:3mm;
+      line-height:1.25;
       border-top:1px solid var(--line);
-      padding-top:0.5mm;
-      margin-top:0.5mm;
+      padding-top:1mm;
+      margin-top:1mm;
     }
 
     .office-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:2mm;
-      margin-top:.5mm;
-      margin-bottom:.5mm;
+      gap:3mm;
+      margin-top:.7mm;
+      margin-bottom:.8mm;
     }
 
     .office-mini{
       border-bottom:1px solid var(--line);
-      min-height:5mm;
+      min-height:6mm;
       padding:0 1mm;
       display:flex;
       align-items:flex-end;
-      font-size:3mm;
+      font-size:3.2mm;
     }
 
     .signatures{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
-      gap:4mm;
+      gap:6mm;
       align-items:end;
-      margin-top:3mm;
+      margin-top:4mm;
     }
 
     .sig{
       text-align:center;
-      font-size:3.4mm;
+      font-size:3.7mm;
       font-style:italic;
       font-weight:700;
-      padding-top:6mm; /* Space for manual signing */
+      padding-top:8mm;
       border-top:1px solid transparent;
     }
 
     .helper{
-      font-size:2.8mm;
+      font-size:3mm;
       color:#333;
-      margin-top:.5mm;
+      margin-top:.8mm;
     }
 
     .hidden{
@@ -404,15 +406,15 @@
 
     .screen-tools{
       display:flex;
-      gap:6px;
+      gap:8px;
       align-items:center;
-      margin:4px 0 0;
+      margin:8px 0 0;
       flex-wrap:wrap;
     }
 
     .screen-tools input[type="date"]{
-      padding:4px 6px;
-      font-size:11px;
+      padding:6px 8px;
+      font-size:12px;
     }
 
     @media print{
@@ -420,8 +422,6 @@
       .paper{
         margin:0 auto;
         box-shadow:none;
-        width: 100%;
-        height: 100%;
       }
       .no-print,
       .screen-only{
@@ -522,7 +522,7 @@
       </div>
 
       <div class="single-label">Residence:</div>
-      <input id="residence" class="boxed-input" style="--cells:32" />
+      <input id="residence" class="boxed-input" style="--cells:28" />
 
       <div class="pair-labels">
         <div>Tehsil</div>
@@ -656,7 +656,7 @@
       </div>
 
       <div class="signatures">
-        <div class="sig">Signature of Parent</div>
+        <div class="sig">Signature.of Parent</div>
         <div class="sig">Sig. Of Adm. Incharge</div>
         <div class="sig">Sig. Of Headmaster</div>
       </div>
@@ -743,6 +743,7 @@
       });
     });
 
+    /* FIX 2: Corrected Photo Processing & Canvas rendering */
     window.processPhoto = function(event){
       const file = event.target.files[0];
       if(!file) return;
@@ -758,12 +759,15 @@
           canvas.height = Math.round(img.height * scale);
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
           compressedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.82);
 
           const preview = document.getElementById("photoPreview");
           preview.src = compressedPhotoBase64;
-          preview.style.display = "block";
-          document.getElementById("photoText").style.display = "none";
+          
+          // Force elements to swap visibility
+          preview.style.setProperty("display", "block", "important");
+          document.getElementById("photoText").style.setProperty("display", "none", "important");
         };
         img.src = e.target.result;
       };
@@ -973,4 +977,4 @@
   </script>
 </body>
 </html>
-        
+      
