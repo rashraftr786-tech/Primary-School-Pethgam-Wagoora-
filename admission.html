@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admission Form - Government Primary School Pethgam Wagoora</title>                                                                                                                                           <!DOCTYPE html><html lang="en"><meta charset="UTF-8" /> <title>Admission Form - Government Primary School Pethgam Wagoora</title>
+  <title>Admission Form - Government Primary School Pethgam Wagoora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root{
@@ -24,15 +24,15 @@
 
     @page{
       size:A4;
-      margin:5mm;
+      margin:4mm; /* Reduced slightly to ensure single page fit */
     }
 
     .no-print{
       background:#123a1e;
       color:#fff;
-      padding:10px 14px;
+      padding:8px 12px;
       display:flex;
-      gap:12px;
+      gap:10px;
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
@@ -45,8 +45,8 @@
       color:#fff;
       text-decoration:none;
       font-weight:700;
-      font-size:12px;
-      padding:8px 12px;
+      font-size:11px;
+      padding:6px 10px;
       border-radius:5px;
       border:none;
       background:rgba(255,255,255,.12);
@@ -61,9 +61,9 @@
     .paper{
       width:210mm;
       min-height:297mm;
-      margin:10px auto;
+      margin:5px auto;
       background:var(--paper);
-      padding:8mm 8mm 7mm 8mm;
+      padding:5mm 7mm; /* Reduced paddings to fit content */
       box-shadow:0 2px 16px rgba(0,0,0,.15);
       position:relative;
       overflow:hidden;
@@ -71,23 +71,23 @@
 
     .header{
       display:grid;
-      grid-template-columns:24mm 1fr;
-      gap:4mm;
-      align-items:start;
+      grid-template-columns:20mm 1fr;
+      gap:3mm;
+      align-items:center;
       border-bottom:1px solid var(--line);
-      padding-bottom:1.5mm;
-      margin-bottom:2mm;
+      padding-bottom:1mm;
+      margin-bottom:1.5mm;
     }
 
     .logo-wrap{
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:center;
     }
 
     .school-logo{
-      width:20mm;
-      height:20mm;
+      width:18mm;
+      height:18mm;
       object-fit:contain;
     }
 
@@ -97,47 +97,46 @@
     }
 
     .head-text .school-name{
-      font-size:8mm;
+      font-size:6mm; /* Sized down slightly */
       font-weight:800;
       letter-spacing:.2px;
       text-transform:uppercase;
-      margin-top:.6mm;
     }
 
     .head-text .address{
-      font-size:4.2mm;
+      font-size:3.5mm;
       font-weight:700;
-      margin-top:.4mm;
+      margin-top:.2mm;
     }
 
     .head-text .meta{
-      font-size:3.7mm;
-      margin-top:.7mm;
+      font-size:3.2mm;
+      margin-top:.4mm;
       letter-spacing:.1px;
     }
 
     .title{
       text-align:center;
-      font-size:6.5mm;
+      font-size:5.5mm;
       font-weight:800;
       letter-spacing:.2px;
       text-transform:uppercase;
       text-decoration:underline;
-      margin:2mm 0 3mm;
+      margin:1mm 0 2mm;
     }
 
     .top-grid{
       display:grid;
-      grid-template-columns:1fr 34mm;
-      gap:4mm;
+      grid-template-columns:1fr 32mm;
+      gap:3mm;
       align-items:start;
     }
 
     .photo-box{
-      width:31mm;
-      height:43mm;
+      width:30mm;
+      height:36mm; /* Reduced photo box height to pull things up */
       border:1px solid var(--line);
-      border-radius:5mm;
+      border-radius:3mm;
       margin-left:auto;
       overflow:hidden;
       display:flex;
@@ -156,55 +155,55 @@
     }
 
     .section-label{
-      font-size:4.2mm;
+      font-size:3.6mm;
       font-weight:700;
-      margin:1.4mm 0 1mm;
+      margin:1mm 0 0.5mm;
     }
 
     .name-heads{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
-      gap:2mm;
-      margin-bottom:.6mm;
+      gap:1.5mm;
+      margin-bottom:.2mm;
     }
 
     .name-heads span{
-      font-size:3.7mm;
+      font-size:3.2mm;
       font-weight:700;
     }
 
     .grid-3{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
-      gap:2mm;
-      margin-bottom:1.2mm;
+      gap:1.5mm;
+      margin-bottom:0.8mm;
     }
 
     .grid-2{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:3mm;
-      margin-bottom:1.2mm;
+      gap:2mm;
+      margin-bottom:0.8mm;
     }
 
     .pair-labels{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:3mm;
-      margin-top:.2mm;
-      margin-bottom:.5mm;
+      gap:2mm;
+      margin-top:.1mm;
+      margin-bottom:.2mm;
     }
 
     .pair-labels div{
-      font-size:4.2mm;
+      font-size:3.6mm;
       font-weight:700;
     }
 
     .single-label{
-      font-size:4.2mm;
+      font-size:3.6mm;
       font-weight:700;
-      margin-top:.4mm;
-      margin-bottom:.7mm;
+      margin-top:.2mm;
+      margin-bottom:.2mm;
     }
 
     .boxed-input,
@@ -217,14 +216,17 @@
       background:#fff;
     }
 
+    /* FIX: Monospace alignment & Box fitting */
     .boxed-input{
       --cells:18;
       --cell-size: calc(100% / var(--cells));
-      height:8.2mm;
+      height:7mm;
       border:1px solid var(--line);
-      font: 4mm/8mm "Courier New", monospace;
-      padding:0 1.3mm;
-      letter-spacing:.18em;
+      font: 3.8mm/6.8mm "Courier New", monospace;
+      padding:0;
+      text-align: left;
+      letter-spacing: calc(var(--cell-size) - 0.61em); /* Mathematical alignment fix */
+      text-indent: calc(var(--cell-size) / 4);
       background-image:
         repeating-linear-gradient(
           to right,
@@ -236,14 +238,16 @@
       background-size:100% 100%;
     }
 
-    .boxed-input.tight{ letter-spacing:.1em; }
-    .boxed-input.center{ text-align:center; }
+    .boxed-input.tight{ 
+      letter-spacing: calc(var(--cell-size) - 0.65em);
+    }
+    .boxed-input.center{ text-align:center; text-indent: 0; }
 
     .line-input{
-      height:8mm;
+      height:7mm;
       border:none;
       border-bottom:1px solid var(--line);
-      font-size:4mm;
+      font-size:3.5mm;
       padding:0 1mm;
     }
 
@@ -255,9 +259,9 @@
     }
 
     .mini-date{
-      height:8.2mm;
+      height:7mm;
       border:1px solid var(--line);
-      font: 4mm/8mm "Courier New", monospace;
+      font: 3.8mm/6.8mm "Courier New", monospace;
       text-align:center;
       letter-spacing:.25em;
       padding:0 1mm;
@@ -283,115 +287,115 @@
     }
 
     .slash{
-      font-size:5mm;
+      font-size:4.5mm;
       font-weight:700;
-      padding-bottom:1.2mm;
+      padding-bottom:1mm;
     }
 
     .rule{
       border-top:1px solid var(--line);
-      margin:3mm 0;
+      margin:1.5mm 0;
     }
 
     .choice-row{
       display:grid;
       grid-template-columns:1.15fr .85fr;
-      gap:3mm;
-      margin-bottom:1.2mm;
+      gap:2mm;
+      margin-bottom:0.8mm;
       align-items:end;
     }
 
     .choice-box{
       border:1px solid var(--line);
-      min-height:8.2mm;
+      min-height:7mm;
       display:flex;
       align-items:center;
-      gap:4mm;
+      gap:3mm;
       padding:0 2mm;
-      font-size:4mm;
+      font-size:3.5mm;
       flex-wrap:wrap;
     }
 
     .choice{
       display:inline-flex;
       align-items:center;
-      gap:1.4mm;
-      font-size:4mm;
+      gap:1mm;
+      font-size:3.5mm;
     }
 
     .choice input{
-      width:3.6mm;
-      height:3.6mm;
+      width:3.2mm;
+      height:3.2mm;
       margin:0;
       accent-color:#000;
     }
 
     .declaration-title{
-      font-size:4.2mm;
+      font-size:3.6mm;
       font-weight:700;
-      margin-top:1.4mm;
-      margin-bottom:.9mm;
+      margin-top:1mm;
+      margin-bottom:.5mm;
     }
 
     .declaration-text{
-      font-size:3.15mm;
-      line-height:1.25;
+      font-size:2.8mm;
+      line-height:1.2;
       text-align:justify;
-      margin-bottom:2mm;
+      margin-bottom:1mm;
     }
 
     .office-title{
-      font-size:3.7mm;
+      font-size:3.5mm;
       font-weight:700;
-      margin-bottom:.8mm;
+      margin-bottom:.5mm;
     }
 
     .office-box{
-      font-size:3mm;
-      line-height:1.25;
+      font-size:2.8mm;
+      line-height:1.2;
       border-top:1px solid var(--line);
-      padding-top:1mm;
-      margin-top:1mm;
+      padding-top:0.5mm;
+      margin-top:0.5mm;
     }
 
     .office-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:3mm;
-      margin-top:.7mm;
-      margin-bottom:.8mm;
+      gap:2mm;
+      margin-top:.5mm;
+      margin-bottom:.5mm;
     }
 
     .office-mini{
       border-bottom:1px solid var(--line);
-      min-height:6mm;
+      min-height:5mm;
       padding:0 1mm;
       display:flex;
       align-items:flex-end;
-      font-size:3.2mm;
+      font-size:3mm;
     }
 
     .signatures{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
-      gap:6mm;
+      gap:4mm;
       align-items:end;
-      margin-top:4mm;
+      margin-top:3mm;
     }
 
     .sig{
       text-align:center;
-      font-size:3.7mm;
+      font-size:3.4mm;
       font-style:italic;
       font-weight:700;
-      padding-top:8mm;
+      padding-top:6mm; /* Space for manual signing */
       border-top:1px solid transparent;
     }
 
     .helper{
-      font-size:3mm;
+      font-size:2.8mm;
       color:#333;
-      margin-top:.8mm;
+      margin-top:.5mm;
     }
 
     .hidden{
@@ -400,15 +404,15 @@
 
     .screen-tools{
       display:flex;
-      gap:8px;
+      gap:6px;
       align-items:center;
-      margin:8px 0 0;
+      margin:4px 0 0;
       flex-wrap:wrap;
     }
 
     .screen-tools input[type="date"]{
-      padding:6px 8px;
-      font-size:12px;
+      padding:4px 6px;
+      font-size:11px;
     }
 
     @media print{
@@ -416,6 +420,8 @@
       .paper{
         margin:0 auto;
         box-shadow:none;
+        width: 100%;
+        height: 100%;
       }
       .no-print,
       .screen-only{
@@ -516,7 +522,7 @@
       </div>
 
       <div class="single-label">Residence:</div>
-      <input id="residence" class="boxed-input" style="--cells:28" />
+      <input id="residence" class="boxed-input" style="--cells:32" />
 
       <div class="pair-labels">
         <div>Tehsil</div>
@@ -650,7 +656,7 @@
       </div>
 
       <div class="signatures">
-        <div class="sig">Signature.of Parent</div>
+        <div class="sig">Signature of Parent</div>
         <div class="sig">Sig. Of Adm. Incharge</div>
         <div class="sig">Sig. Of Headmaster</div>
       </div>
@@ -967,4 +973,4 @@
   </script>
 </body>
 </html>
-                                                                                                                                                
+        
