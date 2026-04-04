@@ -175,31 +175,7 @@ body {
 }
 
 /* Combined School Header & Logo Container */
-.header-container { 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  border-bottom: 2px solid darkgreen; 
-  padding-bottom: 10px; 
-  margin-bottom: 15px;
-  width: 100%; /* Ensures it spans the top properly */
-}
 
-.logo-container {
-  flex: 0 0 80px; /* Slightly widened to make room for the wings */
-  margin-right: 15px;
-}
-
-.school-logo {
-  width: 80px; /* Hard lock width so it never expands into a giant image */
-  height: auto;
-  display: block;
-}
-
-.school-details {
-  text-align: center;
-  flex: 1;
-}
 
 .school-details h1 {
     font-size: 17px; 
@@ -216,7 +192,32 @@ body {
 }
 
 .school-details .meta {
-    font-size: 11px;
+ .header-container { 
+  display: grid;
+  grid-template-columns: 80px 1fr 80px; /* Logo on left, empty spacer on right to force center */
+  align-items: center; 
+  border-bottom: 2px solid darkgreen; 
+  padding-bottom: 10px; 
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.school-logo {
+  width: 65px; /* Perfect, controlled size */
+  height: auto;
+  display: block;
+}
+
+.school-details {
+  text-align: center;
+}
+   font-size: 11px;
     margin-top: 2px;
 }
 
