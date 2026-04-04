@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Government Primary School Pethgam Wagoora - Admission Form</title>
   <style>
+  <style>
   :root {
     --ink: #111;
     --line: #222;
@@ -337,10 +338,10 @@
   @media (max-width: 1180px) {
     .screen-wrap { grid-template-columns: 1fr; }
     .preview-wrap { overflow: auto; }
-    /* Scales down preview for mobile devices without breaking */
+    /* FIXED: Prevent content clipping by setting width instead of scale */
     .a4-sheet {
-      transform: scale(0.9);
-      transform-origin: top center;
+      width: 100%;
+      min-width: 210mm;
     }
   }
 
@@ -351,7 +352,10 @@
   }
 
   @media print {
-    body { background: #fff; }
+    body { 
+      background: #fff; 
+      font-size: 12.5px; /* Boosted base font size to help fill page */
+    }
     
     .screen-wrap {
       display: block;
@@ -377,10 +381,50 @@
       width: 100%;
       min-height: auto;
       padding: 0;
-      transform: none; /* Disables the mobile scaling on paper */
+      transform: none; 
+    }
+
+    /* --- TARGETED FIXES TO FILL THE PAGE --- */
+
+    /* 1. Expand standard grid row spacing */
+    .print-row {
+      margin-bottom: 15px !important; 
+    }
+
+    /* 2. Increase height of data field lines */
+    .line-value {
+      min-height: 22px !important; 
+      font-size: 13px !important;
+    }
+
+    /* 3. Increase label size slightly */
+    .label {
+      font-size: 11.5px !important;
+    }
+
+    /* 4. Increase section headers spacing */
+    .print-section-title {
+      font-size: 13.5px !important;
+      margin: 18px 0 8px !important; 
+    }
+
+    /* 5. Push the bottom half sections down */
+    .declaration {
+      font-size: 11px !important;
+      margin-top: 20px !important;
+      line-height: 1.4 !important;
+    }
+
+    .office-box {
+      margin-top: 25px !important;
+      padding-top: 15px !important;
+    }
+
+    .signatures {
+      margin-top: 40px !important; 
     }
   }
-</style>
+</style>   
 </head>
 <body>
 
