@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Government Primary School Pethgam Wagoora - Admission Form</title>
   <style>
+  <style>
   :root {
     --ink: #111;
     --line: #222;
@@ -86,6 +87,8 @@ body {
     background: #fff;
 }
 
+/* Added input:focus here for UI consistency */
+.field input:focus,
 .field select:focus,
 .field textarea:focus {
     border-color: var(--accent);
@@ -164,19 +167,17 @@ body {
 
 .a4-sheet {
     width: 210mm;
-    height: 297mm; /* Changed from min-height to strict height */
+    height: 297mm; 
     margin: 0 auto;
     background: #fff;
     color: #111;
     box-shadow: 0 8px 30px rgba(0,0,0,.15);
-    padding: 8mm 10mm; /* Squeezed vertical padding to make room */
+    padding: 8mm 10mm; 
     position: relative;
-    overflow: hidden; /* Guards against spilling past A4 bounds */
+    overflow: hidden; 
 }
 
 /* Combined School Header & Logo Container */
-
-
 .school-details h1 {
     font-size: 17px; 
     margin: 0;
@@ -191,34 +192,36 @@ body {
     margin-top: 2px;
 }
 
+/* Fixed broken nesting below */
 .school-details .meta {
- .header-container { 
-  display: grid;
-  grid-template-columns: 80px 1fr 80px; /* Logo on left, empty spacer on right to force center */
-  align-items: center; 
-  border-bottom: 2px solid darkgreen; 
-  padding-bottom: 10px; 
-  margin-bottom: 15px;
-  width: 100%;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.header-container { 
+    display: grid;
+    grid-template-columns: 80px 1fr 80px; /* Logo on left, empty spacer on right to force center */
+    align-items: center; 
+    border-bottom: 2px solid darkgreen; 
+    padding-bottom: 10px; 
+    margin-bottom: 15px;
+    width: 100%;
 }
 
 .logo-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .school-logo {
-  width: 65px; /* Perfect, controlled size */
-  height: auto;
-  display: block;
+    width: 65px; 
+    height: auto;
+    display: block;
 }
 
 .school-details {
-  text-align: center;
-}
-   font-size: 11px;
-    margin-top: 2px;
+    text-align: center;
 }
 
 .form-title {
@@ -230,7 +233,6 @@ body {
     text-decoration: underline;
 }
 
-/* FIXED Missing Selector here */
 .photo-box {
     position: absolute;
     top: 38mm; 
@@ -257,7 +259,6 @@ body {
     display: none;
 }
 
-/* Dialed row gaps back from 14px to 9px */
 .print-row {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -273,7 +274,6 @@ body {
     margin-bottom: 2px;
 }
 
-/* Dialed height back from 22px to 19px */
 .line-value {
     min-height: 19px; 
     border-bottom: 1px solid #333;
@@ -284,7 +284,6 @@ body {
 
 .line-value.center { text-align: center; }
 
-/* Dialed title spacing back from 18px to 12px */
 .print-section-title {
     font-size: 12.5px; 
     font-weight: 800;
@@ -307,14 +306,12 @@ body {
     padding-top: 6px;
 }
 
-/* Removed duplicate .office-text declaration here */
 .office-text {
     font-size: 10px;
     line-height: 1.25;
     text-align: justify;
 }
 
-/* Dialed margin back from 45px to 25px to secure everything on Page 1 */
 .signatures {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -354,7 +351,7 @@ body {
 /* NATIVE PRINT SETTINGS */
 @page {
     size: A4;
-    margin: 0; /* Let the element's internal 8mm/10mm handle padding */
+    margin: 0; 
 }
 
 @media print {
