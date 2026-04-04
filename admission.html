@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Government Primary School Pethgam Wagoora - Admission Form</title>
   <style>
-  <style>
   :root {
     --ink: #111;
     --line: #222;
@@ -87,7 +86,6 @@ body {
     background: #fff;
 }
 
-/* Added input:focus here for UI consistency */
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
@@ -177,31 +175,11 @@ body {
     overflow: hidden; 
 }
 
-/* Combined School Header & Logo Container */
-.school-details h1 {
-    font-size: 17px; 
-    margin: 0;
-    font-weight: 800;
-    letter-spacing: .2px;
-    text-transform: uppercase;
-}
-
-.school-details .sub {
-    font-size: 12px;
-    font-weight: 700;
-    margin-top: 2px;
-}
-
-/* Fixed broken nesting below */
-.school-details .meta {
-    font-size: 11px;
-    margin-top: 2px;
-}
-
+/* Combined School Header & Logo Container (UPDATED) */
 .header-container { 
-    display: grid;
-    grid-template-columns: 80px 1fr 80px; /* Logo on left, empty spacer on right to force center */
+    display: flex;
     align-items: center; 
+    gap: 15px;
     border-bottom: 2px solid darkgreen; 
     padding-bottom: 10px; 
     margin-bottom: 15px;
@@ -220,8 +198,32 @@ body {
     display: block;
 }
 
+/* Applied dark green color and centering to the wrapper */
 .school-details {
     text-align: center;
+    flex: 1;
+    color: darkgreen; 
+}
+
+/* Expanded text using letter-spacing */
+.school-details h1 {
+    font-size: 17px; 
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 1px; /* Expanded text look */
+    text-transform: uppercase;
+}
+
+.school-details .sub {
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+
+.school-details .meta {
+    font-size: 11px;
+    margin-top: 2px;
 }
 
 .form-title {
