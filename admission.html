@@ -5,6 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Government Primary School Pethgam Wagoora - Admission Form</title>
   <style>
+    /* 1. Hide the print header by default on the computer screen */
+.print-header {
+  display: none;
+}
+
+/* 2. Styles applied ONLY when generating the print/PDF view */
+@media print {
+  .print-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .logo-container {
+    flex: 0 0 100px; /* Gives the logo a set 100px width space */
+    margin-right: 20px;
+  }
+
+  .school-logo {
+    width: 100px;
+    height: auto;
+    display: block;
+  }
+
+  .school-details {
+    text-align: center;
+    flex: 1;
+  }
+
+  .school-details h2 {
+    margin: 0 0 5px 0;
+    font-size: 22px;
+  }
+
+  .school-details p {
+    margin: 0 0 5px 0;
+    font-size: 12px;
+  }
+
+  .school-details h3 {
+    margin: 5px 0 0 0;
+    font-size: 16px;
+    text-decoration: underline;
+  }
+}
+    
     :root{
       --ink:#111;
       --line:#222;
@@ -566,14 +616,25 @@
         Live A4 preview. What the user types on the left appears here in proper lines and printing format.
       </div>
       <div class="preview-wrap">
+        <div class="print-header">
+  <div class="logo-container">
+    <img src="logo.png" alt="School Logo" class="school-logo">
+  </div>
+  <div class="school-details">
+    <h1>GOVERNMENT PRIMARY SCHOOL PETHGAM WAGOORA</h1>
+    <div class="sub">Wagoora Babareshi Road Near Zonal Education Office Wagoora</div>
+    <div class="meta">Email ID: pspethgam@gmail.com, UDISE Code: 01022202207</div>
+    <h3>STUDENT ADMISSION FORM</h3>
+  </div>
+        </div>
         <div class="a4-sheet" id="printArea">
           <div class="school-header">
-            <h1>Government Primary School Pethgam Wagoora</h1>
-            <div class="sub">Wagoora Babareshi Road Near Zonal Education Office Wagoora</div>
-            <div class="meta">Email ID: psppethgam@gmail.com, UDISE Code: 01022202207</div>
+            
+            
           </div>
 
           <div class="form-title">Admission Form</div>
+
 
           <div class="photo-box">
             <img id="photoPreviewPrint" alt="Student Photo">
