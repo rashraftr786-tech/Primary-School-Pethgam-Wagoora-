@@ -385,7 +385,6 @@
 <body>
 
   <div class="screen-wrap">
-    <!-- LEFT: INPUT FORM -->
     <div class="panel form-panel">
       <div class="panel-header">
         <h2>Online Admission Form</h2>
@@ -570,31 +569,25 @@
       </div>
     </div>
 
-    <!-- RIGHT: A4 PREVIEW -->
     <div>
       <div class="muted-note">
         Live A4 preview. What the user types on the left appears here in proper lines and printing format.
       </div>
       <div class="preview-wrap">
-        <div class="print-header">
-  <div class="logo-container">
-    <img src="logo.png" alt="School Logo" class="school-logo">
-  </div>
-  <div class="school-details">
-    <h1>GOVERNMENT PRIMARY SCHOOL PETHGAM WAGOORA</h1>
-    <div class="sub">Wagoora Babareshi Road Near Zonal Education Office Wagoora</div>
-    <div class="meta">Email ID: pspethgam@gmail.com, UDISE Code: 01022202207</div>
-    <h3>STUDENT ADMISSION FORM</h3>
-  </div>
-        </div>
         <div class="a4-sheet" id="printArea">
+          
           <div class="school-header">
-            
-            
+            <div class="logo-container">
+              <img src="logo.png" alt="School Logo" class="school-logo">
+            </div>
+            <div class="school-details">
+              <h1>GOVERNMENT PRIMARY SCHOOL PETHGAM WAGOORA</h1>
+              <div class="sub">Wagoora Babareshi Road Near Zonal Education Office Wagoora</div>
+              <div class="meta">Email ID: pspethgam@gmail.com | UDISE Code: 01022202207</div>
+            </div>
           </div>
 
-          <div class="form-title">Admission Form</div>
-
+          <div class="form-title">STUDENT ADMISSION FORM</div>
 
           <div class="photo-box">
             <img id="photoPreviewPrint" alt="Student Photo">
@@ -708,64 +701,57 @@
           <div class="print-row">
             <div class="print-field" style="grid-column:span 12">
               <span class="label">Date of Birth in Words</span>
-              <div class="line-value"id="p_dobwords"></div>
+              <div class="line-value" id="p_dobwords"></div>
             </div>
           </div>
 
           <div class="print-row">
             <div class="print-field" style="grid-column:span 6">
               <span class="label">Bank Account Number</span>
-              <div class="line-value"id="p_bankAccount">
-              </div>
+              <div class="line-value" id="p_bankAccount"></div>
             </div>
-            
-            <div class="print-field"style="grid-column: span 6">
+            <div class="print-field" style="grid-column:span 6">
               <span class="label">Bank Name</span>
-              <div class="line-value"id="p_bankName"></div>
+              <div class="line-value" id="p_bankName"></div>
             </div>
           </div>
 
           <div class="print-row">
             <div class="print-field" style="grid-column:span 6">
               <span class="label">Category</span>
-              <div class="line-value"id="p_category"></div>
+              <div class="line-value" id="p_category"></div>
             </div>
-            
-            <div class="print-field"style="grid-column:span 6">
+            <div class="print-field" style="grid-column:span 6">
               <span class="label">Blood Group</span>
-              <div class="line-value"id="p_bloodGroup"></div>
+              <div class="line-value" id="p_bloodGroup"></div>
             </div>
           </div>
           
           <div class="print-row">
-            <div class="print-field"style="grid-column:span 6">
+            <div class="print-field" style="grid-column:span 6">
               <span class="label">Ration Card Number</span>
-              
-              <div class="line-value"id="p_rationNumber"></div>
+              <div class="line-value" id="p_rationNumber"></div>
             </div>
-
-            <div class="print-field"style="grid-column: span 6">
+            <div class="print-field" style="grid-column:span 6">
               <span class="label">Ration Card Type</span>
-              <div class="line-value"id="p_rationType"></div>
+              <div class="line-value" id="p_rationType"></div>
             </div>
           </div>
 
           <div class="print-row">
-            <div class="print-field"style="grid-column: span 6">
+            <div class="print-field" style="grid-column:span 6">
               <span class="label">Class Joining</span>
-              <div class="line-value"id="p_classJoining"></div>
+              <div class="line-value" id="p_classJoining"></div>
             </div>
-
-            <div class="print-field"style="grid-column: span 6">
+            <div class="print-field" style="grid-column:span 6">
               <span class="label">PEN Number: for Transferring Students</span>
-              <div class="line-value"id="p_penNumber"></div>
+              <div class="line-value" id="p_penNumber"></div>
             </div>
           </div>
 
-          <div class="print-section- title">Parents Declaration</div>
+          <div class="print-section-title">Parents Declaration</div>
           <div class="declaration">
-
-            I do hereby declare that the above information provided by me is true to the best of my knowledge and belief.Further declare that I will abide by the rules and regulations laid down by the school and the department from time to time and will abide the instructions of the competent authority and take due and full responsibility in case the informationfurnished by me is found false or incorrect. I hereby declare that the Parent of above mentioned student am giving my consent to my ward Aadhar no. for biometric/ authentication and processing of admission.
+            I do hereby declare that the above information provided by me is true to the best of my knowledge and belief. Further declare that I will abide by the rules and regulations laid down by the school and the department from time to time and will abide the instructions of the competent authority and take due and full responsibility in case the information furnished by me is found false or incorrect. I hereby declare that the Parent of above mentioned student am giving my consent to my ward Aadhar no. for biometric/ authentication and processing of admission.
           </div>
           
           <div class="office-box">
@@ -796,7 +782,7 @@
       </div>
     </div>
   </div>
-
+  
 <script>
   function getValue(id) {
     const el = document.getElementById(id);
