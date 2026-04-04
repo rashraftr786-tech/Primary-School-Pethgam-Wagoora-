@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>l
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Government Primary School Pethgam Wagoora - Admission Form</title>
@@ -389,6 +389,7 @@ body {
 </style>
 </head>
 <body>
+<body>
 
   <div class="screen-wrap">
     <div class="panel form-panel">
@@ -582,7 +583,7 @@ body {
       <div class="preview-wrap">
         <div class="a4-sheet" id="printArea">
           
-          <div class="school-header">
+          <div class="header-container">
             <div class="logo-container">
               <img src="logo.png" alt="School Logo" class="school-logo">
             </div>
@@ -707,7 +708,7 @@ body {
           <div class="print-row">
             <div class="print-field" style="grid-column:span 12">
               <span class="label">Date of Birth in Words</span>
-              <div class="line-value" id="p_dobwords"></div>
+              <div class="line-value" id="p_dobWords"></div>
             </div>
           </div>
 
@@ -719,6 +720,17 @@ body {
             <div class="print-field" style="grid-column:span 6">
               <span class="label">Bank Name</span>
               <div class="line-value" id="p_bankName"></div>
+            </div>
+          </div>
+
+          <div class="print-row">
+            <div class="print-field" style="grid-column:span 6">
+              <span class="label">Bank Branch</span>
+              <div class="line-value" id="p_bankBranch"></div>
+            </div>
+            <div class="print-field" style="grid-column:span 6">
+              <span class="label">IFSC Code</span>
+              <div class="line-value" id="p_ifsc"></div>
             </div>
           </div>
 
@@ -788,7 +800,6 @@ body {
       </div>
     </div>
   </div>
-  
 <script>
   function getValue(id) {
     const el = document.getElementById(id);
