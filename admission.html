@@ -170,7 +170,7 @@
     background: #fff;
     color: #111;
     box-shadow: 0 8px 30px rgba(0,0,0,.15);
-    padding: 8mm 9mm 8mm 9mm;
+    padding: 10mm 12mm; /* Increased padding slightly to push content inwards */
     position: relative;
   }
 
@@ -180,12 +180,12 @@
     align-items: center;
     justify-content: center;
     border-bottom: 1.5px solid #444;
-    padding-bottom: 10px;
-    margin-bottom: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
   }
 
   .logo-container {
-    flex: 0 0 60px; /* Width of the logo in the header */
+    flex: 0 0 60px; 
     margin-right: 15px;
   }
 
@@ -201,7 +201,7 @@
   }
 
   .school-details h1 {
-    font-size: 17px;
+    font-size: 18px; /* Boosted header */
     margin: 0;
     font-weight: 800;
     letter-spacing: .2px;
@@ -209,29 +209,29 @@
   }
 
   .school-details .sub {
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 700;
     margin-top: 2px;
   }
 
   .school-details .meta {
-    font-size: 11px;
+    font-size: 11.5px;
     margin-top: 2px;
   }
 
   .form-title {
     text-align: center;
-    font-size: 16px;
+    font-size: 17px; /* Boosted form title */
     font-weight: 800;
-    margin: 6px 0 10px;
+    margin: 10px 0 15px;
     text-transform: uppercase;
     text-decoration: underline;
   }
 
   .photo-box {
     position: absolute;
-    top: 42mm;
-    right: 9mm;
+    top: 45mm; /* Adjusted down due to bigger header padding */
+    right: 12mm;
     width: 32mm;
     height: 40mm;
     border: 1.5px solid #444;
@@ -254,70 +254,75 @@
     display: none;
   }
 
+  /* MASTER FIX 1: Pushed row gaps from 4px to 14px universally */
   .print-row {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 5px 10px;
-    margin-bottom: 4px;
+    margin-bottom: 14px; 
     align-items: end;
   }
 
   .label {
     display: block;
-    font-size: 11px;
+    font-size: 11.5px; /* Boosted label size */
     font-weight: 700;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
   }
 
+  /* MASTER FIX 2: Pushed height from 16px to 22px universally */
   .line-value {
-    min-height: 16px;
+    min-height: 22px; 
     border-bottom: 1px solid #333;
-    font-size: 11px;
+    font-size: 12.5px; /* Boosted text size */
     padding: 0 2px 2px;
     word-break: break-word;
   }
 
   .line-value.center { text-align: center; }
 
+  /* MASTER FIX 3: Section gaps from 3px to 12px universally */
   .print-section-title {
-    font-size: 12px;
+    font-size: 13.5px; /* Boosted header size */
     font-weight: 800;
-    margin: 7px 0 3px;
+    margin: 18px 0 6px; 
     text-decoration: underline;
   }
 
   .small { font-size: 10px; }
 
+  /* MASTER FIX 4: Loosened up paragraph spacing */
   .declaration {
-    font-size: 10.2px;
+    font-size: 11.5px; 
     text-align: justify;
-    margin-top: 4px;
-    line-height: 1.22;
+    margin-top: 15px;
+    line-height: 1.35;
   }
 
   .office-box {
-    margin-top: 4px;
-    border-top: 1px solid #444;
-    padding-top: 4px;
+    margin-top: 20px;
+    border-top: 1.5px solid #444;
+    padding-top: 10px;
   }
 
   .office-text {
-    font-size: 9.6px;
-    line-height: 1.18;
+    font-size: 10.5px;
+    line-height: 1.3;
     text-align: justify;
   }
 
+  /* MASTER FIX 5: Massive margin to push signatures down */
   .signatures {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
-    margin-top: 12px;
+    margin-top: 45px; 
     align-items: end;
   }
 
   .sign-block {
     text-align: center;
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 700;
   }
 
@@ -337,7 +342,6 @@
   @media (max-width: 1180px) {
     .screen-wrap { grid-template-columns: 1fr; }
     .preview-wrap { overflow: auto; }
-    /* FIXED: Prevent content clipping by setting width instead of scale */
     .a4-sheet {
       width: 100%;
       min-width: 210mm;
@@ -351,10 +355,7 @@
   }
 
   @media print {
-    body { 
-      background: #fff; 
-      font-size: 12.5px; /* Boosted base font size to help fill page */
-    }
+    body { background: #fff; }
     
     .screen-wrap {
       display: block;
@@ -362,7 +363,6 @@
       padding: 0;
     }
     
-    /* Suppress UI elements on print */
     .form-panel, .muted-note, .actions {
       display: none !important;
     }
@@ -382,48 +382,8 @@
       padding: 0;
       transform: none; 
     }
-
-    /* --- TARGETED FIXES TO FILL THE PAGE --- */
-
-    /* 1. Expand standard grid row spacing */
-    .print-row {
-      margin-bottom: 15px !important; 
-    }
-
-    /* 2. Increase height of data field lines */
-    .line-value {
-      min-height: 22px !important; 
-      font-size: 13px !important;
-    }
-
-    /* 3. Increase label size slightly */
-    .label {
-      font-size: 11.5px !important;
-    }
-
-    /* 4. Increase section headers spacing */
-    .print-section-title {
-      font-size: 13.5px !important;
-      margin: 18px 0 8px !important; 
-    }
-
-    /* 5. Push the bottom half sections down */
-    .declaration {
-      font-size: 11px !important;
-      margin-top: 20px !important;
-      line-height: 1.4 !important;
-    }
-
-    .office-box {
-      margin-top: 25px !important;
-      padding-top: 15px !important;
-    }
-
-    .signatures {
-      margin-top: 40px !important; 
-    }
   }
-</style>   
+</style>
 </head>
 <body>
 
