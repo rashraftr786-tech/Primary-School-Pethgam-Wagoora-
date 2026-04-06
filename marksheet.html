@@ -9,7 +9,7 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); margin: 0; padding: 20px; display: flex; gap: 20px; }
         
         /* UPDATION FORM STYLE */
-        .admin-panel { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: fit-content; sticky: top 20px; }
+        .admin-panel { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: fit-content; Change to position: sticky; top: 20px; }
         .admin-panel h2 { color: var(--primary); font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid var(--primary); }
         .input-group { margin-bottom: 10px; }
         label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 3px; }
@@ -179,7 +179,6 @@
             <button onclick="saveToRegister()" style="background: #28a745; color: white; padding: 10px; border: none; cursor: pointer;">Save to Register</button>
             <button onclick="generatePDF()" style="background: var(--primary); color: white; padding: 10px; border: none; cursor: pointer;">Generate Marksheet PDF</button>
         </div>
-    </div>
 
         <button onclick="downloadPDF()">Download Marksheet PDF</button>
     </div>
@@ -328,22 +327,111 @@
     </div>
 
     <script>
-        function downloadPDF() {
-            const element = document.getElementById('printable-marksheet');
-            const studentName = document.getElementById('val-name').innerText;
-            
-            const opt = {
-                margin:       0, // Zero margin because padding is handled in CSS
-                filename:     `Marksheet_${studentName.replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true }, 
-                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
+    /**
+     * Synchronizes data from the Admin Panel to the Marksheet in real-time.
+     * Also calculates totals and updates the performance chart.
+     */
+    function syncData() {
+        // 1. Sync Basic Info
+        const name = document.getElementById('in-name').value;
+        const adm = document.getElementById('in-adm').value;
+        document.getElementById('val-name').innerText = name;
+        document.getElementById('val-adm').innerText = adm;
 
-            // Generate and download PDF
-            html2pdf().set(opt).from(element).save();
+        // 2. Map Subjects and Update Marks
+        const subjects = [
+            { id: 'eng', name: 'English' },
+            { id: 'math', name: 'Math' },
+            { id: 'evs', name: 'EVS' },
+            { id: 'urdu', name: 'Urdu' },
+            { id: 'kash', name: 'Kashmiri' }
+        ];
+
+        let totalMarks = 0;
+
+        subjects.forEach(sub => {
+            const markInput = document.getElementById(`in-${sub.id}`);
+            let val = parseInt(markInput.value) || 0;
+
+            // Constrain marks between 0 and 100
+            if (val > 100) val = 100;
+            if (val < 0) val = 0;
+
+            // Update the Performance Chart Bars
+            const bar = document.getElementById(`bar-${sub.id}`);
+            if (bar) {
+                bar.style.height = val + '%';
+                bar.querySelector('.bar-value').innerText = val;
+            }
+
+            // Update Total logic
+            totalMarks += val;
+            
+            // Note: In a full production version, you would also update 
+            // the <td> elements for specific subject rows here.
+        });
+
+        // 3. Update Final Results Section
+        const percentage = (totalMarks / 500) * 100;
+        
+        // Update Total Display
+        const resultRows = document.querySelectorAll('.box:nth-child(2) .result-row span:last-child');
+        if (resultRows.length > 0) {
+            resultRows[0].innerText = `${totalMarks} / 500`; // Total Marks
+            resultRows[1].innerText = `${percentage.toFixed(1)}%`; // Percentage
+            resultRows[2].innerText = getOverallGrade(percentage); // Overall Grade
         }
-    </script>
+        
+        // Update Remarks name
+        const remarksBox = document.querySelector('.box p strong');
+        if (remarksBox) remarksBox.innerText = `Remarks: ${name}`;
+    }
+
+    /**
+     * Determines the grade string based on the percentage
+     */
+    function getOverallGrade(pct) {
+        if (pct > 85) return "Outstanding";
+        if (pct > 70) return "Very Good";
+        if (pct > 55) return "Good";
+        if (pct > 40) return "Fair";
+        if (pct > 33) return "Average";
+        return "Needs Improvement";
+    }
+
+    /**
+     * Triggers the PDF generation
+     */
+    function downloadPDF() {
+        const element = document.getElementById('printable-marksheet');
+        const studentName = document.getElementById('val-name').innerText;
+        
+        // Use a slightly larger scale for better text clarity in PDF
+        const opt = {
+            margin:       0,
+            filename:     `Marksheet_${studentName.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 3, useCORS: true, logging: false }, 
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save();
+    }
+
+    // Alias for the button in your admin panel
+    function generatePDF() {
+        downloadPDF();
+    }
+
+    function saveToRegister() {
+        const studentName = document.getElementById('val-name').innerText;
+        alert(`Data for ${studentName} has been synchronized and is ready for export.`);
+        // Note: You could implement localStorage saving here if needed.
+    }
+
+    // Run once on load to ensure chart matches initial values
+    window.onload = syncData;
+</script>
 </body>
 </html>
         .                        
