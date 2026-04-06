@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marksheet</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        /* A4 Page Setup */
+        .a4-container {
+            width: 8.27in;
+            height: 11.69in;
+            margin: 0 auto;
+            padding: 0.4in;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            color: #333;
+            background: #fff;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        /* Typography & Utility */
+        h1, h2, h3 { margin: 0; text-align: center; }
+        .text-center { text-align: center; }
+        
+        /* Header */
+        .header {
+            background-color: #5b2c91;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        .header h1 { font-size: 22px; letter-spacing: 1px; }
+        .header h2 { font-size: 16px; margin-top: 5px; font-weight: normal; }
+
+        /* Student Info Section */
+        .student-info-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 2fr 1fr 2fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .info-label { font-weight: bold; color: #5b2c91; }
+        .info-value { border-bottom: 1px solid #ccc; padding-bottom: 2px; }
+        .student-photo {
+            width: 80px;
+            height: 95px;
+            border: 1px solid #999;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px 4px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f0f7;
+            color: #5b2c91;
+            font-size: 11px;
+        }
+        .subject-col { text-align: left; font-weight: bold; padding-left: 8px; }
+
+        /* Bottom Section Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1.5fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        .box h3 {
+            font-size: 12px;
+            background: #5b2c91;
+            color: white;
+            padding: 4px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+
+        /* Results & Ranks Box */
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .result-label { font-weight: bold; }
+
+        /* Footer / Signatures */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            bottom: 0.5in;
+            left: 0.4in;
+            right: 0.4in;
+        }
+        .sig-box {
+            width: 1.5in;
+            border-top: 1px solid #333;
+            text-align: center;
+            padding-top: 5px;
+            font-size: 11px;
+        }
+
+        /* Controls (Invisible in Print/PDF) */
+        .controls {
+            text-align: center;
+            margin: 20px auto;
+            width: 8.27in;
+        }
+        button {
+            background: #5b2c91;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #451f70; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button onclick="downloadPDF()">Download Marksheet PDF</button>
+    </div>
+
+    <div class="a4-container" id="printable-marksheet">
+        
+        <div class="header">
+            <h1>GOVERNMENT PRIMARY SCHOOL</h1>
+            <h2>PETHGAM WAGOORA 193109</h2>
+        </div>
+
+        <div class="student-info-grid">
+            <div class="info-label">Student Name:</div>
+            <div class="info-value" id="val-name">AAYAT RIYAZ WANI</div>
+            <div class="info-label">Adm. No:</div>
+            <div class="info-value" id="val-adm">133</div>
+            <div class="student-photo" style="grid-row: span 4; justify-self: center;">
+                [ Student Photo ]
+            </div>
+
+            <div class="info-label">Father's Name:</div>
+            <div class="info-value" id="val-father">RIYAZ AHMAD WANI</div>
+            <div class="info-label">D.O.B:</div>
+            <div class="info-value" id="val-dob">03-03-2017</div>
+
+            <div class="info-label">Mother's Name:</div>
+            <div class="info-value" id="val-mother">AFROZA BEGUM</div>
+            <div class="info-label">Class:</div>
+            <div class="info-value" id="val-class">3rd</div>
+
+            <div class="info-label">Session:</div>
+            <div class="info-value">Nov.-Dec. 2024</div>
+            <div class="info-label">Roll No:</div>
+            <div class="info-value" id="val-roll">303</div>
+
+            <div class="info-label">Apaar ID:</div>
+            <div class="info-value">Not Available</div>
+            <div class="info-label">PEN No:</div>
+            <div class="info-value">22232018998</div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 20%;">Subject</th>
+                    <th colspan="6">Formative Assessments (FA)</th>
+                    <th rowspan="2">Total<br>(30)</th>
+                    <th rowspan="2">Co-Curricular<br>(20)</th>
+                    <th rowspan="2">Summative<br>(50)</th>
+                    <th rowspan="2">Grand Total<br>(100)</th>
+                    <th rowspan="2">Grade</th>
+                </tr>
+                <tr>
+                    <th>FA1 (5)</th>
+                    <th>FA2 (5)</th>
+                    <th>FA3 (5)</th>
+                    <th>FA4 (5)</th>
+                    <th>FA5 (5)</th>
+                    <th>FA6 (5)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="subject-col">English</td>
+                    <td>3</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td>
+                    <td>23</td><td>16</td><td>38</td><td>77</td><td>A</td>
+                </tr>
+                <tr>
+                    <td class="subject-col">Math</td>
+                    <td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td>
+                    <td>27</td><td>18</td><td>45</td><td>90</td><td>A+</td>
+                </tr>
+                <tr>
+                    <td class="subject-col">EVS</td>
+                    <td>4</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td>
+                    <td>26</td><td>17</td><td>43</td><td>86</td><td>A+</td>
+                </tr>
+                <tr>
+                    <td class="subject-col">Urdu</td>
+                    <td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td>
+                    <td>27</td><td>18</td><td>45</td><td>90</td><td>A+</td>
+                </tr>
+                <tr>
+                    <td class="subject-col">Kashmiri</td>
+                    <td>3</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td>
+                    <td>25</td><td>17</td><td>41</td><td>83</td><td>A</td>
+                </tr>
+                <tr style="font-weight: bold; background-color: #f9f9f9;">
+                    <td class="subject-col">Grand Total</td>
+                    <td>18</td><td>19</td><td>20</td><td>22</td><td>24</td><td>25</td>
+                    <td>128</td><td>86</td><td>212</td><td>426</td><td>A+</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="bottom-grid">
+            
+            <div class="box">
+                <h3>Grade Scale</h3>
+                <div class="result-row"><span class="result-label">>85% to 100%</span><span>A+</span></div>
+                <div class="result-row"><span class="result-label">>70% to 85%</span><span>A</span></div>
+                <div class="result-row"><span class="result-label">>55% to 70%</span><span>B</span></div>
+                <div class="result-row"><span class="result-label">>40% to 55%</span><span>C</span></div>
+                <div class="result-row"><span class="result-label">>33% to 40%</span><span>D</span></div>
+                <div class="result-row"><span class="result-label">0% to 33%</span><span>E</span></div>
+            </div>
+
+            <div class="box">
+                <h3>Final Results</h3>
+                <div class="result-row"><span class="result-label">Total Marks:</span><span>426 / 500</span></div>
+                <div class="result-row"><span class="result-label">Percentage:</span><span>85%</span></div>
+                <div class="result-row"><span class="result-label">Overall Grade:</span><span>Very Good</span></div>
+                <div class="result-row"><span class="result-label">Result:</span><span>Pass</span></div>
+                <div class="result-row"><span class="result-label">Class Rank:</span><span>1st</span></div>
+                <div class="result-row"><span class="result-label">School Rank:</span><span>5th</span></div>
+            </div>
+
+            <div class="box">
+                <h3>Proficiency & Remarks</h3>
+                <div class="result-row"><span class="result-label">Level:</span><span>Sky ☁️</span></div>
+                <p style="font-size: 11px; margin-top: 10px; line-height: 1.4;">
+                    <strong>Remarks:</strong> AAYAT RIYAZ WANI has performed well in English, Math, EVS, Urdu, and Kashmiri. Keep it up!
+                </p>
+            </div>
+        </div>
+
+        <div style="border: 1px solid #ddd; border-radius: 4px; padding: 8px;">
+            <p style="margin: 0; font-size: 11px;"><strong>Co-Curricular Grades:</strong> Empathy & Teamwork, Discipline, Sports, Art and Craft are evaluated as "Excellent" based on overall participation.</p>
+        </div>
+
+        <div class="signatures">
+            <div class="sig-box">Form Teacher</div>
+            <div class="sig-box">Exam I/C</div>
+            <div class="sig-box">Parents Signature</div>
+            <div class="sig-box">Headmaster Seal & Sign</div>
+        </div>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('printable-marksheet');
+            const studentName = document.getElementById('val-name').innerText;
+            
+            const opt = {
+                margin:       0, // Zero margin because padding is handled in CSS
+                filename:     `Marksheet_${studentName.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true }, 
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate and download PDF
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
