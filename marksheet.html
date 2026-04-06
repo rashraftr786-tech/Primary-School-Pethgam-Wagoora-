@@ -225,177 +225,153 @@
 
     <div class="admin-panel">
         <h2>Result Updation Form</h2>
-        <div class="input-group">
-            <label>Student Name</label>
-            <input type="text" id="in-name" value="AAYAT RIYAZ WANI" oninput="syncData()">
-        </div>
-        <div class="input-group">
-            <label>Admission No</label>
-            <input type="text" id="in-adm" value="133" oninput="syncData()">
-        </div>
-        <hr>
-        <label>Subject Marks (Out of 100)</label>
-        <div class="input-group">
-            <label>English</label><input type="number" id="in-eng" value="77" oninput="syncData()">
-            <label>Math</label><input type="number" id="in-math" value="90" oninput="syncData()">
-            <label>EVS</label><input type="number" id="in-evs" value="86" oninput="syncData()">
-            <label>Urdu</label><input type="number" id="in-urdu" value="90" oninput="syncData()">
-            <label>Kashmiri</label><input type="number" id="in-kash" value="83" oninput="syncData()">
-        </div>
         
-        <div class="btn-group">
-            <button onclick="saveToRegister()" style="background: #28a745; color: white; padding: 10px; border: none; cursor: pointer;">Save to Register</button>
-            <button onclick="generatePDF()" style="background: var(--primary); color: white; padding: 10px; border: none; cursor: pointer;">Generate Marksheet PDF</button>
-        </div>
-
-        <button onclick="downloadPDF()">Download Marksheet PDF</button>
-    </div>
-
-    <div class="a4-container" id="printable-marksheet">
-        
-        <div class="header">
-            <h1>GOVERNMENT PRIMARY SCHOOL</h1>
-            <h2>PETHGAM WAGOORA 193109</h2>
-        </div>
-
-        <div class="student-info-grid">
-            <div class="info-label">Student Name:</div>
-            <div class="info-value" id="val-name">AAYAT RIYAZ WANI</div>
-            <div class="info-label">Adm. No:</div>
-            <div class="info-value" id="val-adm">133</div>
-            <div class="student-photo" style="grid-row: span 4; justify-self: center;">
-                [ Student Photo ]
+        <div class="input-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="input-group">
+                <label>Student Name</label>
+                <input type="text" id="in-name" value="AAYAT RIYAZ WANI" oninput="syncData()">
             </div>
-
-            <div class="info-label">Father's Name:</div>
-            <div class="info-value" id="val-father">RIYAZ AHMAD WANI</div>
-            <div class="info-label">D.O.B:</div>
-            <div class="info-value" id="val-dob">03-03-2017</div>
-
-            <div class="info-label">Mother's Name:</div>
-            <div class="info-value" id="val-mother">AFROZA BEGUM</div>
-            <div class="info-label">Class:</div>
-            <div class="info-value" id="val-class">3rd</div>
-
-            <div class="info-label">Session:</div>
-            <div class="info-value">Nov.-Dec. 2024</div>
-            <div class="info-label">Roll No:</div>
-            <div class="info-value" id="val-roll">303</div>
-
-            <div class="info-label">Apaar ID:</div>
-            <div class="info-value">Not Available</div>
-            <div class="info-label">PEN No:</div>
-            <div class="info-value">22232018998</div>
+            <div class="input-group">
+                <label>Admission No</label>
+                <input type="text" id="in-adm" value="133" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Father's Name</label>
+                <input type="text" id="in-father" value="RIYAZ AHMAD WANI" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Mother's Name</label>
+                <input type="text" id="in-mother" value="AFROZA BEGUM" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Class</label>
+                <input type="text" id="in-class" value="3rd" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Roll No</label>
+                <input type="text" id="in-roll" value="303" oninput="syncData()">
+            </div>
         </div>
 
-        <table>
+        <hr>
+        
+        <h3>Subject Marks (Breakdown)</h3>
+        <p style="font-size: 0.8em; color: #666;">Note: Enter Summative Marks (Out of 50) and Co-Curricular (Out of 20)</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead>
-                <tr>
-                    <th rowspan="2" style="width: 20%;">Subject</th>
-                    <th colspan="6">Formative Assessments (FA)</th>
-                    <th rowspan="2">Total<br>(30)</th>
-                    <th rowspan="2">Co-Curricular<br>(20)</th>
-                    <th rowspan="2">Summative<br>(50)</th>
-                    <th rowspan="2">Grand Total<br>(100)</th>
-                    <th rowspan="2">Grade</th>
-                </tr>
-                <tr>
-                    <th>FA1 (5)</th>
-                    <th>FA2 (5)</th>
-                    <th>FA3 (5)</th>
-                    <th>FA4 (5)</th>
-                    <th>FA5 (5)</th>
-                    <th>FA6 (5)</th>
+                <tr style="font-size: 12px; background: #eee;">
+                    <th>Subject</th>
+                    <th>FA (Total 30)</th>
+                    <th>Co-Curr (20)</th>
+                    <th>Summative (50)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="subject-col">English</td>
-                    <td>3</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td>
-                    <td>23</td><td>16</td><td>38</td><td>77</td><td>A</td>
+                    <td>English</td>
+                    <td><input type="number" id="in-eng-fa" value="23" oninput="syncData()"></td>
+                    <td><input type="number" id="in-eng-co" value="16" oninput="syncData()"></td>
+                    <td><input type="number" id="in-eng-sum" value="38" oninput="syncData()"></td>
                 </tr>
                 <tr>
-                    <td class="subject-col">Math</td>
-                    <td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td>
-                    <td>27</td><td>18</td><td>45</td><td>90</td><td>A+</td>
+                    <td>Math</td>
+                    <td><input type="number" id="in-math-fa" value="27" oninput="syncData()"></td>
+                    <td><input type="number" id="in-math-co" value="18" oninput="syncData()"></td>
+                    <td><input type="number" id="in-math-sum" value="45" oninput="syncData()"></td>
                 </tr>
-                <tr>
-                    <td class="subject-col">EVS</td>
-                    <td>4</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td>
-                    <td>26</td><td>17</td><td>43</td><td>86</td><td>A+</td>
-                </tr>
-                <tr>
-                    <td class="subject-col">Urdu</td>
-                    <td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td>
-                    <td>27</td><td>18</td><td>45</td><td>90</td><td>A+</td>
-                </tr>
-                <tr>
-                    <td class="subject-col">Kashmiri</td>
-                    <td>3</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td>
-                    <td>25</td><td>17</td><td>41</td><td>83</td><td>A</td>
-                </tr>
-                <tr style="font-weight: bold; background-color: #f9f9f9;">
-                    <td class="subject-col">Grand Total</td>
-                    <td>18</td><td>19</td><td>20</td><td>22</td><td>24</td><td>25</td>
-                    <td>128</td><td>86</td><td>212</td><td>426</td><td>A+</td>
-                </tr>
-            </tbody>
+                </tbody>
         </table>
-
-        <div class="bottom-grid">
-            
-            <div class="box">
-                <h3>Grade Scale</h3>
-                <div class="result-row"><span class="result-label">>85% to 100%</span><span>A+</span></div>
-                <div class="result-row"><span class="result-label">>70% to 85%</span><span>A</span></div>
-                <div class="result-row"><span class="result-label">>55% to 70%</span><span>B</span></div>
-                <div class="result-row"><span class="result-label">>40% to 55%</span><span>C</span></div>
-                <div class="result-row"><span class="result-label">>33% to 40%</span><span>D</span></div>
-                <div class="result-row"><span class="result-label">0% to 33%</span><span>E</span></div>
-            </div>
-
-            <div class="box">
-                <h3>Final Results</h3>
-                <div class="result-row"><span class="result-label">Total Marks:</span><span>426 / 500</span></div>
-                <div class="result-row"><span class="result-label">Percentage:</span><span>85%</span></div>
-                <div class="result-row"><span class="result-label">Overall Grade:</span><span>Very Good</span></div>
-                <div class="result-row"><span class="result-label">Result:</span><span>Pass</span></div>
-                <div class="result-row"><span class="result-label">Class Rank:</span><span>1st</span></div>
-                <div class="result-row"><span class="result-label">School Rank:</span><span>5th</span></div>
-            </div>
-
-            <div class="box">
-                <h3>Proficiency & Remarks</h3>
-                <div class="result-row"><span class="result-label">Level:</span><span>Sky ☁️</span></div>
-                <p style="font-size: 11px; margin-top: 10px; line-height: 1.4;">
-                    <strong>Remarks:</strong> AAYAT RIYAZ WANI has performed well in English, Math, EVS, Urdu, and Kashmiri. Keep it up!
-                </p>
-            </div>
-        </div>
-
-        <div style="border: 1px solid #ddd; border-radius: 4px; padding: 8px;">
-            <p style="margin: 0; font-size: 11px;"><strong>Co-Curricular Grades:</strong> Empathy & Teamwork, Discipline, Sports, Art and Craft are evaluated as "Excellent" based on overall participation.</p>
-        </div>
-
-        <div class="graph-container">
-            <h3 style="text-align:center; margin: 0 0 10px 0; font-size: 14px;">Subject Performance Chart</h3>
-            <div class="chart-area">
-                <div class="bar-wrapper"><div class="bar" id="bar-eng" style="height: 77%;"><span class="bar-value">77</span></div><div class="subject-label">Eng</div></div>
-                <div class="bar-wrapper"><div class="bar" id="bar-math" style="height: 90%;"><span class="bar-value">90</span></div><div class="subject-label">Math</div></div>
-                <div class="bar-wrapper"><div class="bar" id="bar-evs" style="height: 86%;"><span class="bar-value">86</span></div><div class="subject-label">EVS</div></div>
-                <div class="bar-wrapper"><div class="bar" id="bar-urdu" style="height: 90%;"><span class="bar-value">90</span></div><div class="subject-label">Urdu</div></div>
-                <div class="bar-wrapper"><div class="bar" id="bar-kash" style="height: 83%;"><span class="bar-value">83</span></div><div class="subject-label">Kash</div></div>
-            </div>
-        </div>
-
-        <div class="signatures">
-            <div class="sig-box">Class Teacher</div>
-            <div class="sig-box">Headmaster</div>
+        
+        <div class="btn-group">
+            <button onclick="saveToRegister()" style="background: #28a745; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 4px;">Save to Register</button>
+            <button onclick="window.print()" style="background: #007bff; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 4px;">Print / Save PDF</button>
         </div>
     </div>
 
+    <div class="a4-container" id="printable-marksheet">
+        
+        <div class="header" style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 24px;">GOVERNMENT PRIMARY SCHOOL</h1>
+            <h2 style="margin: 0; font-size: 18px;">PETHGAM WAGOORA 193109</h2>
+            <p style="margin: 5px 0 0 0;">Progress Report Card - Session 2024</p>
+        </div>
+
+        <div class="student-info-grid" style="display: grid; grid-template-columns: 150px 1fr 150px 1fr 120px; gap: 8px; font-size: 13px; margin-bottom: 20px;">
+            <div class="info-label"><strong>Student Name:</strong></div>
+            <div class="info-value" id="val-name">AAYAT RIYAZ WANI</div>
+            <div class="info-label"><strong>Adm. No:</strong></div>
+            <div class="info-value" id="val-adm">133</div>
+            <div class="student-photo" style="grid-row: span 4; border: 1px solid #ccc; width: 100px; height: 120px; display: flex; align-items: center; text-align: center; font-size: 10px;">
+                Photo
+            </div>
+
+            <div class="info-label"><strong>Father's Name:</strong></div>
+            <div class="info-value" id="val-father">RIYAZ AHMAD WANI</div>
+            <div class="info-label"><strong>D.O.B:</strong></div>
+            <div class="info-value" id="val-dob">03-03-2017</div>
+
+            <div class="info-label"><strong>Mother's Name:</strong></div>
+            <div class="info-value" id="val-mother">AFROZA BEGUM</div>
+            <div class="info-label"><strong>Class:</strong></div>
+            <div class="info-value" id="val-class">3rd</div>
+
+            <div class="info-label"><strong>Roll No:</strong></div>
+            <div class="info-value" id="val-roll">303</div>
+            <div class="info-label"><strong>Session:</strong></div>
+            <div class="info-value">Nov.-Dec. 2024</div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;">
+            <thead>
+                <tr style="background: #f2f2f2;">
+                    <th style="border: 1px solid #000; padding: 8px;">Subject</th>
+                    <th style="border: 1px solid #000;">FA Total (30)</th>
+                    <th style="border: 1px solid #000;">Co-Curricular (20)</th>
+                    <th style="border: 1px solid #000;">Summative (50)</th>
+                    <th style="border: 1px solid #000;">Grand Total (100)</th>
+                    <th style="border: 1px solid #000;">Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #000; text-align: left; padding-left: 5px;">English</td>
+                    <td style="border: 1px solid #000;" id="val-eng-fa">23</td>
+                    <td style="border: 1px solid #000;" id="val-eng-co">16</td>
+                    <td style="border: 1px solid #000;" id="val-eng-sum">38</td>
+                    <td style="border: 1px solid #000; font-weight: bold;" id="val-eng-total">77</td>
+                    <td style="border: 1px solid #000;" id="val-eng-grade">A</td>
+                </tr>
+                </tbody>
+        </table>
+
+        </div>
+
     <script>
-    /**
+    function syncData() {
+        // Sync Text Fields
+        document.getElementById('val-name').innerText = document.getElementById('in-name').value;
+        document.getElementById('val-adm').innerText = document.getElementById('in-adm').value;
+        document.getElementById('val-father').innerText = document.getElementById('in-father').value;
+        document.getElementById('val-mother').innerText = document.getElementById('in-mother').value;
+        document.getElementById('val-class').innerText = document.getElementById('in-class').value;
+        document.getElementById('val-roll').innerText = document.getElementById('in-roll').value;
+
+        // Logic for Calculations (Example for English)
+        let fa = parseInt(document.getElementById('in-eng-fa').value) || 0;
+        let co = parseInt(document.getElementById('in-eng-co').value) || 0;
+        let sum = parseInt(document.getElementById('in-eng-sum').value) || 0;
+        let total = fa + co + sum;
+        
+        document.getElementById('val-eng-fa').innerText = fa;
+        document.getElementById('val-eng-co').innerText = co;
+        document.getElementById('val-eng-sum').innerText = sum;
+        document.getElementById('val-eng-total').innerText = total;
+        
+        // Update Bar Chart
+        document.getElementById('bar-eng').style.height = total + "%";
+        document.querySelector('#bar-eng .bar-value').innerText = total;
+    }
      * Synchronizes data from the Admin Panel to the Marksheet in real-time.
      * Also calculates totals and updates the performance chart.
      */
