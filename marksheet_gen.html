@@ -43,6 +43,16 @@
     <script>
         let studentPhotos = {};
 
+        // Helper to format Excel dates correctly
+        function formatExcelDate(dateVal) {
+            if (!dateVal) return "N/A";
+            if (!isNaN(dateVal)) {
+                const date = new Date((dateVal - 25569) * 86400 * 1000);
+                return date.toLocaleDateString('en-GB');
+            }
+            return dateVal;
+        }
+
         document.getElementById('photoUpload').addEventListener('change', function(e) {
             const files = e.target.files;
             for (let file of files) {
@@ -58,7 +68,7 @@
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+                const workbook = XLSX.read(data, { type: 'array', cellDates: false });
                 const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
                 processData(rows);
             };
@@ -98,11 +108,16 @@
                 const studentName = String(row[3]).toUpperCase();
                 const photoSrc = studentPhotos[studentName] || '';
 
+                // Based on your Image 1 (Column BN is 65, BO is 66)
+                // Based on your Image 2 (DOB is Column H = 7)
                 const s = {
                     adm: row[0], roll: row[1], class: row[2], name: studentName,
-                    father: row[4], mother: row[5], apaar: row[57] || 'N/A', 
-                    dob: row[7], pen: row[58] || 'N/A', session: "Nov. 2025",
-                    sRank: row[59] || '-', cRank: row[60] || '-',
+                    father: row[4], mother: row[5], 
+                    dob: formatExcelDate(row[7]), 
+                    apaar: row[65] || 'N/A', 
+                    pen: row[66] || 'N/A', 
+                    session: "Nov. 2025",
+                    sRank: row[67] || '-', cRank: row[68] || '-',
                     eng: { fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14]||0, cc: row[15]||0, sum: row[16]||0, grand: row[17]||0 },
                     math: { fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24]||0, cc: row[25]||0, sum: row[26]||0, grand: row[27]||0 },
                     evs: { fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34]||0, cc: row[35]||0, sum: row[36]||0, grand: row[37]||0 },
@@ -241,4 +256,4 @@
     </script>
 </body>
 </html>
-
+                                                    
