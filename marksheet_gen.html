@@ -18,7 +18,6 @@
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 3px; }
         .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 5px; font-size: 13px; }
-        .proficiency-sky { background-color: #e0f2fe; }
         .footer-tab { background-color: #334155; color: white; font-size: 10px; padding: 4px; text-align: center; }
         .photo-box { width: 100px; height: 110px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
     </style>
@@ -27,16 +26,14 @@
 
     <div class="no-print max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
         <h2 class="text-2xl font-bold text-indigo-900 mb-4">Marksheet Control Panel</h2>
-        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">1. Upload Student Data (Excel)</label>
                 <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">2. Upload Student Photos (Multiple)</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">2. Upload Student Photos</label>
                 <input type="file" id="photoUpload" multiple accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-emerald-600 file:text-white hover:file:bg-emerald-700" />
-                <p class="text-[10px] text-gray-500 mt-1">* Rename photos to match student names (e.g. "AAYAT RIYAZ WANI.jpg")</p>
             </div>
         </div>
     </div>
@@ -46,7 +43,6 @@
     <script>
         let studentPhotos = {};
 
-        // Handle Photo Uploads
         document.getElementById('photoUpload').addEventListener('change', function(e) {
             const files = e.target.files;
             for (let file of files) {
@@ -57,7 +53,6 @@
             }
         });
 
-        // Handle Excel Upload
         document.getElementById('excelUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -71,25 +66,32 @@
         });
 
         function getGrade(score) {
-            if (score > 85) return 'A+';
-            if (score > 70) return 'A';
-            if (score > 55) return 'B';
-            if (score > 40) return 'C';
-            if (score > 33) return 'D';
+            if (score >= 85) return 'A+';
+            if (score >= 70) return 'A';
+            if (score >= 55) return 'B';
+            if (score >= 40) return 'C';
+            if (score >= 33) return 'D';
             return 'E';
         }
 
         function getProficiency(score) {
-            if (score > 85) return 'Sky';
-            if (score > 55) return 'Mountain';
+            if (score >= 85) return 'Sky';
+            if (score >= 55) return 'Mountain';
             return 'Stream';
+        }
+
+        function getAutomaticRemarks(avg) {
+            if (avg >= 85) return "Excellent performance! Keep up the brilliant work.";
+            if (avg >= 70) return "Very good progress. Aim for the top grade next time.";
+            if (avg >= 55) return "Good effort. Focus more on weak areas.";
+            if (avg >= 33) return "Satisfactory. Needs more consistent study habits.";
+            return "Requires urgent attention and remedial support.";
         }
 
         function processData(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
             
-            // Slice based on your Excel structure (skipping headers)
             const students = rows.slice(3).filter(r => r[3]); 
 
             students.forEach(row => {
@@ -98,24 +100,19 @@
 
                 const s = {
                     adm: row[0], roll: row[1], class: row[2], name: studentName,
-                    father: row[4], mother: row[5], apaar: row[57] || 'Not Available', 
+                    father: row[4], mother: row[5], apaar: row[57] || 'N/A', 
                     dob: row[7], pen: row[58] || 'N/A', session: "Nov. 2025",
-                    sRank: row[59] || '-', cRank: row[60] || '1',
-                    eng: { fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14], cc: row[15], sum: row[16], grand: row[17] },
-                    math: { fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24], cc: row[25], sum: row[26], grand: row[27] },
-                    evs: { fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34], cc: row[35], sum: row[36], grand: row[37] },
-                    urdu: { fa: [row[38],row[39],row[40],row[41],row[42],row[43]], tot: row[44], cc: row[45], sum: row[46], grand: row[47] },
-                    kash: { fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54], cc: row[55], sum: row[56], grand: row[57] }
+                    sRank: row[59] || '-', cRank: row[60] || '-',
+                    eng: { fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14]||0, cc: row[15]||0, sum: row[16]||0, grand: row[17]||0 },
+                    math: { fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24]||0, cc: row[25]||0, sum: row[26]||0, grand: row[27]||0 },
+                    evs: { fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34]||0, cc: row[35]||0, sum: row[36]||0, grand: row[37]||0 },
+                    urdu: { fa: [row[38],row[39],row[40],row[41],row[42],row[43]], tot: row[44]||0, cc: row[45]||0, sum: row[46]||0, grand: row[47]||0 },
+                    kash: { fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54]||0, cc: row[55]||0, sum: row[56]||0, grand: row[57]||0 }
                 };
-                // **Critical Step:** Generate and insert the remarks AFTER the div is appended
-        const remarksDivId = `remarksContent_${studentData.name.replace(/\s+/g, '')}`;
-        const remarksElement = document.getElementById(remarksDivId);
-        if (remarksElement) {
-            remarksElement.innerText = getAutomaticRemarks(studentData, avgPerc);
-        }
 
                 const total = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
-                const avgGrade = getGrade(total / 5);
+                const avgPerc = total / 5;
+                const avgGrade = getGrade(avgPerc);
 
                 const div = document.createElement('div');
                 div.className = 'marksheet-container mb-8 page-break';
@@ -186,7 +183,7 @@
                                 <td>-</td><td>-</td>
                                 <td>${total}</td>
                                 <td>${avgGrade}</td>
-                                <td>${getProficiency(total/5)}</td>
+                                <td>${getProficiency(avgPerc)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -206,51 +203,29 @@
                             <div class="bg-slate-700 text-white text-[10px] font-bold">CLASS RANK: ${s.cRank}</div>
                         </div>
                         <div class="border border-slate-400 bg-white">
-    <div class="bg-[#a855f7] text-white text-[12px] p-2 font-bold text-center uppercase tracking-wider">
-        General Remarks
-    </div>
-    <div id="remarksContent_${s.name.replace(/\s+/g, '')}" class="p-3 text-[11px] font-bold text-black leading-relaxed text-left min-h-[60px]">
-        </div>
-</div>
-
-                        <div class="border border-indigo-200">
-                            <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
-                            <div class="border border-slate-400">
-    
-    
-    <table class="w-full text-[11px] border-collapse">
-        <tr>
-            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Total Marks Obtained</td>
-            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${total}</td>
-        </tr>
-        <tr>
-            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Max. Marks</td>
-            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">500</td>
-        </tr>
-        <tr>
-            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Percentage</td>
-            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${(total/5).toFixed(0)}%</td>
-        </tr>
-        <tr>
-            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Grade</td>
-            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">Very Good</td>
-        </tr>
-        <tr>
-            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Result</td>
-            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">Pass</td>
-        </tr>
-        <tr>
-            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Position in Class</td>
-            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300 relative overflow-hidden" style="height: 35px;">
-                <div style="transform: rotate(-45deg); font-size: 9px; line-height: 1;">
-                    ${s.cRank} Position
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
-
+                            <div class="bg-[#a855f7] text-white text-[12px] p-2 font-bold text-center uppercase tracking-wider">General Remarks</div>
+                            <div id="remarks_${s.roll}" class="p-3 text-[11px] font-bold text-black leading-relaxed text-left min-h-[60px]">
+                                ${getAutomaticRemarks(avgPerc)}
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="mt-1 border border-indigo-200">
+                        <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
+                        <table class="w-full text-[11px] border-collapse">
+                            <tr>
+                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Total Marks Obtained</td>
+                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${total} / 500</td>
+                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Grade</td>
+                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgGrade}</td>
+                            </tr>
+                            <tr>
+                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Percentage</td>
+                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgPerc.toFixed(1)}%</td>
+                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Result</td>
+                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgPerc >= 33 ? 'PASS' : 'FAIL'}</td>
+                            </tr>
+                        </table>
                     </div>
 
                     <div class="grid grid-cols-4 mt-8 gap-4">
@@ -266,4 +241,4 @@
     </script>
 </body>
 </html>
- 
+
