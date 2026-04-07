@@ -7,318 +7,170 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Responsive Scaling for Screen */
-        #marksheetWrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        /* Responsive container to handle small screens without breaking layout */
-        @media screen and (max-width: 210mm) {
-            .marksheet-container {
-                zoom: 0.9; /* Browser-friendly scaling */
-                -moz-transform: scale(0.9);
-            }
-        }
-        @media screen and (max-width: 768px) {
-            .marksheet-container {
-                zoom: 0.5;
-                -moz-transform: scale(0.5);
-                margin: -150px auto !important; /* Adjust margin for scale offset */
-            }
-        }
-
-        /* Print Logic */
+        #marksheetWrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        @media screen and (max-width: 210mm) { .marksheet-container { zoom: 0.85; } }
+        @media screen and (max-width: 640px) { .marksheet-container { zoom: 0.45; margin: -180px auto !important; } }
         @media print { 
             .no-print { display: none !important; } 
-            .page-break { page-break-after: always; }
-            body { background-color: white; padding: 0; margin: 0; }
-            .marksheet-container { 
-                margin: 0 auto; 
-                border: 5px solid #6d59c0 !important; 
-                zoom: 1 !important; 
-                transform: scale(1) !important;
-            }
+            body { background: white; padding: 0; }
+            .marksheet-container { margin: 0 auto; border: 5px solid #6d59c0 !important; zoom: 1 !important; page-break-after: always; }
         }
-
-        body { background-color: #e2e8f0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        /* Fixed Marksheet Structure (A4 Ratio) */
-        .marksheet-container {
-            width: 210mm; 
-            min-height: 285mm; 
-            padding: 10px; 
-            margin: 20px auto;
-            border: 5px solid #6d59c0; 
-            background-color: white; 
-            position: relative; 
-            box-sizing: border-box;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-bg { background-color: #6d59c0; color: white; border-bottom: 2px solid #000; text-align: center; }
-        .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 12px; }
-        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 13px; font-weight: bold; text-align: center; color: #000; }
-        
+        body { background-color: #e2e8f0; padding: 20px; font-family: sans-serif; }
+        .marksheet-container { width: 210mm; min-height: 285mm; padding: 10px; margin: 20px auto; border: 5px solid #6d59c0; background: white; box-sizing: border-box; }
+        .header-bg { background-color: #6d59c0; color: white; text-align: center; }
+        .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
+        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 12px; font-weight: bold; text-align: center; color: #000; min-height: 25px; }
         table { border-collapse: collapse; width: 100%; margin-top: 2px; }
-        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 4px; }
-        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 10px; font-size: 14px; }
-        
-        .section-header { background: #9333ea; color: white; text-align: center; font-weight: bold; font-size: 14px; padding: 4px; }
-        .prof-box { display: flex; align-items: center; justify-content: space-between; padding: 2px 5px; border-bottom: 1px solid #ccc; height: 40px;}
-        
-        /* Bar Graph */
-        .chart-container { height: 120px; border: 1px solid #ccc; position: relative; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 20px; padding-top: 20px; }
-        .chart-bar { width: 25px; background-color: #4f81bd; position: relative; border: 1px solid #000; transition: height 0.5s; }
-        .chart-val { position: absolute; top: -18px; width: 100%; text-align: center; font-size: 10px; font-weight: bold; }
-        .chart-label { position: absolute; bottom: -18px; font-size: 9px; width: 60px; left: -17px; text-align: center; }
-
-        .rank-box { background: #4b5563; color: white; text-align: center; padding: 2px; font-size: 12px; font-weight: bold; }
-        .qualitative-label { background: #df695a; color: white; text-align: left; padding-left: 5px; font-size: 10px; }
-        .student-photo { width: 100%; height: 100%; object-fit: contain; background: #f3f4f6; }
+        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 10px; padding: 3px; }
+        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 8px; font-size: 13px; }
     </style>
 </head>
 <body>
 
     <div class="no-print max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
-        <h2 class="text-2xl font-bold text-indigo-900 mb-4">PS Pethgam Wagoora Marksheet Generator</h2>
+        <h2 class="text-2xl font-bold text-indigo-900 mb-2">GPS Pethgam - Master Generator</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700">1. Upload Student Photos (Rename files to Adm No.)</label>
-                <input type="file" id="photoUpload" multiple accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
-                <p id="photoCount" class="text-xs text-green-600 mt-1 font-semibold"></p>
+            <div class="border p-3 rounded bg-green-50">
+                <label class="block text-sm font-bold text-green-800">1. Upload Photos (Name them e.g. 116.jpg)</label>
+                <input type="file" id="photoUpload" multiple accept="image/*" class="mt-1 block w-full text-xs" />
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">2. Upload Excel Data</label>
-                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+            <div class="border p-3 rounded bg-indigo-50">
+                <label class="block text-sm font-bold text-indigo-800">2. Upload Excel Master Sheet</label>
+                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="mt-1 block w-full text-xs" />
             </div>
         </div>
-        <div class="flex gap-4 mt-6">
-            <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition">Print All Marksheets</button>
-            <button onclick="location.reload()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-bold hover:bg-gray-300">Reset</button>
-        </div>
+        <button onclick="window.print()" class="mt-4 w-full bg-indigo-600 text-white py-2 rounded font-bold hover:bg-indigo-700 transition">PRINT ALL MARKSHEETS</button>
     </div>
 
     <div id="marksheetWrapper"></div>
 
     <script>
         let studentPhotos = {};
-        let excelData = null;
 
-        // Enhanced Photo Upload with feedback
-        document.getElementById('photoUpload').addEventListener('change', async function(e) {
-            const files = e.target.files;
-            let loaded = 0;
-            
-            for (let file of files) {
+        // Handle Photos
+        document.getElementById('photoUpload').addEventListener('change', async (e) => {
+            for (let file of e.target.files) {
                 const admNo = file.name.split('.')[0].trim();
-                studentPhotos[admNo] = await readFileAsDataURL(file);
-                loaded++;
+                const reader = new FileReader();
+                studentPhotos[admNo] = await new Promise(r => {
+                    reader.onload = (ev) => r(ev.target.result);
+                    reader.readAsDataURL(file);
+                });
             }
-            document.getElementById('photoCount').innerText = `✅ ${loaded} Photos Ready`;
-            if(excelData) processData(excelData); // Re-process if excel was already uploaded
+            alert(Object.keys(studentPhotos).length + " photos loaded.");
         });
 
-        function readFileAsDataURL(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // Excel Upload
-        document.getElementById('excelUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
+        // Handle Excel (Custom Multi-Row Parser)
+        document.getElementById('excelUpload').addEventListener('change', (e) => {
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                excelData = XLSX.utils.sheet_to_json(sheet);
-                processData(excelData);
+                
+                // Convert to 2D Array first to handle your complex headers
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                processMasterRows(rows);
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsArrayBuffer(e.target.files[0]);
         });
 
-        function processData(students) {
+        function processMasterRows(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
 
-            students.forEach(row => {
+            // Based on your screenshot:
+            // Column A=0 (Adm No), B=1 (Roll), C=2 (Class), D=3 (Name), E=4 (Father), F=5 (Mother), H=7 (DOB)
+            // English starts at Column I (8), Math at S (18), EVS at AC (28), Urdu at AM (38), Kashmiri at AW (48)
+
+            for (let i = 3; i < rows.length; i++) {
+                let r = rows[i];
+                if (!r[0]) continue; // Skip empty rows
+
+                const admNo = String(r[0]).trim();
+                const photo = studentPhotos[admNo];
+
                 const div = document.createElement('div');
-                div.className = 'marksheet-container page-break';
-                
-                // Flexible Adm No matching (removes leading zeros or spaces)
-                const lookupKey = String(row["Adm. No"] || "").trim();
-                const photoSrc = studentPhotos[lookupKey];
-
-                const photoHtml = photoSrc 
-                    ? `<img src="${photoSrc}" class="student-photo">` 
-                    : `<div class="flex flex-col items-center justify-center h-full text-[10px] text-gray-400">NO PHOTO<br>ID: ${lookupKey}</div>`;
-
+                div.className = 'marksheet-container';
                 div.innerHTML = `
-                    <div class="flex items-center header-bg p-2 relative">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[10px] text-indigo-900 font-bold border-2 border-yellow-400">LOGO</div>
+                    <div class="flex items-center header-bg p-3">
+                        <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center text-indigo-900 font-bold border-2 border-yellow-400 text-[8px]">LOGO</div>
                         <div class="flex-grow text-center">
-                            <h1 class="text-3xl font-black">GOVERNMENT PRIMARY SCHOOL</h1>
-                            <h2 class="text-xl font-bold">PETHGAM WAGOORA 193109</h2>
+                            <h1 class="text-2xl font-black uppercase">Government Primary School</h1>
+                            <h2 class="text-lg font-bold">Pethgam Wagoora 193109</h2>
                         </div>
                     </div>
 
-                    <div class="flex mt-1 border">
+                    <div class="flex mt-2 border-2 border-indigo-900">
                         <div class="flex-grow grid grid-cols-4">
-                            <div class="cell-label">Student Name:</div><div class="cell-value">${row["Student Name"] || ''}</div>
-                            <div class="cell-label">Adm. No:</div><div class="cell-value">${row["Adm. No"] || ''}</div>
-                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${row["Fathers Name"] || ''}</div>
-                            <div class="cell-label">D.O.B:</div><div class="cell-value">${row["D.O.B"] || ''}</div>
-                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${row["Mothers Name"] || ''}</div>
-                            <div class="cell-label">Class:</div><div class="cell-value">${row["Class"] || ''}</div>
-                            <div class="cell-label">Academic Session:</div><div class="cell-value">${row["Session"] || '2024-25'}</div>
-                            <div class="cell-label">Roll No:</div><div class="cell-value">${row["Roll No"] || ''}</div>
-                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${row["Apaar ID"] || 'N/A'}</div>
-                            <div class="cell-label">PEN No.:</div><div class="cell-value">${row["PEN"] || ''}</div>
+                            <div class="cell-label">Student Name:</div><div class="cell-value">${r[3] || ''}</div>
+                            <div class="cell-label">Adm. No:</div><div class="cell-value">${admNo}</div>
+                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${r[4] || ''}</div>
+                            <div class="cell-label">D.O.B:</div><div class="cell-value">${r[7] || ''}</div>
+                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${r[5] || ''}</div>
+                            <div class="cell-label">Class:</div><div class="cell-value">${r[2] || ''}</div>
+                            <div class="cell-label">Session:</div><div class="cell-value">2024-25</div>
+                            <div class="cell-label">Roll No:</div><div class="cell-value">${r[1] || ''}</div>
                         </div>
-                        <div class="w-28 h-32 border-2 border-indigo-900 ml-1 bg-gray-50 flex items-center justify-center overflow-hidden">
-                            ${photoHtml}
+                        <div class="w-28 h-32 border-l-2 border-indigo-900 bg-gray-50 flex items-center justify-center">
+                            ${photo ? `<img src="${photo}" class="w-full h-full object-cover">` : `<div class="text-[9px] text-gray-400 text-center">PHOTO<br>${admNo}</div>`}
                         </div>
                     </div>
 
-                    <table class="mt-1">
-                        <thead class="bg-indigo-100 text-[9px]">
+                    <table class="mt-2">
+                        <thead class="bg-indigo-100">
                             <tr>
-                                <th rowspan="2" class="w-32">Subject</th>
-                                <th colspan="6">Formative Assessment "FA" (5 Marks Each)</th>
+                                <th rowspan="2" class="w-24">Subject</th>
+                                <th colspan="6">Formative Assessment (FA)</th>
                                 <th rowspan="2">Total (30)</th>
                                 <th rowspan="2">Co-Curricular (20)</th>
                                 <th rowspan="2">Summative (50)</th>
-                                <th rowspan="2">Grand Total (100)</th>
-                                <th rowspan="2">Grade</th>
-                                <th rowspan="2">Proficiency</th>
+                                <th rowspan="2">Grand Total</th>
                             </tr>
                             <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
                         </thead>
                         <tbody>
-                            ${renderSubjectRow("English", row)}
-                            ${renderSubjectRow("Math", row)}
-                            ${renderSubjectRow("EVS", row)}
-                            ${renderSubjectRow("Urdu", row)}
-                            ${renderSubjectRow("Kashmiri", row)}
-                            <tr class="bg-gray-100 font-bold">
-                                <td>Grand Total</td>
-                                <td colspan="6">-</td>
-                                <td>${row["Total_FA"] || ''}</td>
-                                <td>${row["Total_CC"] || ''}</td>
-                                <td>${row["Total_Summative"] || ''}</td>
-                                <td>${row["Grand_Total"] || ''}</td>
-                                <td>${row["Overall_Grade"] || ''}</td>
-                                <td>-</td>
-                            </tr>
+                            ${renderSubRow("English", r, 8)}
+                            ${renderSubRow("Mathematics", r, 18)}
+                            ${renderSubRow("Env. Science", r, 28)}
+                            ${renderSubRow("Urdu", r, 38)}
+                            ${renderSubRow("Kashmiri", r, 48)}
                         </tbody>
                     </table>
 
-                    <div class="grid grid-cols-3 mt-1 gap-1">
-                        <div>
-                            <div class="section-header">Percentage/Grade Key</div>
-                            <table class="grade-key">
-                                <tr class="bg-blue-100 font-bold"><td>%age Grade Scale</td><td>Grade</td></tr>
-                                <tr><td>>85% to 100%</td><td>A+</td></tr>
-                                <tr><td>>70% to 85%</td><td>A</td></tr>
-                                <tr><td>>55% to 70%</td><td>B</td></tr>
-                                <tr><td>>40% to 55%</td><td>C</td></tr>
-                                <tr><td>>33% to 40%</td><td>D</td></tr>
-                                <tr><td>0% to 33%</td><td>E</td></tr>
-                            </table>
+                    <div class="grid grid-cols-2 mt-4 gap-4">
+                        <div class="border p-2 text-xs">
+                            <div class="font-bold bg-gray-100 p-1 mb-1">General Remarks</div>
+                            <p class="italic">${r[3]} has shown satisfactory performance in all areas.</p>
                         </div>
-                        <div>
-                            <div class="section-header">Level of Proficiency</div>
-                            <div class="border h-full bg-white">
-                                <div class="prof-box"><span>Sky</span><img src="https://i.ibb.co/JfGTh1L/IMG-20260407-220459.jpg" class="h-6"> <span>${row["Proficiency"] === 'Sky' ? '✔' : ''}</span></div>
-                                <div class="prof-box"><span>Mountain</span><img src="https://i.ibb.co/BVNfR1Pd/IMG-20260407-220254.png" class="h-6"> <span>${row["Proficiency"] === 'Mountain' ? '✔' : ''}</span></div>
-                                <div class="prof-box"><span>Stream</span><img src="https://i.ibb.co/DPhJKgjp/IMG-20260407-220351.jpg" class="h-6"> <span>${row["Proficiency"] === 'Stream' ? '✔' : ''}</span></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="section-header">Final Results</div>
-                            <table class="text-[10px]">
-                                <tr><td class="bg-blue-100 font-bold">Total Marks Obtained</td><td>${row["Grand_Total"] || ''}</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Max. Marks</td><td>500</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Overall Percentage</td><td>${row["Percentage"] || ''}%</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Overall Grade</td><td>${row["Overall_Grade"] || ''}</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Result</td><td class="font-bold">Pass</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Position in Class</td><td>${row["Class_Rank"] || ''}</td></tr>
-                            </table>
+                        <div class="border p-2 text-xs">
+                            <div class="font-bold bg-gray-100 p-1 mb-1">Attendance</div>
+                            <p>Regularity: Good</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 mt-1 gap-1">
-                        <div class="rank-box">School Rank: ${row["School_Rank"] || 'N/A'}</div>
-                        <div class="bg-white"></div> <div class="rank-box">Class Rank: ${row["Class_Rank"] || 'N/A'}</div>
-                    </div>
-
-                    <div class="grid grid-cols-12 mt-1 border gap-1">
-                        <div class="col-span-5">
-                            <div class="bg-orange-400 text-white text-center font-bold text-xs p-1">Subject wise Performance</div>
-                            <div class="chart-container">
-                                ${renderBar("Eng", row["English_Total"])}
-                                ${renderBar("Math", row["Math_Total"])}
-                                ${renderBar("EVS", row["EVS_Total"])}
-                                ${renderBar("Urdu", row["Urdu_Total"])}
-                                ${renderBar("Kash", row["Kashmiri_Total"])}
-                            </div>
-                        </div>
-                        <div class="col-span-3 border">
-                            <div class="bg-indigo-900 text-white text-center font-bold text-xs p-1">General Remarks</div>
-                            <div class="p-2 text-[10px] leading-tight italic">
-                                ${row["Remarks"] || (row["Student Name"] + ' has performed well in all subjects. Keep it up!')}
-                            </div>
-                        </div>
-                        <div class="col-span-4">
-                            <table class="w-full">
-                                <tr><td class="qualitative-label">Attendance %age</td><td class="w-10">${row["Attendance"] || ''}</td></tr>
-                                <tr><td class="qualitative-label">Empathy & Teamwork</td><td>${row["Empathy"] || ''}</td></tr>
-                                <tr><td class="qualitative-label">Discipline</td><td>${row["Discipline"] || ''}</td></tr>
-                                <tr><td class="qualitative-label">Sports</td><td>${row["Sports"] || ''}</td></tr>
-                                <tr><td class="qualitative-label">Art and Craft</td><td>${row["Art"] || ''}</td></tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-4 mt-16 text-center border-t border-black pt-2">
-                        <div class="text-[10px] font-bold">Sign. Form Teacher</div>
-                        <div class="text-[10px] font-bold">Sign. Exam I/C</div>
-                        <div class="text-[10px] font-bold">Parents Signature</div>
-                        <div class="text-[10px] font-bold">Seal & Signature of Headmaster</div>
+                    <div class="grid grid-cols-4 mt-24 text-center border-t border-black pt-2 font-bold text-[10px]">
+                        <div>Class Teacher</div><div>Exam Incharge</div><div>Parent Signature</div><div>Headmaster</div>
                     </div>
                 `;
                 wrapper.appendChild(div);
-            });
+            }
         }
 
-        function renderSubjectRow(sub, row) {
-            return `
-                <tr>
-                    <td class="sub-name">${sub}</td>
-                    <td>${row[sub+'_FA1'] ?? ''}</td><td>${row[sub+'_FA2'] ?? ''}</td>
-                    <td>${row[sub+'_FA3'] ?? ''}</td><td>${row[sub+'_FA4'] ?? ''}</td>
-                    <td>${row[sub+'_FA5'] ?? ''}</td><td>${row[sub+'_FA6'] ?? ''}</td>
-                    <td>${row[sub+'_FATotal'] ?? ''}</td>
-                    <td>${row[sub+'_CC'] ?? ''}</td>
-                    <td>${row[sub+'_Summative'] ?? ''}</td>
-                    <td class="font-bold">${row[sub+'_Total'] ?? ''}</td>
-                    <td class="font-bold">${row[sub+'_Grade'] ?? ''}</td>
-                    <td>${row[sub+'_Prof'] ?? ''}</td>
-                </tr>`;
-        }
-
-        function renderBar(label, val) {
-            // Calculate height as percentage of 100
-            const height = val ? Math.min(val, 100) : 0;
-            return `<div class="chart-bar" style="height: ${height}%"><div class="chart-val">${height}</div><div class="chart-label">${label}</div></div>`;
+        function renderSubRow(name, r, start) {
+            // Helper to get data based on column index from your screenshot
+            return `<tr>
+                <td class="sub-name">${name}</td>
+                <td>${r[start] || '0'}</td><td>${r[start+1] || '0'}</td>
+                <td>${r[start+2] || '0'}</td><td>${r[start+3] || '0'}</td>
+                <td>${r[start+4] || '0'}</td><td>${r[start+5] || '0'}</td>
+                <td class="bg-yellow-50 font-bold">${r[start+6] || '0'}</td>
+                <td>${r[start+7] || '0'}</td>
+                <td>${r[start+8] || '0'}</td>
+                <td class="bg-indigo-50 font-bold">${r[start+9] || '0'}</td>
+            </tr>`;
         }
     </script>
 </body>
 </html>
-                                            
+                        :                                 
