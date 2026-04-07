@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Final Verified System</title>
+    <title>GPS Pethgam Wagoora - Multi-Subject System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -16,16 +16,16 @@
         .cell-label { background-color: #f1f5f9; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
         .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 12px; font-weight: bold; text-align: center; color: #000; }
         table { border-collapse: collapse; width: 100%; margin-top: 8px; }
-        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 5px; }
-        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 10px; }
-        .sig-box { border-top: 1px solid black; width: 150px; text-align: center; font-size: 10px; font-weight: bold; margin-top: 60px; }
+        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 10px; padding: 4px; }
+        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 5px; }
+        .sig-box { border-top: 1px solid black; width: 140px; text-align: center; font-size: 10px; font-weight: bold; margin-top: 45px; }
     </style>
 </head>
 <body class="bg-gray-300 p-10">
 
     <div class="no-print max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-2xl mb-10 border-t-8 border-indigo-700">
         <h2 class="text-2xl font-bold text-indigo-900 mb-2">Final Marksheet Generator</h2>
-        <p class="text-sm text-gray-600 mb-6 font-medium">Verified for Excel Columns A-R. All student details and English marks mapped.</p>
+        <p class="text-sm text-gray-600 mb-6">Processing subjects: English, Math, EVS, Urdu, & Kashmiri.</p>
         <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
     </div>
 
@@ -44,37 +44,43 @@
             reader.readAsArrayBuffer(file);
         });
 
+        function getGrade(score) {
+            if (score >= 85) return 'A+';
+            if (score >= 70) return 'A';
+            if (score >= 55) return 'B';
+            if (score >= 40) return 'C';
+            return 'D';
+        }
+
         function processData(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
             
-            // Skip headers, process from row index 3
+            // Skip headers (Rows 1-3), process students from Row 4 (index 3)
             const students = rows.slice(3).filter(r => r[3]); 
 
             students.forEach(row => {
-                const grandTotal = parseFloat(row[17]) || 0;
-                const percentage = grandTotal.toFixed(0); // Assuming 100 is max for the English row
-                
-                // Mapping the student object
+                // Map function to handle subject data chunks
+                const mapSub = (startIdx) => ({
+                    fa: [row[startIdx], row[startIdx+1], row[startIdx+2], row[startIdx+3], row[startIdx+4], row[startIdx+5]],
+                    totalFa: row[startIdx+6] || 0,
+                    cc: row[startIdx+7] || 0,
+                    summ: row[startIdx+8] || 0,
+                    grand: row[startIdx+9] || 0
+                });
+
                 const s = {
-                    adm: row[0] || '', 
-                    roll: row[1] || '', 
-                    class: row[2] || '', 
-                    name: row[3] || '',
-                    father: row[4] || '', 
-                    mother: row[5] || '', 
-                    contact: row[6] || '', 
-                    dob: row[7] instanceof Date ? row[7].toLocaleDateString('en-GB') : (row[7] || ''),
-                    eng: {
-                        fa: [row[8], row[9], row[10], row[11], row[12], row[13]],
-                        totalFa: row[14] || 0, 
-                        cc: row[15] || 0, 
-                        summ: row[16] || 0, 
-                        grand: grandTotal
-                    },
-                    percentage: percentage,
-                    grade: grandTotal >= 85 ? 'A+' : grandTotal >= 70 ? 'A' : grandTotal >= 55 ? 'B' : 'C'
+                    adm: row[0], roll: row[1], class: row[2], name: row[3],
+                    father: row[4], mother: row[5], dob: row[7] instanceof Date ? row[7].toLocaleDateString('en-GB') : row[7],
+                    eng: mapSub(8),    // Col I (8)
+                    math: mapSub(18),   // Col S (18)
+                    evs: mapSub(28),    // Col AC (28)
+                    urdu: mapSub(38),   // Col AM (38)
+                    kash: mapSub(48)    // Col AW (48)
                 };
+
+                const totalObtained = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
+                const percentage = (totalObtained / 5).toFixed(1);
 
                 const div = document.createElement('div');
                 div.className = 'marksheet-container mb-12 page-break shadow-lg';
@@ -91,70 +97,69 @@
                         <div class="cell-label">D.O.B:</div><div class="cell-value col-span-2">${s.dob}</div>
                         <div class="cell-label">Mothers Name:</div><div class="cell-value col-span-2">${s.mother}</div>
                         <div class="cell-label">Class:</div><div class="cell-value col-span-2">${s.class}</div>
-                        <div class="cell-label">Academic Session:</div><div class="cell-value col-span-2">2024-2025</div>
-                        <div class="cell-label">Roll No:</div><div class="cell-value col-span-2">${s.roll}</div>
-                        <div class="cell-label">Apaar ID:</div><div class="cell-value col-span-2">Not Available</div>
-                        <div class="cell-label">PEN No.</div><div class="cell-value col-span-2">22232018998</div>
                     </div>
 
                     <table>
                         <thead class="bg-indigo-50">
                             <tr>
                                 <th rowspan="2">Subject</th>
-                                <th colspan="6">Formative Assessment (5x6=30)</th>
-                                <th rowspan="2">Total<br>(30)</th>
-                                <th rowspan="2">Co-Curr<br>(20)</th>
-                                <th rowspan="2">Summ<br>(50)</th>
-                                <th rowspan="2">Grand<br>(100)</th>
+                                <th colspan="6">Formative Assessment (30)</th>
+                                <th rowspan="2">FA Total</th>
+                                <th rowspan="2">Co-Curr (20)</th>
+                                <th rowspan="2">Summ (50)</th>
+                                <th rowspan="2">Grand (100)</th>
                                 <th rowspan="2">Grade</th>
-                                <th rowspan="2">Level</th>
                             </tr>
-                            <tr class="text-[9px]">
-                                <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
+                            <tr class="text-[8px]">
+                                <th>F1</th><th>F2</th><th>F3</th><th>F4</th><th>F5</th><th>F6</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="sub-name text-red-700">English</td>
-                                ${s.eng.fa.map(v => `<td>${v || 0}</td>`).join('')}
-                                <td class="font-bold">${s.eng.totalFa}</td>
-                                <td>${s.eng.cc}</td>
-                                <td>${s.eng.summ}</td>
-                                <td class="font-bold bg-yellow-50">${s.eng.grand}</td>
-                                <td class="font-bold text-green-700">${s.grade}</td>
-                                <td>Sky</td>
-                            </tr>
+                            ${[
+                                {n: 'English', d: s.eng},
+                                {n: 'Mathematics', d: s.math},
+                                {n: 'Env. Science', d: s.evs},
+                                {n: 'Urdu', d: s.urdu},
+                                {n: 'Kashmiri', d: s.kash}
+                            ].map(sub => `
+                                <tr>
+                                    <td class="sub-name">${sub.n}</td>
+                                    ${sub.d.fa.map(v => `<td>${v || 0}</td>`).join('')}
+                                    <td class="font-bold">${sub.d.totalFa}</td>
+                                    <td>${sub.d.cc}</td>
+                                    <td>${sub.d.summ}</td>
+                                    <td class="font-bold bg-yellow-50">${sub.d.grand}</td>
+                                    <td class="font-bold">${getGrade(sub.d.grand)}</td>
+                                </tr>
+                            `).join('')}
                         </tbody>
                     </table>
 
-                    <div class="grid grid-cols-3 gap-4 mt-6">
+                    <div class="grid grid-cols-3 gap-4 mt-4">
                         <div class="border border-slate-300">
-                            <div class="bg-purple-800 text-white text-xs p-1 font-bold text-center uppercase">Percentage Key</div>
-                            <div class="p-2 text-[10px] leading-tight">
-                                >85% to 100%: <b>A+</b> <br>
-                                >70% to 85%: <b>A</b> <br>
-                                >55% to 70%: <b>B</b>
+                            <div class="bg-purple-800 text-white text-[10px] p-1 font-bold text-center uppercase">Grade Key</div>
+                            <div class="p-2 text-[9px] leading-tight text-center font-bold">
+                                A+: 85-100% | A: 70-84% | B: 55-69% | C: 40-54%
                             </div>
                         </div>
-                        <div class="border border-slate-300 text-center">
-                            <div class="bg-red-600 text-white text-xs p-1 font-bold uppercase">Level of Proficiency</div>
-                            <div class="p-3 text-xs font-bold">Sky (✔)<br><span class="text-[9px] text-gray-500">School Rank: 5</span></div>
+                        <div class="border border-slate-300 text-center flex flex-col justify-center">
+                            <div class="bg-red-600 text-white text-[10px] p-1 font-bold uppercase">Result</div>
+                            <div class="p-2 text-sm font-black text-green-700">PROMOTED</div>
                         </div>
                         <div class="border border-slate-300">
-                            <div class="bg-purple-800 text-white text-xs p-1 font-bold text-center uppercase">Final Results</div>
-                            <div class="p-2 text-xs font-bold leading-relaxed">
-                                Total Obtained: ${s.eng.grand} <br>
-                                Percentage: ${s.percentage}% <br>
-                                Class Rank: 1
+                            <div class="bg-purple-800 text-white text-[10px] p-1 font-bold text-center uppercase">Performance</div>
+                            <div class="p-2 text-[11px] font-bold">
+                                Total: ${totalObtained} / 500 <br>
+                                Percentage: ${percentage}%
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-20 flex justify-between px-2">
-                        <div class="sig-box">Sign. Form Teacher</div>
-                        <div class="sig-box">Sign. Exam I/C</div>
-                        <div class="sig-box">Parents Signature</div>
-                        <div class="sig-box">Seal & Sign. Headmaster</div>
+                    <div class="mt-16 flex justify-between px-2">
+                        <div class="sig-box">Teacher</div>
+                        <div class="sig-box">Exam I/C</div>
+                        <div class="sig-box">Parent</div>
+                        <div class="sig-box">Headmaster</div>
                     </div>
                 `;
                 wrapper.appendChild(div);
@@ -163,5 +168,4 @@
     </script>
 </body>
 </html>
-                                                    <div class="sig-box">Parents Signature</div>
-                        
+                                                
