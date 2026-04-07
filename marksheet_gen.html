@@ -115,6 +115,16 @@
                                 <td class="font-bold text-green-700">${s.grade}</td>
                                 <td>Sky</td>
                             </tr>
+                            <tr>
+                                <td class="sub-name text-red-700">Mathematics</td>
+                                ${s.math.fa.map(v => `<td>${v || 0}</td>`).join('')}
+                                <td class="font-bold">${s.math.totalFa || 0}</td>
+                                <td>${s.math.cc || 0}</td>
+                                <td>${s.math.summ || 0}</td>
+                                <td class="font-bold bg-yellow-50">${s.math.grand || 0}</td>
+                                <td class="font-bold text-green-700">${s.grade}</td>
+                                <td>Sky</td>
+                            </tr>
                             </tbody>
                     </table>
 
