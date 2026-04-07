@@ -52,16 +52,25 @@
             const students = rows.slice(3).filter(r => r[3]); 
 
             students.forEach(row => {
-                const grandTotal = row[17] || 0;
-                const percentage = ((grandTotal / 100) * 100).toFixed(0);
+                const grandTotal = parseFloat(row[17]) || 0;
+                const percentage = grandTotal.toFixed(0); // Assuming 100 is max for the English row
                 
+                // Mapping the student object
                 const s = {
-                    adm: row[0], roll: row[1], class: row[2], name: row[3],
-                    father: row[4], mother: row[5], contact: row[6], 
-                    dob: row[7] instanceof Date ? row[7].toLocaleDateString('en-GB') : row[7],
+                    adm: row[0] || '', 
+                    roll: row[1] || '', 
+                    class: row[2] || '', 
+                    name: row[3] || '',
+                    father: row[4] || '', 
+                    mother: row[5] || '', 
+                    contact: row[6] || '', 
+                    dob: row[7] instanceof Date ? row[7].toLocaleDateString('en-GB') : (row[7] || ''),
                     eng: {
                         fa: [row[8], row[9], row[10], row[11], row[12], row[13]],
-                        totalFa: row[14], cc: row[15], summ: row[16], grand: row[17]
+                        totalFa: row[14] || 0, 
+                        cc: row[15] || 0, 
+                        summ: row[16] || 0, 
+                        grand: grandTotal
                     },
                     percentage: percentage,
                     grade: grandTotal >= 85 ? 'A+' : grandTotal >= 70 ? 'A' : grandTotal >= 55 ? 'B' : 'C'
@@ -108,24 +117,14 @@
                             <tr>
                                 <td class="sub-name text-red-700">English</td>
                                 ${s.eng.fa.map(v => `<td>${v || 0}</td>`).join('')}
-                                <td class="font-bold">${s.eng.totalFa || 0}</td>
-                                <td>${s.eng.cc || 0}</td>
-                                <td>${s.eng.summ || 0}</td>
-                                <td class="font-bold bg-yellow-50">${s.eng.grand || 0}</td>
+                                <td class="font-bold">${s.eng.totalFa}</td>
+                                <td>${s.eng.cc}</td>
+                                <td>${s.eng.summ}</td>
+                                <td class="font-bold bg-yellow-50">${s.eng.grand}</td>
                                 <td class="font-bold text-green-700">${s.grade}</td>
                                 <td>Sky</td>
                             </tr>
-                            <tr>
-                                <td class="sub-name text-red-700">Mathematics</td>
-                                ${s.math.fa.map(v => `<td>${v || 0}</td>`).join('')}
-                                <td class="font-bold">${s.math.totalFa || 0}</td>
-                                <td>${s.math.cc || 0}</td>
-                                <td>${s.math.summ || 0}</td>
-                                <td class="font-bold bg-yellow-50">${s.math.grand || 0}</td>
-                                <td class="font-bold text-green-700">${s.grade}</td>
-                                <td>Sky</td>
-                            </tr>
-                            </tbody>
+                        </tbody>
                     </table>
 
                     <div class="grid grid-cols-3 gap-4 mt-6">
@@ -164,6 +163,5 @@
     </script>
 </body>
 </html>
-                                }
-
-        
+                                                    <div class="sig-box">Parents Signature</div>
+                        
