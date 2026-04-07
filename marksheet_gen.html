@@ -201,10 +201,43 @@
                         </div>
                         <div class="border border-indigo-200">
                             <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
-                            <div class="p-1 text-[10px] font-bold">
-                                Marks Obtained: ${total}/500 <br>
-                                Result: <span class="text-green-700">PASS</span>
-                            </div>
+                            <div class="border border-slate-400">
+    <div class="bg-[#a855f7] text-yellow-100 text-sm font-bold text-center py-1 uppercase tracking-wider">
+        Final Results
+    </div>
+    
+    <table class="w-full text-[11px] border-collapse">
+        <tr>
+            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Total Marks Obtained</td>
+            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${total}</td>
+        </tr>
+        <tr>
+            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Max. Marks</td>
+            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">500</td>
+        </tr>
+        <tr>
+            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Percentage</td>
+            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${(total/5).toFixed(0)}%</td>
+        </tr>
+        <tr>
+            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Grade</td>
+            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">Very Good</td>
+        </tr>
+        <tr>
+            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Result</td>
+            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">Pass</td>
+        </tr>
+        <tr>
+            <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Position in Class</td>
+            <td class="bg-white text-black font-bold text-center py-1 border border-slate-300 relative overflow-hidden" style="height: 35px;">
+                <div style="transform: rotate(-45deg); font-size: 9px; line-height: 1;">
+                    ${s.cRank} Position
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
                         </div>
                     </div>
 
