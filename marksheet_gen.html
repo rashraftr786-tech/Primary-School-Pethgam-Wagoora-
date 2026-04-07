@@ -3,41 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Multi-Subject System</title>
+    <title>GPS Pethgam Wagoora - Advanced Marksheet System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @media print { .no-print { display: none; } .page-break { page-break-after: always; } }
         .marksheet-container {
-            width: 210mm; min-height: 297mm; padding: 10mm; margin: auto;
-            border: 2px solid #6d59c0; background-color: white; font-family: 'Arial', sans-serif;
+            width: 210mm; min-height: 297mm; padding: 5mm; margin: auto;
+            border: 4px solid #6d59c0; background-color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .header-bg { background-color: #6d59c0; color: white; border: 1px solid #000; }
-        .cell-label { background-color: #f1f5f9; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
+        .header-bg { background-color: #6d59c0; color: white; border-bottom: 2px solid #000; }
+        .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
         .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 12px; font-weight: bold; text-align: center; color: #000; }
-        table { border-collapse: collapse; width: 100%; margin-top: 8px; }
-        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 10px; padding: 4px; }
-        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 5px; }
-        .sig-box { border-top: 1px solid black; width: 140px; text-align: center; font-size: 10px; font-weight: bold; margin-top: 45px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 3px; }
+        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 5px; font-size: 13px; }
+        .proficiency-sky { background-color: #e0f2fe; }
+        .footer-tab { background-color: #334155; color: white; font-size: 10px; padding: 4px; text-align: center; }
+        .photo-box { width: 100px; height: 110px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
     </style>
 </head>
-<body class="bg-gray-300 p-10">
+<body class="bg-gray-200 p-4">
 
-    <div class="no-print max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-2xl mb-10 border-t-8 border-indigo-700">
-        <h2 class="text-2xl font-bold text-indigo-900 mb-2">Final Marksheet Generator</h2>
-        <p class="text-sm text-gray-600 mb-6">Processing subjects: English, Math, EVS, Urdu, & Kashmiri.</p>
-        <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
+    <div class="no-print max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
+        <h2 class="text-2xl font-bold text-indigo-900 mb-4">Marksheet Control Panel</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">1. Upload Student Data (Excel)</label>
+                <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">2. Upload Student Photos (Multiple)</label>
+                <input type="file" id="photoUpload" multiple accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-emerald-600 file:text-white hover:file:bg-emerald-700" />
+                <p class="text-[10px] text-gray-500 mt-1">* Rename photos to match student names (e.g. "AAYAT RIYAZ WANI.jpg")</p>
+            </div>
+        </div>
     </div>
 
     <div id="marksheetWrapper"></div>
 
     <script>
+        let studentPhotos = {};
+
+        // Handle Photo Uploads
+        document.getElementById('photoUpload').addEventListener('change', function(e) {
+            const files = e.target.files;
+            for (let file of files) {
+                const reader = new FileReader();
+                const name = file.name.split('.')[0].toUpperCase();
+                reader.onload = (f) => { studentPhotos[name] = f.target.result; };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle Excel Upload
         document.getElementById('excelUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                const workbook = XLSX.read(data, { type: 'array' });
                 const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
                 processData(rows);
             };
@@ -45,121 +71,147 @@
         });
 
         function getGrade(score) {
-            if (score >= 85) return 'A+';
-            if (score >= 70) return 'A';
-            if (score >= 55) return 'B';
-            if (score >= 40) return 'C';
-            return 'D';
+            if (score > 85) return 'A+';
+            if (score > 70) return 'A';
+            if (score > 55) return 'B';
+            if (score > 40) return 'C';
+            if (score > 33) return 'D';
+            return 'E';
+        }
+
+        function getProficiency(score) {
+            if (score > 85) return 'Sky';
+            if (score > 55) return 'Mountain';
+            return 'Stream';
         }
 
         function processData(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
             
-            // Skip headers (Rows 1-3), process students from Row 4 (index 3)
+            // Slice based on your Excel structure (skipping headers)
             const students = rows.slice(3).filter(r => r[3]); 
 
             students.forEach(row => {
-                // Map function to handle subject data chunks
-                const mapSub = (startIdx) => ({
-                    fa: [row[startIdx], row[startIdx+1], row[startIdx+2], row[startIdx+3], row[startIdx+4], row[startIdx+5]],
-                    totalFa: row[startIdx+6] || 0,
-                    cc: row[startIdx+7] || 0,
-                    summ: row[startIdx+8] || 0,
-                    grand: row[startIdx+9] || 0
-                });
+                const studentName = String(row[3]).toUpperCase();
+                const photoSrc = studentPhotos[studentName] || '';
 
                 const s = {
-                    adm: row[0], roll: row[1], class: row[2], name: row[3],
-                    father: row[4], mother: row[5], dob: row[7] instanceof Date ? row[7].toLocaleDateString('en-GB') : row[7],
-                    eng: mapSub(8),    // Col I (8)
-                    math: mapSub(18),   // Col S (18)
-                    evs: mapSub(28),    // Col AC (28)
-                    urdu: mapSub(38),   // Col AM (38)
-                    kash: mapSub(48)    // Col AW (48)
+                    adm: row[0], roll: row[1], class: row[2], name: studentName,
+                    father: row[4], mother: row[5], apaar: row[6] || 'Not Available', 
+                    dob: row[7], pen: row[58] || 'N/A', session: "Nov.-Dec. 2024",
+                    sRank: row[59] || '-', cRank: row[60] || '1',
+                    eng: { fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14], cc: row[15], sum: row[16], grand: row[17] },
+                    math: { fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24], cc: row[25], sum: row[26], grand: row[27] },
+                    evs: { fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34], cc: row[35], sum: row[36], grand: row[37] },
+                    urdu: { fa: [row[38],row[39],row[40],row[41],row[42],row[43]], tot: row[44], cc: row[45], sum: row[46], grand: row[47] },
+                    kash: { fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54], cc: row[55], sum: row[56], grand: row[57] }
                 };
 
-                const totalObtained = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
-                const percentage = (totalObtained / 5).toFixed(1);
+                const total = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
+                const avgGrade = getGrade(total / 5);
 
                 const div = document.createElement('div');
-                div.className = 'marksheet-container mb-12 page-break shadow-lg';
+                div.className = 'marksheet-container mb-8 page-break';
                 div.innerHTML = `
-                    <div class="header-bg p-4 text-center rounded-t">
-                        <h1 class="text-3xl font-black">GOVERNMENT PRIMARY SCHOOL</h1>
-                        <h2 class="text-xl font-bold">PETHGAM WAGOORA 193109</h2>
+                    <div class="header-bg p-2 flex justify-between items-center">
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[8px] text-black font-bold">LOGO</div>
+                        <div class="text-center flex-grow">
+                            <h1 class="text-2xl font-black leading-none">GOVERNMENT PRIMARY SCHOOL</h1>
+                            <h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-6 mt-2">
-                        <div class="cell-label">Student Name:</div><div class="cell-value col-span-2">${s.name}</div>
-                        <div class="cell-label">Adm. No:</div><div class="cell-value col-span-2">${s.adm}</div>
-                        <div class="cell-label">Fathers Name:</div><div class="cell-value col-span-2">${s.father}</div>
-                        <div class="cell-label">D.O.B:</div><div class="cell-value col-span-2">${s.dob}</div>
-                        <div class="cell-label">Mothers Name:</div><div class="cell-value col-span-2">${s.mother}</div>
-                        <div class="cell-label">Class:</div><div class="cell-value col-span-2">${s.class}</div>
+                    <div class="flex mt-1">
+                        <div class="flex-grow grid grid-cols-4 border-l border-t">
+                            <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${s.name}</div>
+                            <div class="cell-label">Adm. No:</div><div class="cell-value">${s.adm}</div>
+                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${s.father}</div>
+                            <div class="cell-label">D.O.B:</div><div class="cell-value">${s.dob}</div>
+                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${s.mother}</div>
+                            <div class="cell-label">Class:</div><div class="cell-value">${s.class}</div>
+                            <div class="cell-label">Academic Session:</div><div class="cell-value">${s.session}</div>
+                            <div class="cell-label">Roll No:</div><div class="cell-value">${s.roll}</div>
+                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${s.apaar}</div>
+                            <div class="cell-label">PEN No.</div><div class="cell-value">${s.pen}</div>
+                        </div>
+                        <div class="photo-box ml-1">
+                            ${photoSrc ? `<img src="${photoSrc}" class="w-full h-full object-cover">` : `<span class="text-[10px] text-gray-400">PHOTO</span>`}
+                        </div>
                     </div>
 
-                    <table>
-                        <thead class="bg-indigo-50">
+                    <table class="mt-1">
+                        <thead class="bg-indigo-100">
                             <tr>
                                 <th rowspan="2">Subject</th>
-                                <th colspan="6">Formative Assessment (30)</th>
-                                <th rowspan="2">FA Total</th>
-                                <th rowspan="2">Co-Curr (20)</th>
-                                <th rowspan="2">Summ (50)</th>
-                                <th rowspan="2">Grand (100)</th>
+                                <th colspan="6">Formative Assessment (5 marks each)</th>
+                                <th rowspan="2">Total (30)</th>
+                                <th rowspan="2">Co-Curricular (20)</th>
+                                <th rowspan="2">Summative (50)</th>
+                                <th rowspan="2">Total (100)</th>
                                 <th rowspan="2">Grade</th>
+                                <th rowspan="2">Proficiency</th>
                             </tr>
-                            <tr class="text-[8px]">
-                                <th>F1</th><th>F2</th><th>F3</th><th>F4</th><th>F5</th><th>F6</th>
+                            <tr class="text-[9px]">
+                                <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${[
-                                {n: 'English', d: s.eng},
-                                {n: 'Mathematics', d: s.math},
-                                {n: 'Env. Science', d: s.evs},
-                                {n: 'Urdu', d: s.urdu},
-                                {n: 'Kashmiri', d: s.kash}
+                                {n: 'English', d: s.eng}, {n: 'Math', d: s.math}, {n: 'EVS', d: s.evs},
+                                {n: 'Urdu', d: s.urdu}, {n: 'Kashmiri', d: s.kash}
                             ].map(sub => `
                                 <tr>
                                     <td class="sub-name">${sub.n}</td>
                                     ${sub.d.fa.map(v => `<td>${v || 0}</td>`).join('')}
-                                    <td class="font-bold">${sub.d.totalFa}</td>
+                                    <td class="font-bold">${sub.d.tot}</td>
                                     <td>${sub.d.cc}</td>
-                                    <td>${sub.d.summ}</td>
-                                    <td class="font-bold bg-yellow-50">${sub.d.grand}</td>
+                                    <td>${sub.d.sum}</td>
+                                    <td class="font-bold bg-blue-50">${sub.d.grand}</td>
                                     <td class="font-bold">${getGrade(sub.d.grand)}</td>
+                                    <td class="text-[9px] italic">${getProficiency(sub.d.grand)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
+                        <tfoot class="bg-gray-100 font-bold">
+                            <tr>
+                                <td colspan="7">Grand Total</td>
+                                <td>${s.eng.tot+s.math.tot+s.evs.tot+s.urdu.tot+s.kash.tot}</td>
+                                <td>-</td><td>-</td>
+                                <td>${total}</td>
+                                <td>${avgGrade}</td>
+                                <td>${getProficiency(total/5)}</td>
+                            </tr>
+                        </tfoot>
                     </table>
 
-                    <div class="grid grid-cols-3 gap-4 mt-4">
-                        <div class="border border-slate-300">
-                            <div class="bg-purple-800 text-white text-[10px] p-1 font-bold text-center uppercase">Grade Key</div>
-                            <div class="p-2 text-[9px] leading-tight text-center font-bold">
-                                A+: 85-100% | A: 70-84% | B: 55-69% | C: 40-54%
-                            </div>
+                    <div class="grid grid-cols-3 gap-1 mt-1">
+                        <div class="border border-indigo-200">
+                            <div class="bg-indigo-600 text-white text-[10px] font-bold text-center">GRADE KEY</div>
+                            <table class="text-[9px] w-full">
+                                <tr><td>>85%</td><td>A+</td><td>>70%</td><td>A</td></tr>
+                                <tr><td>>55%</td><td>B</td><td>>40%</td><td>C</td></tr>
+                            </table>
                         </div>
-                        <div class="border border-slate-300 text-center flex flex-col justify-center">
-                            <div class="bg-red-600 text-white text-[10px] p-1 font-bold uppercase">Result</div>
-                            <div class="p-2 text-sm font-black text-green-700">PROMOTED</div>
+                        <div class="border border-indigo-200 text-center">
+                            <div class="bg-indigo-600 text-white text-[10px] font-bold">SCHOOL RANK</div>
+                            <div class="text-xl font-bold p-1">${s.sRank}</div>
+                            <div class="bg-slate-700 text-white text-[10px] font-bold">CLASS RANK: ${s.cRank}</div>
                         </div>
-                        <div class="border border-slate-300">
-                            <div class="bg-purple-800 text-white text-[10px] p-1 font-bold text-center uppercase">Performance</div>
-                            <div class="p-2 text-[11px] font-bold">
-                                Total: ${totalObtained} / 500 <br>
-                                Percentage: ${percentage}%
+                        <div class="border border-indigo-200">
+                            <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
+                            <div class="p-1 text-[10px] font-bold">
+                                Marks: ${total}/500 <br>
+                                Result: <span class="text-green-700">PASS</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-16 flex justify-between px-2">
-                        <div class="sig-box">Teacher</div>
-                        <div class="sig-box">Exam I/C</div>
-                        <div class="sig-box">Parent</div>
-                        <div class="sig-box">Headmaster</div>
+                    <div class="grid grid-cols-4 mt-8 gap-4">
+                        <div class="footer-tab">Sign. Form Teacher</div>
+                        <div class="footer-tab">Sign. Exam I/C</div>
+                        <div class="footer-tab">Parents Signature</div>
+                        <div class="footer-tab">Seal of Headmaster</div>
                     </div>
                 `;
                 wrapper.appendChild(div);
@@ -168,4 +220,4 @@
     </script>
 </body>
 </html>
-                                                
+ 
