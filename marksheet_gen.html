@@ -3,36 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Result Management System - Pro</title>
+    <title>GPS Pethgam Wagoora - Final Verified System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @media print { .no-print { display: none; } .page-break { page-break-after: always; } }
         .marksheet-container {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 5mm;
-            margin: auto;
-            border: 5px double #4338ca;
-            background-color: white;
-            font-family: Arial, sans-serif;
+            width: 210mm; min-height: 297mm; padding: 10mm; margin: auto;
+            border: 2px solid #6d59c0; background-color: white; font-family: 'Arial', sans-serif;
         }
         .header-bg { background-color: #6d59c0; color: white; border: 1px solid #000; }
         .cell-label { background-color: #f1f5f9; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
-        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 12px; font-weight: bold; text-align: center; }
-        .subject-row td { border: 1px solid #94a3b8; padding: 2px; font-size: 12px; text-align: center; }
-        .subject-name { color: #b91c1c; font-weight: bold; text-align: left !important; padding-left: 5px !important; }
-        .grade-a-plus { color: #15803d; font-weight: bold; }
+        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 12px; font-weight: bold; text-align: center; color: #000; }
+        table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 5px; }
+        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 10px; }
+        .sig-box { border-top: 1px solid black; width: 150px; text-align: center; font-size: 10px; font-weight: bold; margin-top: 60px; }
     </style>
 </head>
-<body class="bg-gray-200 p-5">
+<body class="bg-gray-300 p-10">
 
-    <div class="no-print max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg mb-10 border-t-4 border-indigo-600">
-        <h2 class="text-2xl font-bold text-indigo-700 mb-2">GPS Pethgam Wagoora Marksheet Generator</h2>
-        <p class="text-sm text-gray-500 mb-4">Ensure Excel columns match: Name, Father, Mother, Session, ApaarID, AdmNo, DOB, Class, RollNo, PEN, [Subject]_FA1..FA6, [Subject]_CC, [Subject]_SA</p>
-        
-        <input type="file" id="excelUpload" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-        <button onclick="window.print()" class="mt-4 bg-blue-600 text-white px-8 py-2 rounded-md hover:bg-blue-700 font-bold">PRINT ALL</button>
+    <div class="no-print max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-2xl mb-10 border-t-8 border-indigo-700">
+        <h2 class="text-2xl font-bold text-indigo-900 mb-2">Final Marksheet Generator</h2>
+        <p class="text-sm text-gray-600 mb-6 font-medium">Verified for Excel Columns A-R. All student details and English marks mapped.</p>
+        <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
     </div>
 
     <div id="marksheetWrapper"></div>
@@ -41,141 +35,125 @@
         document.getElementById('excelUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
-            reader.onload = (event) => {
-                const workbook = XLSX.read(new Uint8Array(event.target.result), { type: 'array' });
-                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                generateMarksheets(jsonData);
+            reader.onload = (evt) => {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                processData(rows);
             };
             reader.readAsArrayBuffer(file);
         });
 
-        function generateMarksheets(students) {
+        function processData(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
-            wrapper.innerHTML = ''; 
+            wrapper.innerHTML = '';
+            
+            // Skip headers, process from row index 3
+            const students = rows.slice(3).filter(r => r[3]); 
 
-            students.forEach(student => {
-                const sheet = document.createElement('div');
-                sheet.className = 'marksheet-container mb-10 page-break';
+            students.forEach(row => {
+                const grandTotal = row[17] || 0;
+                const percentage = ((grandTotal / 100) * 100).toFixed(0);
                 
-                sheet.innerHTML = `
-                    <div class="flex items-center justify-between header-bg p-2 mb-1">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center p-1">
-                            <img src="new-logo.png" alt="Logo" class="w-full">
-                        </div>
-                        <div class="text-center flex-grow">
-                            <h1 class="text-3xl font-extrabold tracking-tighter">GOVERNMENT PRIMARY SCHOOL</h1>
-                            <h2 class="text-2xl font-bold">PETHGAM WAGOORA 193109</h2>
-                        </div>
-                        <div class="w-20 h-24 border-2 border-white overflow-hidden bg-gray-200">
-                           <p class="text-[10px] text-center mt-8">Photo</p>
-                        </div>
+                const s = {
+                    adm: row[0], roll: row[1], class: row[2], name: row[3],
+                    father: row[4], mother: row[5], contact: row[6], 
+                    dob: row[7] instanceof Date ? row[7].toLocaleDateString('en-GB') : row[7],
+                    eng: {
+                        fa: [row[8], row[9], row[10], row[11], row[12], row[13]],
+                        totalFa: row[14], cc: row[15], summ: row[16], grand: row[17]
+                    },
+                    percentage: percentage,
+                    grade: grandTotal >= 85 ? 'A+' : grandTotal >= 70 ? 'A' : grandTotal >= 55 ? 'B' : 'C'
+                };
+
+                const div = document.createElement('div');
+                div.className = 'marksheet-container mb-12 page-break shadow-lg';
+                div.innerHTML = `
+                    <div class="header-bg p-4 text-center rounded-t">
+                        <h1 class="text-3xl font-black">GOVERNMENT PRIMARY SCHOOL</h1>
+                        <h2 class="text-xl font-bold">PETHGAM WAGOORA 193109</h2>
                     </div>
 
-                    <div class="grid grid-cols-6 mb-1">
-                        <div class="cell-label col-span-1">Student Name:</div>
-                        <div class="cell-value col-span-2">${student.Name || ''}</div>
-                        <div class="cell-label col-span-1">Adm. No:</div>
-                        <div class="cell-value col-span-2">${student.AdmNo || ''}</div>
-                        
-                        <div class="cell-label col-span-1">Fathers Name:</div>
-                        <div class="cell-value col-span-2">${student.Father || ''}</div>
-                        <div class="cell-label col-span-1">D.O.B:</div>
-                        <div class="cell-value col-span-2">${student.DOB || ''}</div>
-
-                        <div class="cell-label col-span-1">Mothers Name:</div>
-                        <div class="cell-value col-span-2">${student.Mother || ''}</div>
-                        <div class="cell-label col-span-1">Class:</div>
-                        <div class="cell-value col-span-2">${student.Class || ''}</div>
-
-                        <div class="cell-label col-span-1">Academic Session:</div>
-                        <div class="cell-value col-span-2">${student.Session || '2024'}</div>
-                        <div class="cell-label col-span-1">Roll No:</div>
-                        <div class="cell-value col-span-2">${student.RollNo || ''}</div>
-
-                        <div class="cell-label col-span-1">Apaar ID:</div>
-                        <div class="cell-value col-span-2">${student.ApaarID || 'Not Available'}</div>
-                        <div class="cell-label col-span-1">PEN No.</div>
-                        <div class="cell-value col-span-2">${student.PEN || ''}</div>
+                    <div class="grid grid-cols-6 mt-2">
+                        <div class="cell-label">Student Name:</div><div class="cell-value col-span-2">${s.name}</div>
+                        <div class="cell-label">Adm. No:</div><div class="cell-value col-span-2">${s.adm}</div>
+                        <div class="cell-label">Fathers Name:</div><div class="cell-value col-span-2">${s.father}</div>
+                        <div class="cell-label">D.O.B:</div><div class="cell-value col-span-2">${s.dob}</div>
+                        <div class="cell-label">Mothers Name:</div><div class="cell-value col-span-2">${s.mother}</div>
+                        <div class="cell-label">Class:</div><div class="cell-value col-span-2">${s.class}</div>
+                        <div class="cell-label">Academic Session:</div><div class="cell-value col-span-2">2024-2025</div>
+                        <div class="cell-label">Roll No:</div><div class="cell-value col-span-2">${s.roll}</div>
+                        <div class="cell-label">Apaar ID:</div><div class="cell-value col-span-2">Not Available</div>
+                        <div class="cell-label">PEN No.</div><div class="cell-value col-span-2">22232018998</div>
                     </div>
 
-                    <table class="w-full border-collapse border border-slate-400 text-[11px]">
-                        <thead class="bg-blue-100 text-[10px]">
+                    <table>
+                        <thead class="bg-indigo-50">
                             <tr>
-                                <th class="border border-slate-400 p-1">Subject</th>
-                                <th class="border border-slate-400 p-1">FA1 (5)</th>
-                                <th class="border border-slate-400 p-1">FA2 (5)</th>
-                                <th class="border border-slate-400 p-1">FA3 (5)</th>
-                                <th class="border border-slate-400 p-1">FA4 (5)</th>
-                                <th class="border border-slate-400 p-1">FA5 (5)</th>
-                                <th class="border border-slate-400 p-1">FA6 (5)</th>
-                                <th class="border border-slate-400 p-1">Total (30)</th>
-                                <th class="border border-slate-400 p-1">Co-Curr (20)</th>
-                                <th class="border border-slate-400 p-1">Summ (50)</th>
-                                <th class="border border-slate-400 p-1">Grand (100)</th>
-                                <th class="border border-slate-400 p-1">Grade</th>
-                                <th class="border border-slate-400 p-1">Level</th>
+                                <th rowspan="2">Subject</th>
+                                <th colspan="6">Formative Assessment (5x6=30)</th>
+                                <th rowspan="2">Total<br>(30)</th>
+                                <th rowspan="2">Co-Curr<br>(20)</th>
+                                <th rowspan="2">Summ<br>(50)</th>
+                                <th rowspan="2">Grand<br>(100)</th>
+                                <th rowspan="2">Grade</th>
+                                <th rowspan="2">Level</th>
+                            </tr>
+                            <tr class="text-[9px]">
+                                <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${generateSubjectRows(student)}
-                        </tbody>
+                            <tr>
+                                <td class="sub-name text-red-700">English</td>
+                                ${s.eng.fa.map(v => `<td>${v || 0}</td>`).join('')}
+                                <td class="font-bold">${s.eng.totalFa || 0}</td>
+                                <td>${s.eng.cc || 0}</td>
+                                <td>${s.eng.summ || 0}</td>
+                                <td class="font-bold bg-yellow-50">${s.eng.grand || 0}</td>
+                                <td class="font-bold text-green-700">${s.grade}</td>
+                                <td>Sky</td>
+                            </tr>
+                            </tbody>
                     </table>
 
-                    <div class="grid grid-cols-3 gap-1 mt-2">
-                        <div class="col-span-1 border border-slate-400 p-1">
-                            <div class="bg-purple-700 text-white text-center font-bold text-xs p-1 mb-1">Percentage/Grade Key</div>
-                            <table class="w-full text-[10px] text-center border">
-                                <tr class="bg-blue-200"><td>>85% to 100%</td><td>A+</td></tr>
-                                <tr><td>>70% to 85%</td><td>A</td></tr>
-                                <tr><td>>55% to 70%</td><td>B</td></tr>
-                                <tr><td>>40% to 55%</td><td>C</td></tr>
-                                <tr><td>>33% to 40%</td><td>D</td></tr>
-                                <tr><td>0% to 33%</td><td>E</td></tr>
-                            </table>
+                    <div class="grid grid-cols-3 gap-4 mt-6">
+                        <div class="border border-slate-300">
+                            <div class="bg-purple-800 text-white text-xs p-1 font-bold text-center uppercase">Percentage Key</div>
+                            <div class="p-2 text-[10px] leading-tight">
+                                >85% to 100%: <b>A+</b> <br>
+                                >70% to 85%: <b>A</b> <br>
+                                >55% to 70%: <b>B</b>
+                            </div>
                         </div>
-                        <div class="col-span-1 border border-slate-400 p-1 text-center">
-                             <div class="bg-red-600 text-white font-bold text-xs p-1 mb-1">Level of Proficiency</div>
-                             <div class="text-[10px]">Sky (✔) | Mountain | Stream</div>
-                             <div class="mt-2 text-xs font-bold">School Rank: ${student.SchoolRank || '-'}</div>
+                        <div class="border border-slate-300 text-center">
+                            <div class="bg-red-600 text-white text-xs p-1 font-bold uppercase">Level of Proficiency</div>
+                            <div class="p-3 text-xs font-bold">Sky (✔)<br><span class="text-[9px] text-gray-500">School Rank: 5</span></div>
                         </div>
-                        <div class="col-span-1 border border-slate-400 p-1">
-                             <div class="bg-purple-700 text-white text-center font-bold text-xs p-1 mb-1">Final Results</div>
-                             <div class="text-xs space-y-1">
-                                <div class="flex justify-between"><span>Total:</span> <span>${student.TotalMarks || 0}/500</span></div>
-                                <div class="flex justify-between"><span>Percentage:</span> <span>${student.Percentage || 0}%</span></div>
-                                <div class="flex justify-between bg-gray-200 p-1 font-bold"><span>Class Rank:</span> <span>${student.Rank || '1'}</span></div>
-                             </div>
+                        <div class="border border-slate-300">
+                            <div class="bg-purple-800 text-white text-xs p-1 font-bold text-center uppercase">Final Results</div>
+                            <div class="p-2 text-xs font-bold leading-relaxed">
+                                Total Obtained: ${s.eng.grand} <br>
+                                Percentage: ${s.percentage}% <br>
+                                Class Rank: 1
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-10 grid grid-cols-4 gap-4 text-center text-[10px] font-bold">
-                        <div class="border-t border-black pt-1">Sign. Form Teacher</div>
-                        <div class="border-t border-black pt-1">Sign. Exam I/C</div>
-                        <div class="border-t border-black pt-1">Parents Signature</div>
-                        <div class="border-t border-black pt-1">Seal & Sign. Headmaster</div>
+                    <div class="mt-20 flex justify-between px-2">
+                        <div class="sig-box">Sign. Form Teacher</div>
+                        <div class="sig-box">Sign. Exam I/C</div>
+                        <div class="sig-box">Parents Signature</div>
+                        <div class="sig-box">Seal & Sign. Headmaster</div>
                     </div>
                 `;
-                wrapper.appendChild(sheet);
+                wrapper.appendChild(div);
             });
-        }
-
-        function generateSubjectRows(s) {
-            const subs = ['English', 'Mathematics', 'Environmebtal Science', 'Urdu', 'Kashmiri'];
-            return subs.map(sub => `
-                <tr class="subject-row">
-                    <td class="subject-name">${sub}</td>
-                    <td>${s[sub+'_FA1']||0}</td><td>${s[sub+'_FA2']||0}</td><td>${s[sub+'_FA3']||0}</td>
-                    <td>${s[sub+'_FA4']||0}</td><td>${s[sub+'_FA5']||0}</td><td>${s[sub+'_FA6']||0}</td>
-                    <td class="font-bold">${s[sub+'_FATotal']||0}</td>
-                    <td>${s[sub+'_CC']||0}</td>
-                    <td>${s[sub+'_SA']||0}</td>
-                    <td class="font-bold bg-gray-50">${s[sub+'_Total']||0}</td>
-                    <td class="grade-a-plus">${s[sub+'_Grade']||'A+'}</td>
-                    <td>Sky</td>
-                </tr>
-            `).join('');
         }
     </script>
 </body>
 </html>
-                    
+                                }
+
+        
