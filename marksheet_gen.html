@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Result Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @media print {
+            .no-print { display: none; }
+            .page-break { page-break-after: always; }
+        }
+        .marksheet-container {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: auto;
+            border: 2px solid #333;
+            background-color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-bg { background-color: #6a5acd; color: white; }
+        .table-header { background-color: #e0e7ff; }
+        .grid-cell { border: 1px solid #94a3b8; padding: 4px; }
+    </style>
+</head>
+<body class="bg-gray-100 p-5">
+
+    <div class="no-print max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md mb-10">
+        <h2 class="text-2xl font-bold text-indigo-700 mb-4">Update General Result Register</h2>
+        <p class="text-gray-600 mb-6">Upload your Excel file (.xlsx) containing student marks to generate marksheets.</p>
+        
+        <div class="flex items-center justify-center w-full">
+            <label class="flex flex-col w-full h-32 border-4 border-dashed border-indigo-200 hover:bg-gray-100 hover:border-indigo-300 transition-colors">
+                <div class="flex flex-col items-center justify-center pt-7">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-indigo-400 group-hover:text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">Attach Excel File</p>
+                </div>
+                <input type="file" id="excelUpload" class="opacity-0" accept=".xlsx, .xls" />
+            </label>
+        </div>
+        <button onclick="window.print()" class="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Print All Marksheets</button>
+    </div>
+
+    <div id="marksheetWrapper"></div>
+
+    <script>
+        document.getElementById('excelUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                generateMarksheets(jsonData);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function generateMarksheets(students) {
+            const wrapper = document.getElementById('marksheetWrapper');
+            wrapper.innerHTML = ''; // Clear previous
+
+            students.forEach(student => {
+                const sheet = document.createElement('div');
+                sheet.className = 'marksheet-container mb-10 page-break';
+                
+                sheet.innerHTML = `
+                    <div class="header-bg text-center p-2 rounded-t-lg">
+                        <h1 class="text-2xl font-bold">GOVERNMENT PRIMARY SCHOOL</h1>
+                        <h2 class="text-xl">PETHGAM WAGOORA 193109</h2>
+                    </div>
+
+                    <div class="grid grid-cols-4 text-sm mt-2">
+                        <div class="grid-cell font-bold text-blue-800">Student Name:</div>
+                        <div class="grid-cell">${student.Name || 'N/A'}</div>
+                        <div class="grid-cell font-bold text-blue-800">Adm. No:</div>
+                        <div class="grid-cell">${student.AdmNo || ''}</div>
+                        
+                        <div class="grid-cell font-bold text-blue-800">Father's Name:</div>
+                        <div class="grid-cell">${student.Father || ''}</div>
+                        <div class="grid-cell font-bold text-blue-800">D.O.B:</div>
+                        <div class="grid-cell">${student.DOB || ''}</div>
+                    </div>
+
+                    <table class="w-full mt-4 border-collapse border border-slate-400 text-xs text-center">
+                        <thead class="bg-indigo-100">
+                            <tr>
+                                <th class="border border-slate-300 p-1">Subject</th>
+                                <th class="border border-slate-300 p-1">FA Total (30)</th>
+                                <th class="border border-slate-300 p-1">Co-Curricular (20)</th>
+                                <th class="border border-slate-300 p-1">Summative (50)</th>
+                                <th class="border border-slate-300 p-1">Grand Total (100)</th>
+                                <th class="border border-slate-300 p-1">Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${generateRows(student)}
+                        </tbody>
+                    </table>
+
+                    <div class="mt-6 grid grid-cols-2 gap-4">
+                        <div class="border p-2">
+                            <h3 class="font-bold border-b mb-2">Final Results</h3>
+                            <p>Total Marks: <strong>${student.TotalMarks || 0} / 500</strong></p>
+                            <p>Percentage: <strong>${student.Percentage || 0}%</strong></p>
+                            <p>Class Rank: <strong>${student.Rank || '1'}</strong></p>
+                        </div>
+                        <div class="border p-2">
+                            <h3 class="font-bold border-b mb-2">General Remarks</h3>
+                            <p class="italic text-gray-700">"${student.Remarks || 'Keep it up!'}"</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-20 flex justify-between text-xs font-bold px-4">
+                        <div class="border-t border-black pt-1 w-32 text-center">Class Teacher</div>
+                        <div class="border-t border-black pt-1 w-32 text-center">Exam I/C</div>
+                        <div class="border-t border-black pt-1 w-32 text-center">Headmaster</div>
+                    </div>
+                `;
+                wrapper.appendChild(sheet);
+            });
+        }
+
+        function generateRows(student) {
+            const subjects = ['English', 'Math', 'EVS', 'Urdu', 'Kashmiri'];
+            return subjects.map(sub => `
+                <tr>
+                    <td class="border border-slate-300 p-2 font-bold text-left text-red-700">${sub}</td>
+                    <td class="border border-slate-300 p-2">${student[sub + '_FA'] || 0}</td>
+                    <td class="border border-slate-300 p-2">${student[sub + '_CC'] || 0}</td>
+                    <td class="border border-slate-300 p-2">${student[sub + '_SA'] || 0}</td>
+                    <td class="border border-slate-300 p-2 font-bold">${student[sub + '_Total'] || 0}</td>
+                    <td class="border border-slate-300 p-2">A+</td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
