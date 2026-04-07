@@ -107,6 +107,12 @@
                     urdu: { fa: [row[38],row[39],row[40],row[41],row[42],row[43]], tot: row[44], cc: row[45], sum: row[46], grand: row[47] },
                     kash: { fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54], cc: row[55], sum: row[56], grand: row[57] }
                 };
+                // **Critical Step:** Generate and insert the remarks AFTER the div is appended
+        const remarksDivId = `remarksContent_${studentData.name.replace(/\s+/g, '')}`;
+        const remarksElement = document.getElementById(remarksDivId);
+        if (remarksElement) {
+            remarksElement.innerText = getAutomaticRemarks(studentData, avgPerc);
+        }
 
                 const total = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
                 const avgGrade = getGrade(total / 5);
@@ -199,6 +205,14 @@
                             <div class="text-xl font-bold p-1">${s.sRank}</div>
                             <div class="bg-slate-700 text-white text-[10px] font-bold">CLASS RANK: ${s.cRank}</div>
                         </div>
+                        <div class="border border-slate-400 bg-white">
+    <div class="bg-[#a855f7] text-white text-[12px] p-2 font-bold text-center uppercase tracking-wider">
+        General Remarks
+    </div>
+    <div id="remarksContent_${s.name.replace(/\s+/g, '')}" class="p-3 text-[11px] font-bold text-black leading-relaxed text-left min-h-[60px]">
+        </div>
+</div>
+
                         <div class="border border-indigo-200">
                             <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
                             <div class="border border-slate-400">
