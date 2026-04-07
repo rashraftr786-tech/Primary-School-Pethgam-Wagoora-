@@ -3,43 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS Pethgam Wagoora - Official Marksheet</title>
+    <title>GPS Pethgam Wagoora - Official Report Card Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        #marksheetWrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        @media screen and (max-width: 210mm) { .marksheet-container { zoom: 0.85; } }
-        @media screen and (max-width: 640px) { .marksheet-container { zoom: 0.45; margin: -180px auto !important; } }
-        @media print { 
-            .no-print { display: none !important; } 
-            body { background: white; padding: 0; }
-            .marksheet-container { margin: 0 auto; border: 5px solid #6d59c0 !important; zoom: 1 !important; page-break-after: always; }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+
+        body { background-color: #f1f5f9; font-family: 'Roboto', sans-serif; }
+        
+        .marksheet-container {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 5px;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            position: relative;
+            border: 2px solid #4a3392;
         }
-        body { background-color: #e2e8f0; padding: 20px; font-family: sans-serif; }
-        .marksheet-container { width: 210mm; min-height: 285mm; padding: 10px; margin: 20px auto; border: 5px solid #6d59c0; background: white; box-sizing: border-box; }
-        .header-bg { background-color: #6d59c0; color: white; text-align: center; }
-        .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
-        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 12px; font-weight: bold; text-align: center; color: #000; min-height: 25px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 2px; }
-        th, td { border: 1px solid #94a3b8; text-align: center; font-size: 10px; padding: 3px; }
-        .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 8px; font-size: 13px; }
+
+        /* Color Palette matching the image */
+        .header-bg { background-color: #6d59c0; color: white; }
+        .label-cell { background-color: #e8edff; color: #3b4ca8; font-weight: bold; border: 1px solid #94a3b8; font-size: 13px; padding: 4px 8px; }
+        .value-cell { border: 1px solid #94a3b8; font-size: 14px; font-weight: bold; text-align: center; padding: 4px; }
+        
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 2px; }
+        th { background-color: #74b9ff; color: white; border: 1px solid #4a3392; font-size: 10px; padding: 2px; }
+        td { border: 1px solid #4a3392; text-align: center; font-size: 13px; font-weight: bold; height: 28px; }
+        .sub-name { color: #b91c1c; text-align: left; padding-left: 10px; font-size: 16px; }
+
+        /* Specific Sections */
+        .section-header { background-color: #a55eea; color: white; font-weight: bold; text-align: center; padding: 5px; font-size: 18px; }
+        .grade-key-header { background-color: #f7b731; color: white; }
+        .proficiency-header { background-color: #eb4d4b; color: white; }
+        .results-header { background-color: #686de0; color: white; }
+
+        .bar-container { display: flex; align-items: flex-end; justify-content: space-around; height: 100px; padding: 10px; border: 1px solid #ccc; background: #fff; }
+        .bar { width: 25px; background: #4a90e2; position: relative; }
+        .bar-label { position: absolute; top: -20px; width: 100%; text-align: center; font-size: 10px; }
+        .sub-label { font-size: 9px; margin-top: 5px; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .marksheet-container { margin: 0; border: none; zoom: 100%; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="no-print max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
-        <h2 class="text-2xl font-bold text-indigo-900 mb-2">GPS Pethgam - Master Generator</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="border p-3 rounded bg-green-50">
-                <label class="block text-sm font-bold text-green-800">1. Upload Photos (Name them e.g. 116.jpg)</label>
-                <input type="file" id="photoUpload" multiple accept="image/*" class="mt-1 block w-full text-xs" />
+    <div class="no-print max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg mb-10 border-t-8 border-purple-700">
+        <h2 class="text-3xl font-black text-purple-900 mb-4">Report Card Master System</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-4 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50">
+                <p class="font-bold text-blue-800 mb-2">1. Student Photos</p>
+                <input type="file" id="photoUpload" multiple accept="image/*" class="w-full text-sm" />
             </div>
-            <div class="border p-3 rounded bg-indigo-50">
-                <label class="block text-sm font-bold text-indigo-800">2. Upload Excel Master Sheet</label>
-                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="mt-1 block w-full text-xs" />
+            <div class="p-4 border-2 border-dashed border-green-300 rounded-lg bg-green-50">
+                <p class="font-bold text-green-800 mb-2">2. Excel Database</p>
+                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="w-full text-sm" />
             </div>
         </div>
-        <button onclick="window.print()" class="mt-4 w-full bg-indigo-600 text-white py-2 rounded font-bold hover:bg-indigo-700 transition">PRINT ALL MARKSHEETS</button>
+        <button onclick="window.print()" class="mt-6 bg-purple-700 text-white px-8 py-3 rounded-lg font-bold hover:bg-purple-800 shadow-lg">PRINT ALL MARKSHEETS</button>
     </div>
 
     <div id="marksheetWrapper"></div>
@@ -47,7 +73,6 @@
     <script>
         let studentPhotos = {};
 
-        // Handle Photos
         document.getElementById('photoUpload').addEventListener('change', async (e) => {
             for (let file of e.target.files) {
                 const admNo = file.name.split('.')[0].trim();
@@ -57,120 +82,160 @@
                     reader.readAsDataURL(file);
                 });
             }
-            alert(Object.keys(studentPhotos).length + " photos loaded.");
+            alert(Object.keys(studentPhotos).length + " photos ready.");
         });
 
-        // Handle Excel (Custom Multi-Row Parser)
         document.getElementById('excelUpload').addEventListener('change', (e) => {
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                
-                // Convert to 2D Array first to handle your complex headers
-                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                processMasterRows(rows);
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                generateMarksheets(rows);
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         });
 
-        function processMasterRows(rows) {
+        function generateMarksheets(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
 
-            // Based on your screenshot:
-            // Column A=0 (Adm No), B=1 (Roll), C=2 (Class), D=3 (Name), E=4 (Father), F=5 (Mother), H=7 (DOB)
-            // English starts at Column I (8), Math at S (18), EVS at AC (28), Urdu at AM (38), Kashmiri at AW (48)
-
             for (let i = 3; i < rows.length; i++) {
                 let r = rows[i];
-                if (!r[0]) continue; // Skip empty rows
+                if (!r[0]) continue;
 
                 const admNo = String(r[0]).trim();
-                const photo = studentPhotos[admNo];
+                const photo = studentPhotos[admNo] || '';
 
                 const div = document.createElement('div');
                 div.className = 'marksheet-container';
                 div.innerHTML = `
-                    <div class="flex items-center header-bg p-3">
-                        <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center text-indigo-900 font-bold border-2 border-yellow-400 text-[8px]">LOGO</div>
+                    <div class="header-bg flex items-center p-2 relative">
+                        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center border-2 border-yellow-400">
+                           <span class="text-indigo-900 font-black text-center text-[10px]">SCHOOL<br>LOGO</span>
+                        </div>
                         <div class="flex-grow text-center">
-                            <h1 class="text-2xl font-black uppercase">Government Primary School</h1>
-                            <h2 class="text-lg font-bold">Pethgam Wagoora 193109</h2>
+                            <h1 class="text-4xl font-black tracking-tight">GOVERNMENT PRIMARY SCHOOL</h1>
+                            <h2 class="text-2xl font-bold">PETHGAM WAGOORA 193109</h2>
                         </div>
                     </div>
 
-                    <div class="flex mt-2 border-2 border-indigo-900">
+                    <div class="flex border-x-2 border-b-2 border-purple-900">
                         <div class="flex-grow grid grid-cols-4">
-                            <div class="cell-label">Student Name:</div><div class="cell-value">${r[3] || ''}</div>
-                            <div class="cell-label">Adm. No:</div><div class="cell-value">${admNo}</div>
-                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${r[4] || ''}</div>
-                            <div class="cell-label">D.O.B:</div><div class="cell-value">${r[7] || ''}</div>
-                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${r[5] || ''}</div>
-                            <div class="cell-label">Class:</div><div class="cell-value">${r[2] || ''}</div>
-                            <div class="cell-label">Session:</div><div class="cell-value">2024-25</div>
-                            <div class="cell-label">Roll No:</div><div class="cell-value">${r[1] || ''}</div>
+                            <div class="label-cell">Student Name:</div><div class="value-cell col-span-1">${r[3] || ''}</div>
+                            <div class="label-cell">Adm. No:</div><div class="value-cell">${admNo}</div>
+                            <div class="label-cell">Fathers Name:</div><div class="value-cell col-span-1">${r[4] || ''}</div>
+                            <div class="label-cell">D.O.B:</div><div class="value-cell">${r[7] || ''}</div>
+                            <div class="label-cell">Mothers Name:</div><div class="value-cell col-span-1">${r[5] || ''}</div>
+                            <div class="label-cell">Class:</div><div class="value-cell">${r[2] || ''}</div>
+                            <div class="label-cell">Academic Session:</div><div class="value-cell">Nov.-Dec. 2024</div>
+                            <div class="label-cell">Roll No:</div><div class="value-cell">${r[1] || ''}</div>
+                            <div class="label-cell">Apaar ID:</div><div class="value-cell">Not Available</div>
+                            <div class="label-cell">PEN No.</div><div class="value-cell">${r[6] || ''}</div>
                         </div>
-                        <div class="w-28 h-32 border-l-2 border-indigo-900 bg-gray-50 flex items-center justify-center">
-                            ${photo ? `<img src="${photo}" class="w-full h-full object-cover">` : `<div class="text-[9px] text-gray-400 text-center">PHOTO<br>${admNo}</div>`}
+                        <div class="w-32 border-l-2 border-purple-900 p-1 flex items-center justify-center bg-gray-50">
+                            ${photo ? `<img src="${photo}" class="w-full h-full object-cover rounded shadow-inner">` : `<div class="text-xs text-gray-400">PASSPORT<br>PHOTO</div>`}
                         </div>
                     </div>
 
-                    <table class="mt-2">
-                        <thead class="bg-indigo-100">
+                    <table>
+                        <thead>
                             <tr>
-                                <th rowspan="2" class="w-24">Subject</th>
-                                <th colspan="6">Formative Assessment (FA)</th>
-                                <th rowspan="2">Total (30)</th>
-                                <th rowspan="2">Co-Curricular (20)</th>
-                                <th rowspan="2">Summative (50)</th>
-                                <th rowspan="2">Grand Total</th>
+                                <th class="w-32">Subject</th>
+                                <th>"FA1 (5)"</th><th>"FA2 (5)"</th><th>"FA3 (5)"</th><th>"FA4 (5)"</th><th>"FA5 (5)"</th><th>"FA6 (5)"</th>
+                                <th>"Total (30)"</th><th>"Co-Curricular (20)"</th><th>"Summative (50)"</th><th>"Total (100)"</th><th>Grade</th><th>Proficiency</th>
                             </tr>
-                            <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
                         </thead>
                         <tbody>
-                            ${renderSubRow("English", r, 8)}
-                            ${renderSubRow("Mathematics", r, 18)}
-                            ${renderSubRow("Env. Science", r, 28)}
-                            ${renderSubRow("Urdu", r, 38)}
-                            ${renderSubRow("Kashmiri", r, 48)}
+                            ${renderRow("English", r, 8)}
+                            ${renderRow("Math", r, 20)}
+                            ${renderRow("EVS", r, 32)}
+                            ${renderRow("Urdu", r, 44)}
+                            ${renderRow("Kashmiri", r, 56)}
+                            <tr class="bg-gray-100">
+                                <td class="sub-name">Grand Total</td>
+                                <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                                <td>${r[100] || '0'}</td><td>${r[101] || '0'}</td><td>${r[102] || '0'}</td><td>${r[103] || '0'}</td><td>A+</td><td>Stream</td>
+                            </tr>
                         </tbody>
                     </table>
 
-                    <div class="grid grid-cols-2 mt-4 gap-4">
-                        <div class="border p-2 text-xs">
-                            <div class="font-bold bg-gray-100 p-1 mb-1">General Remarks</div>
-                            <p class="italic">${r[3]} has shown satisfactory performance in all areas.</p>
+                    <div class="grid grid-cols-3 gap-1 mt-2">
+                        <div>
+                            <div class="section-header grade-key-header">Percentage/Grade Key</div>
+                            <table class="text-[10px]">
+                                <tr class="bg-cyan-100"><th>%age Scale</th><th>Grade</th></tr>
+                                <tr><td>>85% to 100%</td><td>A+</td></tr>
+                                <tr><td>>70% to 85%</td><td>A</td></tr>
+                                <tr><td>>55% to 70%</td><td>B</td></tr>
+                                <tr><td>>40% to 55%</td><td>C</td></tr>
+                                <tr><td>>33% to 40%</td><td>D</td></tr>
+                                <tr><td>0% to 33%</td><td>E</td></tr>
+                            </table>
                         </div>
-                        <div class="border p-2 text-xs">
-                            <div class="font-bold bg-gray-100 p-1 mb-1">Attendance</div>
-                            <p>Regularity: Good</p>
+
+                        <div>
+                            <div class="section-header proficiency-header">Level of Proficiency</div>
+                            <table class="text-[10px]">
+                                <tr><td>Sky</td><td>☁️</td><td>✔</td></tr>
+                                <tr><td>Mountain</td><td>🏔️</td><td></td></tr>
+                                <tr><td>Stream</td><td>🌊</td><td></td></tr>
+                                <tr class="bg-gray-700 text-white font-bold"><td colspan="2">School Rank</td><td>${r[110] || '5'}</td></tr>
+                            </table>
+                        </div>
+
+                        <div>
+                            <div class="section-header results-header">Final Results</div>
+                            <div class="border-2 border-indigo-600 p-1 text-sm font-bold">
+                                <div class="flex justify-between border-b"><span>Total Obtained:</span> <span>${r[103] || '0'}</span></div>
+                                <div class="flex justify-between border-b"><span>Max Marks:</span> <span>500</span></div>
+                                <div class="flex justify-between border-b text-blue-800"><span>Percentage:</span> <span>${r[104] || '0'}%</span></div>
+                                <div class="flex justify-between border-b"><span>Overall Grade:</span> <span>Very Good</span></div>
+                                <div class="flex justify-between text-green-700"><span>Result:</span> <span>PASS</span></div>
+                            </div>
+                            <div class="mt-1 bg-gray-800 text-white p-1 text-center font-bold">Class Rank: ${r[111] || '1'}</div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-4 mt-24 text-center border-t border-black pt-2 font-bold text-[10px]">
-                        <div>Class Teacher</div><div>Exam Incharge</div><div>Parent Signature</div><div>Headmaster</div>
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <div class="border border-purple-900 p-2">
+                            <div class="bar-container">
+                                ${renderBar("Eng", r[18])} ${renderBar("Math", r[30])} ${renderBar("EVS", r[42])} ${renderBar("Urdu", r[54])} ${renderBar("Kas", r[66])}
+                            </div>
+                            <div class="bg-orange-400 text-white text-center font-bold text-xs p-1">Subject wise Bar Graph Chart</div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="bg-purple-800 text-white text-center font-bold p-1">General Remarks</div>
+                            <div class="border flex-grow p-2 text-sm italic">
+                                ${r[3]} has performed exceptionally well in all core subjects. Maintain this consistency!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 mt-16 text-[10px] font-bold text-center">
+                        <div class="border-t border-black pt-1">Sign. Form Teacher</div>
+                        <div class="border-t border-black pt-1">Sign. Exam I/C</div>
+                        <div class="border-t border-black pt-1">Parents Signature</div>
+                        <div class="border-t border-black pt-1">Seal & Signature of Headmaster</div>
                     </div>
                 `;
                 wrapper.appendChild(div);
             }
         }
 
-        function renderSubRow(name, r, start) {
-            // Helper to get data based on column index from your screenshot
+        function renderRow(name, r, s) {
             return `<tr>
                 <td class="sub-name">${name}</td>
-                <td>${r[start] || '0'}</td><td>${r[start+1] || '0'}</td>
-                <td>${r[start+2] || '0'}</td><td>${r[start+3] || '0'}</td>
-                <td>${r[start+4] || '0'}</td><td>${r[start+5] || '0'}</td>
-                <td class="bg-yellow-50 font-bold">${r[start+6] || '0'}</td>
-                <td>${r[start+7] || '0'}</td>
-                <td>${r[start+8] || '0'}</td>
-                <td class="bg-indigo-50 font-bold">${r[start+9] || '0'}</td>
+                <td>${r[s]||0}</td><td>${r[s+1]||0}</td><td>${r[s+2]||0}</td><td>${r[s+3]||0}</td><td>${r[s+4]||0}</td><td>${r[s+5]||0}</td>
+                <td class="bg-blue-50">${r[s+6]||0}</td><td>${r[s+7]||0}</td><td>${r[s+8]||0}</td>
+                <td class="bg-yellow-50">${r[s+9]||0}</td><td>${r[s+10]||'A'}</td><td>Sky</td>
             </tr>`;
+        }
+
+        function renderBar(label, val) {
+            const h = Math.min(val || 0, 100);
+            return `<div class="bar" style="height: ${h}%"><span class="bar-label">${val || 0}</span><span class="sub-label" style="bottom: -15px; position:absolute; width: 100%; text-align:center;">${label}</span></div>`;
         }
     </script>
 </body>
-</html>
-                        :                                 
+</html>  
