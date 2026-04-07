@@ -8,39 +8,60 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Responsive Scaling for Screen */
+        #marksheetWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Responsive container to handle small screens without breaking layout */
         @media screen and (max-width: 210mm) {
-            #marksheetWrapper {
-                transform: scale(0.9);
-                transform-origin: top center;
+            .marksheet-container {
+                zoom: 0.9; /* Browser-friendly scaling */
+                -moz-transform: scale(0.9);
             }
         }
-        @media screen and (max-width: 640px) {
-            #marksheetWrapper {
-                transform: scale(0.45);
-                transform-origin: top center;
+        @media screen and (max-width: 768px) {
+            .marksheet-container {
+                zoom: 0.5;
+                -moz-transform: scale(0.5);
+                margin: -150px auto !important; /* Adjust margin for scale offset */
             }
-            body { padding: 5px; }
         }
 
         /* Print Logic */
         @media print { 
             .no-print { display: none !important; } 
             .page-break { page-break-after: always; }
-            body { background-color: white; padding: 0; }
-            .marksheet-container { margin: 0; border: 5px solid #6d59c0 !important; }
+            body { background-color: white; padding: 0; margin: 0; }
+            .marksheet-container { 
+                margin: 0 auto; 
+                border: 5px solid #6d59c0 !important; 
+                zoom: 1 !important; 
+                transform: scale(1) !important;
+            }
         }
 
-        body { background-color: #e2e8f0; padding: 20px; }
+        body { background-color: #e2e8f0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* Fixed Marksheet Structure */
+        /* Fixed Marksheet Structure (A4 Ratio) */
         .marksheet-container {
-            width: 210mm; height: 285mm; padding: 10px; margin: 20px auto;
-            border: 5px solid #6d59c0; background-color: white; font-family: sans-serif;
-            position: relative; overflow: hidden; box-sizing: border-box;
+            width: 210mm; 
+            min-height: 285mm; 
+            padding: 10px; 
+            margin: 20px auto;
+            border: 5px solid #6d59c0; 
+            background-color: white; 
+            position: relative; 
+            box-sizing: border-box;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+
         .header-bg { background-color: #6d59c0; color: white; border-bottom: 2px solid #000; text-align: center; }
         .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 12px; }
-        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 13px; font-weight: bold; text-align: center; color: #000; overflow: hidden; }
+        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 13px; font-weight: bold; text-align: center; color: #000; }
+        
         table { border-collapse: collapse; width: 100%; margin-top: 2px; }
         th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 4px; }
         .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 10px; font-size: 14px; }
@@ -49,54 +70,66 @@
         .prof-box { display: flex; align-items: center; justify-content: space-between; padding: 2px 5px; border-bottom: 1px solid #ccc; height: 40px;}
         
         /* Bar Graph */
-        .chart-container { height: 120px; border: 1px solid #ccc; position: relative; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 20px; }
+        .chart-container { height: 120px; border: 1px solid #ccc; position: relative; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 20px; padding-top: 20px; }
         .chart-bar { width: 25px; background-color: #4f81bd; position: relative; border: 1px solid #000; transition: height 0.5s; }
-        .chart-val { position: absolute; top: -15px; width: 100%; text-align: center; font-size: 10px; font-weight: bold; }
+        .chart-val { position: absolute; top: -18px; width: 100%; text-align: center; font-size: 10px; font-weight: bold; }
         .chart-label { position: absolute; bottom: -18px; font-size: 9px; width: 60px; left: -17px; text-align: center; }
 
         .rank-box { background: #4b5563; color: white; text-align: center; padding: 2px; font-size: 12px; font-weight: bold; }
         .qualitative-label { background: #df695a; color: white; text-align: left; padding-left: 5px; font-size: 10px; }
-        .student-photo { width: 100%; height: 100%; object-fit: cover; }
+        .student-photo { width: 100%; height: 100%; object-fit: contain; background: #f3f4f6; }
     </style>
 </head>
 <body>
 
     <div class="no-print max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
-        <h2 class="text-2xl font-bold text-indigo-900 mb-4">Marksheet Generator</h2>
+        <h2 class="text-2xl font-bold text-indigo-900 mb-4">PS Pethgam Wagoora Marksheet Generator</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700">1. Upload Excel Data</label>
-                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                <label class="block text-sm font-medium text-gray-700">1. Upload Student Photos (Rename files to Adm No.)</label>
+                <input type="file" id="photoUpload" multiple accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
+                <p id="photoCount" class="text-xs text-green-600 mt-1 font-semibold"></p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700">2. Upload Student Photos (Name files as Admission No.)</label>
-                <input type="file" id="photoUpload" multiple accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
+                <label class="block text-sm font-medium text-gray-700">2. Upload Excel Data</label>
+                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
             </div>
         </div>
-        <button onclick="window.print()" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700">Print All Marksheets</button>
+        <div class="flex gap-4 mt-6">
+            <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition">Print All Marksheets</button>
+            <button onclick="location.reload()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-bold hover:bg-gray-300">Reset</button>
+        </div>
     </div>
 
     <div id="marksheetWrapper"></div>
 
     <script>
         let studentPhotos = {};
+        let excelData = null;
 
-        // Handle Photo Uploads
-        document.getElementById('photoUpload').addEventListener('change', function(e) {
+        // Enhanced Photo Upload with feedback
+        document.getElementById('photoUpload').addEventListener('change', async function(e) {
             const files = e.target.files;
+            let loaded = 0;
+            
             for (let file of files) {
-                const reader = new FileReader();
-                // Get filename without extension to match Admission Number
-                const admNo = file.name.split('.')[0];
-                reader.onload = (event) => {
-                    studentPhotos[admNo] = event.target.result;
-                };
-                reader.readAsDataURL(file);
+                const admNo = file.name.split('.')[0].trim();
+                studentPhotos[admNo] = await readFileAsDataURL(file);
+                loaded++;
             }
-            alert("Photos uploaded and indexed by Admission Number.");
+            document.getElementById('photoCount').innerText = `✅ ${loaded} Photos Ready`;
+            if(excelData) processData(excelData); // Re-process if excel was already uploaded
         });
 
-        // Handle Excel Upload
+        function readFileAsDataURL(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Excel Upload
         document.getElementById('excelUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -104,8 +137,8 @@
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(sheet);
-                processData(jsonData);
+                excelData = XLSX.utils.sheet_to_json(sheet);
+                processData(excelData);
             };
             reader.readAsArrayBuffer(file);
         });
@@ -118,14 +151,17 @@
                 const div = document.createElement('div');
                 div.className = 'marksheet-container page-break';
                 
-                // Handle Photo - Check if photo exists for this Admission Number
-                const photoHtml = studentPhotos[row["Adm. No"]] 
-                    ? `<img src="${studentPhotos[row["Adm. No"]]}" class="student-photo">` 
-                    : `<span class="text-gray-400">PHOTO</span>`;
+                // Flexible Adm No matching (removes leading zeros or spaces)
+                const lookupKey = String(row["Adm. No"] || "").trim();
+                const photoSrc = studentPhotos[lookupKey];
+
+                const photoHtml = photoSrc 
+                    ? `<img src="${photoSrc}" class="student-photo">` 
+                    : `<div class="flex flex-col items-center justify-center h-full text-[10px] text-gray-400">NO PHOTO<br>ID: ${lookupKey}</div>`;
 
                 div.innerHTML = `
                     <div class="flex items-center header-bg p-2 relative">
-                        <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-[10px] text-black font-bold">LOGO</div>
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[10px] text-indigo-900 font-bold border-2 border-yellow-400">LOGO</div>
                         <div class="flex-grow text-center">
                             <h1 class="text-3xl font-black">GOVERNMENT PRIMARY SCHOOL</h1>
                             <h2 class="text-xl font-bold">PETHGAM WAGOORA 193109</h2>
@@ -145,7 +181,7 @@
                             <div class="cell-label">Apaar ID:</div><div class="cell-value">${row["Apaar ID"] || 'N/A'}</div>
                             <div class="cell-label">PEN No.:</div><div class="cell-value">${row["PEN"] || ''}</div>
                         </div>
-                        <div class="w-28 h-32 border-2 border-indigo-900 ml-1 bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <div class="w-28 h-32 border-2 border-indigo-900 ml-1 bg-gray-50 flex items-center justify-center overflow-hidden">
                             ${photoHtml}
                         </div>
                     </div>
@@ -153,8 +189,8 @@
                     <table class="mt-1">
                         <thead class="bg-indigo-100 text-[9px]">
                             <tr>
-                                <th rowspan="2">Subject</th>
-                                <th colspan="6">"FA" (5)</th>
+                                <th rowspan="2" class="w-32">Subject</th>
+                                <th colspan="6">Formative Assessment "FA" (5 Marks Each)</th>
                                 <th rowspan="2">Total (30)</th>
                                 <th rowspan="2">Co-Curricular (20)</th>
                                 <th rowspan="2">Summative (50)</th>
@@ -198,7 +234,7 @@
                         </div>
                         <div>
                             <div class="section-header">Level of Proficiency</div>
-                            <div class="border h-full">
+                            <div class="border h-full bg-white">
                                 <div class="prof-box"><span>Sky</span><img src="https://i.ibb.co/JfGTh1L/IMG-20260407-220459.jpg" class="h-6"> <span>${row["Proficiency"] === 'Sky' ? '✔' : ''}</span></div>
                                 <div class="prof-box"><span>Mountain</span><img src="https://i.ibb.co/BVNfR1Pd/IMG-20260407-220254.png" class="h-6"> <span>${row["Proficiency"] === 'Mountain' ? '✔' : ''}</span></div>
                                 <div class="prof-box"><span>Stream</span><img src="https://i.ibb.co/DPhJKgjp/IMG-20260407-220351.jpg" class="h-6"> <span>${row["Proficiency"] === 'Stream' ? '✔' : ''}</span></div>
@@ -218,13 +254,13 @@
                     </div>
 
                     <div class="grid grid-cols-3 mt-1 gap-1">
-                        <div class="rank-box">School Rank: ${row["School_Rank"] || ''}</div>
-                        <div class="bg-white"></div> <div class="rank-box">Class Rank: ${row["Class_Rank"] || ''}</div>
+                        <div class="rank-box">School Rank: ${row["School_Rank"] || 'N/A'}</div>
+                        <div class="bg-white"></div> <div class="rank-box">Class Rank: ${row["Class_Rank"] || 'N/A'}</div>
                     </div>
 
                     <div class="grid grid-cols-12 mt-1 border gap-1">
                         <div class="col-span-5">
-                            <div class="bg-orange-400 text-white text-center font-bold text-xs p-1">Subject wise Bar Graph Chart</div>
+                            <div class="bg-orange-400 text-white text-center font-bold text-xs p-1">Subject wise Performance</div>
                             <div class="chart-container">
                                 ${renderBar("Eng", row["English_Total"])}
                                 ${renderBar("Math", row["Math_Total"])}
@@ -265,23 +301,24 @@
             return `
                 <tr>
                     <td class="sub-name">${sub}</td>
-                    <td>${row[sub+'_FA1'] || 0}</td><td>${row[sub+'_FA2'] || 0}</td>
-                    <td>${row[sub+'_FA3'] || 0}</td><td>${row[sub+'_FA4'] || 0}</td>
-                    <td>${row[sub+'_FA5'] || 0}</td><td>${row[sub+'_FA6'] || 0}</td>
-                    <td>${row[sub+'_FATotal'] || 0}</td>
-                    <td>${row[sub+'_CC'] || 0}</td>
-                    <td>${row[sub+'_Summative'] || 0}</td>
-                    <td>${row[sub+'_Total'] || 0}</td>
-                    <td>${row[sub+'_Grade'] || ''}</td>
-                    <td>${row[sub+'_Prof'] || ''}</td>
+                    <td>${row[sub+'_FA1'] ?? ''}</td><td>${row[sub+'_FA2'] ?? ''}</td>
+                    <td>${row[sub+'_FA3'] ?? ''}</td><td>${row[sub+'_FA4'] ?? ''}</td>
+                    <td>${row[sub+'_FA5'] ?? ''}</td><td>${row[sub+'_FA6'] ?? ''}</td>
+                    <td>${row[sub+'_FATotal'] ?? ''}</td>
+                    <td>${row[sub+'_CC'] ?? ''}</td>
+                    <td>${row[sub+'_Summative'] ?? ''}</td>
+                    <td class="font-bold">${row[sub+'_Total'] ?? ''}</td>
+                    <td class="font-bold">${row[sub+'_Grade'] ?? ''}</td>
+                    <td>${row[sub+'_Prof'] ?? ''}</td>
                 </tr>`;
         }
 
         function renderBar(label, val) {
-            const height = val ? val : 0;
+            // Calculate height as percentage of 100
+            const height = val ? Math.min(val, 100) : 0;
             return `<div class="chart-bar" style="height: ${height}%"><div class="chart-val">${height}</div><div class="chart-label">${label}</div></div>`;
         }
     </script>
 </body>
 </html>
-                                        
+                                            
