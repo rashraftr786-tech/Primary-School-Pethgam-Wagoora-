@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPS Pethgam Wagoora - Advanced Marksheet System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print { .no-print { display: none; } .page-break { page-break-after: always; } }
         .marksheet-container {
@@ -20,6 +20,15 @@
         .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 5px; font-size: 13px; }
         .footer-tab { background-color: #334155; color: white; font-size: 10px; padding: 4px; text-align: center; }
         .photo-box { width: 100px; height: 110px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
+
+        /* Custom Bar Graph Styles */
+        .chart-container { width: 100%; height: 150px; border: 1px solid #ccc; position: relative; margin-top: 10px; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 25px; background: #fff; }
+        .chart-y-axis { position: absolute; left: 5px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: #333; padding-bottom: 25px; }
+        .chart-bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 15%; position: relative; height: 100%; justify-content: flex-end; }
+        .chart-bar { width: 80%; background-color: #4f81bd; border: 1px solid #385d8a; position: relative; transition: height 0.5s; }
+        .chart-val { position: absolute; top: -18px; width: 100%; text-align: center; font-size: 11px; font-weight: bold; }
+        .chart-label { position: absolute; bottom: -22px; font-size: 10px; font-weight: bold; width: 100%; text-align: center; }
+        .chart-title { background: #f79646; color: white; text-align: center; font-weight: bold; padding: 2px; width: 100%; font-size: 14px; }
     </style>
 </head>
 <body class="bg-gray-200 p-4">
@@ -89,19 +98,9 @@
             return 'Stream';
         }
 
-        function getAutomaticRemarks(avg) {
-            if (avg >= 85) return "Excellent performance! Keep up the brilliant work.";
-            if (avg >= 70) return "Very good progress. Aim for the top grade next time.";
-            if (avg >= 55) return "Good effort. Focus more on weak areas.";
-            if (avg >= 33) return "Satisfactory. Needs more consistent study habits.";
-            return "Requires urgent attention and remedial support.";
-        }
-
         function processData(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
-            
-            // Starts from row 4 (index 3) and filters empty student names
             const students = rows.slice(3).filter(r => r[3]); 
 
             students.forEach(row => {
@@ -110,12 +109,9 @@
 
                 const s = {
                     adm: row[0], roll: row[1], class: row[2], name: studentName,
-                    father: row[4], mother: row[5], 
-                    dob: formatExcelDate(row[7]), 
-                    apaar: row[65] || 'N/A', 
-                    pen: row[66] || 'N/A', 
-                    session: "Nov. 2025",
-                    sRank: row[67] || '-', cRank: row[68] || '-',
+                    father: row[4], mother: row[5], dob: formatExcelDate(row[7]), 
+                    apaar: row[65] || 'N/A', pen: row[66] || 'N/A', 
+                    session: "Nov. 2025", sRank: row[67] || '-', cRank: row[68] || '-',
                     eng: { fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14]||0, cc: row[15]||0, sum: row[16]||0, grand: row[17]||0 },
                     math: { fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24]||0, cc: row[25]||0, sum: row[26]||0, grand: row[27]||0 },
                     evs: { fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34]||0, cc: row[35]||0, sum: row[36]||0, grand: row[37]||0 },
@@ -123,15 +119,15 @@
                     kash: { fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54]||0, cc: row[55]||0, sum: row[56]||0, grand: row[57]||0 }
                 };
 
-                const total = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
-                const avgPerc = total / 5;
-                const avgGrade = getGrade(avgPerc);
+                const totalGrand = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
+                const totalCC = s.eng.cc + s.math.cc + s.evs.cc + s.urdu.cc + s.kash.cc;
+                const totalSum = s.eng.sum + s.math.sum + s.evs.sum + s.urdu.sum + s.kash.sum;
+                const totalFA = s.eng.tot + s.math.tot + s.evs.tot + s.urdu.tot + s.kash.tot;
 
                 const div = document.createElement('div');
                 div.className = 'marksheet-container mb-8 page-break';
                 div.innerHTML = `
                     <div class="header-bg p-2 flex justify-between items-center">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[8px] text-black font-bold">LOGO</div>
                         <div class="text-center flex-grow">
                             <h1 class="text-2xl font-black leading-none">GOVERNMENT PRIMARY SCHOOL</h1>
                             <h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2>
@@ -144,15 +140,11 @@
                             <div class="cell-label">Adm. No:</div><div class="cell-value">${s.adm}</div>
                             <div class="cell-label">Fathers Name:</div><div class="cell-value">${s.father}</div>
                             <div class="cell-label">D.O.B:</div><div class="cell-value">${s.dob}</div>
-                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${s.mother}</div>
                             <div class="cell-label">Class:</div><div class="cell-value">${s.class}</div>
-                            <div class="cell-label">Academic Session:</div><div class="cell-value">${s.session}</div>
                             <div class="cell-label">Roll No:</div><div class="cell-value">${s.roll}</div>
-                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${s.apaar}</div>
-                            <div class="cell-label">PEN No.</div><div class="cell-value">${s.pen}</div>
                         </div>
                         <div class="photo-box ml-1">
-                            ${photoSrc ? `<img src="${photoSrc}" class="w-full h-full object-cover">` : `<span class="text-[10px] text-gray-400">PHOTO</span>`}
+                            ${photoSrc ? `<img src="${photoSrc}" class="w-full h-full object-cover">` : `<span class="text-[10px]">PHOTO</span>`}
                         </div>
                     </div>
 
@@ -160,23 +152,19 @@
                         <thead class="bg-indigo-100">
                             <tr>
                                 <th rowspan="2">Subject</th>
-                                <th colspan="6">Formative Assessment (5 marks each)</th>
+                                <th colspan="6">FA (5 each)</th>
                                 <th rowspan="2">Total (30)</th>
                                 <th rowspan="2">Co-Curricular (20)</th>
                                 <th rowspan="2">Summative (50)</th>
-                                <th rowspan="2">Total (100)</th>
+                                <th rowspan="2">Grand Total (100)</th>
                                 <th rowspan="2">Grade</th>
-                                <th rowspan="2">Proficiency</th>
                             </tr>
-                            <tr class="text-[9px]">
-                                <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
+                            <tr class="text-[8px]">
+                                <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${[
-                                {n: 'English', d: s.eng}, {n: 'Math', d: s.math}, {n: 'EVS', d: s.evs},
-                                {n: 'Urdu', d: s.urdu}, {n: 'Kashmiri', d: s.kash}
-                            ].map(sub => `
+                            ${[{n:'English', d:s.eng}, {n:'Math', d:s.math}, {n:'EVS', d:s.evs}, {n:'Urdu', d:s.urdu}, {n:'Kashmiri', d:s.kash}].map(sub => `
                                 <tr>
                                     <td class="sub-name">${sub.n}</td>
                                     ${sub.d.fa.map(v => `<td>${v || 0}</td>`).join('')}
@@ -185,67 +173,39 @@
                                     <td>${sub.d.sum}</td>
                                     <td class="font-bold bg-blue-50">${sub.d.grand}</td>
                                     <td class="font-bold">${getGrade(sub.d.grand)}</td>
-                                    <td class="text-[9px] italic">${getProficiency(sub.d.grand)}</td>
-                                </tr>
-                            `).join('')}
+                                </tr>`).join('')}
                         </tbody>
                         <tfoot class="bg-gray-100 font-bold">
                             <tr>
-                                <td colspan="7">Grand Total</td>
-                                <td>${s.eng.tot+s.math.tot+s.evs.tot+s.urdu.tot+s.kash.tot}</td>
-                                <td>-</td><td>-</td>
-                                <td>${total}</td>
-                                <td>${avgGrade}</td>
-                                <td>${getProficiency(avgPerc)}</td>
+                                <td colspan="7">GRAND TOTALS</td>
+                                <td>${totalFA}</td>
+                                <td>${totalCC}</td>
+                                <td>${totalSum}</td>
+                                <td class="bg-yellow-100">${totalGrand}</td>
+                                <td>${getGrade(totalGrand/5)}</td>
                             </tr>
                         </tfoot>
                     </table>
 
-                    <div class="grid grid-cols-3 gap-1 mt-1">
-                        <div class="border border-indigo-200">
-                            <div class="bg-indigo-600 text-white text-[10px] font-bold text-center">GRADE KEY</div>
-                            <table class="text-[9px] w-full">
-                                <tr><td>>85%</td><td>A+</td><td>>70%</td><td>A</td></tr>
-                                <tr><td>>55%</td><td>B</td><td>>40%</td><td>C</td></tr>
-                                <tr><td>>33%</td><td>D</td><td>>0%</td><td>E</td></tr>
-                            </table>
+                    <div class="mt-2">
+                        <div class="chart-title">Subject wise Bar Graph Chart</div>
+                        <div class="chart-container">
+                            <div class="chart-y-axis"><span>95</span><span>70</span></div>
+                            ${[{l:'English', v:s.eng.grand}, {l:'Math', v:s.math.grand}, {l:'EVS', v:s.evs.grand}, {l:'Urdu', v:s.urdu.grand}, {l:'Kashmiri', v:s.kash.grand}].map(item => `
+                                <div class="chart-bar-wrapper">
+                                    <div class="chart-val">${item.v}</div>
+                                    <div class="chart-bar" style="height: ${((item.v - 65) / 35) * 100}%"></div>
+                                    <div class="chart-label">${item.l}</div>
+                                </div>
+                            `).join('')}
                         </div>
-                        <div class="border border-indigo-200 text-center">
-                            <div class="bg-indigo-600 text-white text-[10px] font-bold">SCHOOL RANK</div>
-                            <div class="text-xl font-bold p-1">${s.sRank}</div>
-                            <div class="bg-slate-700 text-white text-[10px] font-bold">CLASS RANK: ${s.cRank}</div>
-                        </div>
-                        <div class="border border-slate-400 bg-white">
-                            <div class="bg-[#a855f7] text-white text-[12px] p-2 font-bold text-center uppercase tracking-wider">General Remarks</div>
-                            <div id="remarks_${s.roll}" class="p-3 text-[11px] font-bold text-black leading-relaxed text-left min-h-[60px]">
-                                ${getAutomaticRemarks(avgPerc)}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-1 border border-indigo-200">
-                        <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
-                        <table class="w-full text-[11px] border-collapse">
-                            <tr>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Total Marks Obtained</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${total} / 500</td>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Grade</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgGrade}</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Percentage</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgPerc.toFixed(1)}%</td>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Result</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgPerc >= 33 ? 'PASS' : 'FAIL'}</td>
-                            </tr>
-                        </table>
                     </div>
 
                     <div class="grid grid-cols-4 mt-8 gap-4">
-                        <div class="footer-tab">Sign. Form Teacher</div>
+                        <div class="footer-tab">Sign. Teacher</div>
                         <div class="footer-tab">Sign. Exam I/C</div>
                         <div class="footer-tab">Parents Signature</div>
-                        <div class="footer-tab">Seal of Headmaster</div>
+                        <div class="footer-tab">Headmaster</div>
                     </div>
                 `;
                 wrapper.appendChild(div);
@@ -254,4 +214,4 @@
     </script>
 </body>
 </html>
-                                                       
+                 {n
