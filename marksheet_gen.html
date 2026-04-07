@@ -7,74 +7,121 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @media print { .no-print { display: none; } .page-break { page-break-after: always; } }
+        /* Responsive Scaling for Screen */
+        @media screen and (max-width: 210mm) {
+            #marksheetWrapper {
+                transform: scale(0.9);
+                transform-origin: top center;
+            }
+        }
+        @media screen and (max-width: 640px) {
+            #marksheetWrapper {
+                transform: scale(0.45);
+                transform-origin: top center;
+            }
+            body { padding: 5px; }
+        }
+
+        /* Print Logic */
+        @media print { 
+            .no-print { display: none !important; } 
+            .page-break { page-break-after: always; }
+            body { background-color: white; padding: 0; }
+            .marksheet-container { margin: 0; border: 5px solid #6d59c0 !important; }
+        }
+
         body { background-color: #e2e8f0; padding: 20px; }
+        
+        /* Fixed Marksheet Structure */
         .marksheet-container {
-            width: 210mm; height: 285mm; padding: 10px; margin: auto;
+            width: 210mm; height: 285mm; padding: 10px; margin: 20px auto;
             border: 5px solid #6d59c0; background-color: white; font-family: sans-serif;
-            position: relative;
+            position: relative; overflow: hidden; box-sizing: border-box;
         }
         .header-bg { background-color: #6d59c0; color: white; border-bottom: 2px solid #000; text-align: center; }
         .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 12px; }
-        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 13px; font-weight: bold; text-align: center; color: #000; }
+        .cell-value { border: 1px solid #94a3b8; padding: 4px; font-size: 13px; font-weight: bold; text-align: center; color: #000; overflow: hidden; }
         table { border-collapse: collapse; width: 100%; margin-top: 2px; }
         th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 4px; }
         .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 10px; font-size: 14px; }
         
-        /* Proficiency/Result Section Styles */
         .section-header { background: #9333ea; color: white; text-align: center; font-weight: bold; font-size: 14px; padding: 4px; }
         .prof-box { display: flex; align-items: center; justify-content: space-between; padding: 2px 5px; border-bottom: 1px solid #ccc; height: 40px;}
-        .grade-key td { padding: 2px; font-size: 10px; }
         
         /* Bar Graph */
         .chart-container { height: 120px; border: 1px solid #ccc; position: relative; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 20px; }
-        .chart-bar { width: 25px; background-color: #4f81bd; position: relative; border: 1px solid #000; }
+        .chart-bar { width: 25px; background-color: #4f81bd; position: relative; border: 1px solid #000; transition: height 0.5s; }
         .chart-val { position: absolute; top: -15px; width: 100%; text-align: center; font-size: 10px; font-weight: bold; }
         .chart-label { position: absolute; bottom: -18px; font-size: 9px; width: 60px; left: -17px; text-align: center; }
 
         .rank-box { background: #4b5563; color: white; text-align: center; padding: 2px; font-size: 12px; font-weight: bold; }
         .qualitative-label { background: #df695a; color: white; text-align: left; padding-left: 5px; font-size: 10px; }
+        .student-photo { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-    <div class="no-print max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
-        <h2 class="text-2xl font-bold text-indigo-900 mb-4">Control Panel</h2>
-        <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-indigo-600 file:text-white" />
+    <div class="no-print max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
+        <h2 class="text-2xl font-bold text-indigo-900 mb-4">Marksheet Generator</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">1. Upload Excel Data</label>
+                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">2. Upload Student Photos (Name files as Admission No.)</label>
+                <input type="file" id="photoUpload" multiple accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
+            </div>
+        </div>
+        <button onclick="window.print()" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700">Print All Marksheets</button>
     </div>
 
     <div id="marksheetWrapper"></div>
 
     <script>
+        let studentPhotos = {};
+
+        // Handle Photo Uploads
+        document.getElementById('photoUpload').addEventListener('change', function(e) {
+            const files = e.target.files;
+            for (let file of files) {
+                const reader = new FileReader();
+                // Get filename without extension to match Admission Number
+                const admNo = file.name.split('.')[0];
+                reader.onload = (event) => {
+                    studentPhotos[admNo] = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            alert("Photos uploaded and indexed by Admission Number.");
+        });
+
+        // Handle Excel Upload
         document.getElementById('excelUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-                processData(rows);
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(sheet);
+                processData(jsonData);
             };
             reader.readAsArrayBuffer(file);
         });
 
-        function getGrade(p) {
-            if (p > 85) return 'A+'; if (p > 70) return 'A'; if (p > 55) return 'B';
-            if (p > 40) return 'C'; if (p > 33) return 'D'; return 'E';
-        }
-
-        function processData(rows) {
+        function processData(students) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
-            const students = rows.slice(1); // Adjust based on your Excel header row
 
             students.forEach(row => {
                 const div = document.createElement('div');
-                div.className = 'marksheet-container mb-10 page-break';
+                div.className = 'marksheet-container page-break';
                 
-                // Demo mapping based on your image logic
-                const totalMarks = 426; 
-                const percentage = (totalMarks/500)*100;
+                // Handle Photo - Check if photo exists for this Admission Number
+                const photoHtml = studentPhotos[row["Adm. No"]] 
+                    ? `<img src="${studentPhotos[row["Adm. No"]]}" class="student-photo">` 
+                    : `<span class="text-gray-400">PHOTO</span>`;
 
                 div.innerHTML = `
                     <div class="flex items-center header-bg p-2 relative">
@@ -87,18 +134,20 @@
 
                     <div class="flex mt-1 border">
                         <div class="flex-grow grid grid-cols-4">
-                            <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">AAYAT RIYAZ WANI</div>
-                            <div class="cell-label">Adm. No:</div><div class="cell-value">133</div>
-                            <div class="cell-label">Fathers Name:</div><div class="cell-value">RIYAZ AHMAD WANI</div>
-                            <div class="cell-label">D.O.B:</div><div class="cell-value">03-03-2017</div>
-                            <div class="cell-label">Mothers Name:</div><div class="cell-value">AFROZA BEGUM</div>
-                            <div class="cell-label">Class:</div><div class="cell-value">3rd</div>
-                            <div class="cell-label">Academic Session:</div><div class="cell-value">Nov.-Dec. 2024</div>
-                            <div class="cell-label">Roll No:</div><div class="cell-value">303</div>
-                            <div class="cell-label">Apaar ID:</div><div class="cell-value">Not Available</div>
-                            <div class="cell-label">PEN No.:</div><div class="cell-value">22232018998</div>
+                            <div class="cell-label">Student Name:</div><div class="cell-value">${row["Student Name"] || ''}</div>
+                            <div class="cell-label">Adm. No:</div><div class="cell-value">${row["Adm. No"] || ''}</div>
+                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${row["Fathers Name"] || ''}</div>
+                            <div class="cell-label">D.O.B:</div><div class="cell-value">${row["D.O.B"] || ''}</div>
+                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${row["Mothers Name"] || ''}</div>
+                            <div class="cell-label">Class:</div><div class="cell-value">${row["Class"] || ''}</div>
+                            <div class="cell-label">Academic Session:</div><div class="cell-value">${row["Session"] || '2024-25'}</div>
+                            <div class="cell-label">Roll No:</div><div class="cell-value">${row["Roll No"] || ''}</div>
+                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${row["Apaar ID"] || 'N/A'}</div>
+                            <div class="cell-label">PEN No.:</div><div class="cell-value">${row["PEN"] || ''}</div>
                         </div>
-                        <div class="w-28 h-32 border-2 border-indigo-900 ml-1 bg-gray-100 flex items-center justify-center text-xs">PHOTO</div>
+                        <div class="w-28 h-32 border-2 border-indigo-900 ml-1 bg-gray-100 flex items-center justify-center overflow-hidden">
+                            ${photoHtml}
+                        </div>
                     </div>
 
                     <table class="mt-1">
@@ -116,12 +165,21 @@
                             <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td class="sub-name">English</td><td>3</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td><td>23</td><td>16</td><td>38</td><td>77</td><td>A</td><td>Sky</td></tr>
-                            <tr><td class="sub-name">Math</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td><td>27</td><td>18</td><td>45</td><td>90</td><td>A+</td><td>Sky</td></tr>
-                            <tr><td class="sub-name">EVS</td><td>4</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>26</td><td>17</td><td>43</td><td>86</td><td>A+</td><td>Sky</td></tr>
-                            <tr><td class="sub-name">Urdu</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td><td>27</td><td>18</td><td>45</td><td>90</td><td>A+</td><td>Sky</td></tr>
-                            <tr><td class="sub-name">Kashmiri</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>25</td><td>17</td><td>41</td><td>83</td><td>A</td><td>Sky</td></tr>
-                            <tr class="bg-gray-100 font-bold"><td>Grand Total</td><td>18</td><td>19</td><td>20</td><td>22</td><td>24</td><td>25</td><td>128</td><td>86</td><td>212</td><td>426</td><td>A+</td><td>Stream</td></tr>
+                            ${renderSubjectRow("English", row)}
+                            ${renderSubjectRow("Math", row)}
+                            ${renderSubjectRow("EVS", row)}
+                            ${renderSubjectRow("Urdu", row)}
+                            ${renderSubjectRow("Kashmiri", row)}
+                            <tr class="bg-gray-100 font-bold">
+                                <td>Grand Total</td>
+                                <td colspan="6">-</td>
+                                <td>${row["Total_FA"] || ''}</td>
+                                <td>${row["Total_CC"] || ''}</td>
+                                <td>${row["Total_Summative"] || ''}</td>
+                                <td>${row["Grand_Total"] || ''}</td>
+                                <td>${row["Overall_Grade"] || ''}</td>
+                                <td>-</td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -141,53 +199,53 @@
                         <div>
                             <div class="section-header">Level of Proficiency</div>
                             <div class="border h-full">
-                                <div class="prof-box"><span>Sky</span><img src="https://i.ibb.co/JfGTh1L/IMG-20260407-220459.jpg" class="h-6"> <span>✔</span></div>
-                                <div class="prof-box"><span>Mountain</span><img src="https://i.ibb.co/BVNfR1Pd/IMG-20260407-220254.png" class="h-6"> <span></span></div>
-                                <div class="prof-box"><span>Stream</span><img src="https://i.ibb.co/DPhJKgjp/IMG-20260407-220351.jpg" class="h-6"> <span></span></div>
+                                <div class="prof-box"><span>Sky</span><img src="https://i.ibb.co/JfGTh1L/IMG-20260407-220459.jpg" class="h-6"> <span>${row["Proficiency"] === 'Sky' ? '✔' : ''}</span></div>
+                                <div class="prof-box"><span>Mountain</span><img src="https://i.ibb.co/BVNfR1Pd/IMG-20260407-220254.png" class="h-6"> <span>${row["Proficiency"] === 'Mountain' ? '✔' : ''}</span></div>
+                                <div class="prof-box"><span>Stream</span><img src="https://i.ibb.co/DPhJKgjp/IMG-20260407-220351.jpg" class="h-6"> <span>${row["Proficiency"] === 'Stream' ? '✔' : ''}</span></div>
                             </div>
                         </div>
                         <div>
                             <div class="section-header">Final Results</div>
                             <table class="text-[10px]">
-                                <tr><td class="bg-blue-100 font-bold">Total Marks Obtained</td><td>426</td></tr>
+                                <tr><td class="bg-blue-100 font-bold">Total Marks Obtained</td><td>${row["Grand_Total"] || ''}</td></tr>
                                 <tr><td class="bg-blue-100 font-bold">Max. Marks</td><td>500</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Overall Percentage</td><td>85%</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Overall Grade</td><td>Very Good</td></tr>
+                                <tr><td class="bg-blue-100 font-bold">Overall Percentage</td><td>${row["Percentage"] || ''}%</td></tr>
+                                <tr><td class="bg-blue-100 font-bold">Overall Grade</td><td>${row["Overall_Grade"] || ''}</td></tr>
                                 <tr><td class="bg-blue-100 font-bold">Result</td><td class="font-bold">Pass</td></tr>
-                                <tr><td class="bg-blue-100 font-bold">Position in Class</td><td>1st</td></tr>
+                                <tr><td class="bg-blue-100 font-bold">Position in Class</td><td>${row["Class_Rank"] || ''}</td></tr>
                             </table>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 mt-1 gap-1">
-                        <div class="rank-box">School Rank: 5</div>
-                        <div class="bg-white"></div> <div class="rank-box">Class Rank: 1</div>
+                        <div class="rank-box">School Rank: ${row["School_Rank"] || ''}</div>
+                        <div class="bg-white"></div> <div class="rank-box">Class Rank: ${row["Class_Rank"] || ''}</div>
                     </div>
 
                     <div class="grid grid-cols-12 mt-1 border gap-1">
                         <div class="col-span-5">
                             <div class="bg-orange-400 text-white text-center font-bold text-xs p-1">Subject wise Bar Graph Chart</div>
                             <div class="chart-container">
-                                <div class="chart-bar" style="height: 77%"><div class="chart-val">77</div><div class="chart-label">Eng</div></div>
-                                <div class="chart-bar" style="height: 90%"><div class="chart-val">90</div><div class="chart-label">Math</div></div>
-                                <div class="chart-bar" style="height: 86%"><div class="chart-val">86</div><div class="chart-label">EVS</div></div>
-                                <div class="chart-bar" style="height: 90%"><div class="chart-val">90</div><div class="chart-label">Urdu</div></div>
-                                <div class="chart-bar" style="height: 83%"><div class="chart-val">83</div><div class="chart-label">Kash</div></div>
+                                ${renderBar("Eng", row["English_Total"])}
+                                ${renderBar("Math", row["Math_Total"])}
+                                ${renderBar("EVS", row["EVS_Total"])}
+                                ${renderBar("Urdu", row["Urdu_Total"])}
+                                ${renderBar("Kash", row["Kashmiri_Total"])}
                             </div>
                         </div>
                         <div class="col-span-3 border">
                             <div class="bg-indigo-900 text-white text-center font-bold text-xs p-1">General Remarks</div>
                             <div class="p-2 text-[10px] leading-tight italic">
-                                AAYAT RIYAZ WANI has performed well in English, Math, EVS, Urdu, Kashmiri. Keep it up!
+                                ${row["Remarks"] || (row["Student Name"] + ' has performed well in all subjects. Keep it up!')}
                             </div>
                         </div>
                         <div class="col-span-4">
                             <table class="w-full">
-                                <tr><td class="qualitative-label">Attendance %age</td><td class="w-10"></td></tr>
-                                <tr><td class="qualitative-label">Empathy & Teamwork</td><td></td></tr>
-                                <tr><td class="qualitative-label">Discipline</td><td></td></tr>
-                                <tr><td class="qualitative-label">Sports</td><td></td></tr>
-                                <tr><td class="qualitative-label">Art and Craft</td><td></td></tr>
+                                <tr><td class="qualitative-label">Attendance %age</td><td class="w-10">${row["Attendance"] || ''}</td></tr>
+                                <tr><td class="qualitative-label">Empathy & Teamwork</td><td>${row["Empathy"] || ''}</td></tr>
+                                <tr><td class="qualitative-label">Discipline</td><td>${row["Discipline"] || ''}</td></tr>
+                                <tr><td class="qualitative-label">Sports</td><td>${row["Sports"] || ''}</td></tr>
+                                <tr><td class="qualitative-label">Art and Craft</td><td>${row["Art"] || ''}</td></tr>
                             </table>
                         </div>
                     </div>
@@ -202,7 +260,28 @@
                 wrapper.appendChild(div);
             });
         }
+
+        function renderSubjectRow(sub, row) {
+            return `
+                <tr>
+                    <td class="sub-name">${sub}</td>
+                    <td>${row[sub+'_FA1'] || 0}</td><td>${row[sub+'_FA2'] || 0}</td>
+                    <td>${row[sub+'_FA3'] || 0}</td><td>${row[sub+'_FA4'] || 0}</td>
+                    <td>${row[sub+'_FA5'] || 0}</td><td>${row[sub+'_FA6'] || 0}</td>
+                    <td>${row[sub+'_FATotal'] || 0}</td>
+                    <td>${row[sub+'_CC'] || 0}</td>
+                    <td>${row[sub+'_Summative'] || 0}</td>
+                    <td>${row[sub+'_Total'] || 0}</td>
+                    <td>${row[sub+'_Grade'] || ''}</td>
+                    <td>${row[sub+'_Prof'] || ''}</td>
+                </tr>`;
+        }
+
+        function renderBar(label, val) {
+            const height = val ? val : 0;
+            return `<div class="chart-bar" style="height: ${height}%"><div class="chart-val">${height}</div><div class="chart-label">${label}</div></div>`;
+        }
     </script>
 </body>
 </html>
-                                            
+                                        
