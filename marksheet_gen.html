@@ -43,7 +43,6 @@
     <script>
         let studentPhotos = {};
 
-        // Helper to format Excel dates correctly
         function formatExcelDate(dateVal) {
             if (!dateVal) return "N/A";
             if (!isNaN(dateVal)) {
@@ -68,7 +67,7 @@
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, { type: 'array', cellDates: false });
+                const workbook = XLSX.read(data, { type: 'array' });
                 const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
                 processData(rows);
             };
@@ -102,14 +101,13 @@
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
             
+            // Starts from row 4 (index 3) and filters empty student names
             const students = rows.slice(3).filter(r => r[3]); 
 
             students.forEach(row => {
                 const studentName = String(row[3]).toUpperCase();
                 const photoSrc = studentPhotos[studentName] || '';
 
-                // Based on your Image 1 (Column BN is 65, BO is 66)
-                // Based on your Image 2 (DOB is Column H = 7)
                 const s = {
                     adm: row[0], roll: row[1], class: row[2], name: studentName,
                     father: row[4], mother: row[5], 
@@ -251,73 +249,9 @@
                     </div>
                 `;
                 wrapper.appendChild(div);
-                <script>
-    let studentPhotos = {};
-
-    function formatExcelDate(dateVal) {
-        if (!dateVal) return "N/A";
-        if (!isNaN(dateVal)) {
-            const date = new Date((dateVal - 25569) * 86400 * 1000);
-            return date.toLocaleDateString('en-GB');
-        }
-        return dateVal;
-    }
-
-    document.getElementById('photoUpload').addEventListener('change', function(e) {
-        const files = e.target.files;
-        for (let file of files) {
-            const reader = new FileReader();
-            const name = file.name.split('.')[0].toUpperCase();
-            reader.onload = (f) => { studentPhotos[name] = f.target.result; };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    document.getElementById('excelUpload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            const data = new Uint8Array(evt.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-            processData(rows);
-        };
-        reader.readAsArrayBuffer(file);
-    });
-
-    function getGrade(score) {
-        if (score >= 85) return 'A+';
-        if (score >= 70) return 'A';
-        if (score >= 55) return 'B';
-        if (score >= 40) return 'C';
-        if (score >= 33) return 'D';
-        return 'E';
-    }
-
-    function processData(rows) {
-        const wrapper = document.getElementById('marksheetWrapper');
-        wrapper.innerHTML = '';
-        const students = rows.slice(3).filter(r => r[3]); 
-
-        students.forEach(row => {
-            const studentName = String(row[3]).toUpperCase();
-            const s = {
-                adm: row[0], roll: row[1], class: row[2], name: studentName,
-                father: row[4], mother: row[5], dob: formatExcelDate(row[7]),
-                apaar: row[65] || 'N/A', pen: row[66] || 'N/A',
-                eng: { grand: row[17]||0 }, math: { grand: row[27]||0 },
-                evs: { grand: row[37]||0 }, urdu: { grand: row[47]||0 },
-                kash: { grand: row[57]||0 }
-            };
-            
-            // Note: Add the HTML structure as before, inserting the chart logic provided above.
-            // I've used pure CSS bars to ensure it works offline and during printing.
-        });
-    }
-    
             });
         }
     </script>
 </body>
 </html>
-                                                    
+                                    
