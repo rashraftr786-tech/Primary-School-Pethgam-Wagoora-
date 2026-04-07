@@ -98,8 +98,8 @@
 
                 const s = {
                     adm: row[0], roll: row[1], class: row[2], name: studentName,
-                    father: row[4], mother: row[5], apaar: row[6] || 'Not Available', 
-                    dob: row[7], pen: row[58] || 'N/A', session: "Nov.-Dec. 2024",
+                    father: row[4], mother: row[5], apaar: row[57] || 'Not Available', 
+                    dob: row[7], pen: row[58] || 'N/A', session: "Nov. 2025",
                     sRank: row[59] || '-', cRank: row[60] || '1',
                     eng: { fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14], cc: row[15], sum: row[16], grand: row[17] },
                     math: { fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24], cc: row[25], sum: row[26], grand: row[27] },
@@ -191,6 +191,7 @@
                             <table class="text-[9px] w-full">
                                 <tr><td>>85%</td><td>A+</td><td>>70%</td><td>A</td></tr>
                                 <tr><td>>55%</td><td>B</td><td>>40%</td><td>C</td></tr>
+                                <tr><td>>33%</td><td>D</td><td>>0%</td><td>E</td></tr>
                             </table>
                         </div>
                         <div class="border border-indigo-200 text-center">
@@ -201,7 +202,7 @@
                         <div class="border border-indigo-200">
                             <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
                             <div class="p-1 text-[10px] font-bold">
-                                Marks: ${total}/500 <br>
+                                Marks Obtained: ${total}/500 <br>
                                 Result: <span class="text-green-700">PASS</span>
                             </div>
                         </div>
