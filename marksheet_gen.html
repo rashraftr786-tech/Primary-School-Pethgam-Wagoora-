@@ -340,23 +340,24 @@
     </div>
 </div>
 <script>
-    // Mock Data for Demo
+    // Initialize data from LocalStorage
     let studentRecords = JSON.parse(localStorage.getItem('gps_records')) || [];
 
     // Navigation logic
     function showSection(sectionId) {
         document.querySelectorAll('section, #marksheet-view').forEach(s => s.classList.add('d-none'));
         document.getElementById('main-content').classList.remove('d-none');
-        document.getElementById(sectionId + '-section').classList.remove('d-none');
+        
+        const section = document.getElementById(sectionId + '-section');
+        if (section) section.classList.remove('d-none');
         
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        event?.target.classList.add('active');
-
+        
         if(sectionId === 'records') renderTable();
         if(sectionId === 'dashboard') updateStats();
     }
 
-    // Excel Processing
+    // Excel Processing logic
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('fileInput');
 
@@ -382,13 +383,16 @@
         if(!file) return alert("Please select a file first!");
 
         const reader = new FileReader();
-        document.getElementById('upload-progress-container').classList.remove('d-none');
+        const progressContainer = document.getElementById('upload-progress-container');
+        const progressBar = document.getElementById('upload-progress');
+        
+        progressContainer.classList.remove('d-none');
         let prog = 0;
         const interval = setInterval(() => {
             prog += 10;
-            document.getElementById('upload-progress').style.width = prog + '%';
+            progressBar.style.width = prog + '%';
             if(prog >= 100) clearInterval(interval);
-        }, 100);
+        }, 50);
 
         reader.onload = (e) => {
             const data = new Uint8Array(e.target.result);
@@ -396,30 +400,42 @@
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const json = XLSX.utils.sheet_to_json(sheet);
 
-            // In a real scenario, we would map the exact column names from your screenshot
-            // For this demo, we handle the mapping logic
+            // DYNAMIC MAPPING: Pulling real data from Excel rows
             const formattedData = json.map((row, index) => {
-                const total = (row['Total Marks'] || 400); // Placeholder if columns differ
+                // Parse individual subject totals from Excel
+                const eng = parseInt(row['English']) || 0;
+                const math = parseInt(row['Math']) || 0;
+                const evs = parseInt(row['EVS']) || 0;
+                const urdu = parseInt(row['Urdu']) || 0;
+                const kash = parseInt(row['Kashmiri']) || 0;
+
+                const grandTotal = eng + math + evs + urdu + kash;
+                const percentage = ((grandTotal / 500) * 100).toFixed(1);
+                const finalGrade = calculateGrade(percentage);
+
                 return {
                     id: Date.now() + index,
-                    admNo: row['Admission No.'] || row['Admission No'] || '100'+index,
-                    rollNo: row['Roll No'] || '50'+index,
+                    admNo: row['Admission No.'] || row['Admission No'] || 'N/A',
+                    rollNo: row['Roll No'] || 'N/A',
                     name: row['Name'] || row['Student Name'] || 'Unknown',
                     fname: row["Father's Name"] || 'N/A',
                     mname: row["Mother's Name"] || 'N/A',
-                    class: row['Class'] || '3rd',
-                    dob: row['D.O.B'] || '01-01-2015',
+                    class: row['Class'] || 'N/A',
+                    dob: row['D.O.B'] || 'N/A',
+                    pen: row['PEN'] || 'N/A',
                     marks: {
-                        English: { fa: [3,3,4,4,4,5], totalFA: 23, cc: 16, sa: 38, total: 77 },
-                        Math: { fa: [4,4,4,5,5,5], totalFA: 27, cc: 18, sa: 45, total: 90 },
-                        EVS: { fa: [4,4,4,4,5,5], totalFA: 26, cc: 17, sa: 43, total: 86 },
-                        Urdu: { fa: [4,4,4,5,5,5], totalFA: 27, cc: 18, sa: 45, total: 90 },
-                        Kashmiri: { fa: [3,4,4,4,5,5], totalFA: 25, cc: 17, sa: 41, total: 83 }
+                        // If your Excel contains FA/SA breakdowns, map them here. 
+                        // Otherwise, we store the total per subject.
+                        English: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: eng },
+                        Math: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: math },
+                        EVS: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: evs },
+                        Urdu: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: urdu },
+                        Kashmiri: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: kash }
                     },
-                    totalObtained: 426,
-                    percentage: 85.2,
-                    grade: 'A+',
-                    status: 'Pass'
+                    totalObtained: grandTotal,
+                    percentage: percentage,
+                    grade: finalGrade,
+                    status: percentage >= 33 ? 'Pass' : 'Fail'
                 };
             });
 
@@ -427,24 +443,25 @@
             localStorage.setItem('gps_records', JSON.stringify(studentRecords));
             alert("Success! " + formattedData.length + " records imported.");
             showSection('records');
+            progressContainer.classList.add('d-none');
         };
         reader.readAsArrayBuffer(file);
     }
 
-    // Records Table
+    // Records Table Rendering
     function renderTable() {
         const tbody = document.getElementById('student-table-body');
         tbody.innerHTML = '';
         studentRecords.forEach(student => {
             tbody.innerHTML += `
                 <tr>
-                    <td><img src="https://via.placeholder.com/40" class="rounded-circle"></td>
+                    <td><img src="https://via.placeholder.com/40" class="rounded-circle" alt="User"></td>
                     <td>${student.rollNo}</td>
                     <td>${student.name}</td>
                     <td>${student.class}</td>
                     <td>${student.percentage}%</td>
                     <td><span class="badge bg-primary">${student.grade}</span></td>
-                    <td><span class="badge bg-success">${student.status}</span></td>
+                    <td><span class="badge ${student.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${student.status}</span></td>
                     <td>
                         <button class="btn btn-sm btn-info text-white" onclick="generateMarksheet(${student.id})"><i class="fas fa-file-invoice"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deleteRecord(${student.id})"><i class="fas fa-trash"></i></button>
@@ -467,10 +484,11 @@
     }
 
     function deleteRecord(id) {
-        if(confirm('Are you sure?')) {
+        if(confirm('Are you sure you want to delete this record?')) {
             studentRecords = studentRecords.filter(r => r.id !== id);
             localStorage.setItem('gps_records', JSON.stringify(studentRecords));
             renderTable();
+            updateStats();
         }
     }
 
@@ -484,7 +502,7 @@
         document.getElementById('main-content').classList.add('d-none');
         document.getElementById('marksheet-view').classList.remove('d-none');
 
-        // Populate Data
+        // Populate Student Header Info
         document.getElementById('ms-name').innerText = s.name;
         document.getElementById('ms-fname').innerText = s.fname;
         document.getElementById('ms-mname').innerText = s.mname;
@@ -492,11 +510,14 @@
         document.getElementById('ms-roll').innerText = s.rollNo;
         document.getElementById('ms-class').innerText = s.class;
         document.getElementById('ms-dob').innerText = s.dob;
+        document.getElementById('ms-pen').innerText = s.pen || 'N/A';
+        
+        // Final Results Summary
         document.getElementById('ms-res-ob').innerText = s.totalObtained;
         document.getElementById('ms-res-perc').innerText = s.percentage + '%';
         document.getElementById('ms-res-status').innerText = s.status;
 
-        // Render Table
+        // Render Marks Table
         const mBody = document.getElementById('ms-marks-body');
         mBody.innerHTML = '';
         const subjects = Object.keys(s.marks);
@@ -505,8 +526,8 @@
 
         subjects.forEach(sub => {
             const m = s.marks[sub];
-            const grade = calculateGrade(m.total);
-            const level = (grade === 'A+' || grade === 'A') ? 'Sky' : (grade === 'B' || grade === 'C' ? 'Mountain' : 'Stream');
+            const subGrade = calculateGrade(m.total);
+            const level = (subGrade === 'A+' || subGrade === 'A') ? 'Sky' : (subGrade === 'B' || subGrade === 'C' ? 'Mountain' : 'Stream');
             
             chartLabels.push(sub);
             chartData.push(m.total);
@@ -519,23 +540,27 @@
                     <td>${m.cc}</td>
                     <td>${m.sa}</td>
                     <td class="fw-bold">${m.total}</td>
-                    <td>${grade}</td>
+                    <td>${subGrade}</td>
                     <td>${level}</td>
                 </tr>
             `;
         });
 
-        // Totals
+        // Update Grand Totals Footer
         document.getElementById('gt-grand-total').innerText = s.totalObtained;
         document.getElementById('gt-grade').innerText = s.grade;
-        document.getElementById('gt-level').innerText = (s.grade === 'A+' || s.grade === 'A') ? 'Sky' : 'Mountain';
         
-        // Proficiency Ticks
-        document.getElementById('prof-sky').innerText = (s.grade === 'A+' || s.grade === 'A') ? '✔' : '';
-        document.getElementById('prof-mountain').innerText = (s.grade === 'B' || s.grade === 'C') ? '✔' : '';
-        document.getElementById('prof-stream').innerText = (s.grade === 'D' || s.grade === 'E') ? '✔' : '';
+        // Dynamic Proficiency Ticks
+        const isSky = (s.grade === 'A+' || s.grade === 'A');
+        const isMtn = (s.grade === 'B' || s.grade === 'C');
+        const isStr = (s.grade === 'D' || s.grade === 'E');
 
-        // Chart
+        document.getElementById('gt-level').innerText = isSky ? 'Sky' : (isMtn ? 'Mountain' : 'Stream');
+        document.getElementById('prof-sky').innerHTML = isSky ? '<i class="fas fa-check"></i>' : '';
+        document.getElementById('prof-mountain').innerHTML = isMtn ? '<i class="fas fa-check"></i>' : '';
+        document.getElementById('prof-stream').innerHTML = isStr ? '<i class="fas fa-check"></i>' : '';
+
+        // Update Chart
         if(currentChart) currentChart.destroy();
         const ctx = document.getElementById('msChart').getContext('2d');
         currentChart = new Chart(ctx, {
@@ -543,16 +568,21 @@
             data: {
                 labels: chartLabels,
                 datasets: [{
-                    label: 'Subject Marks',
+                    label: 'Subject Performance',
                     data: chartData,
-                    backgroundColor: '#5e35b1'
+                    backgroundColor: '#673ab7'
                 }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+            options: { 
+                responsive: true,
+                plugins: { legend: { display: false } }, 
+                scales: { y: { beginAtZero: true, max: 100 } } 
+            }
         });
     }
 
-    function calculateGrade(m) {
+    function calculateGrade(perc) {
+        const m = parseFloat(perc);
         if(m > 85) return 'A+';
         if(m > 70) return 'A';
         if(m > 55) return 'B';
@@ -563,19 +593,22 @@
 
     function downloadPDF() {
         const element = document.getElementById('marksheet-container');
-        html2pdf().from(element).set({
-            margin: 0,
-            filename: 'marksheet.pdf',
+        const opt = {
+            margin: 5,
+            filename: `Marksheet_${document.getElementById('ms-name').innerText}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).save();
+        };
+        html2pdf().set(opt).from(element).save();
     }
 
     function updateStats() {
-        document.getElementById('stat-total').innerText = studentRecords.length;
+        const total = studentRecords.length;
+        document.getElementById('stat-total').innerText = total;
         document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
-        const avg = studentRecords.length > 0 ? (studentRecords.reduce((a,b) => a + b.percentage, 0) / studentRecords.length).toFixed(1) : 0;
+        
+        const avg = total > 0 ? (studentRecords.reduce((a, b) => a + parseFloat(b.percentage), 0) / total).toFixed(1) : 0;
         document.getElementById('stat-avg').innerText = avg + '%';
     }
 
@@ -589,7 +622,7 @@
     }
 
     // Initial Load
-    updateStats();
+    window.onload = updateStats;
 </script>
 
 </body>
