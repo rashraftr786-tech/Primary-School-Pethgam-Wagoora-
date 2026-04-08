@@ -77,6 +77,7 @@
             border-color: var(--primary-purple);
         }
 
+        /* Marksheet A4 Styling */
         #marksheet-container {
             width: 210mm;
             min-height: 297mm;
@@ -126,47 +127,42 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 12px;
+            font-size: 13px;
         }
 
-        .ms-grid-table th,
         .ms-grid-table td {
             border: 1px solid var(--border-color);
-            padding: 6px;
-            text-align: center;
+            padding: 8px;
         }
 
         .ms-label-cell {
             background: var(--light-purple);
             font-weight: bold;
-            text-align: left !important;
-            padding-left: 8px;
             width: 15%;
         }
 
         .ms-value-cell {
             width: 35%;
-            text-align: left !important;
         }
 
         .marks-table {
             width: 100%;
             margin-top: 15px;
             border-collapse: collapse;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .marks-table th {
             background: var(--primary-purple);
             color: white;
             border: 1px solid #fff;
-            padding: 6px;
+            padding: 8px;
             text-align: center;
         }
 
         .marks-table td {
             border: 1px solid var(--border-color);
-            padding: 6px;
+            padding: 8px;
             text-align: center;
         }
 
@@ -197,15 +193,13 @@
             color: green;
             font-weight: bold;
             font-size: 18px;
-            margin-left: 6px;
         }
 
         .sig-area {
-            margin-top: 40px;
+            margin-top: 60px;
             display: flex;
             justify-content: space-between;
-            gap: 20px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
             text-align: center;
         }
@@ -213,68 +207,13 @@
         .sig-box {
             width: 30%;
             border-top: 1px solid #000;
-            padding-top: 4px;
-        }
-
-        .table > :not(caption) > * > * {
-            vertical-align: middle;
-        }
-
-        .subject-badge {
-            background: var(--light-purple);
-            color: #222;
-            border: 1px solid #d1d6f0;
-            padding: 0.25rem 0.5rem;
-            border-radius: 999px;
-            font-size: 0.8rem;
-        }
-
-        @media (max-width: 768px) {
-            .bottom-section {
-                grid-template-columns: 1fr;
-            }
-
-            #marksheet-container {
-                width: 100%;
-                min-height: auto;
-                margin: 10px auto;
-                padding: 12px;
-            }
-
-            .ms-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .ms-photo-box {
-                margin: 0 auto;
-            }
-
-            .sig-area {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .sig-box {
-                width: 100%;
-            }
+            padding-top: 5px;
         }
 
         @media print {
-            .no-print {
-                display: none !important;
-            }
-
-            body {
-                background: white;
-            }
-
-            #marksheet-container {
-                margin: 0;
-                border: none;
-                width: 100%;
-                min-height: auto;
-            }
+            .no-print { display: none !important; }
+            body { background: white; }
+            #marksheet-container { margin: 0; border: none; box-shadow: none; }
         }
     </style>
 </head>
@@ -284,39 +223,20 @@
     <div class="container py-3">
         <div class="row align-items-center">
             <div class="col-md-2 text-center">
-                <img
-                    src="new-logo.png"
-                    alt="School Logo"
-                    class="img-fluid rounded-circle shadow-sm"
-                    style="max-width: 90px;"
-                    onerror="this.src='https://via.placeholder.com/80?text=Logo'">
+                <img src="new-logo.png" alt="Logo" class="img-fluid rounded-circle" style="max-width: 80px;" onerror="this.src='https://via.placeholder.com/80?text=Logo'">
             </div>
             <div class="col-md-8 text-center">
-                <h2 class="fw-bold mb-0 text-uppercase header-title">Government Primary School Pethgam Wagoora</h2>
-                <p class="mb-0 text-muted small">Wagoora Babareshi Road, Baramulla, 193109 | UDISE: 01022202207</p>
-                <div class="mt-1">
-                    <span class="badge bg-light text-dark border"><i class="fas fa-envelope me-1"></i> pspethgam@gmail.com</span>
-                    <span class="badge bg-light text-dark border"><i class="fas fa-phone me-1"></i> 9596449881</span>
-                </div>
+                <h2 class="fw-bold mb-0 header-title">GPS PETHGAM WAGOORA</h2>
+                <p class="mb-0 text-muted small">UDISE: 01022202207 | pspethgam@gmail.com</p>
             </div>
         </div>
     </div>
-
     <nav class="navbar navbar-expand-lg navbar-light bg-light mt-2 border-top">
-        <div class="container">
-            <div class="navbar-nav w-100 justify-content-between flex-wrap">
-                <button type="button" class="nav-link active" data-section="dashboard" onclick="showSection('dashboard')">
-                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
-                </button>
-                <button type="button" class="nav-link" data-section="upload" onclick="showSection('upload')">
-                    <i class="fas fa-file-upload me-1"></i> Upload Results
-                </button>
-                <button type="button" class="nav-link" data-section="records" onclick="showSection('records')">
-                    <i class="fas fa-users me-1"></i> Student Records
-                </button>
-                <button type="button" class="nav-link" onclick="logout()">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </button>
+        <div class="container justify-content-center">
+            <div class="navbar-nav gap-3">
+                <button class="nav-link active" data-section="dashboard" onclick="showSection('dashboard')">Dashboard</button>
+                <button class="nav-link" data-section="upload" onclick="showSection('upload')">Upload</button>
+                <button class="nav-link" data-section="records" onclick="showSection('records')">Records</button>
             </div>
         </div>
     </nav>
@@ -324,37 +244,20 @@
 
 <main class="container my-4 no-print" id="main-content">
     <section id="dashboard-section">
-        <div class="row g-4">
+        <div class="row g-4 text-center">
             <div class="col-md-4">
                 <div class="card admin-card bg-primary text-white p-3">
-                    <h3><span id="stat-total">0</span></h3>
-                    <p class="mb-0">Total Students</p>
+                    <h3 id="stat-total">0</h3><p>Total Students</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card admin-card bg-success text-white p-3">
-                    <h3><span id="stat-pass">0</span></h3>
-                    <p class="mb-0">Total Pass</p>
+                    <h3 id="stat-pass">0</h3><p>Total Pass</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card admin-card bg-warning text-dark p-3">
-                    <h3><span id="stat-avg">0%</span></h3>
-                    <p class="mb-0">Avg. Percentage</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card admin-card p-4 mt-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                    <h4 class="mb-1">Quick Summary</h4>
-                    <p class="text-muted mb-0">Manage student result uploads, records, and printable marksheets.</p>
-                </div>
-                <div class="d-flex gap-2 flex-wrap">
-                    <span class="subject-badge">Local Storage Enabled</span>
-                    <span class="subject-badge">Excel Import</span>
-                    <span class="subject-badge">PDF Export</span>
+                    <h3 id="stat-avg">0%</h3><p>Avg. Percentage</p>
                 </div>
             </div>
         </div>
@@ -362,51 +265,29 @@
 
     <section id="upload-section" class="d-none">
         <div class="card admin-card p-4">
-            <h4 class="mb-4"><i class="fas fa-upload me-2 text-primary"></i>Upload Student Result Excel File</h4>
-
-            <div class="alert alert-info">
-                <strong>Expected columns:</strong> Name, Roll No, Class, and subject columns like English, Math, Urdu, EVS etc.
-                Optional columns: Admission No, Father Name, Photo.
-            </div>
-
-            <div id="drop-zone">
-                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                <h5>Drag & Drop Excel File here</h5>
-                <p class="text-muted">or click to browse (.xlsx, .xls)</p>
+            <h4>Upload Results</h4>
+            <div id="drop-zone" class="mt-3">
+                <i class="fas fa-file-excel fa-3x mb-2 text-muted"></i>
+                <p>Click or Drag Excel File Here</p>
                 <input type="file" id="fileInput" class="d-none" accept=".xlsx,.xls">
-                <div id="file-name-display" class="mt-2 fw-bold text-primary"></div>
+                <div id="file-name-display" class="fw-bold text-primary"></div>
             </div>
-
-            <div class="mt-4 text-center d-flex gap-2 justify-content-center flex-wrap">
-                <button class="btn btn-primary px-5" onclick="processExcel()">Process & Save Records</button>
-                <button class="btn btn-outline-secondary" onclick="clearSelectedFile()">Clear Selected File</button>
+            <div class="mt-3 text-center">
+                <button class="btn btn-primary" onclick="processExcel()">Process Records</button>
             </div>
         </div>
     </section>
 
     <section id="records-section" class="d-none">
         <div class="card admin-card p-4">
-            <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
-                <h4 class="mb-0">Student Records</h4>
-                <div class="d-flex gap-2 flex-wrap">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, roll no, class..." onkeyup="filterTable()">
-                    <button class="btn btn-outline-danger" onclick="clearAllRecords()">Clear All Records</button>
-                </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Student Records</h4>
+                <button class="btn btn-sm btn-danger" onclick="clearAllRecords()">Clear All</button>
             </div>
-
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Roll No</th>
-                            <th>Name</th>
-                            <th>Class</th>
-                            <th>%age</th>
-                            <th>Grade</th>
-                            <th>Result</th>
-                            <th>Subjects</th>
-                            <th>Actions</th>
-                        </tr>
+                <table class="table table-hover">
+                    <thead>
+                        <tr><th>Roll No</th><th>Name</th><th>Class</th><th>%</th><th>Result</th><th>Actions</th></tr>
                     </thead>
                     <tbody id="student-table-body"></tbody>
                 </table>
@@ -416,10 +297,10 @@
 </main>
 
 <div id="marksheet-view" class="d-none">
-    <div class="container py-3 no-print d-flex gap-2 flex-wrap">
+    <div class="container py-3 no-print d-flex gap-2">
         <button class="btn btn-secondary" onclick="showSection('records')">Back</button>
         <button class="btn btn-danger" onclick="downloadPDF()">Download PDF</button>
-        <button class="btn btn-outline-primary" onclick="window.print()">Print</button>
+        <button class="btn btn-primary" onclick="window.print()">Print</button>
     </div>
 
     <div id="marksheet-container">
@@ -430,39 +311,28 @@
                 <small>Academic Result Card</small>
             </div>
             <div class="ms-photo-box">
-                <img id="ms-student-photo" src="https://via.placeholder.com/100x120?text=Photo" alt="Student Photo">
+                <img id="ms-student-photo" src="https://via.placeholder.com/100x120?text=Photo">
             </div>
         </div>
 
         <table class="ms-grid-table">
             <tr>
-                <td class="ms-label-cell">Name:</td>
-                <td class="ms-value-cell fw-bold" id="ms-name">-</td>
-                <td class="ms-label-cell">Adm. No:</td>
-                <td class="ms-value-cell" id="ms-adm">-</td>
+                <td class="ms-label-cell">Name:</td><td class="ms-value-cell fw-bold" id="ms-name">-</td>
+                <td class="ms-label-cell">Adm. No:</td><td class="ms-value-cell" id="ms-adm">-</td>
             </tr>
             <tr>
-                <td class="ms-label-cell">Father:</td>
-                <td class="ms-value-cell" id="ms-fname">-</td>
-                <td class="ms-label-cell">Class:</td>
-                <td class="ms-value-cell" id="ms-class">-</td>
+                <td class="ms-label-cell">Father:</td><td class="ms-value-cell" id="ms-fname">-</td>
+                <td class="ms-label-cell">Class:</td><td class="ms-value-cell" id="ms-class">-</td>
             </tr>
             <tr>
-                <td class="ms-label-cell">Roll No:</td>
-                <td class="ms-value-cell" id="ms-roll">-</td>
-                <td class="ms-label-cell">Grade:</td>
-                <td class="ms-value-cell" id="ms-grade">-</td>
+                <td class="ms-label-cell">Roll No:</td><td class="ms-value-cell" id="ms-roll">-</td>
+                <td class="ms-label-cell">Grade:</td><td class="ms-value-cell fw-bold" id="ms-grade">-</td>
             </tr>
         </table>
 
         <table class="marks-table">
             <thead>
-                <tr>
-                    <th>Subject</th>
-                    <th>Marks Obtained</th>
-                    <th>Grade</th>
-                    <th>Status</th>
-                </tr>
+                <tr><th>Subject</th><th>Marks Obtained</th><th>Grade</th><th>Status</th></tr>
             </thead>
             <tbody id="ms-marks-body"></tbody>
         </table>
@@ -470,27 +340,23 @@
         <div class="bottom-section">
             <div class="res-box">
                 <div class="res-head">Final Results</div>
-                <div class="p-2 text-center">
+                <div class="p-2 text-center" style="font-size: 13px;">
                     Obtained: <span id="ms-res-ob">-</span><br>
                     Percentage: <span id="ms-res-perc">-</span><br>
                     Status: <span id="ms-res-status">-</span>
                 </div>
             </div>
-
             <div class="res-box">
                 <div class="res-head">Proficiency</div>
-                <div class="p-2">
+                <div class="p-2" style="font-size: 12px;">
                     Sky (A+/A) <span id="prof-sky"></span><br>
                     Mountain (B/C) <span id="prof-mountain"></span><br>
                     Stream (D/E) <span id="prof-stream"></span>
                 </div>
             </div>
-
             <div class="res-box">
-                <div class="res-head">Chart</div>
-                <div class="p-2">
-                    <canvas id="msChart" height="150"></canvas>
-                </div>
+                <div class="res-head">Performance Chart</div>
+                <div class="p-1"><canvas id="msChart" height="120"></canvas></div>
             </div>
         </div>
 
@@ -503,354 +369,170 @@
 </div>
 
 <script>
-    const STORAGE_KEY = 'gps_records';
-    const PASS_MARKS_PER_SUBJECT = 33;
-
-    let studentRecords = [];
+    const STORAGE_KEY = 'gps_v2_records';
+    let studentRecords = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     let currentChart = null;
     let currentStudent = null;
 
-    const META_KEYS = [
-        'name', 'student name', 'roll no', 'roll number', 'rollno', 'class', 
-        'admission no', 'admission number', 'adm no', 'adm. no', 'father', 
-        'father name', 'father_name', 'photo', 'image', 'photo url', 
-        'student photo', 'sl no', 's.no', 'serial number', 'mobile', 'phone', 'remarks', 'dob', 'age'
-    ];
+    const META_KEYS = ['name', 'roll', 'class', 'admission', 'adm', 'father', 'photo', 'image'];
 
-    function normalizeKey(key) {
-        return String(key || '')
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, ' ')
-            .replace(/[._-]/g, ' ');
-    }
-
-    function safeLoadRecords() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (err) {
-            console.warn('Could not parse saved records:', err);
-            return [];
-        }
-    }
-
-    studentRecords = safeLoadRecords();
-
-    function saveRecords() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(studentRecords));
-    }
-
-    function setActiveNav(sectionId) {
-        document.querySelectorAll('.nav-link[data-section]').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.section === sectionId);
-        });
-    }
-
-    function showSection(sectionId) {
+    function showSection(id) {
         document.querySelectorAll('section, #marksheet-view').forEach(el => el.classList.add('d-none'));
-
-        if (sectionId === 'marksheet-view') {
-            document.getElementById('main-content').classList.add('d-none');
-            document.getElementById('marksheet-view').classList.remove('d-none');
-            return;
-        }
-
         document.getElementById('main-content').classList.remove('d-none');
-        const targetSection = document.getElementById(sectionId + '-section');
-        if (targetSection) {
-            targetSection.classList.remove('d-none');
+        
+        if(id === 'marksheet-view') {
+            document.getElementById('main-content').classList.add('d-none');
+            document.getElementById(id).classList.remove('d-none');
+        } else {
+            document.getElementById(id + '-section').classList.remove('d-none');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`[data-section="${id}"]`).classList.add('active');
         }
-
-        setActiveNav(sectionId);
-
-        if (sectionId === 'records') renderTable();
-        if (sectionId === 'dashboard') updateStats();
-    }
-
-    function logout() {
-        const shouldLogout = confirm('Do you want to logout?');
-        if (!shouldLogout) return;
-        alert('Logout functionality placeholder.');
-    }
-
-    function handleFileSelect() {
-        const input = document.getElementById('fileInput');
-        const fileNameDisplay = document.getElementById('file-name-display');
-        fileNameDisplay.innerText = input.files.length ? input.files[0].name : '';
-    }
-
-    function clearSelectedFile() {
-        document.getElementById('fileInput').value = '';
-        document.getElementById('file-name-display').innerText = '';
-    }
-
-    function getCellValue(row, candidates, fallback = '') {
-        const normalizedMap = {};
-        Object.keys(row).forEach(key => {
-            normalizedMap[normalizeKey(key)] = row[key];
-        });
-
-        for (const candidate of candidates) {
-            const value = normalizedMap[normalizeKey(candidate)];
-            if (value !== undefined && value !== null && String(value).trim() !== '') {
-                return String(value).trim();
-            }
-        }
-        return fallback;
-    }
-
-    function isNumericLike(value) {
-        if (value === null || value === undefined || value === '') return false;
-        return !isNaN(parseFloat(value)) && isFinite(value);
-    }
-
-    function detectSubjects(row) {
-        return Object.keys(row).filter(key => {
-            const nk = normalizeKey(key);
-            if (META_KEYS.includes(nk)) return false;
-            return isNumericLike(row[key]);
-        });
-    }
-
-    function calculateGrade(score) {
-        const marks = Number(score) || 0;
-        if (marks >= 85) return 'A+';
-        if (marks >= 70) return 'A';
-        if (marks >= 55) return 'B';
-        if (marks >= 40) return 'C';
-        if (marks >= 33) return 'D';
-        return 'E';
-    }
-
-    function proficiencyFromGrade(grade) {
-        if (['A+', 'A'].includes(grade)) return 'sky';
-        if (['B', 'C'].includes(grade)) return 'mountain';
-        return 'stream';
+        if(id === 'records') renderTable();
+        if(id === 'dashboard') updateStats();
     }
 
     function processExcel() {
         const file = document.getElementById('fileInput').files[0];
-        if (!file) {
-            alert('Please select an Excel file first.');
-            return;
-        }
+        if (!file) return alert("Select a file!");
 
         const reader = new FileReader();
-
         reader.onload = (e) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
 
-                if (!workbook.SheetNames.length) {
-                    alert('No worksheet found in the file.');
-                    return;
-                }
+            studentRecords = json.map((row, idx) => {
+                let marks = {};
+                let totalObtained = 0;
+                let subjectCount = 0;
 
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+                Object.keys(row).forEach(key => {
+                    const cleanKey = key.toLowerCase();
+                    const isMeta = META_KEYS.some(m => cleanKey.includes(m));
+                    const val = parseFloat(row[key]);
 
-                if (!json.length) {
-                    alert('The selected sheet is empty.');
-                    return;
-                }
-
-                const firstRow = json[0];
-                const subjectColumns = detectSubjects(firstRow);
-
-                const newRecords = json.map((row, index) => {
-                    const marks = {};
-                    subjectColumns.forEach(subject => {
-                        const val = parseFloat(row[subject]);
-                        marks[subject] = isNaN(val) ? 0 : Number(val.toFixed(2));
-                    });
-
-                    const subjectNames = Object.keys(marks);
-                    const totalObtained = subjectNames.reduce((sum, key) => sum + marks[key], 0);
-                    const maxTotal = subjectNames.length * 100;
-                    const percentage = maxTotal > 0 ? Number(((totalObtained / maxTotal) * 100).toFixed(1)) : 0;
-
-                    const allSubjectsPassed = subjectNames.every(sub => Number(marks[sub]) >= PASS_MARKS_PER_SUBJECT);
-                    const status = subjectNames.length ? (allSubjectsPassed ? 'Pass' : 'Fail') : 'Fail';
-                    const grade = calculateGrade(percentage);
-
-                    return {
-                        id: `${Date.now()}_${index}_${Math.random().toString(36).slice(2, 8)}`,
-                        name: getCellValue(row, ['Name', 'Student Name'], 'Unknown'),
-                        rollNo: getCellValue(row, ['Roll No', 'Roll Number', 'RollNo'], 'N/A'),
-                        class: getCellValue(row, ['Class'], 'N/A'),
-                        admissionNo: getCellValue(row, ['Admission No', 'Admission Number', 'Adm No', 'Adm. No'], 'N/A'),
-                        fatherName: getCellValue(row, ['Father Name', 'Father'], 'N/A'),
-                        photo: getCellValue(row, ['Photo', 'Image', 'Photo URL', 'Student Photo'], ''),
-                        marks,
-                        totalObtained: Number(totalObtained.toFixed(2)),
-                        maxTotal,
-                        percentage,
-                        grade,
-                        status
-                    };
+                    if (!isMeta && !isNaN(val)) {
+                        marks[key] = val;
+                        totalObtained += val;
+                        subjectCount++;
+                    }
                 });
 
-                studentRecords = newRecords;
-                saveRecords();
-                updateStats();
-                renderTable();
-                clearSelectedFile();
-                alert(`Successfully processed ${studentRecords.length} student record(s).`);
-                showSection('records');
+                const percentage = subjectCount > 0 ? (totalObtained / (subjectCount * 100)) * 100 : 0;
+                
+                return {
+                    id: Date.now() + idx,
+                    name: row['Name'] || row['Student Name'] || 'Unknown',
+                    rollNo: row['Roll No'] || row['Roll'] || idx + 1,
+                    class: row['Class'] || '-',
+                    admissionNo: row['Admission No'] || row['Adm No'] || 'N/A',
+                    fatherName: row['Father Name'] || row['Father'] || 'N/A',
+                    marks: marks,
+                    totalObtained: totalObtained,
+                    maxTotal: subjectCount * 100,
+                    percentage: percentage.toFixed(1),
+                    status: percentage >= 33 ? 'Pass' : 'Fail',
+                    grade: getGrade(percentage)
+                };
+            });
 
-            } catch (error) {
-                console.error(error);
-                alert('Failed to process Excel file.');
-            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(studentRecords));
+            alert("Processed " + studentRecords.length + " students!");
+            showSection('records');
         };
-
         reader.readAsArrayBuffer(file);
     }
 
-    function renderTable(filteredRecords = null) {
+    function getGrade(p) {
+        if (p >= 85) return 'A+';
+        if (p >= 70) return 'A';
+        if (p >= 55) return 'B';
+        if (p >= 40) return 'C';
+        if (p >= 33) return 'D';
+        return 'E';
+    }
+
+    function renderTable() {
         const tbody = document.getElementById('student-table-body');
-        const records = filteredRecords || studentRecords;
-
-        if (!records.length) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">No records available.</td></tr>`;
-            return;
-        }
-
-        tbody.innerHTML = records.map(s => `
+        tbody.innerHTML = studentRecords.map(s => `
             <tr>
-                <td>${escapeHtml(s.rollNo)}</td>
-                <td>${escapeHtml(s.name)}</td>
-                <td>${escapeHtml(s.class)}</td>
-                <td>${Number(s.percentage).toFixed(1)}%</td>
-                <td>${escapeHtml(s.grade)}</td>
-                <td><span class="badge ${s.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${escapeHtml(s.status)}</span></td>
-                <td>${Object.keys(s.marks || {}).length}</td>
-                <td><button class="btn btn-sm btn-info text-white" onclick="generateMarksheet('${String(s.id).replace(/'/g, "\\'")}')">View</button></td>
+                <td>${s.rollNo}</td><td>${s.name}</td><td>${s.class}</td>
+                <td>${s.percentage}%</td>
+                <td><span class="badge ${s.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${s.status}</span></td>
+                <td><button class="btn btn-sm btn-info text-white" onclick="viewMarksheet(${s.id})">View</button></td>
             </tr>
         `).join('');
     }
 
-    function filterTable() {
-        const query = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (!query) { renderTable(); return; }
-
-        const filtered = studentRecords.filter(s => {
-            const combined = [s.name, s.rollNo, s.class, s.grade, s.status].join(' ').toLowerCase();
-            return combined.includes(query);
-        });
-        renderTable(filtered);
-    }
-
-    function generateMarksheet(id) {
-        const student = studentRecords.find(r => String(r.id) === String(id));
-        if (!student) return;
-
-        currentStudent = student;
+    function viewMarksheet(id) {
+        const s = studentRecords.find(r => r.id === id);
+        currentStudent = s;
         showSection('marksheet-view');
 
-        document.getElementById('ms-name').innerHTML = escapeHtml(student.name || '-');
-        document.getElementById('ms-adm').innerHTML = escapeHtml(student.admissionNo || 'N/A');
-        document.getElementById('ms-fname').innerHTML = escapeHtml(student.fatherName || 'N/A');
-        document.getElementById('ms-class').innerHTML = escapeHtml(student.class || '-');
-        document.getElementById('ms-roll').innerHTML = escapeHtml(student.rollNo || '-');
-        document.getElementById('ms-grade').innerHTML = escapeHtml(student.grade || '-');
-        document.getElementById('ms-res-ob').innerHTML = `${student.totalObtained} / ${student.maxTotal}`;
-        document.getElementById('ms-res-perc').innerHTML = `${Number(student.percentage).toFixed(1)}%`;
-        document.getElementById('ms-res-status').innerHTML = escapeHtml(student.status || '-');
+        document.getElementById('ms-name').innerText = s.name;
+        document.getElementById('ms-adm').innerText = s.admissionNo;
+        document.getElementById('ms-fname').innerText = s.fatherName;
+        document.getElementById('ms-class').innerText = s.class;
+        document.getElementById('ms-roll').innerText = s.rollNo;
+        document.getElementById('ms-grade').innerText = s.grade;
+        document.getElementById('ms-res-ob').innerText = `${s.totalObtained} / ${s.maxTotal}`;
+        document.getElementById('ms-res-perc').innerText = s.percentage + "%";
+        document.getElementById('ms-res-status').innerText = s.status;
 
-        document.getElementById('ms-student-photo').src = student.photo && String(student.photo).trim() !== ''
-            ? student.photo : 'https://via.placeholder.com/100x120?text=Photo';
-
-        const marksBody = document.getElementById('ms-marks-body');
-        const subjects = Object.entries(student.marks || {});
-
-        marksBody.innerHTML = subjects.map(([subject, mark]) => `
+        const marksHtml = Object.entries(s.marks).map(([sub, score]) => `
             <tr>
-                <td>${escapeHtml(subject)}</td>
-                <td>${Number(mark).toFixed(Number.isInteger(mark) ? 0 : 2)}</td>
-                <td>${calculateGrade(mark)}</td>
-                <td>${Number(mark) >= PASS_MARKS_PER_SUBJECT ? 'Pass' : 'Fail'}</td>
+                <td>${sub}</td><td>${score}</td>
+                <td>${getGrade(score)}</td>
+                <td>${score >= 33 ? 'Pass' : 'Fail'}</td>
             </tr>
         `).join('');
+        document.getElementById('ms-marks-body').innerHTML = marksHtml;
 
-        ['sky', 'mountain', 'stream'].forEach(p => document.getElementById(`prof-${p}`).innerHTML = '');
-        const prof = proficiencyFromGrade(student.grade);
-        document.getElementById(`prof-${prof}`).innerHTML = '<span class="tick-mark">&#10003;</span>';
+        const prof = s.grade.startsWith('A') ? 'sky' : (['B', 'C'].includes(s.grade) ? 'mountain' : 'stream');
+        ['sky', 'mountain', 'stream'].forEach(p => document.getElementById('prof-'+p).innerHTML = '');
+        document.getElementById('prof-'+prof).innerHTML = '✓';
 
-        renderChart(student);
+        renderChart(s);
     }
 
-    function renderChart(student) {
+    function renderChart(s) {
         const ctx = document.getElementById('msChart').getContext('2d');
-        const labels = Object.keys(student.marks || {});
-        const values = Object.values(student.marks || {}).map(v => Number(v) || 0);
-
         if (currentChart) currentChart.destroy();
-
         currentChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels,
-                datasets: [{ label: 'Marks', data: values, backgroundColor: '#5e35b1' }]
+                labels: Object.keys(s.marks),
+                datasets: [{ data: Object.values(s.marks), backgroundColor: '#5e35b1' }]
             },
-            options: {
-                animation: false,
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, max: 100 } }
-            }
+            options: { animation: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
         });
     }
 
     function downloadPDF() {
-        if (!currentStudent) return;
         const element = document.getElementById('marksheet-container');
-        const options = {
+        html2pdf().from(element).set({
             margin: 0,
-            filename: `${sanitizeFileName(currentStudent.name)}_marksheet.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
+            filename: currentStudent.name + '_Result.pdf',
+            html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(options).from(element).save();
+        }).save();
     }
 
     function updateStats() {
         document.getElementById('stat-total').innerText = studentRecords.length;
         document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
-        const avg = studentRecords.length
-            ? (studentRecords.reduce((sum, r) => sum + Number(r.percentage || 0), 0) / studentRecords.length).toFixed(1)
-            : '0.0';
-        document.getElementById('stat-avg').innerText = `${avg}%`;
+        const avg = studentRecords.reduce((a, b) => a + parseFloat(b.percentage), 0) / (studentRecords.length || 1);
+        document.getElementById('stat-avg').innerText = avg.toFixed(1) + "%";
     }
 
-    function clearAllRecords() {
-        if (!studentRecords.length || !confirm('Delete all records?')) return;
-        studentRecords = []; saveRecords(); updateStats(); renderTable();
-    }
+    function clearAllRecords() { if(confirm("Delete all?")) { studentRecords = []; localStorage.removeItem(STORAGE_KEY); renderTable(); updateStats(); }}
 
-    function sanitizeFileName(name) { return String(name).replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').trim() || 'student'; }
+    document.getElementById('drop-zone').onclick = () => document.getElementById('fileInput').click();
+    document.getElementById('fileInput').onchange = (e) => { document.getElementById('file-name-display').innerText = e.target.files[0].name; };
 
-    function escapeHtml(value) {
-        return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    }
-
-    function setupDropZone() {
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('fileInput');
-        dropZone.addEventListener('click', () => fileInput.click());
-        ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.add('dragover'); }));
-        ['dragleave', 'dragend', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.remove('dragover'); }));
-        dropZone.addEventListener('drop', (e) => { if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; handleFileSelect(); } });
-        fileInput.addEventListener('change', handleFileSelect);
-    }
-
-    window.addEventListener('load', () => { setupDropZone(); updateStats(); renderTable(); showSection('dashboard'); });
+    window.onload = updateStats;
 </script>
-
 </body>
 </html>
