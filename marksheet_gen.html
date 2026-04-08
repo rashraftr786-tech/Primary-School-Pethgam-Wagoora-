@@ -82,7 +82,7 @@
 
 <header class="school-header no-print">
     <div class="container py-3">
-        <div class="row align-items-center"> 
+        <div class="row align-items-center">
             <div class="col-md-2 text-center">
                 <img src="new-logo.png" alt="School Logo" class="img-fluid rounded-circle shadow-sm">
             </div>
@@ -115,42 +115,85 @@
     
     <section id="dashboard-section">
         <div class="row g-4">
-            <div class="col-md-4"><div class="card admin-card bg-primary text-white p-3"><h3><span id="stat-total">0</span></h3><p class="mb-0">Total Students</p></div></div>
-            <div class="col-md-4"><div class="card admin-card bg-success text-white p-3"><h3><span id="stat-pass">0</span></h3><p class="mb-0">Total Pass</p></div></div>
-            <div class="col-md-4"><div class="card admin-card bg-warning text-dark p-3"><h3><span id="stat-avg">0%</span></h3><p class="mb-0">Avg. Percentage</p></div></div>
+            <div class="col-md-4">
+                <div class="card admin-card bg-primary text-white p-3">
+                    <h3><span id="stat-total">0</span></h3>
+                    <p class="mb-0">Total Students</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card admin-card bg-success text-white p-3">
+                    <h3><span id="stat-pass">0</span></h3>
+                    <p class="mb-0">Total Pass</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card admin-card bg-warning text-dark p-3">
+                    <h3><span id="stat-avg">0%</span></h3>
+                    <p class="mb-0">Avg. Percentage</p>
+                </div>
+            </div>
         </div>
         <div class="mt-5 text-center p-5 bg-white rounded shadow-sm">
             <i class="fas fa-school fa-5x text-muted mb-3"></i>
             <h4>Welcome to PS Pethgam Admin Portal</h4>
-            <p>Manage student assessments and track performance.</p>
+            <p>Manage student assessments, generate digital marksheets, and track performance effortlessly.</p>
         </div>
     </section>
 
     <section id="upload-section" class="d-none">
         <div class="card admin-card p-4">
-            <h4 class="mb-4"><i class="fas fa-upload me-2 text-primary"></i>Upload Excel File</h4>
-            <div id="drop-zone" onclick="document.getElementById('fileInput').click()" style="border: 2px dashed #ccc; padding: 40px; text-align: center; cursor: pointer;">
+            <h4 class="mb-4"><i class="fas fa-upload me-2 text-primary"></i>Upload Student Result Excel File</h4>
+            <div id="drop-zone" style="cursor: pointer;" onclick="document.getElementById('fileInput').click()">
                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                <h5>Click or Drag Excel File here</h5>
+                <h5>Drag & Drop Excel File here</h5>
+                <p class="text-muted">or click to browse from your computer (.xlsx, .xls)</p>
                 <input type="file" id="fileInput" class="d-none" accept=".xlsx, .xls">
                 <div id="file-name-display" class="mt-2 fw-bold text-primary"></div>
             </div>
-            <button class="btn btn-primary mt-4 px-5" onclick="processExcel()">Process & Save Records</button>
+            
+            <div class="progress mt-4 d-none" id="upload-progress-container">
+                <div id="upload-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn btn-primary px-5" onclick="processExcel()"><i class="fas fa-check-circle me-1"></i> Process & Save Records</button>
+            </div>
         </div>
     </section>
 
     <section id="records-section" class="d-none">
         <div class="card admin-card p-4">
-            <div class="d-flex justify-content-between mb-3">
-                <h4>Student Records</h4>
-                <input type="text" id="searchInput" class="form-control w-25" placeholder="Search..." onkeyup="filterTable()">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4><i class="fas fa-list me-2 text-primary"></i>Student Records</h4>
+                <div class="d-flex gap-2">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search name/roll/adm..." onkeyup="filterTable()">
+                    <select id="classFilter" class="form-select" style="width: 150px;" onchange="filterTable()">
+                        <option value="">All Classes</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                    </select>
+                </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr><th>Roll No</th><th>Name</th><th>Class</th><th>Percentage</th><th>Actions</th></tr>
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Photo</th>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>%age</th>
+                            <th>Grade</th>
+                            <th>Result</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
-                    <tbody id="student-table-body"></tbody>
+                    <tbody id="student-table-body">
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -159,53 +202,143 @@
 
 <div id="marksheet-view" class="d-none">
     <div class="container py-3 no-print">
-        <button class="btn btn-secondary" onclick="showSection('records')">Back</button>
-        <button class="btn btn-success" onclick="window.print()">Print Marksheet</button>
+        <button class="btn btn-secondary" onclick="showSection('records')"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</button>
+        <button class="btn btn-success" onclick="window.print()"><i class="fas fa-print"></i> Print Marksheet</button>
     </div>
 
     <div id="marksheet-container">
         <img src="new-logo.png" class="watermark-main" alt="Watermark">
         
         <div class="ms-header">
-            <img src="new-logo.png" alt="Logo" style="height: 60px; filter: brightness(0) invert(1);">
-            <div class="ms-school-info text-center">
+            <img src="new-logo.png" alt="Logo" style="height: 60px;">
+            <div class="ms-school-info">
                 <h4 class="mb-0 fw-bold">GOVERNMENT PRIMARY SCHOOL</h4>
-                <p class="mb-0 fw-bold">PETHGAM WAGOORA 193109</p>
-                <p class="mb-0 small">Wagoora Babareshi Road Near ZEO Wagoora</p>
+                <p class="mb-0" style="letter-spacing: 2px;">PETHGAM WAGOORA 193109</p>
+                <p class="mb-0 fw-bold small text-uppercase">Wagoora Babareshi Road Near Zonal Education Office Wagoora</p>
             </div>
             <div class="ms-photo-box">
-                <img id="ms-student-photo" src="https://via.placeholder.com/100x120" alt="Student">
+                <img id="ms-student-photo" src="https://via.placeholder.com/100x120?text=Photo" alt="Student">
             </div>
         </div>
 
-        <table class="ms-grid-table w-100 mt-3">
+        <table class="ms-grid-table">
             <tr>
-                <td class="ms-label-cell">Name:</td><td id="ms-name" class="ms-value-cell">-</td>
-                <td class="ms-label-cell">Adm No:</td><td id="ms-adm" class="ms-value-cell">-</td>
+                <td class="ms-label-cell">Student Name:</td><td class="ms-value-cell fw-bold" id="ms-name">-</td>
+                <td class="ms-label-cell">Adm. No:</td><td class="ms-value-cell" id="ms-adm">-</td>
             </tr>
             <tr>
-                <td class="ms-label-cell">Roll No:</td><td id="ms-roll" class="ms-value-cell">-</td>
-                <td class="ms-label-cell">Class:</td><td id="ms-class" class="ms-value-cell">-</td>
+                <td class="ms-label-cell">Fathers Name:</td><td class="ms-value-cell" id="ms-fname">-</td>
+                <td class="ms-label-cell">D.O.B:</td><td class="ms-value-cell" id="ms-dob">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Mothers Name:</td><td class="ms-value-cell" id="ms-mname">-</td>
+                <td class="ms-label-cell">Class:</td><td class="ms-value-cell" id="ms-class">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Academic Session:</td><td class="ms-value-cell" id="ms-session">2024-25</td>
+                <td class="ms-label-cell">Roll No:</td><td class="ms-value-cell" id="ms-roll">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Apaar ID:</td><td class="ms-value-cell">Not Available</td>
+                <td class="ms-label-cell">PEN No.</td><td class="ms-value-cell" id="ms-pen">-</td>
             </tr>
         </table>
 
-        <table class="marks-table w-100 mt-3">
+        <table class="marks-table">
             <thead>
                 <tr>
-                    <th>Subject</th><th>FA Total</th><th>CC Marks</th><th>SA Marks</th><th>Total</th><th>Grade</th>
+                    <th>Subject</th>
+                    <th>FA1 (5)</th><th>FA2 (5)</th><th>FA3 (5)</th><th>FA4 (5)</th><th>FA5 (5)</th><th>FA6 (5)</th>
+                    <th>Total (30)</th><th>Co-Curr (20)</th><th>SA (50)</th><th>Total (100)</th><th>Grade</th><th>Level</th>
                 </tr>
             </thead>
-            <tbody id="ms-marks-body"></tbody>
+            <tbody id="ms-marks-body">
+                </tbody>
+            <tfoot>
+                <tr class="fw-bold" style="background: #f0f0f0;">
+                    <td colspan="7">Grand Total</td>
+                    <td id="gt-total-fa">-</td>
+                    <td id="gt-total-cc">-</td>
+                    <td id="gt-total-sa">-</td>
+                    <td id="gt-grand-total">-</td>
+                    <td id="gt-grade">-</td>
+                    <td id="gt-level">-</td>
+                </tr>
+            </tfoot>
         </table>
 
+        <div class="bottom-section">
+            <div class="res-box">
+                <div class="res-head">Percentage / Grade Key</div>
+                <table class="w-100 text-center small" style="font-size: 10px;">
+                    <tr style="background: #e8eaf6;"><th>Range</th><th>Grade</th></tr>
+                    <tr><td>&gt;85% to 100%</td><td>A+</td></tr>
+                    <tr><td>&gt;70% to 85%</td><td>A</td></tr>
+                    <tr><td>&gt;55% to 70%</td><td>B</td></tr>
+                    <tr><td>&gt;40% to 55%</td><td>C</td></tr>
+                    <tr><td>&gt;33% to 40%</td><td>D</td></tr>
+                    <tr><td>0% to 33%</td><td>E</td></tr>
+                </table>
+            </div>
+
+            <div class="res-box">
+                <div class="res-head">Level of Proficiency</div>
+                <div class="p-1">
+                    <div class="d-flex align-items-center mb-1">
+                        <div class="flex-grow-1">Sky (A+/A)</div>
+                        <div id="prof-sky" class="tick-mark"></div>
+                    </div>
+                    <div class="d-flex align-items-center mb-1">
+                        <div class="flex-grow-1">Mountain (B/C)</div>
+                        <div id="prof-mountain" class="tick-mark"></div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">Stream (D/E)</div>
+                        <div id="prof-stream" class="tick-mark"></div>
+                    </div>
+                </div>
+                <div class="res-head mt-1">Class Rank: <span id="ms-rank">-</span></div>
+            </div>
+
+            <div class="res-box">
+                <div class="res-head">Final Results</div>
+                <div class="p-1 small" style="font-size: 10px;">
+                    <div class="d-flex justify-content-between"><span>Total Obtained:</span><span id="ms-res-ob">-</span></div>
+                    <div class="d-flex justify-content-between border-top"><span>Max Marks:</span><span>500</span></div>
+                    <div class="d-flex justify-content-between border-top"><span>Percentage:</span><span id="ms-res-perc">-</span></div>
+                    <div class="d-flex justify-content-between border-top"><span>Result:</span><span class="fw-bold" id="ms-res-status">-</span></div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-3">
-            <div class="col-12">
+            <div class="col-6">
                 <canvas id="msChart" style="max-height: 150px;"></canvas>
             </div>
+            <div class="col-6">
+                <div class="res-box h-100">
+                    <div class="res-head">General Remarks</div>
+                    <div class="p-2 small" id="ms-remarks">Performing well. Keep it up!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sig-area">
+            <div>___________________<br>Class Teacher</div>
+            <div>___________________<br>Exam Incharge</div>
+            <div>___________________<br>Parents</div>
+            <div>
+                <div style="height: 50px;"></div>
+                ___________________<br>Headmaster (Seal)
+            </div>
+        </div>
+
+        <div class="text-center mt-4 text-muted border-top pt-2" style="font-size: 8px;">
+            This is a computer generated marksheet. | Contact: pspethgam@gmail.com | Powered by Digital GPS Pethgam
         </div>
     </div>
 </div>
-
 <script>
     // Mock Data for Demo
     let studentRecords = JSON.parse(localStorage.getItem('gps_records')) || [];
