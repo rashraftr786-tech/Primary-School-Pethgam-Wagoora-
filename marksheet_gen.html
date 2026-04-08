@@ -24,7 +24,7 @@
         /* Navigation & Header */
         .school-header { background: white; border-bottom: 4px solid var(--primary-purple); position: relative; overflow: hidden; }
         .header-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; width: 300px; pointer-events: none; }
-        .nav-link { font-weight: 500; color: #555; }
+        .nav-link { font-weight: 500; color: #555; cursor: pointer; }
         .nav-link.active { color: var(--primary-purple) !important; border-bottom: 2px solid var(--primary-purple); }
 
         /* Dashboard Cards */
@@ -35,7 +35,7 @@
         #drop-zone { border: 2px dashed #ccc; border-radius: 15px; padding: 40px; text-align: center; background: #fff; cursor: pointer; transition: 0.3s; }
         #drop-zone.dragover { background: #e8eaf6; border-color: var(--primary-purple); }
 
-        /* Marksheet Styling (The Reference Replication) */
+        /* Marksheet Styling */
         #marksheet-container {
             width: 210mm;
             min-height: 297mm;
@@ -65,7 +65,6 @@
         .res-box { border: 1px solid #5e35b1; border-radius: 4px; overflow: hidden; }
         .res-head { background: #5e35b1; color: white; padding: 5px; font-size: 12px; font-weight: bold; text-align: center; }
         
-        .proficiency-img { width: 100%; height: 60px; object-fit: cover; }
         .tick-mark { color: green; font-weight: bold; font-size: 18px; }
 
         .sig-area { margin-top: 40px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; text-align: center; }
@@ -84,7 +83,7 @@
     <div class="container py-3">
         <div class="row align-items-center">
             <div class="col-md-2 text-center">
-                <img src="new-logo.png" alt="School Logo" class="img-fluid rounded-circle shadow-sm">
+                <img src="new-logo.png" alt="Logo" class="img-fluid rounded-circle shadow-sm" onerror="this.src='https://via.placeholder.com/80'">
             </div>
             <div class="col-md-8 text-center">
                 <h2 class="fw-bold mb-0 text-uppercase" style="color: var(--primary-purple);">Government Primary School Pethgam Wagoora</h2>
@@ -94,25 +93,21 @@
                     <span class="badge bg-light text-dark border"><i class="fas fa-phone me-1"></i> 9596449881</span>
                 </div>
             </div>
-            <div class="col-md-2 text-end">
-                <button class="btn btn-outline-secondary btn-sm" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-            </div>
         </div>
     </div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light mt-2 border-top">
         <div class="container">
             <div class="navbar-nav w-100 justify-content-between">
-                <a class="nav-link active" href="#" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
-                <a class="nav-link" href="#" onclick="showSection('upload')"><i class="fas fa-file-upload me-1"></i> Upload Results</a>
-                <a class="nav-link" href="#" onclick="showSection('records')"><i class="fas fa-users me-1"></i> Student Records</a>
-                <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+                <a class="nav-link active" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                <a class="nav-link" onclick="showSection('upload')"><i class="fas fa-file-upload me-1"></i> Upload Results</a>
+                <a class="nav-link" onclick="showSection('records')"><i class="fas fa-users me-1"></i> Student Records</a>
+                <a class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
             </div>
         </div>
     </nav>
 </header>
 
 <main class="container my-4 no-print" id="main-content">
-    
     <section id="dashboard-section">
         <div class="row g-4">
             <div class="col-md-4">
@@ -134,55 +129,36 @@
                 </div>
             </div>
         </div>
-        <div class="mt-5 text-center p-5 bg-white rounded shadow-sm">
-            <i class="fas fa-school fa-5x text-muted mb-3"></i>
-            <h4>Welcome to PS Pethgam Admin Portal</h4>
-            <p>Manage student assessments, generate digital marksheets, and track performance effortlessly.</p>
-        </div>
     </section>
 
     <section id="upload-section" class="d-none">
         <div class="card admin-card p-4">
             <h4 class="mb-4"><i class="fas fa-upload me-2 text-primary"></i>Upload Student Result Excel File</h4>
-            <div id="drop-zone" style="cursor: pointer;" onclick="document.getElementById('fileInput').click()">
+            <div id="drop-zone" onclick="document.getElementById('fileInput').click()">
                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
                 <h5>Drag & Drop Excel File here</h5>
-                <p class="text-muted">or click to browse from your computer (.xlsx, .xls)</p>
+                <p class="text-muted">or click to browse (.xlsx, .xls)</p>
                 <input type="file" id="fileInput" class="d-none" accept=".xlsx, .xls">
                 <div id="file-name-display" class="mt-2 fw-bold text-primary"></div>
             </div>
-            
-            <div class="progress mt-4 d-none" id="upload-progress-container">
-                <div id="upload-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
-            </div>
-
-            <div class="mt-4">
-                <button class="btn btn-primary px-5" onclick="processExcel()"><i class="fas fa-check-circle me-1"></i> Process & Save Records</button>
+            <div class="mt-4 text-center">
+                <button class="btn btn-primary px-5" onclick="processExcel()">Process & Save Records</button>
             </div>
         </div>
     </section>
 
     <section id="records-section" class="d-none">
         <div class="card admin-card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4><i class="fas fa-list me-2 text-primary"></i>Student Records</h4>
+            <div class="d-flex justify-content-between mb-4">
+                <h4>Student Records</h4>
                 <div class="d-flex gap-2">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search name/roll/adm..." onkeyup="filterTable()">
-                    <select id="classFilter" class="form-select" style="width: 150px;" onchange="filterTable()">
-                        <option value="">All Classes</option>
-                        <option value="1st">1st</option>
-                        <option value="2nd">2nd</option>
-                        <option value="3rd">3rd</option>
-                        <option value="4th">4th</option>
-                        <option value="5th">5th</option>
-                    </select>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search..." onkeyup="filterTable()">
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <th>Photo</th>
                             <th>Roll No</th>
                             <th>Name</th>
                             <th>Class</th>
@@ -192,8 +168,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="student-table-body">
-                        </tbody>
+                    <tbody id="student-table-body"></tbody>
                 </table>
             </div>
         </div>
@@ -202,46 +177,29 @@
 
 <div id="marksheet-view" class="d-none">
     <div class="container py-3 no-print">
-        <button class="btn btn-secondary" onclick="showSection('records')"><i class="fas fa-arrow-left"></i> Back</button>
-        <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</button>
-        <button class="btn btn-success" onclick="window.print()"><i class="fas fa-print"></i> Print Marksheet</button>
+        <button class="btn btn-secondary" onclick="showSection('records')">Back</button>
+        <button class="btn btn-danger" onclick="downloadPDF()">Download PDF</button>
     </div>
 
     <div id="marksheet-container">
-        <img src="new-logo.png" class="watermark-main" alt="Watermark">
-        
         <div class="ms-header">
-            <img src="new-logo.png" alt="Logo" style="height: 60px;">
             <div class="ms-school-info">
                 <h4 class="mb-0 fw-bold">GOVERNMENT PRIMARY SCHOOL</h4>
-                <p class="mb-0" style="letter-spacing: 2px;">PETHGAM WAGOORA 193109</p>
-                <p class="mb-0 fw-bold small text-uppercase">Wagoora Babareshi Road Near Zonal Education Office Wagoora</p>
+                <p class="mb-0">PETHGAM WAGOORA 193109</p>
             </div>
             <div class="ms-photo-box">
-                <img id="ms-student-photo" src="https://via.placeholder.com/100x120?text=Photo" alt="Student">
+                <img id="ms-student-photo" src="https://via.placeholder.com/100x120" alt="Student">
             </div>
         </div>
 
         <table class="ms-grid-table">
             <tr>
-                <td class="ms-label-cell">Student Name:</td><td class="ms-value-cell fw-bold" id="ms-name">-</td>
+                <td class="ms-label-cell">Name:</td><td class="ms-value-cell fw-bold" id="ms-name">-</td>
                 <td class="ms-label-cell">Adm. No:</td><td class="ms-value-cell" id="ms-adm">-</td>
             </tr>
             <tr>
-                <td class="ms-label-cell">Fathers Name:</td><td class="ms-value-cell" id="ms-fname">-</td>
-                <td class="ms-label-cell">D.O.B:</td><td class="ms-value-cell" id="ms-dob">-</td>
-            </tr>
-            <tr>
-                <td class="ms-label-cell">Mothers Name:</td><td class="ms-value-cell" id="ms-mname">-</td>
+                <td class="ms-label-cell">Father:</td><td class="ms-value-cell" id="ms-fname">-</td>
                 <td class="ms-label-cell">Class:</td><td class="ms-value-cell" id="ms-class">-</td>
-            </tr>
-            <tr>
-                <td class="ms-label-cell">Academic Session:</td><td class="ms-value-cell" id="ms-session">2024-25</td>
-                <td class="ms-label-cell">Roll No:</td><td class="ms-value-cell" id="ms-roll">-</td>
-            </tr>
-            <tr>
-                <td class="ms-label-cell">Apaar ID:</td><td class="ms-value-cell">Not Available</td>
-                <td class="ms-label-cell">PEN No.</td><td class="ms-value-cell" id="ms-pen">-</td>
             </tr>
         </table>
 
@@ -249,346 +207,148 @@
             <thead>
                 <tr>
                     <th>Subject</th>
-                    <th>FA1 (5)</th><th>FA2 (5)</th><th>FA3 (5)</th><th>FA4 (5)</th><th>FA5 (5)</th><th>FA6 (5)</th>
-                    <th>Total (30)</th><th>Co-Curr (20)</th><th>SA (50)</th><th>Total (100)</th><th>Grade</th><th>Level</th>
+                    <th>Total (100)</th>
+                    <th>Grade</th>
                 </tr>
             </thead>
-            <tbody id="ms-marks-body">
-                </tbody>
-            <tfoot>
-                <tr class="fw-bold" style="background: #f0f0f0;">
-                    <td colspan="7">Grand Total</td>
-                    <td id="gt-total-fa">-</td>
-                    <td id="gt-total-cc">-</td>
-                    <td id="gt-total-sa">-</td>
-                    <td id="gt-grand-total">-</td>
-                    <td id="gt-grade">-</td>
-                    <td id="gt-level">-</td>
-                </tr>
-            </tfoot>
+            <tbody id="ms-marks-body"></tbody>
         </table>
 
         <div class="bottom-section">
             <div class="res-box">
-                <div class="res-head">Percentage / Grade Key</div>
-                <table class="w-100 text-center small" style="font-size: 10px;">
-                    <tr style="background: #e8eaf6;"><th>Range</th><th>Grade</th></tr>
-                    <tr><td>&gt;85% to 100%</td><td>A+</td></tr>
-                    <tr><td>&gt;70% to 85%</td><td>A</td></tr>
-                    <tr><td>&gt;55% to 70%</td><td>B</td></tr>
-                    <tr><td>&gt;40% to 55%</td><td>C</td></tr>
-                    <tr><td>&gt;33% to 40%</td><td>D</td></tr>
-                    <tr><td>0% to 33%</td><td>E</td></tr>
-                </table>
-            </div>
-
-            <div class="res-box">
-                <div class="res-head">Level of Proficiency</div>
-                <div class="p-1">
-                    <div class="d-flex align-items-center mb-1">
-                        <div class="flex-grow-1">Sky (A+/A)</div>
-                        <div id="prof-sky" class="tick-mark"></div>
-                    </div>
-                    <div class="d-flex align-items-center mb-1">
-                        <div class="flex-grow-1">Mountain (B/C)</div>
-                        <div id="prof-mountain" class="tick-mark"></div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">Stream (D/E)</div>
-                        <div id="prof-stream" class="tick-mark"></div>
-                    </div>
-                </div>
-                <div class="res-head mt-1">Class Rank: <span id="ms-rank">-</span></div>
-            </div>
-
-            <div class="res-box">
                 <div class="res-head">Final Results</div>
-                <div class="p-1 small" style="font-size: 10px;">
-                   // Initialize data from LocalStorage
+                <div class="p-2 text-center">
+                    Obtained: <span id="ms-res-ob">-</span><br>
+                    Percentage: <span id="ms-res-perc">-</span><br>
+                    Status: <span id="ms-res-status">-</span>
+                </div>
+            </div>
+            <div class="res-box">
+                <div class="res-head">Proficiency</div>
+                <div class="p-2">
+                    Sky (A+/A) <span id="prof-sky"></span><br>
+                    Mountain (B/C) <span id="prof-mountain"></span><br>
+                    Stream (D/E) <span id="prof-stream"></span>
+                </div>
+            </div>
+            <div class="res-box">
+                <div class="res-head">Chart</div>
+                <canvas id="msChart" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
 let studentRecords = JSON.parse(localStorage.getItem('gps_records')) || [];
 
-// Navigation logic
 function showSection(sectionId) {
     document.querySelectorAll('section, #marksheet-view').forEach(s => s.classList.add('d-none'));
     document.getElementById('main-content').classList.remove('d-none');
-    
-    const section = document.getElementById(sectionId + '-section');
-    if (section) section.classList.remove('d-none');
-    
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    
+    document.getElementById(sectionId + '-section').classList.remove('d-none');
     if(sectionId === 'records') renderTable();
     if(sectionId === 'dashboard') updateStats();
 }
 
-// Excel Processing logic
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('fileInput');
-
-if(dropZone) {
-    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };
-    dropZone.ondragleave = () => dropZone.classList.remove('dragover');
-    dropZone.ondrop = (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
-        fileInput.files = e.dataTransfer.files;
-        handleFileSelect();
-    };
-}
-
-fileInput.onchange = handleFileSelect;
-
 function handleFileSelect() {
-    if(fileInput.files.length > 0) {
-        document.getElementById('file-name-display').innerText = fileInput.files[0].name;
+    if(document.getElementById('fileInput').files.length > 0) {
+        document.getElementById('file-name-display').innerText = document.getElementById('fileInput').files[0].name;
     }
 }
+document.getElementById('fileInput').onchange = handleFileSelect;
 
 function processExcel() {
-    const file = fileInput.files[0];
-    if(!file) return alert("Please select a file first!");
-
+    const file = document.getElementById('fileInput').files[0];
+    if(!file) return alert("Select file!");
     const reader = new FileReader();
-    const progressContainer = document.getElementById('upload-progress-container');
-    
-    if(progressContainer) progressContainer.classList.remove('d-none');
-    
     reader.onload = (e) => {
-        try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet);
-
-            const formattedData = json.map((row, index) => {
-                // Ensure column names match your Excel exactly
-                const eng = parseInt(row['English']) || 0;
-                const math = parseInt(row['Math']) || 0;
-                const evs = parseInt(row['EVS']) || 0;
-                const urdu = parseInt(row['Urdu']) || 0;
-                const kash = parseInt(row['Kashmiri']) || 0;
-
-                const grandTotal = eng + math + evs + urdu + kash;
-                const percentage = ((grandTotal / 500) * 100).toFixed(1);
-
-                return {
-                    id: Date.now() + index, 
-                    admNo: row['Admission No.'] || row['Admission No'] || 'N/A',
-                    rollNo: row['Roll No'] || 'N/A',
-                    name: row['Name'] || row['Student Name'] || 'Unknown',
-                    fname: row["Father's Name"] || 'N/A',
-                    mname: row["Mother's Name"] || 'N/A',
-                    class: row['Class'] || 'N/A',
-                    dob: row['D.O.B'] || 'N/A',
-                    pen: row['PEN'] || 'N/A',
-                    marks: {
-                        English: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: eng },
-                        Math: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: math },
-                        EVS: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: evs },
-                        Urdu: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: urdu },
-                        Kashmiri: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: kash }
-                    },
-                    totalObtained: grandTotal,
-                    percentage: parseFloat(percentage),
-                    grade: calculateGrade(percentage),
-                    status: percentage >= 33 ? 'Pass' : 'Fail'
-                };
-            });
-
-            studentRecords = formattedData; 
-            localStorage.setItem('gps_records', JSON.stringify(studentRecords));
-            
-            alert("Success! " + formattedData.length + " records imported.");
-            if(progressContainer) progressContainer.classList.add('d-none');
-            showSection('records');
-        } catch (err) {
-            console.error(err);
-            alert("Error processing Excel file. Check console for details.");
-        }
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        
+        studentRecords = json.map((row, index) => {
+            const eng = parseInt(row['English']) || 0;
+            const math = parseInt(row['Math']) || 0;
+            const total = eng + math;
+            const perc = ((total / 200) * 100).toFixed(1);
+            return {
+                id: Date.now() + index,
+                name: row['Name'] || 'Unknown',
+                rollNo: row['Roll No'] || 'N/A',
+                class: row['Class'] || 'N/A',
+                marks: { English: eng, Math: math },
+                totalObtained: total,
+                percentage: perc,
+                grade: calculateGrade(perc),
+                status: perc >= 33 ? 'Pass' : 'Fail'
+            };
+        });
+        localStorage.setItem('gps_records', JSON.stringify(studentRecords));
+        showSection('records');
     };
     reader.readAsArrayBuffer(file);
 }
 
-// Records Table Rendering
+function calculateGrade(perc) {
+    if(perc >= 85) return 'A+';
+    if(perc >= 70) return 'A';
+    if(perc >= 55) return 'B';
+    if(perc >= 40) return 'C';
+    return 'D';
+}
+
 function renderTable() {
     const tbody = document.getElementById('student-table-body');
-    if(!tbody) return;
-    tbody.innerHTML = '';
-    studentRecords.forEach(student => {
-        tbody.innerHTML += `
-            <tr>
-                <td><img src="https://ui-avatars.com/api/?name=${student.name}&background=random" class="rounded-circle" width="40" alt="User"></td>
-                <td>${student.rollNo}</td>
-                <td>${student.name}</td>
-                <td>${student.class}</td>
-                <td>${student.percentage}%</td>
-                <td><span class="badge bg-primary">${student.grade}</span></td>
-                <td><span class="badge ${student.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${student.status}</span></td>
-                <td>
-                    <button class="btn btn-sm btn-info text-white" onclick="generateMarksheet(${student.id})"><i class="fas fa-file-invoice"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteRecord(${student.id})"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        `;
-    });
+    tbody.innerHTML = studentRecords.map(s => `
+        <tr>
+            <td>${s.rollNo}</td>
+            <td>${s.name}</td>
+            <td>${s.class}</td>
+            <td>${s.percentage}%</td>
+            <td>${s.grade}</td>
+            <td>${s.status}</td>
+            <td>
+                <button class="btn btn-sm btn-info" onclick="generateMarksheet(${s.id})">View</button>
+            </td>
+        </tr>
+    `).join('');
 }
 
-function filterTable() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const cls = document.getElementById('classFilter').value;
-    const rows = document.querySelectorAll('#student-table-body tr');
-    rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        const matchesSearch = text.includes(q);
-        const matchesClass = cls === '' || row.children[3].innerText === cls;
-        row.style.display = (matchesSearch && matchesClass) ? '' : 'none';
-    });
-}
-
-function deleteRecord(id) {
-    if(confirm('Are you sure you want to delete this record?')) {
-        studentRecords = studentRecords.filter(r => r.id !== id);
-        localStorage.setItem('gps_records', JSON.stringify(studentRecords));
-        renderTable();
-        updateStats();
-    }
-}
-
-// Marksheet Generation
 let currentChart = null;
-
 function generateMarksheet(id) {
     const s = studentRecords.find(r => r.id === id);
-    if(!s) return;
-
+    showSection('marksheet-view');
     document.getElementById('main-content').classList.add('d-none');
     document.getElementById('marksheet-view').classList.remove('d-none');
-
-    // Populate Student Header Info
-    document.getElementById('ms-name').innerText = s.name;
-    document.getElementById('ms-fname').innerText = s.fname;
-    document.getElementById('ms-mname').innerText = s.mname;
-    document.getElementById('ms-adm').innerText = s.admNo;
-    document.getElementById('ms-roll').innerText = s.rollNo;
-    document.getElementById('ms-class').innerText = s.class;
-    document.getElementById('ms-dob').innerText = s.dob;
-    document.getElementById('ms-pen').innerText = s.pen || 'N/A';
     
-    // Final Results Summary
+    document.getElementById('ms-name').innerText = s.name;
     document.getElementById('ms-res-ob').innerText = s.totalObtained;
     document.getElementById('ms-res-perc').innerText = s.percentage + '%';
     document.getElementById('ms-res-status').innerText = s.status;
 
-    // Render Marks Table
-    const mBody = document.getElementById('ms-marks-body');
-    mBody.innerHTML = '';
-    const subjects = Object.keys(s.marks);
-    const chartLabels = [];
-    const chartData = [];
-
-    subjects.forEach(sub => {
-        const m = s.marks[sub];
-        const subGrade = calculateGrade(m.total); // Adjust this if subject total isn't 100
-        const level = (subGrade === 'A+' || subGrade === 'A') ? 'Sky' : (subGrade === 'B' || subGrade === 'C' ? 'Mountain' : 'Stream');
-        
-        chartLabels.push(sub);
-        chartData.push(m.total);
-
-        mBody.innerHTML += `
-            <tr>
-                <td class="fw-bold text-start">${sub}</td>
-                ${m.fa.map(v => `<td>${v}</td>`).join('')}
-                <td>${m.totalFA}</td>
-                <td>${m.cc}</td>
-                <td>${m.sa}</td>
-                <td class="fw-bold">${m.total}</td>
-                <td>${subGrade}</td>
-                <td>${level}</td>
-            </tr>
-        `;
-    });
-
-    document.getElementById('gt-grand-total').innerText = s.totalObtained;
-    document.getElementById('gt-grade').innerText = s.grade;
-    
-    const isSky = (s.grade === 'A+' || s.grade === 'A');
-    const isMtn = (s.grade === 'B' || s.grade === 'C');
-    const isStr = (s.grade === 'D' || s.grade === 'E');
-
-    document.getElementById('gt-level').innerText = isSky ? 'Sky' : (isMtn ? 'Mountain' : 'Stream');
-    document.getElementById('prof-sky').innerHTML = isSky ? '<i class="fas fa-check"></i>' : '';
-    document.getElementById('prof-mountain').innerHTML = isMtn ? '<i class="fas fa-check"></i>' : '';
-    document.getElementById('prof-stream').innerHTML = isStr ? '<i class="fas fa-check"></i>' : '';
-
-    // Update Chart
-    if(currentChart) currentChart.destroy();
     const ctx = document.getElementById('msChart').getContext('2d');
+    if(currentChart) currentChart.destroy();
     currentChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: chartLabels,
-            datasets: [{
-                label: 'Subject Performance',
-                data: chartData,
-                backgroundColor: '#673ab7'
-            }]
-        },
-        options: { 
-            responsive: true,
-            plugins: { legend: { display: false } }, 
-            scales: { y: { beginAtZero: true, max: 100 } } 
+            labels: ['English', 'Math'],
+            datasets: [{ data: [s.marks.English, s.marks.Math], backgroundColor: '#5e35b1' }]
         }
     });
 }
 
-function calculateGrade(perc) {
-    const m = parseFloat(perc);
-    if(m >= 85) return 'A+';
-    if(m >= 70) return 'A';
-    if(m >= 55) return 'B';
-    if(m >= 40) return 'C';
-    if(m >= 33) return 'D';
-    return 'E';
-}
-
 function downloadPDF() {
     const element = document.getElementById('marksheet-container');
-    const opt = {
-        margin: 5,
-        filename: `Marksheet_${document.getElementById('ms-name').innerText}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
+    html2pdf().from(element).save();
 }
 
 function updateStats() {
-    const total = studentRecords.length;
-    const statTotal = document.getElementById('stat-total');
-    const statPass = document.getElementById('stat-pass');
-    const statAvg = document.getElementById('stat-avg');
-
-    if(statTotal) statTotal.innerText = total;
-    if(statPass) statPass.innerText = studentRecords.filter(r => r.status === 'Pass').length;
-    
-    if(statAvg) {
-        const avg = total > 0 ? (studentRecords.reduce((a, b) => a + parseFloat(b.percentage), 0) / total).toFixed(1) : 0;
-        statAvg.innerText = avg + '%';
-    }
+    document.getElementById('stat-total').innerText = studentRecords.length;
+    document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
 }
 
-function logout() {
-    if(confirm('Log out from Admin panel?')) location.reload();
-}
-
-// Initial Load
-window.onload = () => {
-    updateStats();
-    if(studentRecords.length > 0) renderTable();
-};
-         
+window.onload = updateStats;
 </script>
-
 </body>
 </html>
+                    
