@@ -354,72 +354,74 @@
     }
 
     function processExcel() {
-        const file = fileInput.files[0];
-        if(!file) return alert("Please select a file first!");
+    const file = fileInput.files[0];
+    if(!file) return alert("Please select a file first!");
 
-        const reader = new FileReader();
-        const progressContainer = document.getElementById('upload-progress-container');
-        const progressBar = document.getElementById('upload-progress');
+    const reader = new FileReader();
+    const progressContainer = document.getElementById('upload-progress-container');
+    const progressBar = document.getElementById('upload-progress');
+    
+    progressContainer.classList.remove('d-none');
+    
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet);
+
+        console.log("Raw Data from Excel:", json); // DEBUG: Check your browser console (F12)
+
+        const formattedData = json.map((row, index) => {
+            // 1. Pulling RAW numbers from YOUR Excel columns
+            // IMPORTANT: If your Excel says "English Marks", change 'English' to 'English Marks'
+            const eng = parseInt(row['English']) || 0;
+            const math = parseInt(row['Math']) || 0;
+            const evs = parseInt(row['EVS']) || 0;
+            const urdu = parseInt(row['Urdu']) || 0;
+            const kash = parseInt(row['Kashmiri']) || 0;
+
+            const grandTotal = eng + math + evs + urdu + kash;
+            const percentage = ((grandTotal / 500) * 100).toFixed(1);
+            const finalGrade = calculateGrade(percentage);
+
+            return {
+                id: Date.now() + index + Math.random(), // Unique ID
+                admNo: row['Admission No.'] || row['Admission No'] || 'N/A',
+                rollNo: row['Roll No'] || 'N/A',
+                name: row['Name'] || row['Student Name'] || 'Unknown',
+                fname: row["Father's Name"] || 'N/A',
+                mname: row["Mother's Name"] || 'N/A',
+                class: row['Class'] || 'N/A',
+                dob: row['D.O.B'] || 'N/A',
+                marks: {
+                    // We generate FA/SA based on the TOTAL from Excel 
+                    // since Excel usually only provides the final score.
+                    English: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: eng },
+                    Math: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: math },
+                    EVS: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: evs },
+                    Urdu: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: urdu },
+                    Kashmiri: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: kash }
+                },
+                totalObtained: grandTotal,
+                percentage: parseFloat(percentage),
+                grade: finalGrade,
+                status: percentage >= 33 ? 'Pass' : 'Fail'
+            };
+        });
+
+        // 2. Clear old records and save new ones
+        studentRecords = formattedData; 
+        localStorage.setItem('gps_records', JSON.stringify(studentRecords));
         
-        progressContainer.classList.remove('d-none');
-        let prog = 0;
-        const interval = setInterval(() => {
-            prog += 10;
-            progressBar.style.width = prog + '%';
-            if(prog >= 100) clearInterval(interval);
-        }, 50);
+        console.log("Formatted Records saved to LocalStorage:", studentRecords);
 
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet);
+        alert("Success! " + formattedData.length + " fresh records imported.");
+        progressContainer.classList.add('d-none');
+        showSection('records');
+    };
+    reader.readAsArrayBuffer(file);
+}
 
-            // DYNAMIC MAPPING: Pulling real data from Excel rows
-            const formattedData = json.map((row, index) => {
-                // Parse individual subject totals from Excel
-                const eng = parseInt(row['English']) || 0;
-                const math = parseInt(row['Math']) || 0;
-                const evs = parseInt(row['EVS']) || 0;
-                const urdu = parseInt(row['Urdu']) || 0;
-                const kash = parseInt(row['Kashmiri']) || 0;
-
-                const grandTotal = eng + math + evs + urdu + kash;
-                const percentage = ((grandTotal / 500) * 100).toFixed(1);
-                const finalGrade = calculateGrade(percentage);
-
-                return {
-                    id: Date.now() + index,
-                    admNo: row['Admission No.'] || row['Admission No'] || 'N/A',
-                    rollNo: row['Roll No'] || 'N/A',
-                    name: row['Name'] || row['Student Name'] || 'Unknown',
-                    fname: row["Father's Name"] || 'N/A',
-                    mname: row["Mother's Name"] || 'N/A',
-                    class: row['Class'] || 'N/A',
-                    dob: row['D.O.B'] || 'N/A',
-                    pen: row['PEN'] || 'N/A',
-                    marks: {
-                        // If your Excel contains FA/SA breakdowns, map them here. 
-                        // Otherwise, we store the total per subject.
-                        English: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: eng },
-                        Math: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: math },
-                        EVS: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: evs },
-                        Urdu: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: urdu },
-                        Kashmiri: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: kash }
-                    },
-                    totalObtained: grandTotal,
-                    percentage: percentage,
-                    grade: finalGrade,
-                    status: percentage >= 33 ? 'Pass' : 'Fail'
-                };
-            });
-
-            studentRecords = [...studentRecords, ...formattedData];
-            localStorage.setItem('gps_records', JSON.stringify(studentRecords));
-            alert("Success! " + formattedData.length + " records imported.");
-            showSection('records');
-            progressContainer.classList.add('d-none');
-        };
         reader.readAsArrayBuffer(file);
     }
 
