@@ -3,117 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Admin Portal</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        :root {
-        :root {
-    --primary-purple: #5e35b1;
-    --secondary-blue: #1e88e5;
-    --light-purple: #f3e5f5;
-    --border-color: #5e35b1;
-}
-
-body {
-    background-color: #f4f7f6;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* UI Elements */
-.school-header { background: white; border-bottom: 4px solid var(--primary-purple); }
-.header-title { color: var(--primary-purple); }
-.admin-card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-
-/* Marksheet A4 Logic */
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Marksheet Generator</title>
+    <title>Result Portal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        body { font-family: 'Times New Roman', serif; background: #f0f0f0; padding: 10px; }
-        .no-print { background: #fff; padding: 20px; border-radius: 8px; max-width: 400px; margin: 0 auto 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
-        .marksheet { 
-            background: white; border: 3px double #000; padding: 25px; 
-            width: 210mm; min-height: 297mm; margin: 0 auto; box-sizing: border-box;
+        body { font-family: sans-serif; background: #eceff1; padding: 15px; }
+        .upload-box { 
+            background: white; border-radius: 12px; padding: 25px; 
+            text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 450px; margin: 0 auto 20px;
         }
+        #processBtn {
+            background: #2196F3; color: white; border: none; 
+            padding: 12px 25px; border-radius: 5px; font-weight: bold;
+            margin-top: 15px; display: none; width: 100%;
+        }
+        .marksheet { 
+            background: white; border: 2px solid #000; padding: 20px; 
+            margin: 20px auto; max-width: 750px; min-height: 800px;
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
         
-        .header { text-align: center; text-transform: uppercase; border-bottom: 2px solid #000; margin-bottom: 10px; }
-        .header h1 { margin: 5px 0; font-size: 22px; }
-        
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; font-size: 14px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #000; padding: 6px; text-align: center; }
-        .left { text-align: left; padding-left: 10px; }
-        
-        .footer-section { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 13px; }
-        .sign-box { margin-top: 50px; text-align: center; border-top: 1px solid #000; width: 150px; }
-
         @media print {
             .no-print { display: none; }
-            body { background: white; padding: 0; }
-            .marksheet { border: 2px solid #000; margin: 0; width: 100%; }
-            .page-break { page-break-after: always; }
+            .marksheet { border: 1px solid #000; margin: 0; width: 100%; page-break-after: always; }
         }
     </style>
 </head>
 <body>
 
-<div class="no-print">
-    <h3>Result Upload Portal</h3>
-    <input type="file" id="csvFile" accept=".csv" style="margin-bottom: 10px;">
-    <p style="font-size: 12px; color: #666;">Upload your CSV to generate official marksheets</p>
+<div class="upload-box no-print">
+    <h2 style="margin-top:0;">Student Result Portal</h2>
+    <p>Step 1: Choose your CSV file</p>
+    <input type="file" id="csvFile" accept=".csv">
+    
+    <div id="fileInfo" style="margin-top:15px; color: #666; font-size: 14px;"></div>
+    
+    <button id="processBtn">Step 2: Process & View Marksheets</button>
 </div>
 
 <div id="output"></div>
 
 <script>
-    document.getElementById('csvFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
+    const fileInput = document.getElementById('csvFile');
+    const processBtn = document.getElementById('processBtn');
+    const fileInfo = document.getElementById('fileInfo');
+    const output = document.getElementById('output');
+
+    // Detect when file is chosen
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            fileInfo.innerHTML = "Selected: <b>" + e.target.files[0].name + "</b>";
+            processBtn.style.display = "block"; // Show the button
+        }
+    });
+
+    // Process the file when button is clicked
+    processBtn.addEventListener('click', function() {
+        const file = fileInput.files[0];
+        
         Papa.parse(file, {
             header: false,
             skipEmptyLines: true,
             complete: function(results) {
-                render(results.data);
+                const data = results.data;
+                if (data.length < 4) {
+                    alert("The file seems empty or has too few rows.");
+                    return;
+                }
+                renderMarksheets(data);
             }
         });
     });
 
-    function render(data) {
-        const out = document.getElementById('output');
-        out.innerHTML = '';
-        
-        // Start from row index 2 or 3 depending on CSV header rows
-        for (let i = 2; i < data.length; i++) {
-            const r = data[i];
-            if (!r[3]) continue; // Skip if Name is empty
+    function renderMarksheets(data) {
+        output.innerHTML = "";
+        // Your data starts at row 3 (index 2 or 3)
+        for (let i = 3; i < data.length; i++) {
+            const row = data[i];
+            if (!row[3]) continue; // Skip if no Name
 
-            out.innerHTML += `
-                <div class="marksheet page-break">
+            output.innerHTML += `
+                <div class="marksheet">
                     <div class="header">
-                        <h1>PROGRESS REPORT CARD</h1>
-                        <p>Academic Session: 2024-25</p>
+                        <h2 style="margin:0;">PROGRESS REPORT CARD</h2>
+                        <p style="margin:5px;">Academic Session 2024-25</p>
                     </div>
 
-                    <div class="info-grid">
+                    <div style="display:flex; justify-content: space-between; margin-top:15px;">
                         <div>
-                            <p><strong>Student Name:</strong> ${r[3]}</p>
-                            <p><strong>Father's Name:</strong> ${r[4]}</p>
-                            <p><strong>Date of Birth:</strong> ${r[7]}</p>
+                            <p><strong>Student:</strong> ${row[3]}</p>
+                            <p><strong>Father:</strong> ${row[4]}</p>
                         </div>
-                        <div style="text-align: right;">
-                            <p><strong>Roll No:</strong> ${r[1]}</p>
-                            <p><strong>Admission No:</strong> ${r[0]}</p>
+                        <div style="text-align:right;">
+                            <p><strong>Roll No:</strong> ${row[1]}</p>
                             <p><strong>Class:</strong> 1st</p>
                         </div>
                     </div>
@@ -121,63 +105,36 @@ body {
                     <table>
                         <thead>
                             <tr>
-                                <th rowspan="2">Subjects</th>
-                                <th colspan="2">Formative (30)</th>
-                                <th rowspan="2">Co-Curr (20)</th>
-                                <th rowspan="2">Summative (50)</th>
-                                <th rowspan="2">Total (100)</th>
-                                <th rowspan="2">Grade</th>
-                            </tr>
-                            <tr>
-                                <th>FA Total</th>
-                                <th>Weightage</th>
+                                <th>Subject</th>
+                                <th>FA (30)</th>
+                                <th>SA (50)</th>
+                                <th>Co-Curr (20)</th>
+                                <th>Total (100)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td class="left">English</td><td>${r[14]}</td><td>15</td><td>${r[15]}</td><td>${r[16]}</td><td>${r[17]}</td><td>-</td></tr>
-                            <tr><td class="left">Mathematics</td><td>${r[24]}</td><td>15</td><td>${r[25]}</td><td>${r[26]}</td><td>${r[27]}</td><td>-</td></tr>
-                            <tr><td class="left">EVS</td><td>${r[34]}</td><td>15</td><td>${r[35]}</td><td>${r[36]}</td><td>${r[37]}</td><td>-</td></tr>
-                            <tr><td class="left">Urdu</td><td>${r[44]}</td><td>15</td><td>${r[45]}</td><td>${r[46]}</td><td>${r[47]}</td><td>-</td></tr>
-                            <tr><td class="left">Kashmiri</td><td>${r[54]}</td><td>15</td><td>${r[55]}</td><td>${r[56]}</td><td>${r[57]}</td><td>-</td></tr>
+                            <tr><td>English</td><td>${row[14]}</td><td>${row[16]}</td><td>${row[15]}</td><td>${row[17]}</td></tr>
+                            <tr><td>Mathematics</td><td>${row[24]}</td><td>${row[26]}</td><td>${row[25]}</td><td>${row[27]}</td></tr>
+                            <tr><td>EVS</td><td>${row[34]}</td><td>${row[36]}</td><td>${row[35]}</td><td>${row[37]}</td></tr>
+                            <tr><td>Urdu</td><td>${row[44]}</td><td>${row[46]}</td><td>${row[45]}</td><td>${row[47]}</td></tr>
                         </tbody>
                     </table>
 
-                    <div style="margin-top:20px;">
-                        <strong>Part 2: Co-Scholastic Areas</strong>
-                        <table>
-                            <tr><td>Work Education</td><td>A</td><td>Health & Phys Ed</td><td>A</td></tr>
-                            <tr><td>Art Education</td><td>B</td><td>Discipline</td><td>A</td></tr>
-                        </table>
+                    <div style="margin-top:20px; border-top: 1px solid #ccc; padding-top:10px;">
+                        <p><strong>Grand Total:</strong> ${row[58]} / 500</p>
+                        <p><strong>Percentage:</strong> ${row[59]}% &nbsp;&nbsp; <strong>Grade:</strong> ${row[61]}</p>
                     </div>
 
-                    <div class="footer-section">
-                        <div>
-                            <p><strong>Grand Total:</strong> ${r[58]} / 500</p>
-                            <p><strong>Percentage:</strong> ${r[59]}%</p>
-                            <p><strong>Result:</strong> ${r[63] || 'Promoted'}</p>
-                        </div>
-                        <div>
-                            <p><strong>Grade:</strong> ${r[61]}</p>
-                            <p><strong>Class Rank:</strong> ${r[62]}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <p><strong>Attendance:</strong> ___ / ___</p>
-                        </div>
-                    </div>
-
-                    <p style="margin-top:20px;"><strong>Class Teacher's Remarks:</strong> <em>${r[63] || 'Very Good Performance.'}</em></p>
-
-                    <div style="display:flex; justify-content: space-between; margin-top: 40px;">
-                        <div class="sign-box">Class Teacher</div>
-                        <div class="sign-box">Parent</div>
-                        <div class="sign-box">Principal</div>
-                    </div>
+                    <button class="no-print" onclick="window.print()" style="margin-top:20px; padding:10px; cursor:pointer;">Print/Save PDF</button>
                 </div>
             `;
         }
+        // Hide the upload box after processing to see results clearly
+        document.querySelector('.upload-box').style.display = 'none';
+        window.scrollTo(0,0);
     }
 </script>
 
 </body>
 </html>
-                        
+                
