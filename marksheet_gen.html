@@ -23,18 +23,15 @@
             box-sizing: border-box;
         }
 
-        /* Color Palette matching the image */
         .header-bg { background-color: #6d59c0; color: white; }
         .label-cell { background-color: #e8edff; color: #3b4ca8; font-weight: bold; border: 1px solid #94a3b8; font-size: 12px; padding: 4px 8px; }
         .value-cell { border: 1px solid #94a3b8; font-size: 13px; font-weight: bold; text-align: center; padding: 4px; color: #000; }
         
-        /* Table Styles */
         table { width: 100%; border-collapse: collapse; margin-top: 5px; }
         th { background-color: #74b9ff; color: white; border: 1px solid #4a3392; font-size: 10px; padding: 4px 2px; }
         td { border: 1px solid #4a3392; text-align: center; font-size: 13px; font-weight: bold; height: 30px; }
         .sub-name { color: #b91c1c; text-align: left; padding-left: 10px; font-size: 15px; }
 
-        /* Specific Sections */
         .section-header { background-color: #a55eea; color: white; font-weight: bold; text-align: center; padding: 4px; font-size: 16px; border: 1px solid #4a3392; }
         .grade-key-header { background-color: #f7b731; }
         .proficiency-header { background-color: #eb4d4b; }
@@ -58,7 +55,7 @@
         <h2 class="text-3xl font-black text-purple-900 mb-4">GPS Pethgam - Official Marksheet Generator</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="p-4 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50">
-                <p class="font-bold text-blue-800 mb-2">1. Upload Student Photos (Name file e.g. "133.jpg")</p>
+                <p class="font-bold text-blue-800 mb-2">1. Upload Student Photos</p>
                 <input type="file" id="photoUpload" multiple accept="image/*" class="w-full text-sm" />
             </div>
             <div class="p-4 border-2 border-dashed border-green-300 rounded-lg bg-green-50">
@@ -74,7 +71,6 @@
     <script>
         let studentPhotos = {};
 
-        // Excel Date Serial to String helper
         function formatDate(excelDate) {
             if(!excelDate) return "";
             if(!isNaN(excelDate)) {
@@ -82,6 +78,24 @@
                 return date.toLocaleDateString('en-GB');
             }
             return excelDate;
+        }
+
+        // Logic fix for Proficiency calculation
+        function getProficiency(score, max = 100) {
+            const pct = (score / max) * 100;
+            if (pct >= 85) return "Sky";
+            if (pct >= 60) return "Mountain";
+            return "Stream";
+        }
+
+        function getGrade(score, max = 100) {
+            const pct = (score / max) * 100;
+            if (pct > 85) return "A+";
+            if (pct > 70) return "A";
+            if (pct > 55) return "B";
+            if (pct > 40) return "C";
+            if (pct > 33) return "D";
+            return "E";
         }
 
         document.getElementById('photoUpload').addEventListener('change', async (e) => {
@@ -111,7 +125,6 @@
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
 
-            // Data starts on Row 4 (Index 3)
             for (let i = 3; i < rows.length; i++) {
                 let r = rows[i];
                 if (!r[0]) continue; 
@@ -119,14 +132,15 @@
                 const admNo = String(r[0]).trim();
                 const photo = studentPhotos[admNo] || '';
 
-                // Calculate Summary Data
                 const engTot = parseInt(r[17]) || 0;
                 const matTot = parseInt(r[27]) || 0;
                 const evsTot = parseInt(r[37]) || 0;
                 const urdTot = parseInt(r[47]) || 0;
                 const kasTot = parseInt(r[57]) || 0;
+                
                 const grandTotal = engTot + matTot + evsTot + urdTot + kasTot;
                 const percentage = Math.round((grandTotal / 500) * 100);
+                const overallProf = getProficiency(grandTotal, 500);
 
                 const div = document.createElement('div');
                 div.className = 'marksheet-container';
@@ -176,10 +190,12 @@
                             <tr class="bg-gray-100">
                                 <td class="sub-name">Grand Total</td>
                                 <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-                                <td class="bg-blue-100">${r[100] || '128'}</td> <td>${r[101] || '86'}</td>
-                                <td>${r[102] || '212'}</td>
+                                <td class="bg-blue-100">128</td>
+                                <td>86</td>
+                                <td>212</td>
                                 <td class="bg-yellow-100">${grandTotal}</td>
-                                <td>A+</td><td>Stream</td>
+                                <td>${getGrade(grandTotal, 500)}</td>
+                                <td>${overallProf}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -201,9 +217,9 @@
                         <div>
                             <div class="section-header proficiency-header">Level of Proficiency</div>
                             <table class="text-[10px]">
-                                <tr><td>Sky</td><td>☁️</td><td>${percentage >= 85 ? '✔' : ''}</td></tr>
-                                <tr><td>Mountain</td><td>🏔️</td><td>${percentage >= 60 && percentage < 85 ? '✔' : ''}</td></tr>
-                                <tr><td>Stream</td><td>🌊</td><td>${percentage < 60 ? '✔' : ''}</td></tr>
+                                <tr><td>Sky</td><td>☁️</td><td>${overallProf === 'Sky' ? '✔' : ''}</td></tr>
+                                <tr><td>Mountain</td><td>🏔️</td><td>${overallProf === 'Mountain' ? '✔' : ''}</td></tr>
+                                <tr><td>Stream</td><td>🌊</td><td>${overallProf === 'Stream' ? '✔' : ''}</td></tr>
                                 <tr class="bg-gray-700 text-white font-bold"><td colspan="2">School Rank</td><td>5</td></tr>
                             </table>
                         </div>
@@ -214,7 +230,7 @@
                                 <div class="flex justify-between border-b"><span>Total Obtained:</span> <span>${grandTotal}</span></div>
                                 <div class="flex justify-between border-b"><span>Max Marks:</span> <span>500</span></div>
                                 <div class="flex justify-between border-b text-blue-800"><span>Percentage:</span> <span>${percentage}%</span></div>
-                                <div class="flex justify-between border-b"><span>Overall Grade:</span> <span>Very Good</span></div>
+                                <div class="flex justify-between border-b"><span>Overall Grade:</span> <span>${getGrade(grandTotal, 500)}</span></div>
                                 <div class="flex justify-between text-green-700"><span>Result:</span> <span>PASS</span></div>
                             </div>
                             <div class="mt-1 bg-gray-800 text-white p-1 text-center font-bold text-xs">Class Rank: 1</div>
@@ -231,7 +247,7 @@
                         <div class="flex flex-col">
                             <div class="bg-purple-800 text-white text-center font-bold p-1 text-xs">General Remarks</div>
                             <div class="border flex-grow p-2 text-[12px] italic">
-                                ${r[3]} has performed exceptionally well in all core subjects. Maintain this consistency and focus on Art & Craft.
+                                ${r[3]} has performed well in all core subjects. Maintain this consistency and focus on Art & Craft.
                             </div>
                         </div>
                     </div>
@@ -248,21 +264,25 @@
         }
 
         function renderRow(name, r, s) {
+            const subjectTotal = parseInt(r[s+9]) || 0;
+            const proficiency = getProficiency(subjectTotal, 100);
+            const grade = getGrade(subjectTotal, 100);
+
             return `<tr>
                 <td class="sub-name">${name}</td>
                 <td>${r[s]||0}</td><td>${r[s+1]||0}</td><td>${r[s+2]||0}</td><td>${r[s+3]||0}</td><td>${r[s+4]||0}</td><td>${r[s+5]||0}</td>
                 <td class="bg-blue-50">${r[s+6]||0}</td><td>${r[s+7]||0}</td><td>${r[s+8]||0}</td>
-                <td class="bg-yellow-50">${r[s+9]||0}</td><td>A</td><td>Sky</td>
+                <td class="bg-yellow-50">${subjectTotal}</td>
+                <td>${grade}</td>
+                <td>${proficiency}</td>
             </tr>`;
         }
 
         function renderBar(label, val) {
-            // Calculate height as percentage of 100
             const h = Math.min(val || 0, 100);
             return `<div class="bar" style="height: ${h}%"><span class="bar-label">${val || 0}</span><span class="sub-label">${label}</span></div>`;
         }
     </script>
 </body>
 </html>
-
-                            
+                                        
