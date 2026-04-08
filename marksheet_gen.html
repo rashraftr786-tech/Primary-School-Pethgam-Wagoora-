@@ -13,208 +13,115 @@
 
     <style>
         :root {
-            --primary-purple: #5e35b1;
-            --secondary-blue: #1e88e5;
-            --header-bg: #f8f9fa;
-            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            --light-purple: #e8eaf6;
-            --border-color: #5e35b1;
-        }
+        :root {
+    --primary-purple: #5e35b1;
+    --secondary-blue: #1e88e5;
+    --light-purple: #f3e5f5;
+    --border-color: #5e35b1;
+}
 
-        body {
-            background-color: #f4f7f6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .school-header {
-            background: white;
-            border-bottom: 4px solid var(--primary-purple);
-            position: relative;
-            overflow: hidden;
-        }
+/* UI Elements */
+.school-header { background: white; border-bottom: 4px solid var(--primary-purple); }
+.header-title { color: var(--primary-purple); }
+.admin-card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
-        .header-title {
-            color: var(--primary-purple);
-        }
+/* Marksheet A4 Logic */
+#marksheet-container {
+    width: 794px; /* A4 Width at 96 DPI */
+    min-height: 1123px; /* A4 Height at 96 DPI */
+    padding: 30px;
+    margin: 20px auto;
+    background: white;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    position: relative;
+    color: #000;
+}
 
-        .nav-link {
-            font-weight: 500;
-            color: #555;
-            cursor: pointer;
-            border: none;
-            background: none;
-            padding: 0.5rem 1rem;
-        }
+.ms-header {
+    border: 2px solid var(--primary-purple);
+    background: var(--primary-purple);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+}
 
-        .nav-link.active {
-            color: var(--primary-purple) !important;
-            border-bottom: 2px solid var(--primary-purple);
-        }
+.ms-school-info { flex-grow: 1; text-align: center; }
 
-        .admin-card {
-            border: none;
-            border-radius: 12px;
-            transition: transform 0.3s;
-            box-shadow: var(--card-shadow);
-        }
+.ms-photo-box {
+    width: 100px;
+    height: 120px;
+    border: 2px solid white;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .admin-card:hover {
-            transform: translateY(-5px);
-        }
+/* Table Styling for PDF Clarity */
+.ms-grid-table, .marks-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
 
-        #drop-zone {
-            border: 2px dashed #ccc;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            background: #fff;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+.ms-grid-table td, .marks-table th, .marks-table td {
+    border: 1px solid #444;
+    padding: 10px;
+    font-size: 14px;
+}
 
-        #drop-zone.dragover {
-            background: var(--light-purple);
-            border-color: var(--primary-purple);
-        }
+.ms-label-cell { background: var(--light-purple); font-weight: bold; width: 20%; }
 
-        /* Marksheet A4 Styling */
-        #marksheet-container {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 10mm;
-            margin: 20px auto;
-            background: white;
-            border: 2px solid #333;
-            position: relative;
-            color: #000;
-            box-sizing: border-box;
-        }
+.marks-table th {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+}
 
-        .ms-header {
-            border: 2px solid var(--primary-purple);
-            background: var(--primary-purple);
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-        }
+/* Bottom Sections */
+.bottom-section {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr 1.5fr;
+    gap: 15px;
+    margin-top: 20px;
+}
 
-        .ms-school-info {
-            flex-grow: 1;
-            text-align: center;
-        }
+.res-box { border: 1px solid #444; border-radius: 4px; }
+.res-head { 
+    background: #eeeeee; 
+    border-bottom: 1px solid #444; 
+    padding: 5px; 
+    font-weight: bold; 
+    text-align: center;
+}
 
-        .ms-photo-box {
-            width: 100px;
-            height: 120px;
-            border: 2px solid white;
-            background: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
+.sig-area {
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+}
 
-        .ms-photo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+.sig-box {
+    width: 200px;
+    border-top: 1.5px solid #000;
+    text-align: center;
+    padding-top: 5px;
+    font-weight: bold;
+    font-size: 13px;
+}
 
-        .ms-grid-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 13px;
-        }
-
-        .ms-grid-table td {
-            border: 1px solid var(--border-color);
-            padding: 8px;
-        }
-
-        .ms-label-cell {
-            background: var(--light-purple);
-            font-weight: bold;
-            width: 15%;
-        }
-
-        .ms-value-cell {
-            width: 35%;
-        }
-
-        .marks-table {
-            width: 100%;
-            margin-top: 15px;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-
-        .marks-table th {
-            background: var(--primary-purple);
-            color: white;
-            border: 1px solid #fff;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .marks-table td {
-            border: 1px solid var(--border-color);
-            padding: 8px;
-            text-align: center;
-        }
-
-        .bottom-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .res-box {
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .res-head {
-            background: var(--primary-purple);
-            color: white;
-            padding: 5px;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .tick-mark {
-            color: green;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .sig-area {
-            margin-top: 60px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .sig-box {
-            width: 30%;
-            border-top: 1px solid #000;
-            padding-top: 5px;
-        }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; }
-            #marksheet-container { margin: 0; border: none; box-shadow: none; }
-        }
+@media print {
+    .no-print { display: none !important; }
+    #marksheet-container { border: none; margin: 0; }
+}
     </style>
 </head>
 <body>
@@ -370,169 +277,201 @@
 
 <script>
     const STORAGE_KEY = 'gps_v2_records';
-    let studentRecords = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    let currentChart = null;
-    let currentStudent = null;
+    const STORAGE_KEY = 'gps_v2_records';
+let studentRecords = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let currentChart = null;
+let currentStudent = null;
 
-    const META_KEYS = ['name', 'roll', 'class', 'admission', 'adm', 'father', 'photo', 'image'];
+const META_KEYS = ['name', 'roll', 'class', 'admission', 'adm', 'father', 'photo', 'image'];
 
-    function showSection(id) {
-        document.querySelectorAll('section, #marksheet-view').forEach(el => el.classList.add('d-none'));
-        document.getElementById('main-content').classList.remove('d-none');
-        
-        if(id === 'marksheet-view') {
-            document.getElementById('main-content').classList.add('d-none');
-            document.getElementById(id).classList.remove('d-none');
-        } else {
-            document.getElementById(id + '-section').classList.remove('d-none');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.querySelector(`[data-section="${id}"]`).classList.add('active');
-        }
-        if(id === 'records') renderTable();
-        if(id === 'dashboard') updateStats();
+function showSection(id) {
+    document.querySelectorAll('section, #marksheet-view').forEach(el => el.classList.add('d-none'));
+    document.getElementById('main-content').classList.remove('d-none');
+    
+    if(id === 'marksheet-view') {
+        document.getElementById('main-content').classList.add('d-none');
+        document.getElementById(id).classList.remove('d-none');
+    } else {
+        document.getElementById(id + '-section').classList.remove('d-none');
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const navBtn = document.querySelector(`[data-section="${id}"]`);
+        if(navBtn) navBtn.classList.add('active');
     }
+    if(id === 'records') renderTable();
+    if(id === 'dashboard') updateStats();
+}
 
-    function processExcel() {
-        const file = document.getElementById('fileInput').files[0];
-        if (!file) return alert("Select a file!");
+function getGrade(p) {
+    if (p >= 85) return 'A+';
+    if (p >= 70) return 'A';
+    if (p >= 55) return 'B';
+    if (p >= 40) return 'C';
+    if (p >= 33) return 'D';
+    return 'E';
+}
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet);
+function processExcel() {
+    const file = document.getElementById('fileInput').files[0];
+    if (!file) return alert("Select a file!");
 
-            studentRecords = json.map((row, idx) => {
-                let marks = {};
-                let totalObtained = 0;
-                let subjectCount = 0;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet);
 
-                Object.keys(row).forEach(key => {
-                    const cleanKey = key.toLowerCase();
-                    const isMeta = META_KEYS.some(m => cleanKey.includes(m));
-                    const val = parseFloat(row[key]);
+        studentRecords = json.map((row, idx) => {
+            let marks = {};
+            let totalObtained = 0;
+            let subjectCount = 0;
 
-                    if (!isMeta && !isNaN(val)) {
-                        marks[key] = val;
-                        totalObtained += val;
-                        subjectCount++;
-                    }
-                });
+            Object.keys(row).forEach(key => {
+                const cleanKey = key.toLowerCase();
+                const isMeta = META_KEYS.some(m => cleanKey.includes(m));
+                const val = parseFloat(row[key]);
 
-                const percentage = subjectCount > 0 ? (totalObtained / (subjectCount * 100)) * 100 : 0;
-                
-                return {
-                    id: Date.now() + idx,
-                    name: row['Name'] || row['Student Name'] || 'Unknown',
-                    rollNo: row['Roll No'] || row['Roll'] || idx + 1,
-                    class: row['Class'] || '-',
-                    admissionNo: row['Admission No'] || row['Adm No'] || 'N/A',
-                    fatherName: row['Father Name'] || row['Father'] || 'N/A',
-                    marks: marks,
-                    totalObtained: totalObtained,
-                    maxTotal: subjectCount * 100,
-                    percentage: percentage.toFixed(1),
-                    status: percentage >= 33 ? 'Pass' : 'Fail',
-                    grade: getGrade(percentage)
-                };
+                if (!isMeta && !isNaN(val)) {
+                    marks[key] = val;
+                    totalObtained += val;
+                    subjectCount++;
+                }
             });
 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(studentRecords));
-            alert("Processed " + studentRecords.length + " students!");
-            showSection('records');
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    function getGrade(p) {
-        if (p >= 85) return 'A+';
-        if (p >= 70) return 'A';
-        if (p >= 55) return 'B';
-        if (p >= 40) return 'C';
-        if (p >= 33) return 'D';
-        return 'E';
-    }
-
-    function renderTable() {
-        const tbody = document.getElementById('student-table-body');
-        tbody.innerHTML = studentRecords.map(s => `
-            <tr>
-                <td>${s.rollNo}</td><td>${s.name}</td><td>${s.class}</td>
-                <td>${s.percentage}%</td>
-                <td><span class="badge ${s.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${s.status}</span></td>
-                <td><button class="btn btn-sm btn-info text-white" onclick="viewMarksheet(${s.id})">View</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function viewMarksheet(id) {
-        const s = studentRecords.find(r => r.id === id);
-        currentStudent = s;
-        showSection('marksheet-view');
-
-        document.getElementById('ms-name').innerText = s.name;
-        document.getElementById('ms-adm').innerText = s.admissionNo;
-        document.getElementById('ms-fname').innerText = s.fatherName;
-        document.getElementById('ms-class').innerText = s.class;
-        document.getElementById('ms-roll').innerText = s.rollNo;
-        document.getElementById('ms-grade').innerText = s.grade;
-        document.getElementById('ms-res-ob').innerText = `${s.totalObtained} / ${s.maxTotal}`;
-        document.getElementById('ms-res-perc').innerText = s.percentage + "%";
-        document.getElementById('ms-res-status').innerText = s.status;
-
-        const marksHtml = Object.entries(s.marks).map(([sub, score]) => `
-            <tr>
-                <td>${sub}</td><td>${score}</td>
-                <td>${getGrade(score)}</td>
-                <td>${score >= 33 ? 'Pass' : 'Fail'}</td>
-            </tr>
-        `).join('');
-        document.getElementById('ms-marks-body').innerHTML = marksHtml;
-
-        const prof = s.grade.startsWith('A') ? 'sky' : (['B', 'C'].includes(s.grade) ? 'mountain' : 'stream');
-        ['sky', 'mountain', 'stream'].forEach(p => document.getElementById('prof-'+p).innerHTML = '');
-        document.getElementById('prof-'+prof).innerHTML = '✓';
-
-        renderChart(s);
-    }
-
-    function renderChart(s) {
-        const ctx = document.getElementById('msChart').getContext('2d');
-        if (currentChart) currentChart.destroy();
-        currentChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(s.marks),
-                datasets: [{ data: Object.values(s.marks), backgroundColor: '#5e35b1' }]
-            },
-            options: { animation: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+            const percentage = subjectCount > 0 ? (totalObtained / (subjectCount * 100)) * 100 : 0;
+            
+            return {
+                id: Date.now() + idx,
+                name: row['Name'] || row['Student Name'] || 'Unknown',
+                rollNo: row['Roll No'] || row['Roll'] || idx + 1,
+                class: row['Class'] || '-',
+                admissionNo: row['Admission No'] || row['Adm No'] || 'N/A',
+                fatherName: row['Father Name'] || row['Father'] || 'N/A',
+                marks: marks,
+                totalObtained: totalObtained,
+                maxTotal: subjectCount * 100,
+                percentage: percentage.toFixed(1),
+                status: percentage >= 33 ? 'Pass' : 'Fail',
+                grade: getGrade(percentage)
+            };
         });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(studentRecords));
+        updateStats();
+        showSection('records');
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function renderTable() {
+    const tbody = document.getElementById('student-table-body');
+    tbody.innerHTML = studentRecords.map(s => `
+        <tr>
+            <td>${s.rollNo}</td><td>${s.name}</td><td>${s.class}</td>
+            <td>${s.percentage}%</td>
+            <td><span class="badge ${s.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${s.status}</span></td>
+            <td><button class="btn btn-sm btn-info text-white" onclick="viewMarksheet(${s.id})">View</button></td>
+        </tr>
+    `).join('');
+}
+
+function viewMarksheet(id) {
+    const s = studentRecords.find(r => r.id === id);
+    currentStudent = s;
+    showSection('marksheet-view');
+
+    document.getElementById('ms-name').innerText = s.name;
+    document.getElementById('ms-adm').innerText = s.admissionNo;
+    document.getElementById('ms-fname').innerText = s.fatherName;
+    document.getElementById('ms-class').innerText = s.class;
+    document.getElementById('ms-roll').innerText = s.rollNo;
+    document.getElementById('ms-grade').innerText = s.grade;
+    document.getElementById('ms-res-ob').innerText = `${s.totalObtained} / ${s.maxTotal}`;
+    document.getElementById('ms-res-perc').innerText = s.percentage + "%";
+    document.getElementById('ms-res-status').innerText = s.status;
+
+    const marksHtml = Object.entries(s.marks).map(([sub, score]) => `
+        <tr>
+            <td style="text-align:left">${sub}</td><td>${score}</td>
+            <td>${getGrade(score)}</td>
+            <td>${score >= 33 ? 'Pass' : 'Fail'}</td>
+        </tr>
+    `).join('');
+    document.getElementById('ms-marks-body').innerHTML = marksHtml;
+
+    const prof = s.grade.startsWith('A') ? 'sky' : (['B', 'C'].includes(s.grade) ? 'mountain' : 'stream');
+    ['sky', 'mountain', 'stream'].forEach(p => document.getElementById('prof-'+p).innerHTML = '');
+    document.getElementById('prof-'+prof).innerHTML = '<b style="color:green">✔</b>';
+
+    renderChart(s);
+}
+
+function renderChart(s) {
+    const ctx = document.getElementById('msChart').getContext('2d');
+    if (currentChart) currentChart.destroy();
+    currentChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(s.marks),
+            datasets: [{ 
+                label: 'Marks',
+                data: Object.values(s.marks), 
+                backgroundColor: '#5e35b1',
+                barThickness: 20
+            }]
+        },
+        options: { 
+            animation: false, // Critical for PDF capture
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }, 
+            scales: { y: { beginAtZero: true, max: 100 } } 
+        }
+    });
+}
+
+function downloadPDF() {
+    const element = document.getElementById('marksheet-container');
+    const options = {
+        margin: 0,
+        filename: `${currentStudent.name}_Result.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            width: 794 // Ensures captured width matches CSS
+        },
+        jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+    };
+
+    html2pdf().set(options).from(element).save();
+}
+
+function updateStats() {
+    document.getElementById('stat-total').innerText = studentRecords.length;
+    document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
+    const avg = studentRecords.length ? (studentRecords.reduce((a, b) => a + parseFloat(b.percentage), 0) / studentRecords.length) : 0;
+    document.getElementById('stat-avg').innerText = avg.toFixed(1) + "%";
+}
+
+function clearAllRecords() { 
+    if(confirm("Are you sure you want to delete all records?")) { 
+        studentRecords = []; 
+        localStorage.removeItem(STORAGE_KEY); 
+        renderTable(); 
+        updateStats(); 
     }
+}
 
-    function downloadPDF() {
-        const element = document.getElementById('marksheet-container');
-        html2pdf().from(element).set({
-            margin: 0,
-            filename: currentStudent.name + '_Result.pdf',
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).save();
-    }
+document.getElementById('drop-zone').onclick = () => document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange = (e) => { 
+    if(e.target.files.length > 0)
+        document.getElementById('file-name-display').innerText = e.target.files[0].name; 
+};
 
-    function updateStats() {
-        document.getElementById('stat-total').innerText = studentRecords.length;
-        document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
-        const avg = studentRecords.reduce((a, b) => a + parseFloat(b.percentage), 0) / (studentRecords.length || 1);
-        document.getElementById('stat-avg').innerText = avg.toFixed(1) + "%";
-    }
+window.onload = updateStats;
 
-    function clearAllRecords() { if(confirm("Delete all?")) { studentRecords = []; localStorage.removeItem(STORAGE_KEY); renderTable(); updateStats(); }}
-
-    document.getElementById('drop-zone').onclick = () => document.getElementById('fileInput').click();
-    document.getElementById('fileInput').onchange = (e) => { document.getElementById('file-name-display').innerText = e.target.files[0].name; };
-
-    window.onload = updateStats;
 </script>
 </body>
 </html>
