@@ -112,41 +112,55 @@
 </header>
 
 <main class="container my-4 no-print" id="main-content">
+    
     <section id="dashboard-section">
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card admin-card bg-primary text-white p-3">
-                    <h3><span id="stat-total">0</span></h3>
-                    <p class="mb-0">Total Students</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card admin-card bg-success text-white p-3">
-                    <h3><span id="stat-pass">0</span></h3>
-                    <p class="mb-0">Total Pass</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card admin-card bg-warning text-dark p-3">
-                    <h3><span id="stat-avg">0%</span></h3>
-                    <p class="mb-0">Avg. Percentage</p>
-                </div>
-            </div>
+            <div class="col-md-4"><div class="card admin-card bg-primary text-white p-3"><h3><span id="stat-total">0</span></h3><p class="mb-0">Total Students</p></div></div>
+            <div class="col-md-4"><div class="card admin-card bg-success text-white p-3"><h3><span id="stat-pass">0</span></h3><p class="mb-0">Total Pass</p></div></div>
+            <div class="col-md-4"><div class="card admin-card bg-warning text-dark p-3"><h3><span id="stat-avg">0%</span></h3><p class="mb-0">Avg. Percentage</p></div></div>
         </div>
         <div class="mt-5 text-center p-5 bg-white rounded shadow-sm">
             <i class="fas fa-school fa-5x text-muted mb-3"></i>
             <h4>Welcome to PS Pethgam Admin Portal</h4>
-            <p>Manage student assessments, generate digital marksheets, and track performance.</p>
+            <p>Manage student assessments and track performance.</p>
         </div>
     </section>
 
-    </main>
+    <section id="upload-section" class="d-none">
+        <div class="card admin-card p-4">
+            <h4 class="mb-4"><i class="fas fa-upload me-2 text-primary"></i>Upload Excel File</h4>
+            <div id="drop-zone" onclick="document.getElementById('fileInput').click()" style="border: 2px dashed #ccc; padding: 40px; text-align: center; cursor: pointer;">
+                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                <h5>Click or Drag Excel File here</h5>
+                <input type="file" id="fileInput" class="d-none" accept=".xlsx, .xls">
+                <div id="file-name-display" class="mt-2 fw-bold text-primary"></div>
+            </div>
+            <button class="btn btn-primary mt-4 px-5" onclick="processExcel()">Process & Save Records</button>
+        </div>
+    </section>
+
+    <section id="records-section" class="d-none">
+        <div class="card admin-card p-4">
+            <div class="d-flex justify-content-between mb-3">
+                <h4>Student Records</h4>
+                <input type="text" id="searchInput" class="form-control w-25" placeholder="Search..." onkeyup="filterTable()">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr><th>Roll No</th><th>Name</th><th>Class</th><th>Percentage</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="student-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
 
 <div id="marksheet-view" class="d-none">
     <div class="container py-3 no-print">
-        <button class="btn btn-secondary" onclick="showSection('records')"><i class="fas fa-arrow-left"></i> Back</button>
-        <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</button>
-        <button class="btn btn-success" onclick="window.print()"><i class="fas fa-print"></i> Print Marksheet</button>
+        <button class="btn btn-secondary" onclick="showSection('records')">Back</button>
+        <button class="btn btn-success" onclick="window.print()">Print Marksheet</button>
     </div>
 
     <div id="marksheet-container">
@@ -156,14 +170,42 @@
             <img src="new-logo.png" alt="Logo" style="height: 60px; filter: brightness(0) invert(1);">
             <div class="ms-school-info text-center">
                 <h4 class="mb-0 fw-bold">GOVERNMENT PRIMARY SCHOOL</h4>
-                <p class="mb-0 fw-bold" style="font-size: 0.9rem;">PETHGAM WAGOORA 193109</p>
+                <p class="mb-0 fw-bold">PETHGAM WAGOORA 193109</p>
                 <p class="mb-0 small">Wagoora Babareshi Road Near ZEO Wagoora</p>
             </div>
             <div class="ms-photo-box">
-                <img id="ms-student-photo" src="https://via.placeholder.com/100x120?text=Photo" alt="Student">
+                <img id="ms-student-photo" src="https://via.placeholder.com/100x120" alt="Student">
             </div>
         </div>
+
+        <table class="ms-grid-table w-100 mt-3">
+            <tr>
+                <td class="ms-label-cell">Name:</td><td id="ms-name" class="ms-value-cell">-</td>
+                <td class="ms-label-cell">Adm No:</td><td id="ms-adm" class="ms-value-cell">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Roll No:</td><td id="ms-roll" class="ms-value-cell">-</td>
+                <td class="ms-label-cell">Class:</td><td id="ms-class" class="ms-value-cell">-</td>
+            </tr>
+        </table>
+
+        <table class="marks-table w-100 mt-3">
+            <thead>
+                <tr>
+                    <th>Subject</th><th>FA Total</th><th>CC Marks</th><th>SA Marks</th><th>Total</th><th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="ms-marks-body"></tbody>
+        </table>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <canvas id="msChart" style="max-height: 150px;"></canvas>
+            </div>
         </div>
+    </div>
+</div>
+
 <script>
     // Mock Data for Demo
     let studentRecords = JSON.parse(localStorage.getItem('gps_records')) || [];
