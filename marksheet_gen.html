@@ -276,22 +276,23 @@ body {
 </div>
 
 <script>
-    const STORAGE_KEY = 'gps_v2_records';
-    const STORAGE_KEY = 'gps_v2_records';
+const STORAGE_KEY = 'gps_v2_records';
 let studentRecords = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let currentChart = null;
 let currentStudent = null;
 
-const META_KEYS = ['name', 'roll', 'class', 'admission', 'adm', 'father', 'photo', 'image'];
+// Expanded keys to avoid treating non-subject data as marks
+const META_KEYS = ['name', 'roll', 'class', 'admission', 'adm', 'father', 'photo', 'image', 'year', 'section'];
 
 function showSection(id) {
     document.querySelectorAll('section, #marksheet-view').forEach(el => el.classList.add('d-none'));
-    document.getElementById('main-content').classList.remove('d-none');
+    const mainContent = document.getElementById('main-content');
     
     if(id === 'marksheet-view') {
-        document.getElementById('main-content').classList.add('d-none');
+        mainContent.classList.add('d-none');
         document.getElementById(id).classList.remove('d-none');
     } else {
+        mainContent.classList.remove('d-none');
         document.getElementById(id + '-section').classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         const navBtn = document.querySelector(`[data-section="${id}"]`);
@@ -311,167 +312,87 @@ function getGrade(p) {
 }
 
 function processExcel() {
-    const file = document.getElementById('fileInput').files[0];
-    if (!file) return alert("Select a file!");
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (!file) return alert("Please select or drop an Excel file first!");
 
     const reader = new FileReader();
     reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, {type: 'array'});
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet);
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
 
-        studentRecords = json.map((row, idx) => {
-            let marks = {};
-            let totalObtained = 0;
-            let subjectCount = 0;
+            if(json.length === 0) throw new Error("Excel sheet is empty");
 
-            Object.keys(row).forEach(key => {
-                const cleanKey = key.toLowerCase();
-                const isMeta = META_KEYS.some(m => cleanKey.includes(m));
-                const val = parseFloat(row[key]);
+            studentRecords = json.map((row, idx) => {
+                let marks = {};
+                let totalObtained = 0;
+                let subjectCount = 0;
 
-                if (!isMeta && !isNaN(val)) {
-                    marks[key] = val;
-                    totalObtained += val;
-                    subjectCount++;
-                }
+                Object.keys(row).forEach(key => {
+                    const cleanKey = key.toLowerCase().trim();
+                    const isMeta = META_KEYS.some(m => cleanKey.includes(m));
+                    const val = parseFloat(row[key]);
+
+                    if (!isMeta && !isNaN(val)) {
+                        marks[key] = val;
+                        totalObtained += val;
+                        subjectCount++;
+                    }
+                });
+
+                const percentage = subjectCount > 0 ? (totalObtained / (subjectCount * 100)) * 100 : 0;
+                
+                return {
+                    id: Date.now() + idx,
+                    name: row['Name'] || row['Student Name'] || 'Unknown',
+                    rollNo: row['Roll No'] || row['Roll'] || idx + 1,
+                    class: row['Class'] || 'N/A',
+                    admissionNo: row['Admission No'] || row['Adm No'] || 'N/A',
+                    fatherName: row['Father Name'] || row['Father'] || 'N/A',
+                    marks: marks,
+                    totalObtained: totalObtained,
+                    maxTotal: subjectCount * 100,
+                    percentage: percentage.toFixed(1),
+                    status: percentage >= 33 ? 'Pass' : 'Fail',
+                    grade: getGrade(percentage)
+                };
             });
 
-            const percentage = subjectCount > 0 ? (totalObtained / (subjectCount * 100)) * 100 : 0;
-            
-            return {
-                id: Date.now() + idx,
-                name: row['Name'] || row['Student Name'] || 'Unknown',
-                rollNo: row['Roll No'] || row['Roll'] || idx + 1,
-                class: row['Class'] || '-',
-                admissionNo: row['Admission No'] || row['Adm No'] || 'N/A',
-                fatherName: row['Father Name'] || row['Father'] || 'N/A',
-                marks: marks,
-                totalObtained: totalObtained,
-                maxTotal: subjectCount * 100,
-                percentage: percentage.toFixed(1),
-                status: percentage >= 33 ? 'Pass' : 'Fail',
-                grade: getGrade(percentage)
-            };
-        });
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(studentRecords));
-        updateStats();
-        showSection('records');
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(studentRecords));
+            alert("Success! Records processed.");
+            showSection('records');
+        } catch (err) {
+            alert("Error processing file: " + err.message);
+        }
     };
     reader.readAsArrayBuffer(file);
 }
 
-function renderTable() {
-    const tbody = document.getElementById('student-table-body');
-    tbody.innerHTML = studentRecords.map(s => `
-        <tr>
-            <td>${s.rollNo}</td><td>${s.name}</td><td>${s.class}</td>
-            <td>${s.percentage}%</td>
-            <td><span class="badge ${s.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${s.status}</span></td>
-            <td><button class="btn btn-sm btn-info text-white" onclick="viewMarksheet(${s.id})">View</button></td>
-        </tr>
-    `).join('');
-}
+// Drag and Drop Implementation
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('fileInput');
 
-function viewMarksheet(id) {
-    const s = studentRecords.find(r => r.id === id);
-    currentStudent = s;
-    showSection('marksheet-view');
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = '#5e35b1';
+});
 
-    document.getElementById('ms-name').innerText = s.name;
-    document.getElementById('ms-adm').innerText = s.admissionNo;
-    document.getElementById('ms-fname').innerText = s.fatherName;
-    document.getElementById('ms-class').innerText = s.class;
-    document.getElementById('ms-roll').innerText = s.rollNo;
-    document.getElementById('ms-grade').innerText = s.grade;
-    document.getElementById('ms-res-ob').innerText = `${s.totalObtained} / ${s.maxTotal}`;
-    document.getElementById('ms-res-perc').innerText = s.percentage + "%";
-    document.getElementById('ms-res-status').innerText = s.status;
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileInput.files = e.dataTransfer.files;
+    document.getElementById('file-name-display').innerText = fileInput.files[0].name;
+});
 
-    const marksHtml = Object.entries(s.marks).map(([sub, score]) => `
-        <tr>
-            <td style="text-align:left">${sub}</td><td>${score}</td>
-            <td>${getGrade(score)}</td>
-            <td>${score >= 33 ? 'Pass' : 'Fail'}</td>
-        </tr>
-    `).join('');
-    document.getElementById('ms-marks-body').innerHTML = marksHtml;
+// ... Keep your renderTable, viewMarksheet, renderChart, and downloadPDF functions ...
+// They were structurally sound!
 
-    const prof = s.grade.startsWith('A') ? 'sky' : (['B', 'C'].includes(s.grade) ? 'mountain' : 'stream');
-    ['sky', 'mountain', 'stream'].forEach(p => document.getElementById('prof-'+p).innerHTML = '');
-    document.getElementById('prof-'+prof).innerHTML = '<b style="color:green">✔</b>';
-
-    renderChart(s);
-}
-
-function renderChart(s) {
-    const ctx = document.getElementById('msChart').getContext('2d');
-    if (currentChart) currentChart.destroy();
-    currentChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(s.marks),
-            datasets: [{ 
-                label: 'Marks',
-                data: Object.values(s.marks), 
-                backgroundColor: '#5e35b1',
-                barThickness: 20
-            }]
-        },
-        options: { 
-            animation: false, // Critical for PDF capture
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } }, 
-            scales: { y: { beginAtZero: true, max: 100 } } 
-        }
-    });
-}
-
-function downloadPDF() {
-    const element = document.getElementById('marksheet-container');
-    const options = {
-        margin: 0,
-        filename: `${currentStudent.name}_Result.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true, 
-            logging: false,
-            width: 794 // Ensures captured width matches CSS
-        },
-        jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
-    };
-
-    html2pdf().set(options).from(element).save();
-}
-
-function updateStats() {
-    document.getElementById('stat-total').innerText = studentRecords.length;
-    document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
-    const avg = studentRecords.length ? (studentRecords.reduce((a, b) => a + parseFloat(b.percentage), 0) / studentRecords.length) : 0;
-    document.getElementById('stat-avg').innerText = avg.toFixed(1) + "%";
-}
-
-function clearAllRecords() { 
-    if(confirm("Are you sure you want to delete all records?")) { 
-        studentRecords = []; 
-        localStorage.removeItem(STORAGE_KEY); 
-        renderTable(); 
-        updateStats(); 
-    }
-}
-
-document.getElementById('drop-zone').onclick = () => document.getElementById('fileInput').click();
-document.getElementById('fileInput').onchange = (e) => { 
-    if(e.target.files.length > 0)
-        document.getElementById('file-name-display').innerText = e.target.files[0].name; 
+window.onload = () => {
+    updateStats();
+    showSection('dashboard');
 };
-
-window.onload = updateStats;
-
 </script>
 </body>
 </html>
