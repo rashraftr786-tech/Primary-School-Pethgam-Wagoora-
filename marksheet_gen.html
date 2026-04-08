@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPS Pethgam Wagoora - Admin Portal</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -16,26 +16,67 @@
             --primary-purple: #5e35b1;
             --secondary-blue: #1e88e5;
             --header-bg: #f8f9fa;
-            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --light-purple: #e8eaf6;
+            --border-color: #5e35b1;
         }
 
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        /* Navigation & Header */
-        .school-header { background: white; border-bottom: 4px solid var(--primary-purple); position: relative; overflow: hidden; }
-        .header-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; width: 300px; pointer-events: none; }
-        .nav-link { font-weight: 500; color: #555; cursor: pointer; }
-        .nav-link.active { color: var(--primary-purple) !important; border-bottom: 2px solid var(--primary-purple); }
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        /* Dashboard Cards */
-        .admin-card { border: none; border-radius: 12px; transition: transform 0.3s; box-shadow: var(--card-shadow); }
-        .admin-card:hover { transform: translateY(-5px); }
-        
-        /* Excel Upload Area */
-        #drop-zone { border: 2px dashed #ccc; border-radius: 15px; padding: 40px; text-align: center; background: #fff; cursor: pointer; transition: 0.3s; }
-        #drop-zone.dragover { background: #e8eaf6; border-color: var(--primary-purple); }
+        .school-header {
+            background: white;
+            border-bottom: 4px solid var(--primary-purple);
+            position: relative;
+            overflow: hidden;
+        }
 
-        /* Marksheet Styling */
+        .header-title {
+            color: var(--primary-purple);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-link.active {
+            color: var(--primary-purple) !important;
+            border-bottom: 2px solid var(--primary-purple);
+        }
+
+        .admin-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.3s;
+            box-shadow: var(--card-shadow);
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+        }
+
+        #drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #drop-zone.dragover {
+            background: var(--light-purple);
+            border-color: var(--primary-purple);
+        }
+
         #marksheet-container {
             width: 210mm;
             min-height: 297mm;
@@ -45,35 +86,195 @@
             border: 2px solid #333;
             position: relative;
             color: #000;
+            box-sizing: border-box;
         }
 
-        .ms-header { border: 2px solid #5e35b1; background: #5e35b1; color: white; display: flex; align-items: center; padding: 10px; }
-        .ms-school-info { flex-grow: 1; text-align: center; }
-        .ms-photo-box { width: 100px; height: 120px; border: 2px solid white; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .ms-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .ms-header {
+            border: 2px solid var(--primary-purple);
+            background: var(--primary-purple);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+        }
 
-        .ms-grid-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        .ms-grid-table th, .ms-grid-table td { border: 1px solid #5e35b1; padding: 4px; text-align: center; }
-        .ms-label-cell { background: #e8eaf6; font-weight: bold; text-align: left !important; padding-left: 8px; width: 15%; }
-        .ms-value-cell { width: 18%; }
+        .ms-school-info {
+            flex-grow: 1;
+            text-align: center;
+        }
 
-        .marks-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 11px; }
-        .marks-table th { background: #5e35b1; color: white; border: 1px solid #fff; padding: 5px; }
-        .marks-table td { border: 1px solid #5e35b1; padding: 5px; }
+        .ms-photo-box {
+            width: 100px;
+            height: 120px;
+            border: 2px solid white;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
 
-        .bottom-section { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .res-box { border: 1px solid #5e35b1; border-radius: 4px; overflow: hidden; }
-        .res-head { background: #5e35b1; color: white; padding: 5px; font-size: 12px; font-weight: bold; text-align: center; }
-        
-        .tick-mark { color: green; font-weight: bold; font-size: 18px; }
+        .ms-photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        .sig-area { margin-top: 40px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; text-align: center; }
-        .watermark-main { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.1; width: 400px; pointer-events: none; z-index: 0; }
+        .ms-grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .ms-grid-table th,
+        .ms-grid-table td {
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            text-align: center;
+        }
+
+        .ms-label-cell {
+            background: var(--light-purple);
+            font-weight: bold;
+            text-align: left !important;
+            padding-left: 8px;
+            width: 15%;
+        }
+
+        .ms-value-cell {
+            width: 35%;
+            text-align: left !important;
+        }
+
+        .marks-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .marks-table th {
+            background: var(--primary-purple);
+            color: white;
+            border: 1px solid #fff;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .marks-table td {
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            text-align: center;
+        }
+
+        .bottom-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .res-box {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .res-head {
+            background: var(--primary-purple);
+            color: white;
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .tick-mark {
+            color: green;
+            font-weight: bold;
+            font-size: 18px;
+            margin-left: 6px;
+        }
+
+        .sig-area {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .sig-box {
+            width: 30%;
+            border-top: 1px solid #000;
+            padding-top: 4px;
+        }
+
+        .table > :not(caption) > * > * {
+            vertical-align: middle;
+        }
+
+        .subject-badge {
+            background: var(--light-purple);
+            color: #222;
+            border: 1px solid #d1d6f0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-section {
+                grid-template-columns: 1fr;
+            }
+
+            #marksheet-container {
+                width: 100%;
+                min-height: auto;
+                margin: 10px auto;
+                padding: 12px;
+            }
+
+            .ms-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .ms-photo-box {
+                margin: 0 auto;
+            }
+
+            .sig-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sig-box {
+                width: 100%;
+            }
+        }
 
         @media print {
-            .no-print { display: none !important; }
-            body { background: white; }
-            #marksheet-container { margin: 0; border: none; }
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            #marksheet-container {
+                margin: 0;
+                border: none;
+                width: 100%;
+                min-height: auto;
+            }
         }
     </style>
 </head>
@@ -83,10 +284,15 @@
     <div class="container py-3">
         <div class="row align-items-center">
             <div class="col-md-2 text-center">
-                <img src="new-logo.png" alt="Logo" class="img-fluid rounded-circle shadow-sm" onerror="this.src='https://via.placeholder.com/80'">
+                <img
+                    src="new-logo.png"
+                    alt="School Logo"
+                    class="img-fluid rounded-circle shadow-sm"
+                    style="max-width: 90px;"
+                    onerror="this.src='https://via.placeholder.com/80?text=Logo'">
             </div>
             <div class="col-md-8 text-center">
-                <h2 class="fw-bold mb-0 text-uppercase" style="color: var(--primary-purple);">Government Primary School Pethgam Wagoora</h2>
+                <h2 class="fw-bold mb-0 text-uppercase header-title">Government Primary School Pethgam Wagoora</h2>
                 <p class="mb-0 text-muted small">Wagoora Babareshi Road, Baramulla, 193109 | UDISE: 01022202207</p>
                 <div class="mt-1">
                     <span class="badge bg-light text-dark border"><i class="fas fa-envelope me-1"></i> pspethgam@gmail.com</span>
@@ -95,11 +301,312 @@
             </div>
         </div>
     </div>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light mt-2 border-top">
         <div class="container">
-            <div class="navbar-nav w-100 justify-content-between">
-                <a class="nav-link active" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
-                <a class="nav-link" onclick="showSection('upload')"><i class="fas fa-file-upload me-1"></i> Upload Results</a>
+            <div class="navbar-nav w-100 justify-content-between flex-wrap">
+                <button type="button" class="nav-link active" data-section="dashboard" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                </button>
+                <button type="button" class="nav-link" data-section="upload" onclick="showSection('upload')">
+                    <i class="fas fa-file-upload me-1"></i> Upload Results
+                </button>
+                <button type="button" class="nav-link" data-section="records" onclick="showSection('records')">
+                    <i class="fas fa-users me-1"></i> Student Records
+                </button>
+                <button type="button" class="nav-link" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container my-4 no-print" id="main-content">
+    <section id="dashboard-section">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card admin-card bg-primary text-white p-3">
+                    <h3><span id="stat-total">0</span></h3>
+                    <p class="mb-0">Total Students</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card admin-card bg-success text-white p-3">
+                    <h3><span id="stat-pass">0</span></h3>
+                    <p class="mb-0">Total Pass</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card admin-card bg-warning text-dark p-3">
+                    <h3><span id="stat-avg">0%</span></h3>
+                    <p class="mb-0">Avg. Percentage</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card admin-card p-4 mt-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h4 class="mb-1">Quick Summary</h4>
+                    <p class="text-muted mb-0">Manage student result uploads, records, and printable marksheets.</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="subject-badge">Local Storage Enabled</span>
+                    <span class="subject-badge">Excel Import</span>
+                    <span class="subject-badge">PDF Export</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="upload-section" class="d-none">
+        <div class="card admin-card p-4">
+            <h4 class="mb-4"><i class="fas fa-upload me-2 text-primary"></i>Upload Student Result Excel File</h4>
+
+            <div class="alert alert-info">
+                <strong>Expected columns:</strong> Name, Roll No, Class, and subject columns like English, Math, Urdu, EVS etc.
+                Optional columns: Admission No, Father Name, Photo.
+            </div>
+
+            <div id="drop-zone">
+                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                <h5>Drag & Drop Excel File here</h5>
+                <p class="text-muted">or click to browse (.xlsx, .xls)</p>
+                <input type="file" id="fileInput" class="d-none" accept=".xlsx,.xls">
+                <div id="file-name-display" class="mt-2 fw-bold text-primary"></div>
+            </div>
+
+            <div class="mt-4 text-center d-flex gap-2 justify-content-center flex-wrap">
+                <button class="btn btn-primary px-5" onclick="processExcel()">Process & Save Records</button>
+                <button class="btn btn-outline-secondary" onclick="clearSelectedFile()">Clear Selected File</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="records-section" class="d-none">
+        <div class="card admin-card p-4">
+            <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
+                <h4 class="mb-0">Student Records</h4>
+                <div class="d-flex gap-2 flex-wrap">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, roll no, class..." onkeyup="filterTable()">
+                    <button class="btn btn-outline-danger" onclick="clearAllRecords()">Clear All Records</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>%age</th>
+                            <th>Grade</th>
+                            <th>Result</th>
+                            <th>Subjects</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="marksheet-view" class="d-none">
+    <div class="container py-3 no-print d-flex gap-2 flex-wrap">
+        <button class="btn btn-secondary" onclick="showSection('records')">Back</button>
+        <button class="btn btn-danger" onclick="downloadPDF()">Download PDF</button>
+        <button class="btn btn-outline-primary" onclick="window.print()">Print</button>
+    </div>
+
+    <div id="marksheet-container">
+        <div class="ms-header">
+            <div class="ms-school-info">
+                <h4 class="mb-0 fw-bold">GOVERNMENT PRIMARY SCHOOL</h4>
+                <p class="mb-0">PETHGAM WAGOORA 193109</p>
+                <small>Academic Result Card</small>
+            </div>
+            <div class="ms-photo-box">
+                <img id="ms-student-photo" src="https://via.placeholder.com/100x120?text=Photo" alt="Student Photo">
+            </div>
+        </div>
+
+        <table class="ms-grid-table">
+            <tr>
+                <td class="ms-label-cell">Name:</td>
+                <td class="ms-value-cell fw-bold" id="ms-name">-</td>
+                <td class="ms-label-cell">Adm. No:</td>
+                <td class="ms-value-cell" id="ms-adm">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Father:</td>
+                <td class="ms-value-cell" id="ms-fname">-</td>
+                <td class="ms-label-cell">Class:</td>
+                <td class="ms-value-cell" id="ms-class">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Roll No:</td>
+                <td class="ms-value-cell" id="ms-roll">-</td>
+                <td class="ms-label-cell">Grade:</td>
+                <td class="ms-value-cell" id="ms-grade">-</td>
+            </tr>
+        </table>
+
+        <table class="marks-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks Obtained</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="ms-marks-body"></tbody>
+        </table>
+
+        <div class="bottom-section">
+            <div class="res-box">
+                <div class="res-head">Final Results</div>
+                <div class="p-2 text-center">
+                    Obtained: <span id="ms-res-ob">-</span><br>
+                    Percentage: <span id="ms-res-perc">-</span><br>
+                    Status: <span id="ms-res-status">-</span>
+                </div>
+            </div>
+
+            <div class="res-box">
+                <div class="res-head">Proficiency</div>
+                <div class="p-2">
+                    Sky (A+/A) <span id="prof-sky"></span><br>
+                    Mountain (B/C) <span id="prof-mountain"></span><br>
+                    Stream (D/E) <span id="prof-stream"></span>
+                </div>
+            </div>
+
+            <div class="res-box">
+                <div class="res-head">Chart</div>
+                <div class="p-2">
+                    <canvas id="msChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="sig-area">
+            <div class="sig-box">Class Teacher</div>
+            <div class="sig-box">Incharge Examination</div>
+            <div class="sig-box">Head of Institution</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'gps_records';
+    const PASS_MARKS_PER_SUBJECT = 33;
+
+    let studentRecords = [];
+    let currentChart = null;
+    let currentStudent = null;
+
+    const META_KEYS = [
+        'name',
+        'student name',
+        'roll no',
+        'roll number',
+        'rollno',
+        'class',
+        'admission no',
+        'admission number',
+        'adm no',
+        'adm. no',
+        'father',
+        'father name',
+        'father_name',
+        'photo',
+        'image',
+        'photo url',
+        'student photo'
+    ];
+
+    function normalizeKey(key) {
+        return String(key || '')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .replace(/[._-]/g, ' ');
+    }
+
+    function safeLoadRecords() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (err) {
+            console.warn('Could not parse saved records:', err);
+            return [];
+        }
+    }
+
+    studentRecords = safeLoadRecords();
+
+    function saveRecords() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(studentRecords));
+    }
+
+    function setActiveNav(sectionId) {
+        document.querySelectorAll('.nav-link[data-section]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.section === sectionId);
+        });
+    }
+
+    function showSection(sectionId) {
+        document.querySelectorAll('section, #marksheet-view').forEach(el => el.classList.add('d-none'));
+
+        if (sectionId === 'marksheet-view') {
+            document.getElementById('main-content').classList.add('d-none');
+            document.getElementById('marksheet-view').classList.remove('d-none');
+            return;
+        }
+
+        document.getElementById('main-content').classList.remove('d-none');
+        const targetSection = document.getElementById(sectionId + '-section');
+        if (targetSection) {
+            targetSection.classList.remove('d-none');
+        }
+
+        setActiveNav(sectionId);
+
+        if (sectionId === 'records') renderTable();
+        if (sectionId === 'dashboard') updateStats();
+    }
+
+    function logout() {
+        const shouldLogout = confirm('Do you want to logout?');
+        if (!shouldLogout) return;
+        alert('Logout functionality placeholder. Connect this to your actual authentication system.');
+    }
+
+    function handleFileSelect() {
+        const input = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        fileNameDisplay.innerText = input.files.length ? input.files[0].name : '';
+    }
+
+    function clearSelectedFile() {
+        document.getElementById('fileInput').value = '';
+        document.getElementById('file-name-display').innerText = '';
+    }
+
+    function getCellValue(row, candidates, fallback = '') {
+        const normalizedMap = {};
+        Object.keys(row).forEach(key => {
+            normalizedMap[normalizeKey(key)] = row[key];
+        });
+
+        for (const candidate of candidates) {
+            const value = normalizedMap                <a class="nav-link" onclick="showSection('upload')"><i class="fas fa-file-upload me-1"></i> Upload Results</a>
                 <a class="nav-link" onclick="showSection('records')"><i class="fas fa-users me-1"></i> Student Records</a>
                 <a class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
             </div>
