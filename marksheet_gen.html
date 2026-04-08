@@ -304,38 +304,28 @@
             <div class="res-box">
                 <div class="res-head">Final Results</div>
                 <div class="p-1 small" style="font-size: 10px;">
-                    <div class="d-flex justify-content-between"><span>Total Obtained:</span><span id="ms-res-ob">-</span></div>
-                    <div class="d-flex justify-content-between border-top"><span>Max Marks:</span><span>500</span></div>
-                    <div class="d-flex justify-content-between border-top"><span>Percentage:</span><span id="ms-res-perc">-</span></div>
-                    <div class="d-flex justify-content-between border-top"><span>Result:</span><span class="fw-bold" id="ms-res-status">-</span></div>
-                </div>
-            </div>
-        </div>
+                   // Initialize data from LocalStorage
+let studentRecords = JSON.parse(localStorage.getItem('gps_records')) || [];
 
-        <div class="row mt-3">
-            <div class="col-6">
-<script>
-    // Initialize data from LocalStorage
-    let studentRecords = JSON.parse(localStorage.getItem('gps_records')) || [];
+// Navigation logic
+function showSection(sectionId) {
+    document.querySelectorAll('section, #marksheet-view').forEach(s => s.classList.add('d-none'));
+    document.getElementById('main-content').classList.remove('d-none');
+    
+    const section = document.getElementById(sectionId + '-section');
+    if (section) section.classList.remove('d-none');
+    
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    
+    if(sectionId === 'records') renderTable();
+    if(sectionId === 'dashboard') updateStats();
+}
 
-    // Navigation logic
-    function showSection(sectionId) {
-        document.querySelectorAll('section, #marksheet-view').forEach(s => s.classList.add('d-none'));
-        document.getElementById('main-content').classList.remove('d-none');
-        
-        const section = document.getElementById(sectionId + '-section');
-        if (section) section.classList.remove('d-none');
-        
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        
-        if(sectionId === 'records') renderTable();
-        if(sectionId === 'dashboard') updateStats();
-    }
+// Excel Processing logic
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('fileInput');
 
-    // Excel Processing logic
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('fileInput');
-
+if(dropZone) {
     dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };
     dropZone.ondragleave = () => dropZone.classList.remove('dragover');
     dropZone.ondrop = (e) => {
@@ -344,262 +334,260 @@
         fileInput.files = e.dataTransfer.files;
         handleFileSelect();
     };
+}
 
-    fileInput.onchange = handleFileSelect;
+fileInput.onchange = handleFileSelect;
 
-    function handleFileSelect() {
-        if(fileInput.files.length > 0) {
-            document.getElementById('file-name-display').innerText = fileInput.files[0].name;
-        }
+function handleFileSelect() {
+    if(fileInput.files.length > 0) {
+        document.getElementById('file-name-display').innerText = fileInput.files[0].name;
     }
+}
 
-    function processExcel() {
+function processExcel() {
     const file = fileInput.files[0];
     if(!file) return alert("Please select a file first!");
 
     const reader = new FileReader();
     const progressContainer = document.getElementById('upload-progress-container');
-    const progressBar = document.getElementById('upload-progress');
     
-    progressContainer.classList.remove('d-none');
+    if(progressContainer) progressContainer.classList.remove('d-none');
     
     reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, {type: 'array'});
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet);
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
 
-        console.log("Raw Data from Excel:", json); // DEBUG: Check your browser console (F12)
+            const formattedData = json.map((row, index) => {
+                // Ensure column names match your Excel exactly
+                const eng = parseInt(row['English']) || 0;
+                const math = parseInt(row['Math']) || 0;
+                const evs = parseInt(row['EVS']) || 0;
+                const urdu = parseInt(row['Urdu']) || 0;
+                const kash = parseInt(row['Kashmiri']) || 0;
 
-        const formattedData = json.map((row, index) => {
-            // 1. Pulling RAW numbers from YOUR Excel columns
-            // IMPORTANT: If your Excel says "English Marks", change 'English' to 'English Marks'
-            const eng = parseInt(row['English']) || 0;
-            const math = parseInt(row['Math']) || 0;
-            const evs = parseInt(row['EVS']) || 0;
-            const urdu = parseInt(row['Urdu']) || 0;
-            const kash = parseInt(row['Kashmiri']) || 0;
+                const grandTotal = eng + math + evs + urdu + kash;
+                const percentage = ((grandTotal / 500) * 100).toFixed(1);
 
-            const grandTotal = eng + math + evs + urdu + kash;
-            const percentage = ((grandTotal / 500) * 100).toFixed(1);
-            const finalGrade = calculateGrade(percentage);
+                return {
+                    id: Date.now() + index, 
+                    admNo: row['Admission No.'] || row['Admission No'] || 'N/A',
+                    rollNo: row['Roll No'] || 'N/A',
+                    name: row['Name'] || row['Student Name'] || 'Unknown',
+                    fname: row["Father's Name"] || 'N/A',
+                    mname: row["Mother's Name"] || 'N/A',
+                    class: row['Class'] || 'N/A',
+                    dob: row['D.O.B'] || 'N/A',
+                    pen: row['PEN'] || 'N/A',
+                    marks: {
+                        English: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: eng },
+                        Math: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: math },
+                        EVS: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: evs },
+                        Urdu: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: urdu },
+                        Kashmiri: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: kash }
+                    },
+                    totalObtained: grandTotal,
+                    percentage: parseFloat(percentage),
+                    grade: calculateGrade(percentage),
+                    status: percentage >= 33 ? 'Pass' : 'Fail'
+                };
+            });
 
-            return {
-                id: Date.now() + index + Math.random(), // Unique ID
-                admNo: row['Admission No.'] || row['Admission No'] || 'N/A',
-                rollNo: row['Roll No'] || 'N/A',
-                name: row['Name'] || row['Student Name'] || 'Unknown',
-                fname: row["Father's Name"] || 'N/A',
-                mname: row["Mother's Name"] || 'N/A',
-                class: row['Class'] || 'N/A',
-                dob: row['D.O.B'] || 'N/A',
-                marks: {
-                    // We generate FA/SA based on the TOTAL from Excel 
-                    // since Excel usually only provides the final score.
-                    English: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: eng },
-                    Math: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: math },
-                    EVS: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: evs },
-                    Urdu: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: urdu },
-                    Kashmiri: { fa: [0,0,0,0,0,0], totalFA: 0, cc: 0, sa: 0, total: kash }
-                },
-                totalObtained: grandTotal,
-                percentage: parseFloat(percentage),
-                grade: finalGrade,
-                status: percentage >= 33 ? 'Pass' : 'Fail'
-            };
-        });
-
-        // 2. Clear old records and save new ones
-        studentRecords = formattedData; 
-        localStorage.setItem('gps_records', JSON.stringify(studentRecords));
-        
-        console.log("Formatted Records saved to LocalStorage:", studentRecords);
-
-        alert("Success! " + formattedData.length + " fresh records imported.");
-        progressContainer.classList.add('d-none');
-        showSection('records');
+            studentRecords = formattedData; 
+            localStorage.setItem('gps_records', JSON.stringify(studentRecords));
+            
+            alert("Success! " + formattedData.length + " records imported.");
+            if(progressContainer) progressContainer.classList.add('d-none');
+            showSection('records');
+        } catch (err) {
+            console.error(err);
+            alert("Error processing Excel file. Check console for details.");
+        }
     };
     reader.readAsArrayBuffer(file);
 }
 
-        reader.readAsArrayBuffer(file);
-    }
+// Records Table Rendering
+function renderTable() {
+    const tbody = document.getElementById('student-table-body');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    studentRecords.forEach(student => {
+        tbody.innerHTML += `
+            <tr>
+                <td><img src="https://ui-avatars.com/api/?name=${student.name}&background=random" class="rounded-circle" width="40" alt="User"></td>
+                <td>${student.rollNo}</td>
+                <td>${student.name}</td>
+                <td>${student.class}</td>
+                <td>${student.percentage}%</td>
+                <td><span class="badge bg-primary">${student.grade}</span></td>
+                <td><span class="badge ${student.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${student.status}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-info text-white" onclick="generateMarksheet(${student.id})"><i class="fas fa-file-invoice"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteRecord(${student.id})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+}
 
-    // Records Table Rendering
-    function renderTable() {
-        const tbody = document.getElementById('student-table-body');
-        tbody.innerHTML = '';
-        studentRecords.forEach(student => {
-            tbody.innerHTML += `
-                <tr>
-                    <td><img src="https://via.placeholder.com/40" class="rounded-circle" alt="User"></td>
-                    <td>${student.rollNo}</td>
-                    <td>${student.name}</td>
-                    <td>${student.class}</td>
-                    <td>${student.percentage}%</td>
-                    <td><span class="badge bg-primary">${student.grade}</span></td>
-                    <td><span class="badge ${student.status === 'Pass' ? 'bg-success' : 'bg-danger'}">${student.status}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-info text-white" onclick="generateMarksheet(${student.id})"><i class="fas fa-file-invoice"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteRecord(${student.id})"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
+function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const cls = document.getElementById('classFilter').value;
+    const rows = document.querySelectorAll('#student-table-body tr');
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const matchesSearch = text.includes(q);
+        const matchesClass = cls === '' || row.children[3].innerText === cls;
+        row.style.display = (matchesSearch && matchesClass) ? '' : 'none';
+    });
+}
 
-    function filterTable() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        const cls = document.getElementById('classFilter').value;
-        const rows = document.querySelectorAll('#student-table-body tr');
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            const matchesSearch = text.includes(q);
-            const matchesClass = cls === '' || row.children[3].innerText === cls;
-            row.style.display = (matchesSearch && matchesClass) ? '' : 'none';
-        });
+function deleteRecord(id) {
+    if(confirm('Are you sure you want to delete this record?')) {
+        studentRecords = studentRecords.filter(r => r.id !== id);
+        localStorage.setItem('gps_records', JSON.stringify(studentRecords));
+        renderTable();
+        updateStats();
     }
+}
 
-    function deleteRecord(id) {
-        if(confirm('Are you sure you want to delete this record?')) {
-            studentRecords = studentRecords.filter(r => r.id !== id);
-            localStorage.setItem('gps_records', JSON.stringify(studentRecords));
-            renderTable();
-            updateStats();
+// Marksheet Generation
+let currentChart = null;
+
+function generateMarksheet(id) {
+    const s = studentRecords.find(r => r.id === id);
+    if(!s) return;
+
+    document.getElementById('main-content').classList.add('d-none');
+    document.getElementById('marksheet-view').classList.remove('d-none');
+
+    // Populate Student Header Info
+    document.getElementById('ms-name').innerText = s.name;
+    document.getElementById('ms-fname').innerText = s.fname;
+    document.getElementById('ms-mname').innerText = s.mname;
+    document.getElementById('ms-adm').innerText = s.admNo;
+    document.getElementById('ms-roll').innerText = s.rollNo;
+    document.getElementById('ms-class').innerText = s.class;
+    document.getElementById('ms-dob').innerText = s.dob;
+    document.getElementById('ms-pen').innerText = s.pen || 'N/A';
+    
+    // Final Results Summary
+    document.getElementById('ms-res-ob').innerText = s.totalObtained;
+    document.getElementById('ms-res-perc').innerText = s.percentage + '%';
+    document.getElementById('ms-res-status').innerText = s.status;
+
+    // Render Marks Table
+    const mBody = document.getElementById('ms-marks-body');
+    mBody.innerHTML = '';
+    const subjects = Object.keys(s.marks);
+    const chartLabels = [];
+    const chartData = [];
+
+    subjects.forEach(sub => {
+        const m = s.marks[sub];
+        const subGrade = calculateGrade(m.total); // Adjust this if subject total isn't 100
+        const level = (subGrade === 'A+' || subGrade === 'A') ? 'Sky' : (subGrade === 'B' || subGrade === 'C' ? 'Mountain' : 'Stream');
+        
+        chartLabels.push(sub);
+        chartData.push(m.total);
+
+        mBody.innerHTML += `
+            <tr>
+                <td class="fw-bold text-start">${sub}</td>
+                ${m.fa.map(v => `<td>${v}</td>`).join('')}
+                <td>${m.totalFA}</td>
+                <td>${m.cc}</td>
+                <td>${m.sa}</td>
+                <td class="fw-bold">${m.total}</td>
+                <td>${subGrade}</td>
+                <td>${level}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById('gt-grand-total').innerText = s.totalObtained;
+    document.getElementById('gt-grade').innerText = s.grade;
+    
+    const isSky = (s.grade === 'A+' || s.grade === 'A');
+    const isMtn = (s.grade === 'B' || s.grade === 'C');
+    const isStr = (s.grade === 'D' || s.grade === 'E');
+
+    document.getElementById('gt-level').innerText = isSky ? 'Sky' : (isMtn ? 'Mountain' : 'Stream');
+    document.getElementById('prof-sky').innerHTML = isSky ? '<i class="fas fa-check"></i>' : '';
+    document.getElementById('prof-mountain').innerHTML = isMtn ? '<i class="fas fa-check"></i>' : '';
+    document.getElementById('prof-stream').innerHTML = isStr ? '<i class="fas fa-check"></i>' : '';
+
+    // Update Chart
+    if(currentChart) currentChart.destroy();
+    const ctx = document.getElementById('msChart').getContext('2d');
+    currentChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Subject Performance',
+                data: chartData,
+                backgroundColor: '#673ab7'
+            }]
+        },
+        options: { 
+            responsive: true,
+            plugins: { legend: { display: false } }, 
+            scales: { y: { beginAtZero: true, max: 100 } } 
         }
-    }
+    });
+}
 
-    // Marksheet Generation
-    let currentChart = null;
+function calculateGrade(perc) {
+    const m = parseFloat(perc);
+    if(m >= 85) return 'A+';
+    if(m >= 70) return 'A';
+    if(m >= 55) return 'B';
+    if(m >= 40) return 'C';
+    if(m >= 33) return 'D';
+    return 'E';
+}
 
-    function generateMarksheet(id) {
-        const s = studentRecords.find(r => r.id === id);
-        if(!s) return;
+function downloadPDF() {
+    const element = document.getElementById('marksheet-container');
+    const opt = {
+        margin: 5,
+        filename: `Marksheet_${document.getElementById('ms-name').innerText}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+}
 
-        document.getElementById('main-content').classList.add('d-none');
-        document.getElementById('marksheet-view').classList.remove('d-none');
+function updateStats() {
+    const total = studentRecords.length;
+    const statTotal = document.getElementById('stat-total');
+    const statPass = document.getElementById('stat-pass');
+    const statAvg = document.getElementById('stat-avg');
 
-        // Populate Student Header Info
-        document.getElementById('ms-name').innerText = s.name;
-        document.getElementById('ms-fname').innerText = s.fname;
-        document.getElementById('ms-mname').innerText = s.mname;
-        document.getElementById('ms-adm').innerText = s.admNo;
-        document.getElementById('ms-roll').innerText = s.rollNo;
-        document.getElementById('ms-class').innerText = s.class;
-        document.getElementById('ms-dob').innerText = s.dob;
-        document.getElementById('ms-pen').innerText = s.pen || 'N/A';
-        
-        // Final Results Summary
-        document.getElementById('ms-res-ob').innerText = s.totalObtained;
-        document.getElementById('ms-res-perc').innerText = s.percentage + '%';
-        document.getElementById('ms-res-status').innerText = s.status;
-
-        // Render Marks Table
-        const mBody = document.getElementById('ms-marks-body');
-        mBody.innerHTML = '';
-        const subjects = Object.keys(s.marks);
-        const chartLabels = [];
-        const chartData = [];
-
-        subjects.forEach(sub => {
-            const m = s.marks[sub];
-            const subGrade = calculateGrade(m.total);
-            const level = (subGrade === 'A+' || subGrade === 'A') ? 'Sky' : (subGrade === 'B' || subGrade === 'C' ? 'Mountain' : 'Stream');
-            
-            chartLabels.push(sub);
-            chartData.push(m.total);
-
-            mBody.innerHTML += `
-                <tr>
-                    <td class="fw-bold text-start">${sub}</td>
-                    ${m.fa.map(v => `<td>${v}</td>`).join('')}
-                    <td>${m.totalFA}</td>
-                    <td>${m.cc}</td>
-                    <td>${m.sa}</td>
-                    <td class="fw-bold">${m.total}</td>
-                    <td>${subGrade}</td>
-                    <td>${level}</td>
-                </tr>
-            `;
-        });
-
-        // Update Grand Totals Footer
-        document.getElementById('gt-grand-total').innerText = s.totalObtained;
-        document.getElementById('gt-grade').innerText = s.grade;
-        
-        // Dynamic Proficiency Ticks
-        const isSky = (s.grade === 'A+' || s.grade === 'A');
-        const isMtn = (s.grade === 'B' || s.grade === 'C');
-        const isStr = (s.grade === 'D' || s.grade === 'E');
-
-        document.getElementById('gt-level').innerText = isSky ? 'Sky' : (isMtn ? 'Mountain' : 'Stream');
-        document.getElementById('prof-sky').innerHTML = isSky ? '<i class="fas fa-check"></i>' : '';
-        document.getElementById('prof-mountain').innerHTML = isMtn ? '<i class="fas fa-check"></i>' : '';
-        document.getElementById('prof-stream').innerHTML = isStr ? '<i class="fas fa-check"></i>' : '';
-
-        // Update Chart
-        if(currentChart) currentChart.destroy();
-        const ctx = document.getElementById('msChart').getContext('2d');
-        currentChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: 'Subject Performance',
-                    data: chartData,
-                    backgroundColor: '#673ab7'
-                }]
-            },
-            options: { 
-                responsive: true,
-                plugins: { legend: { display: false } }, 
-                scales: { y: { beginAtZero: true, max: 100 } } 
-            }
-        });
-    }
-
-    function calculateGrade(perc) {
-        const m = parseFloat(perc);
-        if(m > 85) return 'A+';
-        if(m > 70) return 'A';
-        if(m > 55) return 'B';
-        if(m > 40) return 'C';
-        if(m > 33) return 'D';
-        return 'E';
-    }
-
-    function downloadPDF() {
-        const element = document.getElementById('marksheet-container');
-        const opt = {
-            margin: 5,
-            filename: `Marksheet_${document.getElementById('ms-name').innerText}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
-    }
-
-    function updateStats() {
-        const total = studentRecords.length;
-        document.getElementById('stat-total').innerText = total;
-        document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
-        
+    if(statTotal) statTotal.innerText = total;
+    if(statPass) statPass.innerText = studentRecords.filter(r => r.status === 'Pass').length;
+    
+    if(statAvg) {
         const avg = total > 0 ? (studentRecords.reduce((a, b) => a + parseFloat(b.percentage), 0) / total).toFixed(1) : 0;
-        document.getElementById('stat-avg').innerText = avg + '%';
+        statAvg.innerText = avg + '%';
     }
+}
 
-    function logout() {
-        if(confirm('Log out from Admin panel?')) location.reload();
-    }
+function logout() {
+    if(confirm('Log out from Admin panel?')) location.reload();
+}
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('bg-dark');
-        document.body.classList.toggle('text-white');
-    }
-
-    // Initial Load
-    window.onload = updateStats;
+// Initial Load
+window.onload = () => {
+    updateStats();
+    if(studentRecords.length > 0) renderTable();
+};
+         
 </script>
 
 </body>
