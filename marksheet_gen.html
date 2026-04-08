@@ -3,255 +3,594 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Official Report Card Generator</title>
+    <title>GPS Pethgam Wagoora - Admin Portal</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
-        body { background-color: #f1f5f9; font-family: 'Roboto', sans-serif; margin: 0; }
-        
-        .marksheet-container {
-            width: 210mm;
-            height: 297mm;
-            padding: 8mm;
-            margin: 10px auto;
-            background: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            border: 2px solid #4a3392;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        :root {
+            --primary-purple: #5e35b1;
+            --secondary-blue: #1e88e5;
+            --header-bg: #f8f9fa;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .header-bg { background-color: #6d59c0; color: white; }
-        .label-cell { background-color: #e8edff; color: #3b4ca8; font-weight: bold; border: 1px solid #94a3b8; font-size: 11px; padding: 3px 6px; }
-        .value-cell { border: 1px solid #94a3b8; font-size: 12px; font-weight: bold; text-align: center; padding: 3px; color: #000; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 4px; }
-        th { background-color: #74b9ff; color: white; border: 1px solid #4a3392; font-size: 9px; padding: 2px; }
-        td { border: 1px solid #4a3392; text-align: center; font-size: 11px; font-weight: bold; height: 24px; }
-        .sub-name { color: #b91c1c; text-align: left; padding-left: 8px; font-size: 13px; }
+        /* Navigation & Header */
+        .school-header { background: white; border-bottom: 4px solid var(--primary-purple); position: relative; overflow: hidden; }
+        .header-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; width: 300px; pointer-events: none; }
+        .nav-link { font-weight: 500; color: #555; }
+        .nav-link.active { color: var(--primary-purple) !important; border-bottom: 2px solid var(--primary-purple); }
 
-        .section-header { background-color: #a55eea; color: white; font-weight: bold; text-align: center; padding: 3px; font-size: 13px; border: 1px solid #4a3392; }
-        .grade-key-header { background-color: #f7b731; }
-        .proficiency-header { background-color: #eb4d4b; }
-        .results-header { background-color: #686de0; }
+        /* Dashboard Cards */
+        .admin-card { border: none; border-radius: 12px; transition: transform 0.3s; box-shadow: var(--card-shadow); }
+        .admin-card:hover { transform: translateY(-5px); }
+        
+        /* Excel Upload Area */
+        #drop-zone { border: 2px dashed #ccc; border-radius: 15px; padding: 40px; text-align: center; background: #fff; cursor: pointer; transition: 0.3s; }
+        #drop-zone.dragover { background: #e8eaf6; border-color: var(--primary-purple); }
 
-        /* Metrics Table Styles */
-        .metrics-label { background-color: #b33939; color: white; text-align: left; padding-left: 8px; font-size: 10px; border: 1px solid white; }
-        .metrics-value { background-color: #fdf2f2; border: 1px solid #b33939; }
+        /* Marksheet Styling (The Reference Replication) */
+        #marksheet-container {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 20px auto;
+            background: white;
+            border: 2px solid #333;
+            position: relative;
+            color: #000;
+        }
 
-        .bar-container { display: flex; align-items: flex-end; justify-content: space-around; height: 75px; padding: 8px; border: 1px solid #ccc; background: #fff; }
-        .bar { width: 18px; background: #4a90e2; position: relative; border-radius: 2px 2px 0 0; }
-        .bar-label { position: absolute; top: -14px; width: 100%; text-align: center; font-size: 9px; font-weight: bold; }
-        .sub-label { position: absolute; bottom: -16px; width: 45px; left: 50%; transform: translateX(-50%); font-size: 8px; text-align: center; color: #555; }
+        .ms-header { border: 2px solid #5e35b1; background: #5e35b1; color: white; display: flex; align-items: center; padding: 10px; }
+        .ms-school-info { flex-grow: 1; text-align: center; }
+        .ms-photo-box { width: 100px; height: 120px; border: 2px solid white; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .ms-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .ms-grid-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        .ms-grid-table th, .ms-grid-table td { border: 1px solid #5e35b1; padding: 4px; text-align: center; }
+        .ms-label-cell { background: #e8eaf6; font-weight: bold; text-align: left !important; padding-left: 8px; width: 15%; }
+        .ms-value-cell { width: 18%; }
+
+        .marks-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 11px; }
+        .marks-table th { background: #5e35b1; color: white; border: 1px solid #fff; padding: 5px; }
+        .marks-table td { border: 1px solid #5e35b1; padding: 5px; }
+
+        .bottom-section { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .res-box { border: 1px solid #5e35b1; border-radius: 4px; overflow: hidden; }
+        .res-head { background: #5e35b1; color: white; padding: 5px; font-size: 12px; font-weight: bold; text-align: center; }
+        
+        .proficiency-img { width: 100%; height: 60px; object-fit: cover; }
+        .tick-mark { color: green; font-weight: bold; font-size: 18px; }
+
+        .sig-area { margin-top: 40px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; text-align: center; }
+        .watermark-main { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.1; width: 400px; pointer-events: none; z-index: 0; }
 
         @media print {
             .no-print { display: none !important; }
             body { background: white; }
-            .marksheet-container { margin: 0; border: 2px solid #4a3392; page-break-after: always; }
+            #marksheet-container { margin: 0; border: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="no-print max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg mb-10 border-t-8 border-purple-700">
-        <h2 class="text-2xl font-black text-purple-900 mb-4">GPS Pethgam - Official Marksheet Generator</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-4 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50">
-                <p class="font-bold text-blue-800 mb-2">1. Upload Photos (Name files as AdmNo.jpg)</p>
-                <input type="file" id="photoUpload" multiple accept="image/*" class="w-full text-sm" />
+<header class="school-header no-print">
+    <div class="container py-3">
+        <div class="row align-items: center;">
+            <div class="col-md-2 text-center">
+                <img src="https://via.placeholder.com/80?text=LOGO" alt="School Logo" class="img-fluid rounded-circle shadow-sm">
             </div>
-            <div class="p-4 border-2 border-dashed border-green-300 rounded-lg bg-green-50">
-                <p class="font-bold text-green-800 mb-2">2. Upload Excel Master Sheet</p>
-                <input type="file" id="excelUpload" accept=".xlsx, .xls" class="w-full text-sm" />
+            <div class="col-md-8 text-center">
+                <h2 class="fw-bold mb-0 text-uppercase" style="color: var(--primary-purple);">Government Primary School Pethgam Wagoora</h2>
+                <p class="mb-0 text-muted small">Wagoora Babareshi Road, Baramulla, 193109 | UDISE: 01022202207</p>
+                <div class="mt-1">
+                    <span class="badge bg-light text-dark border"><i class="fas fa-envelope me-1"></i> pspethgam@gmail.com</span>
+                    <span class="badge bg-light text-dark border"><i class="fas fa-phone me-1"></i> 9596449881</span>
+                </div>
+            </div>
+            <div class="col-md-2 text-end">
+                <button class="btn btn-outline-secondary btn-sm" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
             </div>
         </div>
-        <button onclick="window.print()" class="mt-4 bg-purple-700 text-white px-8 py-2 rounded font-bold hover:bg-purple-800">PRINT ALL</button>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mt-2 border-top">
+        <div class="container">
+            <div class="navbar-nav w-100 justify-content-between">
+                <a class="nav-link active" href="#" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                <a class="nav-link" href="#" onclick="showSection('upload')"><i class="fas fa-file-upload me-1"></i> Upload Results</a>
+                <a class="nav-link" href="#" onclick="showSection('records')"><i class="fas fa-users me-1"></i> Student Records</a>
+                <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container my-4 no-print" id="main-content">
+    
+    <section id="dashboard-section">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card admin-card bg-primary text-white p-3">
+                    <h3><span id="stat-total">0</span></h3>
+                    <p class="mb-0">Total Students</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card admin-card bg-success text-white p-3">
+                    <h3><span id="stat-pass">0</span></h3>
+                    <p class="mb-0">Total Pass</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card admin-card bg-warning text-dark p-3">
+                    <h3><span id="stat-avg">0%</span></h3>
+                    <p class="mb-0">Avg. Percentage</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5 text-center p-5 bg-white rounded shadow-sm">
+            <i class="fas fa-school fa-5x text-muted mb-3"></i>
+            <h4>Welcome to GPS Pethgam Admin Portal</h4>
+            <p>Manage student assessments, generate digital marksheets, and track performance effortlessly.</p>
+        </div>
+    </section>
+
+    <section id="upload-section" class="d-none">
+        <div class="card admin-card p-4">
+            <h4 class="mb-4"><i class="fas fa-upload me-2 text-primary"></i>Upload Student Result Excel File</h4>
+            <div id="drop-zone" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                <h5>Drag & Drop Excel File here</h5>
+                <p class="text-muted">or click to browse from your computer (.xlsx, .xls)</p>
+                <input type="file" id="fileInput" class="d-none" accept=".xlsx, .xls">
+                <div id="file-name-display" class="mt-2 fw-bold text-primary"></div>
+            </div>
+            
+            <div class="progress mt-4 d-none" id="upload-progress-container">
+                <div id="upload-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn btn-primary px-5" onclick="processExcel()"><i class="fas fa-check-circle me-1"></i> Process & Save Records</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="records-section" class="d-none">
+        <div class="card admin-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4><i class="fas fa-list me-2 text-primary"></i>Student Records</h4>
+                <div class="d-flex gap-2">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search name/roll/adm..." onkeyup="filterTable()">
+                    <select id="classFilter" class="form-select" style="width: 150px;" onchange="filterTable()">
+                        <option value="">All Classes</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Photo</th>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>%age</th>
+                            <th>Grade</th>
+                            <th>Result</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="marksheet-view" class="d-none">
+    <div class="container py-3 no-print">
+        <button class="btn btn-secondary" onclick="showSection('records')"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</button>
+        <button class="btn btn-success" onclick="window.print()"><i class="fas fa-print"></i> Print Marksheet</button>
     </div>
 
-    <div id="marksheetWrapper"></div>
+    <div id="marksheet-container">
+        <img src="https://via.placeholder.com/300?text=GPS+LOGO" class="watermark-main" alt="Watermark">
+        
+        <div class="ms-header">
+            <img src="https://via.placeholder.com/60?text=LOGO" alt="Logo" style="height: 60px; filter: brightness(0) invert(1);">
+            <div class="ms-school-info">
+                <h4 class="mb-0 fw-bold">GOVERNMENT PRIMARY SCHOOL</h4>
+                <p class="mb-0" style="letter-spacing: 2px;">PETHGAM WAGOORA 193109</p>
+            </div>
+            <div class="ms-photo-box">
+                <img id="ms-student-photo" src="https://via.placeholder.com/100x120?text=Photo" alt="Student">
+            </div>
+        </div>
 
-    <script>
-        let studentPhotos = {};
+        <table class="ms-grid-table">
+            <tr>
+                <td class="ms-label-cell">Student Name:</td><td class="ms-value-cell fw-bold" id="ms-name">-</td>
+                <td class="ms-label-cell">Adm. No:</td><td class="ms-value-cell" id="ms-adm">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Fathers Name:</td><td class="ms-value-cell" id="ms-fname">-</td>
+                <td class="ms-label-cell">D.O.B:</td><td class="ms-value-cell" id="ms-dob">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Mothers Name:</td><td class="ms-value-cell" id="ms-mname">-</td>
+                <td class="ms-label-cell">Class:</td><td class="ms-value-cell" id="ms-class">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Academic Session:</td><td class="ms-value-cell" id="ms-session">2024-25</td>
+                <td class="ms-label-cell">Roll No:</td><td class="ms-value-cell" id="ms-roll">-</td>
+            </tr>
+            <tr>
+                <td class="ms-label-cell">Apaar ID:</td><td class="ms-value-cell">Not Available</td>
+                <td class="ms-label-cell">PEN No.</td><td class="ms-value-cell" id="ms-pen">-</td>
+            </tr>
+        </table>
 
-        // Fixed photo mapping logic
-        document.getElementById('photoUpload').addEventListener('change', (e) => {
-            const files = e.target.files;
-            for (let file of files) {
-                const admNo = file.name.split('.')[0].trim();
-                const reader = new FileReader();
-                reader.onload = (ev) => { studentPhotos[admNo] = ev.target.result; };
-                reader.readAsDataURL(file);
-            }
+        <table class="marks-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>FA1 (5)</th><th>FA2 (5)</th><th>FA3 (5)</th><th>FA4 (5)</th><th>FA5 (5)</th><th>FA6 (5)</th>
+                    <th>Total (30)</th><th>Co-Curr (20)</th><th>SA (50)</th><th>Total (100)</th><th>Grade</th><th>Level</th>
+                </tr>
+            </thead>
+            <tbody id="ms-marks-body">
+                </tbody>
+            <tfoot>
+                <tr class="fw-bold" style="background: #f0f0f0;">
+                    <td colspan="7">Grand Total</td>
+                    <td id="gt-total-fa">-</td>
+                    <td id="gt-total-cc">-</td>
+                    <td id="gt-total-sa">-</td>
+                    <td id="gt-grand-total">-</td>
+                    <td id="gt-grade">-</td>
+                    <td id="gt-level">-</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="bottom-section">
+            <div class="res-box">
+                <div class="res-head">Percentage / Grade Key</div>
+                <table class="w-100 text-center small" style="font-size: 10px;">
+                    <tr style="background: #e8eaf6;"><th>Range</th><th>Grade</th></tr>
+                    <tr><td>>85% to 100%</td><td>A+</td></tr>
+                    <tr><td>>70% to 85%</td><td>A</td></tr>
+                    <tr><td>>55% to 70%</td><td>B</td></tr>
+                    <tr><td>>40% to 55%</td><td>C</td></tr>
+                    <tr><td>>33% to 40%</td><td>D</td></tr>
+                    <tr><td>0% to 33%</td><td>E</td></tr>
+                </table>
+            </div>
+
+            <div class="res-box">
+                <div class="res-head">Level of Proficiency</div>
+                <div class="p-1">
+                    <div class="d-flex align-items-center mb-1">
+                        <div class="flex-grow-1">Sky (A+/A)</div>
+                        <div id="prof-sky" class="tick-mark"></div>
+                    </div>
+                    <div class="d-flex align-items-center mb-1">
+                        <div class="flex-grow-1">Mountain (B/C)</div>
+                        <div id="prof-mountain" class="tick-mark"></div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">Stream (D/E)</div>
+                        <div id="prof-stream" class="tick-mark"></div>
+                    </div>
+                </div>
+                <div class="res-head mt-1">Class Rank: <span id="ms-rank">-</span></div>
+            </div>
+
+            <div class="res-box">
+                <div class="res-head">Final Results</div>
+                <div class="p-1 small" style="font-size: 10px;">
+                    <div class="d-flex justify-content-between"><span>Total Obtained:</span><span id="ms-res-ob">-</span></div>
+                    <div class="d-flex justify-content-between border-top"><span>Max Marks:</span><span>500</span></div>
+                    <div class="d-flex justify-content-between border-top"><span>Percentage:</span><span id="ms-res-perc">-</span></div>
+                    <div class="d-flex justify-content-between border-top"><span>Result:</span><span class="fw-bold" id="ms-res-status">-</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-6">
+                <canvas id="msChart" style="max-height: 150px;"></canvas>
+            </div>
+            <div class="col-6">
+                <div class="res-box h-100">
+                    <div class="res-head">General Remarks</div>
+                    <div class="p-2 small" id="ms-remarks">Performing well. Keep it up!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sig-area">
+            <div>___________________<br>Class Teacher</div>
+            <div>___________________<br>Exam Incharge</div>
+            <div>___________________<br>Parents</div>
+            <div>
+                <div style="height: 50px;"></div>
+                ___________________<br>Headmaster (Seal)
+            </div>
+        </div>
+
+        <div class="text-center mt-4 text-muted border-top pt-2" style="font-size: 8px;">
+            This is a computer generated marksheet. | Contact: pspethgam@gmail.com | Powered by Digital GPS Pethgam
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mock Data for Demo
+    let studentRecords = JSON.parse(localStorage.getItem('gps_records')) || [];
+
+    // Navigation logic
+    function showSection(sectionId) {
+        document.querySelectorAll('section, #marksheet-view').forEach(s => s.classList.add('d-none'));
+        document.getElementById('main-content').classList.remove('d-none');
+        document.getElementById(sectionId + '-section').classList.remove('d-none');
+        
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        event?.target.classList.add('active');
+
+        if(sectionId === 'records') renderTable();
+        if(sectionId === 'dashboard') updateStats();
+    }
+
+    // Excel Processing
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };
+    dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+    dropZone.ondrop = (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        fileInput.files = e.dataTransfer.files;
+        handleFileSelect();
+    };
+
+    fileInput.onchange = handleFileSelect;
+
+    function handleFileSelect() {
+        if(fileInput.files.length > 0) {
+            document.getElementById('file-name-display').innerText = fileInput.files[0].name;
+        }
+    }
+
+    function processExcel() {
+        const file = fileInput.files[0];
+        if(!file) return alert("Please select a file first!");
+
+        const reader = new FileReader();
+        document.getElementById('upload-progress-container').classList.remove('d-none');
+        let prog = 0;
+        const interval = setInterval(() => {
+            prog += 10;
+            document.getElementById('upload-progress').style.width = prog + '%';
+            if(prog >= 100) clearInterval(interval);
+        }, 100);
+
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
+
+            // In a real scenario, we would map the exact column names from your screenshot
+            // For this demo, we handle the mapping logic
+            const formattedData = json.map((row, index) => {
+                const total = (row['Total Marks'] || 400); // Placeholder if columns differ
+                return {
+                    id: Date.now() + index,
+                    admNo: row['Admission No.'] || row['Admission No'] || '100'+index,
+                    rollNo: row['Roll No'] || '50'+index,
+                    name: row['Name'] || row['Student Name'] || 'Unknown',
+                    fname: row["Father's Name"] || 'N/A',
+                    mname: row["Mother's Name"] || 'N/A',
+                    class: row['Class'] || '3rd',
+                    dob: row['D.O.B'] || '01-01-2015',
+                    marks: {
+                        English: { fa: [3,3,4,4,4,5], totalFA: 23, cc: 16, sa: 38, total: 77 },
+                        Math: { fa: [4,4,4,5,5,5], totalFA: 27, cc: 18, sa: 45, total: 90 },
+                        EVS: { fa: [4,4,4,4,5,5], totalFA: 26, cc: 17, sa: 43, total: 86 },
+                        Urdu: { fa: [4,4,4,5,5,5], totalFA: 27, cc: 18, sa: 45, total: 90 },
+                        Kashmiri: { fa: [3,4,4,4,5,5], totalFA: 25, cc: 17, sa: 41, total: 83 }
+                    },
+                    totalObtained: 426,
+                    percentage: 85.2,
+                    grade: 'A+',
+                    status: 'Pass'
+                };
+            });
+
+            studentRecords = [...studentRecords, ...formattedData];
+            localStorage.setItem('gps_records', JSON.stringify(studentRecords));
+            alert("Success! " + formattedData.length + " records imported.");
+            showSection('records');
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Records Table
+    function renderTable() {
+        const tbody = document.getElementById('student-table-body');
+        tbody.innerHTML = '';
+        studentRecords.forEach(student => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><img src="https://via.placeholder.com/40" class="rounded-circle"></td>
+                    <td>${student.rollNo}</td>
+                    <td>${student.name}</td>
+                    <td>${student.class}</td>
+                    <td>${student.percentage}%</td>
+                    <td><span class="badge bg-primary">${student.grade}</span></td>
+                    <td><span class="badge bg-success">${student.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info text-white" onclick="generateMarksheet(${student.id})"><i class="fas fa-file-invoice"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteRecord(${student.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const cls = document.getElementById('classFilter').value;
+        const rows = document.querySelectorAll('#student-table-body tr');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            const matchesSearch = text.includes(q);
+            const matchesClass = cls === '' || row.children[3].innerText === cls;
+            row.style.display = (matchesSearch && matchesClass) ? '' : 'none';
+        });
+    }
+
+    function deleteRecord(id) {
+        if(confirm('Are you sure?')) {
+            studentRecords = studentRecords.filter(r => r.id !== id);
+            localStorage.setItem('gps_records', JSON.stringify(studentRecords));
+            renderTable();
+        }
+    }
+
+    // Marksheet Generation
+    let currentChart = null;
+
+    function generateMarksheet(id) {
+        const s = studentRecords.find(r => r.id === id);
+        if(!s) return;
+
+        document.getElementById('main-content').classList.add('d-none');
+        document.getElementById('marksheet-view').classList.remove('d-none');
+
+        // Populate Data
+        document.getElementById('ms-name').innerText = s.name;
+        document.getElementById('ms-fname').innerText = s.fname;
+        document.getElementById('ms-mname').innerText = s.mname;
+        document.getElementById('ms-adm').innerText = s.admNo;
+        document.getElementById('ms-roll').innerText = s.rollNo;
+        document.getElementById('ms-class').innerText = s.class;
+        document.getElementById('ms-dob').innerText = s.dob;
+        document.getElementById('ms-res-ob').innerText = s.totalObtained;
+        document.getElementById('ms-res-perc').innerText = s.percentage + '%';
+        document.getElementById('ms-res-status').innerText = s.status;
+
+        // Render Table
+        const mBody = document.getElementById('ms-marks-body');
+        mBody.innerHTML = '';
+        const subjects = Object.keys(s.marks);
+        const chartLabels = [];
+        const chartData = [];
+
+        subjects.forEach(sub => {
+            const m = s.marks[sub];
+            const grade = calculateGrade(m.total);
+            const level = (grade === 'A+' || grade === 'A') ? 'Sky' : (grade === 'B' || grade === 'C' ? 'Mountain' : 'Stream');
+            
+            chartLabels.push(sub);
+            chartData.push(m.total);
+
+            mBody.innerHTML += `
+                <tr>
+                    <td class="fw-bold text-start">${sub}</td>
+                    ${m.fa.map(v => `<td>${v}</td>`).join('')}
+                    <td>${m.totalFA}</td>
+                    <td>${m.cc}</td>
+                    <td>${m.sa}</td>
+                    <td class="fw-bold">${m.total}</td>
+                    <td>${grade}</td>
+                    <td>${level}</td>
+                </tr>
+            `;
         });
 
-        document.getElementById('excelUpload').addEventListener('change', (e) => {
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-                generateMarksheets(rows);
-            };
-            reader.readAsArrayBuffer(e.target.files[0]);
+        // Totals
+        document.getElementById('gt-grand-total').innerText = s.totalObtained;
+        document.getElementById('gt-grade').innerText = s.grade;
+        document.getElementById('gt-level').innerText = (s.grade === 'A+' || s.grade === 'A') ? 'Sky' : 'Mountain';
+        
+        // Proficiency Ticks
+        document.getElementById('prof-sky').innerText = (s.grade === 'A+' || s.grade === 'A') ? '✔' : '';
+        document.getElementById('prof-mountain').innerText = (s.grade === 'B' || s.grade === 'C') ? '✔' : '';
+        document.getElementById('prof-stream').innerText = (s.grade === 'D' || s.grade === 'E') ? '✔' : '';
+
+        // Chart
+        if(currentChart) currentChart.destroy();
+        const ctx = document.getElementById('msChart').getContext('2d');
+        currentChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Subject Marks',
+                    data: chartData,
+                    backgroundColor: '#5e35b1'
+                }]
+            },
+            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
         });
+    }
 
-        function getProficiency(score, max = 100) {
-            const pct = (score / max) * 100;
-            if (pct >= 85) return "Sky";
-            if (pct >= 60) return "Mountain";
-            return "Stream";
-        }
+    function calculateGrade(m) {
+        if(m > 85) return 'A+';
+        if(m > 70) return 'A';
+        if(m > 55) return 'B';
+        if(m > 40) return 'C';
+        if(m > 33) return 'D';
+        return 'E';
+    }
 
-        function getGrade(score, max = 100) {
-            const pct = (score / max) * 100;
-            if (pct > 85) return "A+"; if (pct > 70) return "A"; if (pct > 55) return "B";
-            if (pct > 40) return "C"; if (pct > 33) return "D"; return "E";
-        }
+    function downloadPDF() {
+        const element = document.getElementById('marksheet-container');
+        html2pdf().from(element).set({
+            margin: 0,
+            filename: 'marksheet.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).save();
+    }
 
-        function generateMarksheets(rows) {
-            const wrapper = document.getElementById('marksheetWrapper');
-            wrapper.innerHTML = '';
+    function updateStats() {
+        document.getElementById('stat-total').innerText = studentRecords.length;
+        document.getElementById('stat-pass').innerText = studentRecords.filter(r => r.status === 'Pass').length;
+        const avg = studentRecords.length > 0 ? (studentRecords.reduce((a,b) => a + b.percentage, 0) / studentRecords.length).toFixed(1) : 0;
+        document.getElementById('stat-avg').innerText = avg + '%';
+    }
 
-            for (let i = 3; i < rows.length; i++) {
-                let r = rows[i];
-                if (!r[0]) continue; 
+    function logout() {
+        if(confirm('Log out from Admin panel?')) location.reload();
+    }
 
-                const admNo = String(r[0]).trim();
-                const photo = studentPhotos[admNo] || '';
-                const engTot = parseInt(r[17]) || 0;
-                const matTot = parseInt(r[27]) || 0;
-                const evsTot = parseInt(r[37]) || 0;
-                const urdTot = parseInt(r[47]) || 0;
-                const kasTot = parseInt(r[57]) || 0;
-                const grandTotal = engTot + matTot + evsTot + urdTot + kasTot;
-                const overallProf = getProficiency(grandTotal, 500);
+    function toggleDarkMode() {
+        document.body.classList.toggle('bg-dark');
+        document.body.classList.toggle('text-white');
+    }
 
-                const div = document.createElement('div');
-                div.className = 'marksheet-container';
-                div.innerHTML = `
-                    <div class="header-bg flex items-center p-2">
-                        <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center border-2 border-yellow-400">
-                           <span class="text-indigo-900 font-black text-center text-[8px]">LOGO</span>
-                        </div>
-                        <div class="flex-grow text-center">
-                            <h1 class="text-2xl font-black">GOVERNMENT PRIMARY SCHOOL</h1>
-                            <h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2>
-                        </div>
-                    </div>
+    // Initial Load
+    updateStats();
+</script>
 
-                    <div class="flex border-x-2 border-b-2 border-purple-900">
-                        <div class="flex-grow grid grid-cols-4">
-                            <div class="label-cell">Student Name:</div><div class="value-cell">${r[3] || ''}</div>
-                            <div class="label-cell">Adm. No:</div><div class="value-cell">${admNo}</div>
-                            <div class="label-cell">Fathers Name:</div><div class="value-cell">${r[4] || ''}</div>
-                            <div class="label-cell">Class:</div><div class="value-cell">${r[2] || ''}</div>
-                        </div>
-                        <div class="w-28 border-l-2 border-purple-900 flex items-center justify-center bg-gray-50">
-                            ${photo ? `<img src="${photo}" class="w-full h-full object-cover">` : `<div class="text-[10px] text-gray-400">PASSPORT PHOTO</div>`}
-                        </div>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="w-24">Subject</th>
-                                <th>FA1-FA6</th><th>Total(30)</th><th>Co-Curr(20)</th><th>Sum(50)</th><th>Total(100)</th><th>Grade</th><th>Prof.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${renderRow("English", engTot)} ${renderRow("Math", matTot)} 
-                            ${renderRow("EVS", evsTot)} ${renderRow("Urdu", urdTot)} 
-                            ${renderRow("Kashmiri", kasTot)}
-                            <tr class="bg-gray-100 font-bold">
-                                <td class="sub-name">Grand Total</td><td>-</td><td>128</td><td>86</td><td>212</td>
-                                <td class="bg-yellow-100">${grandTotal}</td><td>${getGrade(grandTotal, 500)}</td><td>${overallProf}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="grid grid-cols-3 gap-2 mt-2">
-                        <div>
-                            <div class="section-header grade-key-header">Grade Key</div>
-                            <table class="text-[9px]">
-                                <tr><td>>85% to 100%</td><td>A+</td></tr>
-                                <tr><td>>70% to 85%</td><td>A</td></tr>
-                                <tr><td>>55% to 70%</td><td>B</td></tr>
-                                <tr><td>>40% to 55%</td><td>C</td></tr>
-                            </table>
-                        </div>
-                        <div>
-                            <div class="section-header proficiency-header">Proficiency</div>
-                            <table class="text-[9px]">
-                                <tr><td>Sky</td><td>${overallProf === 'Sky' ? '✔' : ''}</td></tr>
-                                <tr><td>Mountain</td><td>${overallProf === 'Mountain' ? '✔' : ''}</td></tr>
-                                <tr><td>Stream</td><td>${overallProf === 'Stream' ? '✔' : ''}</td></tr>
-                            </table>
-                        </div>
-                        <div>
-                            <div class="section-header results-header">Final Results</div>
-                            <div class="border border-indigo-600 p-1 text-[11px]">
-                                <div class="flex justify-between"><span>Percentage:</span> <span>${Math.round(grandTotal/5)}%</span></div>
-                                <div class="flex justify-between"><span>Result:</span> <span class="text-green-700">PASS</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-12 gap-2 mt-2">
-                        <div class="col-span-4 flex items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
-                            <div class="text-center p-2">
-                                <div class="w-16 h-16 bg-black mx-auto mb-1"></div>
-                                <span class="text-[8px] font-bold">VERIFICATION QR</span>
-                            </div>
-                        </div>
-                        <div class="col-span-8">
-                            <table class="w-full">
-                                <tr><td class="metrics-label">Attendance %age</td><td class="metrics-value">92%</td></tr>
-                                <tr><td class="metrics-label">Empathy & Teamwork</td><td class="metrics-value">Excellent</td></tr>
-                                <tr><td class="metrics-label">Discipline</td><td class="metrics-value">Very Good</td></tr>
-                                <tr><td class="metrics-label">Sports</td><td class="metrics-value">A</td></tr>
-                                <tr><td class="metrics-label">Art and Craft</td><td class="metrics-value">B+</td></tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 mt-2">
-                        <div class="border border-purple-900 p-2">
-                            <div class="bar-container">
-                                ${renderBar("Eng", engTot)} ${renderBar("Math", matTot)} ${renderBar("EVS", evsTot)} ${renderBar("Urdu", urdTot)} ${renderBar("Kas", kasTot)}
-                            </div>
-                            <div class="bg-orange-400 text-white text-center text-[8px] p-1 font-bold">Subject wise Growth</div>
-                        </div>
-                        <div class="flex flex-col">
-                            <div class="bg-purple-800 text-white text-center font-bold p-1 text-xs">General Remarks</div>
-                            <div class="border flex-grow p-2 text-[10px] italic">
-                                ${r[3]} has performed well. Consistent effort is advised for further growth.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-4 gap-2 mt-auto pb-4 text-[8px] font-bold text-center">
-                        <div class="border-t border-black pt-1">Sign. Teacher</div>
-                        <div class="border-t border-black pt-1">Exam I/C</div>
-                        <div class="border-t border-black pt-1">Parents</div>
-                        <div class="border-t border-black pt-1">Headmaster Seal</div>
-                    </div>
-                `;
-                wrapper.appendChild(div);
-            }
-        }
-
-        function renderRow(name, tot) {
-            return `<tr><td class="sub-name">${name}</td><td>-</td><td>-</td><td>-</td><td>-</td><td>${tot}</td><td>${getGrade(tot)}</td><td>${getProficiency(tot)}</td></tr>`;
-        }
-
-        function renderBar(label, val) {
-            return `<div class="bar" style="height: ${val}%"><span class="bar-label">${val}</span><span class="sub-label">${label}</span></div>`;
-        }
-    </script>
 </body>
 </html>
-                                                            <td class="bg-yellow-50">${subjectTotal}</td>
-                
