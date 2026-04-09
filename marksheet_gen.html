@@ -297,23 +297,24 @@
             `;
             wrapper.appendChild(div);
 
-            // INITIALIZE REAL CODES FOR EACH STUDENT
+            // FIX: BARCODE SIZE INCREASED (WIDTH AND HEIGHT DOUBLED)
             JsBarcode(`#barcode-${admNo}`, admNo.toString(), {
                 format: "CODE39",
-                width: 1.2,
-                height: 30,
+                width: 2.4, // Increased from 1.2
+                height: 60, // Increased from 30
                 displayValue: true,
-                fontSize: 10,
-                margin: 0
+                fontSize: 12,
+                margin: 5
             });
 
+            // FIX: QR CODE READABILITY (INCREASED SIZE AND ADDED QUIET ZONE)
             new QRCode(document.getElementById(`qrcode-${admNo}`), {
                 text: `VERIFIED: ${name} | Adm: ${admNo} | GPS Pethgam Wagoora`,
-                width: 55,
-                height: 55,
+                width: 100, // Increased from 55 for better scanning
+                height: 100, // Increased from 55
                 colorDark : "#000000",
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
+                correctLevel : QRCode.CorrectLevel.M // Medium correction for better density
             });
         });
     }
