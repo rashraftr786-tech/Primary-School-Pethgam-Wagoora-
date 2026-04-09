@@ -170,6 +170,7 @@
                                 <th rowspan="2">Summative (50)</th>
                                 <th rowspan="2">Total (100)</th>
                                 <th rowspan="2">Grade</th>
+                                <th rowspan="2">Proficiency Level</th>
                             </tr>
                             <tr class="text-[9px]">
                                 <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
@@ -239,11 +240,17 @@
                         <table class="w-full text-[11px]">
                             <tr>
                                 <td class="bg-[#93c5fd] font-bold px-2">Total Marks</td>
-                                <td class="font-bold">${totalMarks} / 500</td>
+                                <td class="font-bold">${totalMarks}</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Maximum Marks</td>
+                                <td class="font-bold">500</td>
                                 <td class="bg-[#93c5fd] font-bold px-2">Percentage</td>
                                 <td class="font-bold">${avgPerc.toFixed(1)}%</td>
                                 <td class="bg-[#93c5fd] font-bold px-2">Overall Grade</td>
                                 <td class="font-bold">${getGrade(avgPerc)}</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Result</td>
+                                <td class="font-bold">${result}</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Position in Class</td>
+                                <td class="font-bold">${getPosituon(1)}%</td>
                             </tr>
                         </table>
                     </div>
