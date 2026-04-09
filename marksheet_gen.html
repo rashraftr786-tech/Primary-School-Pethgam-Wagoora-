@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Pethgam Wagoora - Advanced Marksheet System</title>
+    <title>GPS Pethgam Wagoora - Professional Marksheet System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -15,8 +15,7 @@
         }
         .marksheet-container {
             width: 210mm; min-height: 290mm; padding: 5mm; margin: 20px auto;
-            border: 4px solid #6d59c0; background-color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            position: relative;
+            border: 4px solid #6d59c0; background-color: white; font-family: 'Segoe UI', Arial, sans-serif;
         }
         .header-bg { background-color: #6d59c0; color: white; border-bottom: 2px solid #000; }
         .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
@@ -24,44 +23,33 @@
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #94a3b8; text-align: center; font-size: 11px; padding: 3px; }
         .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 5px; font-size: 13px; }
-        .footer-tab { background-color: #334155; color: white; font-size: 10px; padding: 4px; text-align: center; }
-        .photo-box { width: 100px; height: 110px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
+        .footer-tab { background-color: #334155; color: white; font-size: 10px; padding: 6px; text-align: center; border: 1px solid #000; }
+        .photo-box { width: 110px; height: 120px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
         
-        /* Bar Graph Fix */
-        .bar-container { display: flex; align-items: flex-end; height: 100px; gap: 10px; padding: 5px 10px; border-bottom: 2px solid #334155; }
-        .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
-        .bar { width: 100%; background-color: #3b82f6; min-height: 2px; transition: height 0.3s; }
-        .bar-label { font-size: 9px; font-weight: bold; margin-top: 4px; }
-        .bar-value { font-size: 9px; font-weight: bold; }
-
-        .info-table td { padding: 4px; font-size: 10px; border: 1px solid #cbd5e1; }
-        .info-label { background-color: #b91c1c; color: white; text-align: left; padding-left: 8px; font-weight: bold; width: 60%; }
+        /* Bar Graph */
+        .bar-container { display: flex; align-items: flex-end; height: 100px; gap: 8px; padding: 10px; border-bottom: 2px solid #334155; }
+        .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+        .bar { width: 100%; background-color: #3b82f6; border: 1px solid #1e40af; }
+        
+        /* Proficiency Icons */
+        .prof-img { width: 40px; height: 30px; object-fit: cover; border: 1px solid #ccc; }
+        .check-mark { font-size: 18px; color: green; font-weight: bold; }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
 
     <div class="no-print max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-indigo-900">GPS Pethgam Marksheet System</h2>
+            <h2 class="text-2xl font-bold text-indigo-900">GPS Pethgam Marksheet Panel</h2>
             <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700">Print All (PDF)</button>
         </div>
-        
         <div class="mb-8 p-4 bg-indigo-50 rounded-lg">
-            <label class="block text-sm font-bold text-indigo-900 mb-2">Step 1: Upload Excel File</label>
+            <label class="block text-sm font-bold text-indigo-900 mb-2">Upload Student Records (Excel)</label>
             <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
         </div>
-
-        <div id="studentListControl" class="hidden overflow-x-auto">
-            <h3 class="font-bold text-gray-700 mb-2">Step 2: Manage Students & Photos</h3>
-            <table class="w-full text-sm text-left border">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="p-2 border">Roll</th>
-                        <th class="p-2 border">Student Name</th>
-                        <th class="p-2 border">Photo Status</th>
-                        <th class="p-2 border">Actions</th>
-                    </tr>
-                </thead>
+        <div id="studentListControl" class="hidden">
+            <table class="w-full text-sm border">
+                <thead class="bg-gray-200"><tr><th class="p-2 border">Roll</th><th class="p-2 border">Name</th><th class="p-2 border">Photo</th><th class="p-2 border">Actions</th></tr></thead>
                 <tbody id="studentTableBody"></tbody>
             </table>
         </div>
@@ -92,32 +80,28 @@
             const tbody = document.getElementById('studentTableBody');
             listContainer.classList.remove('hidden');
             tbody.innerHTML = '';
-
             allStudentsData.forEach((row, index) => {
-                const name = row[3].toString().toUpperCase().trim();
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-2 border">${row[1]}</td>
-                    <td class="p-2 border font-bold">${name}</td>
-                    <td class="p-2 border text-center" id="status-${index}">
-                        ${studentPhotos[name] ? '✅ Uploaded' : '❌ No Photo'}
-                    </td>
-                    <td class="p-2 border space-x-2">
-                        <input type="file" id="input-${index}" class="hidden" accept="image/*" onchange="uploadIndividualPhoto(this, '${name}', ${index})">
-                        <button onclick="document.getElementById('input-${index}').click()" class="bg-emerald-500 text-white px-2 py-1 rounded text-xs">Upload Photo</button>
-                        <button onclick="printSingle(${index})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Print Marksheet</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+                const name = row[3].toString().toUpperCase();
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2 border">${row[1]}</td>
+                        <td class="p-2 border font-bold">${name}</td>
+                        <td class="p-2 border text-center" id="status-${index}">${studentPhotos[name] ? '✅' : '❌'}</td>
+                        <td class="p-2 border">
+                            <input type="file" id="input-${index}" class="hidden" onchange="uploadPhoto(this, '${name}', ${index})">
+                            <button onclick="document.getElementById('input-${index}').click()" class="bg-emerald-500 text-white px-2 py-1 rounded text-xs">Upload Photo</button>
+                            <button onclick="printSingle(${index})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Print</button>
+                        </td>
+                    </tr>`;
             });
         }
 
-        function uploadIndividualPhoto(input, studentName, index) {
+        function uploadPhoto(input, name, index) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    studentPhotos[studentName] = e.target.result;
-                    document.getElementById(`status-${index}`).innerText = '✅ Uploaded';
+                    studentPhotos[name] = e.target.result;
+                    document.getElementById(`status-${index}`).innerText = '✅';
                     generateAllMarksheets();
                 };
                 reader.readAsDataURL(input.files[0]);
@@ -125,56 +109,43 @@
         }
 
         function printSingle(index) {
-            const allSheets = document.querySelectorAll('.marksheet-container');
-            allSheets.forEach((sheet, i) => {
-                if(i === index) sheet.classList.remove('no-print');
-                else sheet.classList.add('no-print');
-            });
+            const sheets = document.querySelectorAll('.marksheet-container');
+            sheets.forEach((s, i) => s.classList.toggle('no-print', i !== index));
             window.print();
-            // Reset for "Print All"
-            allSheets.forEach(sheet => sheet.classList.remove('no-print'));
+            sheets.forEach(s => s.classList.remove('no-print'));
         }
 
-        function getGrade(score) {
-            if (score >= 85) return 'A+';
-            if (score >= 70) return 'A';
-            if (score >= 55) return 'B';
-            if (score >= 40) return 'C';
-            if (score >= 33) return 'D';
-            return 'E';
+        function getGrade(s) {
+            if (s >= 85) return 'A+'; if (s >= 70) return 'A'; if (s >= 55) return 'B';
+            if (s >= 40) return 'C'; if (s >= 33) return 'D'; return 'E';
         }
 
         function generateAllMarksheets() {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
-
-            allStudentsData.forEach((row, idx) => {
-                const studentName = row[3].toString().toUpperCase().trim();
-                const subjectsArr = [
-                    {n: 'English', g: row[17]||0, fa: [row[8],row[9],row[10],row[11],row[12],row[13]], t: row[14]||0, cc: row[15]||0, s: row[16]||0},
-                    {n: 'Math', g: row[27]||0, fa: [row[18],row[19],row[20],row[21],row[22],row[23]], t: row[24]||0, cc: row[25]||0, s: row[26]||0},
-                    {n: 'EVS', g: row[37]||0, fa: [row[28],row[29],row[30],row[31],row[32],row[33]], t: row[34]||0, cc: row[35]||0, s: row[36]||0},
-                    {n: 'Urdu', g: row[47]||0, fa: [row[38],row[39],row[40],row[41],row[42],row[43]], t: row[44]||0, cc: row[45]||0, s: row[46]||0},
-                    {n: 'Kashmiri', g: row[57]||0, fa: [row[48],row[49],row[50],row[51],row[52],row[53]], t: row[54]||0, cc: row[55]||0, s: row[56]||0}
+            allStudentsData.forEach((row) => {
+                const name = row[3].toString().toUpperCase();
+                const subjects = [
+                    {n:'English', g:row[17]||0, fa:[row[8],row[9],row[10],row[11],row[12],row[13]], t:row[14]||0, cc:row[15]||0, s:row[16]||0},
+                    {n:'Math', g:row[27]||0, fa:[row[18],row[19],row[20],row[21],row[22],row[23]], t:row[24]||0, cc:row[25]||0, s:row[26]||0},
+                    {n:'EVS', g:row[37]||0, fa:[row[28],row[29],row[30],row[31],row[32],row[33]], t:row[34]||0, cc:row[35]||0, s:row[36]||0},
+                    {n:'Urdu', g:row[47]||0, fa:[row[38],row[39],row[40],row[41],row[42],row[43]], t:row[44]||0, cc:row[45]||0, s:row[46]||0},
+                    {n:'Kashmiri', g:row[57]||0, fa:[row[48],row[49],row[50],row[51],row[52],row[53]], t:row[54]||0, cc:row[55]||0, s:row[56]||0}
                 ];
-
-                const total = subjectsArr.reduce((a, b) => a + b.g, 0);
-                const perc = (total / 5).toFixed(1);
-
+                const total = subjects.reduce((a, b) => a + b.g, 0);
+                const perc = (total / 5);
+                
                 const div = document.createElement('div');
                 div.className = 'marksheet-container page-break';
                 div.innerHTML = `
                     <div class="header-bg p-2 flex justify-between items-center">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[8px] text-black font-bold">LOGO</div>
-                        <div class="text-center flex-grow">
-                            <h1 class="text-2xl font-black uppercase">Government Primary School</h1>
-                            <h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2>
-                        </div>
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[10px] text-black font-bold">LOGO</div>
+                        <div class="text-center flex-grow"><h1 class="text-2xl font-black uppercase">Government Primary School</h1><h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2></div>
                     </div>
 
                     <div class="flex mt-1">
                         <div class="flex-grow grid grid-cols-4 border-l border-t">
-                            <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${studentName}</div>
+                            <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${name}</div>
                             <div class="cell-label">Adm. No:</div><div class="cell-value">${row[0]||''}</div>
                             <div class="cell-label">Fathers Name:</div><div class="cell-value">${row[4]||''}</div>
                             <div class="cell-label">D.O.B:</div><div class="cell-value">${row[7] ? new Date((row[7]-25569)*86400*1000).toLocaleDateString('en-GB') : ''}</div>
@@ -186,84 +157,79 @@
                             <div class="cell-label">PEN No.</div><div class="cell-value">${row[66]||'N/A'}</div>
                         </div>
                         <div class="photo-box ml-1">
-                            ${studentPhotos[studentName] ? `<img src="${studentPhotos[studentName]}" class="w-full h-full object-cover">` : `<span class="text-[10px] text-gray-400">PHOTO</span>`}
+                            ${studentPhotos[name] ? `<img src="${studentPhotos[name]}" class="w-full h-full object-cover">` : `<span class="text-gray-400">PHOTO</span>`}
                         </div>
                     </div>
 
                     <table class="mt-1">
                         <thead class="bg-indigo-100">
-                            <tr>
-                                <th rowspan="2">Subject</th>
-                                <th colspan="6">Formative Assessment (5 each)</th>
-                                <th rowspan="2">Total(30)</th><th rowspan="2">CC(20)</th><th rowspan="2">Summ(50)</th><th rowspan="2">Total(100)</th><th rowspan="2">Grade</th>
-                            </tr>
+                            <tr><th rowspan="2">Subject</th><th colspan="6">Formative (5 each)</th><th rowspan="2">T(30)</th><th rowspan="2">CC(20)</th><th rowspan="2">Sum(50)</th><th rowspan="2">Total</th><th rowspan="2">Grade</th></tr>
                             <tr class="text-[9px]"><th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th></tr>
                         </thead>
                         <tbody>
-                            ${subjectsArr.map(s => `
-                                <tr>
-                                    <td class="sub-name">${s.n}</td>
-                                    ${s.fa.map(v => `<td>${v||0}</td>`).join('')}
-                                    <td class="font-bold">${s.t}</td><td>${s.cc}</td><td>${s.s}</td>
-                                    <td class="font-bold bg-blue-50">${s.g}</td><td>${getGrade(s.g)}</td>
-                                </tr>
-                            `).join('')}
+                            ${subjects.map(s => `<tr><td class="sub-name">${s.n}</td>${s.fa.map(v=>`<td>${v||0}</td>`).join('')}<td class="font-bold">${s.t}</td><td>${s.cc}</td><td>${s.s}</td><td class="font-bold bg-blue-50">${s.g}</td><td>${getGrade(s.g)}</td></tr>`).join('')}
                         </tbody>
                     </table>
 
-                    <div class="grid grid-cols-2 gap-2 mt-1">
-                        <div class="border border-slate-300 p-1">
-                             <div class="bg-orange-400 text-white text-[11px] font-bold text-center py-1 mb-1">Subject wise Bar Graph Chart</div>
-                             <div class="bar-container">
-                                ${subjectsArr.map(s => `
-                                    <div class="bar-item">
-                                        <span class="bar-value">${s.g}</span>
-                                        <div class="bar" style="height: ${s.g}%;"></div>
-                                        <span class="bar-label">${s.n}</span>
-                                    </div>
-                                `).join('')}
-                             </div>
+                    <div class="grid grid-cols-3 gap-1 mt-1">
+                        <div class="border border-slate-300">
+                            <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Percentage/Grade Key</div>
+                            <table class="text-[9px] w-full">
+                                <tr class="bg-gray-100"><th>%age Scale</th><th>Grade</th></tr>
+                                <tr><td>>85% to 100%</td><td>A+</td></tr>
+                                <tr><td>>70% to 85%</td><td>A</td></tr>
+                                <tr><td>>55% to 70%</td><td>B</td></tr>
+                                <tr><td>>40% to 55%</td><td>C</td></tr>
+                                <tr><td>>33% to 40%</td><td>D</td></tr>
+                            </table>
+                        </div>
+                        <div class="border border-slate-300">
+                            <div class="bg-red-500 text-white text-[10px] font-bold text-center py-1">Level of Proficiency</div>
+                            <table class="w-full text-[10px]">
+                                <tr><td class="font-bold">Sky</td><td><img src="https://img.freepik.com/free-photo/blue-sky-with-white-clouds_1127-282.jpg" class="prof-img"></td><td>${perc > 85 ? '✔' : ''}</td></tr>
+                                <tr><td class="font-bold">Mountain</td><td><img src="https://img.freepik.com/free-photo/snowy-mountain-peak-starry-night-sky-generated-by-ai_188544-23588.jpg" class="prof-img"></td><td>${perc > 55 && perc <= 85 ? '✔' : ''}</td></tr>
+                                <tr><td class="font-bold">Stream</td><td><img src="https://img.freepik.com/free-photo/beautiful-river-woods_23-2148115024.jpg" class="prof-img"></td><td>${perc <= 55 ? '✔' : ''}</td></tr>
+                            </table>
+                        </div>
+                        <div class="border border-slate-300">
+                            <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Final Results</div>
+                            <table class="w-full text-[10px] text-left">
+                                <tr><td class="bg-blue-50 px-1 border">Total Marks</td><td class="font-bold border text-center">${total}</td></tr>
+                                <tr><td class="bg-blue-50 px-1 border">Overall %</td><td class="font-bold border text-center">${perc.toFixed(1)}%</td></tr>
+                                <tr><td class="bg-blue-50 px-1 border">Result</td><td class="font-bold border text-center">${perc >= 33 ? 'PASS' : 'FAIL'}</td></tr>
+                                <tr><td class="bg-blue-50 px-1 border">Class Pos.</td><td class="font-bold border text-center">${row[68]||'-'}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-1 mt-1">
+                        <div class="border p-1">
+                            <div class="bg-orange-400 text-white text-[10px] font-bold text-center mb-1">Subject wise Bar Graph Chart</div>
+                            <div class="bar-container">
+                                ${subjects.map(s => `<div class="bar-item"><span class="text-[9px]">${s.g}</span><div class="bar" style="height: ${s.g}%;"></div><span class="text-[8px]">${s.n}</span></div>`).join('')}
+                            </div>
                         </div>
                         <div class="grid grid-rows-2 gap-1">
-                             <div class="grid grid-cols-2 gap-1">
-                                <div class="border border-indigo-200 text-center">
-                                    <div class="bg-slate-700 text-white text-[10px] font-bold py-1">SCHOOL RANK</div>
-                                    <div class="text-xl font-bold p-1">${row[67] || '-'}</div>
-                                </div>
-                                <div class="border border-indigo-200 text-center">
-                                    <div class="bg-slate-700 text-white text-[10px] font-bold py-1">CLASS RANK</div>
-                                    <div class="text-xl font-bold p-1">${row[68] || '-'}</div>
-                                </div>
-                             </div>
-                             <div class="border border-slate-400">
-                                <table class="info-table h-full">
-                                    <tr><td class="info-label">Attendance %age</td><td></td></tr>
-                                    <tr><td class="info-label">Discipline</td><td></td></tr>
-                                    <tr><td class="info-label">Sports / Art</td><td></td></tr>
+                            <div class="grid grid-cols-2 gap-1">
+                                <div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">SCHOOL RANK</div><div class="text-lg font-bold">${row[67]||'-'}</div></div>
+                                <div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">CLASS RANK</div><div class="text-lg font-bold">${row[68]||'-'}</div></div>
+                            </div>
+                            <div class="border border-slate-400">
+                                <table class="info-table w-full h-full text-[9px]">
+                                    <tr><td class="info-label">Attendance %</td><td></td><td class="info-label">Discipline</td><td></td></tr>
+                                    <tr><td class="info-label">Empathy</td><td></td><td class="info-label">Sports/Art</td><td></td></tr>
                                 </table>
-                             </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="border border-slate-400 bg-white mt-1">
-                        <div class="bg-[#a855f7] text-white text-[12px] p-1 font-bold text-center">GENERAL REMARKS</div>
-                        <div class="p-2 text-[12px] font-bold text-black min-h-[40px]">
-                            ${studentName} needs to focus more on all subjects. Work hard!
-                        </div>
-                    </div>
-
-                    <div class="mt-1 border border-indigo-200">
-                        <table class="w-full text-[11px]">
-                            <tr>
-                                <td class="bg-[#93c5fd] font-bold px-2">Total Marks</td><td class="font-bold">${total} / 500</td>
-                                <td class="bg-[#93c5fd] font-bold px-2">Percentage</td><td class="font-bold">${perc}%</td>
-                                <td class="bg-[#93c5fd] font-bold px-2">Overall Grade</td><td class="font-bold">${getGrade(perc)}</td>
-                            </tr>
-                        </table>
+                    <div class="border border-slate-400 mt-1">
+                        <div class="bg-purple-500 text-white text-[10px] font-bold text-center py-1 uppercase">General Remarks</div>
+                        <div class="p-2 text-[11px] font-bold min-h-[40px]">${name} ${perc > 70 ? 'has performed excellently. Keep it up!' : 'needs to focus more on all subjects. Work hard!'}</div>
                     </div>
 
                     <div class="grid grid-cols-4 mt-8 gap-4">
-                        <div class="footer-tab">Sign. Form Teacher</div><div class="footer-tab">Sign. Exam I/C</div><div class="footer-tab">Parents Signature</div><div class="footer-tab">Seal of Headmaster</div>
+                        <div class="footer-tab">Sign. Form Teacher</div><div class="footer-tab">Sign. Exam I/C</div><div class="footer-tab">Parents Signature</div><div class="footer-tab">Seal & Sign. Headmaster</div>
                     </div>
                 `;
                 wrapper.appendChild(div);
@@ -272,4 +238,4 @@
     </script>
 </body>
 </html>
-                                
+    
