@@ -37,7 +37,7 @@
 
     <div class="no-print max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
         <h2 class="text-2xl font-bold text-indigo-900 mb-2">Marksheet Control Panel</h2>
-        <p class="text-xs text-gray-500 mb-4">*Note: Photo files should be named exactly like the student name in Excel (e.g., "JOHN DOE.jpg")</p>
+        <p class="text-xs text-gray-500 mb-4">*Note: Photo files should be named exactly like the student name in Excel (e.g., "SHAHID AHMAD MALLA.jpg")</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">1. Upload Student Data (Excel)</label>
@@ -54,6 +54,7 @@
 
     <script>
         let studentPhotos = {};
+        let currentExcelData = null;
 
         function formatExcelDate(dateVal) {
             if (!dateVal) return "N/A";
@@ -64,16 +65,18 @@
             return dateVal;
         }
 
+        // Photo Upload Handling - Updated to auto-refresh current view
         document.getElementById('photoUpload').addEventListener('change', function(e) {
             const files = e.target.files;
+            let loadedCount = 0;
             for (let file of files) {
                 const reader = new FileReader();
                 const name = file.name.split('.')[0].toUpperCase().trim();
                 reader.onload = (f) => { 
                     studentPhotos[name] = f.target.result;
-                    // Trigger redraw if data already exists
-                    if(document.getElementById('marksheetWrapper').innerHTML !== "") {
-                        alert("Photos uploaded! Please re-upload Excel to apply photos to current marksheets.");
+                    loadedCount++;
+                    if(loadedCount === files.length && currentExcelData) {
+                        processData(currentExcelData); // Re-render with new photos
                     }
                 };
                 reader.readAsDataURL(file);
@@ -86,8 +89,8 @@
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-                processData(rows);
+                currentExcelData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                processData(currentExcelData);
             };
             reader.readAsArrayBuffer(file);
         });
@@ -101,15 +104,9 @@
             return 'E';
         }
 
-        function getProficiency(score) {
-            if (score >= 85) return 'Sky';
-            if (score >= 55) return 'Mountain';
-            return 'Stream';
-        }
-
         function getAutomaticRemarks(name, subjects) {
             let highPerformers = subjects.filter(s => s.score >= 80).map(s => s.name);
-            let greeting = `${name} has performed well in ${highPerformers.join(' ')}. Keep it up!`;
+            let greeting = `${name} has performed well in ${highPerformers.join(', ')}. Keep it up!`;
             if (highPerformers.length === 0) greeting = `${name} needs to focus more on all subjects. Work hard!`;
             return greeting;
         }
@@ -118,28 +115,23 @@
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
             
-            const students = rows.slice(3).filter(r => r[3]); 
+            // Filter valid rows (skipping headers and empty rows)
+            const studentRows = rows.slice(3).filter(r => r[3]); 
 
-            students.forEach(row => {
+            // Rank Calculation Logic
+            const studentScores = studentRows.map(row => {
+                const total = (row[17]||0) + (row[27]||0) + (row[37]||0) + (row[47]||0) + (row[57]||0);
+                return { id: row[0], total: total };
+            });
+
+            // Sort by score descending to find rank
+            const sortedScores = [...studentScores].sort((a, b) => b.total - a.total);
+
+            studentRows.forEach(row => {
                 const studentName = String(row[3]).toUpperCase().trim();
                 const photoSrc = studentPhotos[studentName] || '';
-
-                const s = {
-                    adm: row[0], roll: row[1], class: row[2], name: studentName,
-                    father: row[4], mother: row[5], 
-                    dob: formatExcelDate(row[7]), 
-                    apaar: row[65] || 'N/A', 
-                    pen: row[66] || 'N/A', 
-                    session: "Nov. 2025",
-                    sRank: row[67] || '-', cRank: row[68] || '-',
-                    eng: { name: 'English', grand: row[17]||0 },
-                    math: { name: 'Math', grand: row[27]||0 },
-                    evs: { name: 'EVS', grand: row[37]||0 },
-                    urdu: { name: 'Urdu', grand: row[47]||0 },
-                    kash: { name: 'Kashmiri', grand: row[57]||0 }
-                };
-
-                // Detailed data for table mapping
+                
+                // Calculate Total for this student
                 const subjectsArr = [
                     {n: 'English', d: {fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14]||0, cc: row[15]||0, sum: row[16]||0, grand: row[17]||0 }},
                     {n: 'Math', d: {fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24]||0, cc: row[25]||0, sum: row[26]||0, grand: row[27]||0 }},
@@ -148,9 +140,14 @@
                     {n: 'Kashmiri', d: {fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54]||0, cc: row[55]||0, sum: row[56]||0, grand: row[57]||0 }}
                 ];
 
-                const total = subjectsArr.reduce((acc, curr) => acc + curr.d.grand, 0);
-                const avgPerc = total / 5;
+                const totalMarks = subjectsArr.reduce((acc, curr) => acc + curr.d.grand, 0);
+                const avgPerc = totalMarks / 5;
                 const avgGrade = getGrade(avgPerc);
+
+                // Auto-Rank Logic: Use Excel data if exists, otherwise use calculated position
+                const calculatedRank = sortedScores.findIndex(x => x.total === totalMarks) + 1;
+                const schoolRank = row[67] || calculatedRank;
+                const classRank = row[68] || calculatedRank;
 
                 const div = document.createElement('div');
                 div.className = 'marksheet-container mb-8 page-break';
@@ -165,16 +162,16 @@
 
                     <div class="flex mt-1">
                         <div class="flex-grow grid grid-cols-4 border-l border-t">
-                            <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${s.name}</div>
-                            <div class="cell-label">Adm. No:</div><div class="cell-value">${s.adm}</div>
-                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${s.father}</div>
-                            <div class="cell-label">D.O.B:</div><div class="cell-value">${s.dob}</div>
-                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${s.mother}</div>
-                            <div class="cell-label">Class:</div><div class="cell-value">${s.class}</div>
-                            <div class="cell-label">Academic Session:</div><div class="cell-value">${s.session}</div>
-                            <div class="cell-label">Roll No:</div><div class="cell-value">${s.roll}</div>
-                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${s.apaar}</div>
-                            <div class="cell-label">PEN No.</div><div class="cell-value">${s.pen}</div>
+                            <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${studentName}</div>
+                            <div class="cell-label">Adm. No:</div><div class="cell-value">${row[0]}</div>
+                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${row[4]}</div>
+                            <div class="cell-label">D.O.B:</div><div class="cell-value">${formatExcelDate(row[7])}</div>
+                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${row[5]}</div>
+                            <div class="cell-label">Class:</div><div class="cell-value">${row[2]}</div>
+                            <div class="cell-label">Academic Session:</div><div class="cell-value">Nov. 2025</div>
+                            <div class="cell-label">Roll No:</div><div class="cell-value">${row[1]}</div>
+                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${row[65] || 'N/A'}</div>
+                            <div class="cell-label">PEN No.</div><div class="cell-value">${row[66] || 'N/A'}</div>
                         </div>
                         <div class="photo-box ml-1">
                             ${photoSrc ? `<img src="${photoSrc}" class="w-full h-full object-cover">` : `<span class="text-[10px] text-gray-400">PHOTO</span>`}
@@ -218,7 +215,7 @@
                                 ${subjectsArr.map(sub => `
                                     <div class="bar-item">
                                         <span class="bar-value">${sub.d.grand}</span>
-                                        <div class="bar" style="height: ${sub.d.grand}%"></div>
+                                        <div class="bar" style="height: ${Math.min(sub.d.grand, 100)}%"></div>
                                         <span class="bar-label">${sub.n}</span>
                                     </div>
                                 `).join('')}
@@ -229,11 +226,11 @@
                              <div class="grid grid-cols-2 gap-1">
                                 <div class="border border-indigo-200 text-center">
                                     <div class="bg-slate-700 text-white text-[10px] font-bold py-1">SCHOOL RANK</div>
-                                    <div class="text-xl font-bold p-1">${s.sRank}</div>
+                                    <div class="text-xl font-bold p-1">${schoolRank}</div>
                                 </div>
                                 <div class="border border-indigo-200 text-center">
                                     <div class="bg-slate-700 text-white text-[10px] font-bold py-1">CLASS RANK</div>
-                                    <div class="text-xl font-bold p-1">${s.cRank}</div>
+                                    <div class="text-xl font-bold p-1">${classRank}</div>
                                 </div>
                              </div>
                              
@@ -252,7 +249,7 @@
                     <div class="border border-slate-400 bg-white mt-1">
                         <div class="bg-[#a855f7] text-white text-[12px] p-1 font-bold text-center uppercase">General Remarks</div>
                         <div class="p-3 text-[12px] font-bold text-black leading-relaxed text-left">
-                            ${getAutomaticRemarks(s.name, subjectsArr.map(x => ({name: x.n, score: x.d.grand})))}
+                            ${getAutomaticRemarks(studentName, subjectsArr.map(x => ({name: x.n, score: x.d.grand})))}
                         </div>
                     </div>
 
@@ -260,7 +257,7 @@
                         <table class="w-full text-[11px]">
                             <tr>
                                 <td class="bg-[#93c5fd] font-bold px-2">Total Marks</td>
-                                <td class="font-bold">${total} / 500</td>
+                                <td class="font-bold">${totalMarks} / 500</td>
                                 <td class="bg-[#93c5fd] font-bold px-2">Percentage</td>
                                 <td class="font-bold">${avgPerc.toFixed(1)}%</td>
                                 <td class="bg-[#93c5fd] font-bold px-2">Overall Grade</td>
@@ -282,3 +279,4 @@
     </script>
 </body>
 </html>
+        
