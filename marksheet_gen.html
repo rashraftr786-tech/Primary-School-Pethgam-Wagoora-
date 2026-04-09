@@ -246,16 +246,21 @@
                     </div>
                 </div>
 
-                <div class="border border-slate-400 mt-1">
+                                <div class="border border-slate-400 mt-1">
                     <div class="bg-purple-500 text-white text-[10px] font-bold text-center py-1 uppercase">General Remarks</div>
-                    <div class="p-2 text-[11px] font-bold min-h-[45px]">
+                    <div class="p-2 text-[11px] font-bold min-h-[60px]">
                         ${name} has shown ${getProficiency(perc)} level performance. Exceptional in ${bestSub.n} (${bestSub.g}). 
                         ${perc < 55 ? 'Focus needed on ' + weakSub.n + '.' : 'Keep maintaining excellence.'} Overall: ${getGrade(perc)}.
                     </div>
                 </div>
 
-                <div class="grid grid-cols-4 mt-8 gap-4">
-                    <div class="footer-tab">Sign. Form Teacher</div><div class="footer-tab">Sign. Exam I/C</div><div class="footer-tab">Parents Signature</div><div class="footer-tab">Seal & Sign. Headmaster</div>
+                <div class="mt-24"></div> 
+
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Sign. Form Teacher</div>
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Sign. Exam I/C</div>
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Parents Signature</div>
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Seal & Sign. Headmaster</div>
                 </div>
             `;
             wrapper.appendChild(div);
