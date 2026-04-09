@@ -20,12 +20,24 @@
         .sub-name { color: #b91c1c; text-align: left; font-weight: bold; padding-left: 5px; font-size: 13px; }
         .footer-tab { background-color: #334155; color: white; font-size: 10px; padding: 4px; text-align: center; }
         .photo-box { width: 100px; height: 110px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
+        
+        /* Bar Graph Styles */
+        .bar-container { display: flex; align-items: flex-end; height: 80px; gap: 8px; padding: 10px; border-bottom: 2px solid #334155; }
+        .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        .bar { width: 100%; background-color: #3b82f6; position: relative; transition: height 0.5s; min-height: 2px; }
+        .bar-label { font-size: 8px; font-weight: bold; margin-top: 4px; text-align: center; }
+        .bar-value { font-size: 9px; font-weight: bold; margin-bottom: 2px; }
+
+        /* Info Table Styles */
+        .info-table td { padding: 4px; font-size: 10px; border: 1px solid #cbd5e1; }
+        .info-label { background-color: #b91c1c; color: white; text-align: left; padding-left: 8px; font-weight: bold; width: 60%; }
     </style>
 </head>
 <body class="bg-gray-200 p-4">
 
     <div class="no-print max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
-        <h2 class="text-2xl font-bold text-indigo-900 mb-4">Marksheet Control Panel</h2>
+        <h2 class="text-2xl font-bold text-indigo-900 mb-2">Marksheet Control Panel</h2>
+        <p class="text-xs text-gray-500 mb-4">*Note: Photo files should be named exactly like the student name in Excel (e.g., "JOHN DOE.jpg")</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">1. Upload Student Data (Excel)</label>
@@ -56,8 +68,14 @@
             const files = e.target.files;
             for (let file of files) {
                 const reader = new FileReader();
-                const name = file.name.split('.')[0].toUpperCase();
-                reader.onload = (f) => { studentPhotos[name] = f.target.result; };
+                const name = file.name.split('.')[0].toUpperCase().trim();
+                reader.onload = (f) => { 
+                    studentPhotos[name] = f.target.result;
+                    // Trigger redraw if data already exists
+                    if(document.getElementById('marksheetWrapper').innerHTML !== "") {
+                        alert("Photos uploaded! Please re-upload Excel to apply photos to current marksheets.");
+                    }
+                };
                 reader.readAsDataURL(file);
             }
         });
@@ -89,23 +107,21 @@
             return 'Stream';
         }
 
-        function getAutomaticRemarks(avg) {
-            if (avg >= 85) return "Excellent performance! Keep up the brilliant work.";
-            if (avg >= 70) return "Very good progress. Aim for the top grade next time.";
-            if (avg >= 55) return "Good effort. Focus more on weak areas.";
-            if (avg >= 33) return "Satisfactory. Needs more consistent study habits.";
-            return "Requires urgent attention and remedial support.";
+        function getAutomaticRemarks(name, subjects) {
+            let highPerformers = subjects.filter(s => s.score >= 80).map(s => s.name);
+            let greeting = `${name} has performed well in ${highPerformers.join(' ')}. Keep it up!`;
+            if (highPerformers.length === 0) greeting = `${name} needs to focus more on all subjects. Work hard!`;
+            return greeting;
         }
 
         function processData(rows) {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
             
-            // Starts from row 4 (index 3) and filters empty student names
             const students = rows.slice(3).filter(r => r[3]); 
 
             students.forEach(row => {
-                const studentName = String(row[3]).toUpperCase();
+                const studentName = String(row[3]).toUpperCase().trim();
                 const photoSrc = studentPhotos[studentName] || '';
 
                 const s = {
@@ -116,14 +132,23 @@
                     pen: row[66] || 'N/A', 
                     session: "Nov. 2025",
                     sRank: row[67] || '-', cRank: row[68] || '-',
-                    eng: { fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14]||0, cc: row[15]||0, sum: row[16]||0, grand: row[17]||0 },
-                    math: { fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24]||0, cc: row[25]||0, sum: row[26]||0, grand: row[27]||0 },
-                    evs: { fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34]||0, cc: row[35]||0, sum: row[36]||0, grand: row[37]||0 },
-                    urdu: { fa: [row[38],row[39],row[40],row[41],row[42],row[43]], tot: row[44]||0, cc: row[45]||0, sum: row[46]||0, grand: row[47]||0 },
-                    kash: { fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54]||0, cc: row[55]||0, sum: row[56]||0, grand: row[57]||0 }
+                    eng: { name: 'English', grand: row[17]||0 },
+                    math: { name: 'Math', grand: row[27]||0 },
+                    evs: { name: 'EVS', grand: row[37]||0 },
+                    urdu: { name: 'Urdu', grand: row[47]||0 },
+                    kash: { name: 'Kashmiri', grand: row[57]||0 }
                 };
 
-                const total = s.eng.grand + s.math.grand + s.evs.grand + s.urdu.grand + s.kash.grand;
+                // Detailed data for table mapping
+                const subjectsArr = [
+                    {n: 'English', d: {fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14]||0, cc: row[15]||0, sum: row[16]||0, grand: row[17]||0 }},
+                    {n: 'Math', d: {fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24]||0, cc: row[25]||0, sum: row[26]||0, grand: row[27]||0 }},
+                    {n: 'EVS', d: {fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34]||0, cc: row[35]||0, sum: row[36]||0, grand: row[37]||0 }},
+                    {n: 'Urdu', d: {fa: [row[38],row[39],row[40],row[41],row[42],row[43]], tot: row[44]||0, cc: row[45]||0, sum: row[46]||0, grand: row[47]||0 }},
+                    {n: 'Kashmiri', d: {fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54]||0, cc: row[55]||0, sum: row[56]||0, grand: row[57]||0 }}
+                ];
+
+                const total = subjectsArr.reduce((acc, curr) => acc + curr.d.grand, 0);
                 const avgPerc = total / 5;
                 const avgGrade = getGrade(avgPerc);
 
@@ -133,7 +158,7 @@
                     <div class="header-bg p-2 flex justify-between items-center">
                         <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[8px] text-black font-bold">LOGO</div>
                         <div class="text-center flex-grow">
-                            <h1 class="text-2xl font-black leading-none">GOVERNMENT PRIMARY SCHOOL</h1>
+                            <h1 class="text-2xl font-black leading-none uppercase">Government Primary School</h1>
                             <h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2>
                         </div>
                     </div>
@@ -166,17 +191,13 @@
                                 <th rowspan="2">Summative (50)</th>
                                 <th rowspan="2">Total (100)</th>
                                 <th rowspan="2">Grade</th>
-                                <th rowspan="2">Proficiency</th>
                             </tr>
                             <tr class="text-[9px]">
                                 <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${[
-                                {n: 'English', d: s.eng}, {n: 'Math', d: s.math}, {n: 'EVS', d: s.evs},
-                                {n: 'Urdu', d: s.urdu}, {n: 'Kashmiri', d: s.kash}
-                            ].map(sub => `
+                            ${subjectsArr.map(sub => `
                                 <tr>
                                     <td class="sub-name">${sub.n}</td>
                                     ${sub.d.fa.map(v => `<td>${v || 0}</td>`).join('')}
@@ -185,63 +206,70 @@
                                     <td>${sub.d.sum}</td>
                                     <td class="font-bold bg-blue-50">${sub.d.grand}</td>
                                     <td class="font-bold">${getGrade(sub.d.grand)}</td>
-                                    <td class="text-[9px] italic">${getProficiency(sub.d.grand)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
-                        <tfoot class="bg-gray-100 font-bold">
-                            <tr>
-                                <td colspan="7">Grand Total</td>
-                                <td>${s.eng.tot+s.math.tot+s.evs.tot+s.urdu.tot+s.kash.tot}</td>
-                                <td>-</td><td>-</td>
-                                <td>${total}</td>
-                                <td>${avgGrade}</td>
-                                <td>${getProficiency(avgPerc)}</td>
-                            </tr>
-                        </tfoot>
                     </table>
 
-                    <div class="grid grid-cols-3 gap-1 mt-1">
-                        <div class="border border-indigo-200">
-                            <div class="bg-indigo-600 text-white text-[10px] font-bold text-center">GRADE KEY</div>
-                            <table class="text-[9px] w-full">
-                                <tr><td>>85%</td><td>A+</td><td>>70%</td><td>A</td></tr>
-                                <tr><td>>55%</td><td>B</td><td>>40%</td><td>C</td></tr>
-                                <tr><td>>33%</td><td>D</td><td>>0%</td><td>E</td></tr>
-                            </table>
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <div class="border border-slate-300 p-1">
+                             <div class="bg-orange-400 text-white text-[11px] font-bold text-center py-1 mb-2">Subject wise Bar Graph Chart</div>
+                             <div class="bar-container">
+                                ${subjectsArr.map(sub => `
+                                    <div class="bar-item">
+                                        <span class="bar-value">${sub.d.grand}</span>
+                                        <div class="bar" style="height: ${sub.d.grand}%"></div>
+                                        <span class="bar-label">${sub.n}</span>
+                                    </div>
+                                `).join('')}
+                             </div>
                         </div>
-                        <div class="border border-indigo-200 text-center">
-                            <div class="bg-indigo-600 text-white text-[10px] font-bold">SCHOOL RANK</div>
-                            <div class="text-xl font-bold p-1">${s.sRank}</div>
-                            <div class="bg-slate-700 text-white text-[10px] font-bold">CLASS RANK: ${s.cRank}</div>
+
+                        <div class="grid grid-rows-2 gap-1">
+                             <div class="grid grid-cols-2 gap-1">
+                                <div class="border border-indigo-200 text-center">
+                                    <div class="bg-slate-700 text-white text-[10px] font-bold py-1">SCHOOL RANK</div>
+                                    <div class="text-xl font-bold p-1">${s.sRank}</div>
+                                </div>
+                                <div class="border border-indigo-200 text-center">
+                                    <div class="bg-slate-700 text-white text-[10px] font-bold py-1">CLASS RANK</div>
+                                    <div class="text-xl font-bold p-1">${s.cRank}</div>
+                                </div>
+                             </div>
+                             
+                             <div class="border border-slate-400">
+                                <table class="info-table h-full">
+                                    <tr><td class="info-label">Attendance %age</td><td></td></tr>
+                                    <tr><td class="info-label">Empathy & Teamwork</td><td></td></tr>
+                                    <tr><td class="info-label">Discipline</td><td></td></tr>
+                                    <tr><td class="info-label">Sports</td><td></td></tr>
+                                    <tr><td class="info-label">Art and Craft</td><td></td></tr>
+                                </table>
+                             </div>
                         </div>
-                        <div class="border border-slate-400 bg-white">
-                            <div class="bg-[#a855f7] text-white text-[12px] p-2 font-bold text-center uppercase tracking-wider">General Remarks</div>
-                            <div id="remarks_${s.roll}" class="p-3 text-[11px] font-bold text-black leading-relaxed text-left min-h-[60px]">
-                                ${getAutomaticRemarks(avgPerc)}
-                            </div>
+                    </div>
+
+                    <div class="border border-slate-400 bg-white mt-1">
+                        <div class="bg-[#a855f7] text-white text-[12px] p-1 font-bold text-center uppercase">General Remarks</div>
+                        <div class="p-3 text-[12px] font-bold text-black leading-relaxed text-left">
+                            ${getAutomaticRemarks(s.name, subjectsArr.map(x => ({name: x.n, score: x.d.grand})))}
                         </div>
                     </div>
 
                     <div class="mt-1 border border-indigo-200">
-                        <div class="bg-purple-700 text-white text-[10px] font-bold text-center">FINAL RESULTS</div>
-                        <table class="w-full text-[11px] border-collapse">
+                        <table class="w-full text-[11px]">
                             <tr>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Total Marks Obtained</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${total} / 500</td>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Grade</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgGrade}</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Overall Percentage</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgPerc.toFixed(1)}%</td>
-                                <td class="bg-[#93c5fd] text-[#4c1d95] font-bold text-left px-2 py-1 border border-slate-300">Result</td>
-                                <td class="bg-white text-black font-bold text-center py-1 border border-slate-300">${avgPerc >= 33 ? 'PASS' : 'FAIL'}</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Total Marks</td>
+                                <td class="font-bold">${total} / 500</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Percentage</td>
+                                <td class="font-bold">${avgPerc.toFixed(1)}%</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Overall Grade</td>
+                                <td class="font-bold">${avgGrade}</td>
                             </tr>
                         </table>
                     </div>
 
-                    <div class="grid grid-cols-4 mt-8 gap-4">
+                    <div class="grid grid-cols-4 mt-10 gap-4">
                         <div class="footer-tab">Sign. Form Teacher</div>
                         <div class="footer-tab">Sign. Exam I/C</div>
                         <div class="footer-tab">Parents Signature</div>
@@ -254,4 +282,3 @@
     </script>
 </body>
 </html>
-                        
