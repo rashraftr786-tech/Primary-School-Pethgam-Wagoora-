@@ -166,12 +166,7 @@
                             <div class="cell-label">Apaar ID:</div><div class="cell-value">${row[65]||'N/A'}</div>
                             <div class="cell-label">PEN No.</div><div class="cell-value">${row[66]||'N/A'}</div>
                         </div>
-                        <div class="photo-box ml-1">
-                            ${studentPhotos[name] ? `<img src="${studentPhotos[name]}" class="w-full h-full object-cover">` : `<span class="text-gray-400">PHOTO</span>`}
-                        </div>
-                    </div>
-
-                    // Calculate Grand Totals for the footer row
+                        // 1. PERFORM CALCULATIONS BEFORE THE RETURN
 const grandFA = [0, 0, 0, 0, 0, 0];
 subjects.forEach(s => {
     s.fa.forEach((v, i) => grandFA[i] += (Number(v) || 0));
@@ -182,8 +177,13 @@ const grandCC20 = subjects.reduce((a, b) => a + (Number(b.cc) || 0), 0);
 const grandSum50 = subjects.reduce((a, b) => a + (Number(b.s) || 0), 0);
 const grandTotal100 = subjects.reduce((a, b) => a + (Number(b.g) || 0), 0);
 
-// Updated HTML Table
+// 2. NOW RETURN THE FULL HTML STRING
 return `
+    <div class="photo-box ml-1">
+        ${studentPhotos[name] ? `<img src="${studentPhotos[name]}" class="w-full h-full object-cover">` : `<span class="text-gray-400">PHOTO</span>`}
+    </div>
+</div>
+
 <table class="mt-1">
     <thead class="bg-indigo-100">
         <tr>
@@ -229,6 +229,7 @@ return `
     </tfoot>
 </table>
 `;
+
                     <div class="grid grid-cols-3 gap-1 mt-1">
                         <div class="border border-slate-300">
                             <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Percentage/Grade Key</div>
