@@ -27,6 +27,31 @@
         .photo-box { width: 110px; height: 120px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
         .bar-container { display: flex; align-items: flex-end; height: 100px; gap: 8px; padding: 10px; border-bottom: 2px solid #334155; }
         .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+        .bar { width: 100%; background-color: #3b82f6; border: 1px solid #1e40af; min-height: 1px; }
+        .prof-img { width: 40px; height: 30px; object-fit: cover; border: 1px solid #ccc; }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div class="no-print max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-indigo-900">GPS Pethgam Marksheet Panel</h2>
+            <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700">Print All (PDF)</button>
+        </div>
+        <div class="mb-8 p-4 bg-indigo-50 rounded-lg">
+            <label class="block text-sm font-bold text-indigo-900 mb-2">Upload Excel Data</label>
+            <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+        </div>
+        <div id="studentListControl" class="hidden">
+            <table class="w-full text-sm border">
+                <thead class="bg-gray-200"><tr><th class="p-2 border">Roll</th><th class="p-2 border">Name</th><th class="p-2 border">Photo Status</th><th class="p-2 border">Actions</th></tr></thead>
+                <tbody id="studentTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="marksheetWrapper"></div>
+
     <script>
     let allStudentsData = [];
     let studentPhotos = {};
@@ -119,7 +144,6 @@
             const bestSub = subjects.reduce((prev, curr) => (prev.g > curr.g) ? prev : curr);
             const weakSub = subjects.reduce((prev, curr) => (prev.g < curr.g) ? prev : curr);
 
-            // Grand Totals Calculation
             const grandFA = [0, 0, 0, 0, 0, 0];
             subjects.forEach(s => { s.fa.forEach((v, i) => grandFA[i] += (Number(v) || 0)); });
             const grandT30 = subjects.reduce((a, b) => a + (Number(b.t) || 0), 0);
@@ -240,5 +264,4 @@
 </script>
 </body>
 </html>
-                
-                            <
+                                    
