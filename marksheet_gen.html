@@ -203,11 +203,39 @@
                         <div class="border border-slate-300">
                             <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Final Results</div>
                             <table class="w-full text-[10px] text-left">
-                                <tr><td class="bg-blue-50 px-1 border">Total Marks</td><td class="font-bold border text-center">${std.total} / 500</td></tr>
-                                <tr><td class="bg-blue-50 px-1 border">Overall %</td><td class="font-bold border text-center">${perc.toFixed(1)}%</td></tr>
-                                <tr><td class="bg-blue-50 px-1 border">Overall Grade</td><td class="font-bold border text-center">${getGrade(perc)}</td></tr>
-                                <tr><td class="bg-blue-50 px-1 border">Result</td><td class="font-bold border text-center">${perc >= 33 ? 'PASS' : 'FAIL'}</td></tr>
-                            </table>
+    <tr>
+        <td class="bg-blue-50 px-1 border">Total Marks Obtained</td>
+        <td class="font-bold border text-center">${std.total}</td>
+    </tr>
+    <tr>
+        <td class="bg-blue-50 px-1 border">Max. Marks</td>
+        <td class="font-bold border text-center">500</td>
+    </tr>
+    <tr>
+        <td class="bg-blue-50 px-1 border">Overall Percentage</td>
+        <td class="font-bold border text-center">${perc.toFixed(1)}%</td>
+    </tr>
+    <tr>
+        <td class="bg-blue-50 px-1 border">Overall Grade</td>
+        <td class="font-bold border text-center">${getGrade(perc)}</td>
+    </tr>
+    <tr>
+        <td class="bg-blue-50 px-1 border">Result</td>
+        <td class="font-bold border text-center">${perc >= 33 ? 'PROMOTED' : 'REPEATER'}</td>
+    </tr>
+    <tr>
+        <td class="bg-blue-50 px-1 border">Position in Class</td>
+        <td class="font-bold border text-center">
+            ${
+                cRank === 1 ? '1st Position' : 
+                cRank === 2 ? '2nd Position' : 
+                cRank === 3 ? '3rd Position' : 
+                'Qualified'
+            }
+        </td>
+    </tr>
+</table>
+
                         </div>
                     </div>
 
