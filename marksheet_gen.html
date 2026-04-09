@@ -27,305 +27,217 @@
         .photo-box { width: 110px; height: 120px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
         .bar-container { display: flex; align-items: flex-end; height: 100px; gap: 8px; padding: 10px; border-bottom: 2px solid #334155; }
         .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
-        .bar { width: 100%; background-color: #3b82f6; border: 1px solid #1e40af; min-height: 1px; }
-        .prof-img { width: 40px; height: 30px; object-fit: cover; border: 1px solid #ccc; }
-    </style>
-</head>
-<body class="bg-gray-100 p-4">
-
-    <div class="no-print max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-indigo-900">GPS Pethgam Marksheet Panel</h2>
-            <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700">Print All (PDF)</button>
-        </div>
-        <div class="mb-8 p-4 bg-indigo-50 rounded-lg">
-            <label class="block text-sm font-bold text-indigo-900 mb-2">Upload Excel Data</label>
-            <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
-        </div>
-        <div id="studentListControl" class="hidden">
-            <table class="w-full text-sm border">
-                <thead class="bg-gray-200"><tr><th class="p-2 border">Roll</th><th class="p-2 border">Name</th><th class="p-2 border">Photo Status</th><th class="p-2 border">Actions</th></tr></thead>
-                <tbody id="studentTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="marksheetWrapper"></div>
-
     <script>
-        let allStudentsData = [];
-        let studentPhotos = {};
+    let allStudentsData = [];
+    let studentPhotos = {};
 
-        document.getElementById('excelUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
+    document.getElementById('excelUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const data = new Uint8Array(evt.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+            allStudentsData = rows.slice(3).filter(r => r[3]); 
+            renderStudentList();
+            generateAllMarksheets();
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function renderStudentList() {
+        const listContainer = document.getElementById('studentListControl');
+        const tbody = document.getElementById('studentTableBody');
+        listContainer.classList.remove('hidden');
+        tbody.innerHTML = '';
+        allStudentsData.forEach((row, index) => {
+            const name = row[3].toString().toUpperCase();
+            tbody.innerHTML += `
+                <tr>
+                    <td class="p-2 border text-center">${row[1]}</td>
+                    <td class="p-2 border font-bold">${name}</td>
+                    <td class="p-2 border text-center" id="status-${index}">${studentPhotos[name] ? '✅' : '❌'}</td>
+                    <td class="p-2 border text-center">
+                        <input type="file" id="input-${index}" class="hidden" onchange="uploadPhoto(this, '${name}', ${index})">
+                        <button onclick="document.getElementById('input-${index}').click()" class="bg-emerald-500 text-white px-2 py-1 rounded text-xs">Upload Photo</button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    function uploadPhoto(input, name, index) {
+        if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = (evt) => {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-                allStudentsData = rows.slice(3).filter(r => r[3]); 
-                renderStudentList();
+            reader.onload = (e) => {
+                studentPhotos[name] = e.target.result;
+                document.getElementById(`status-${index}`).innerText = '✅';
                 generateAllMarksheets();
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function getGrade(s) {
+        if (s >= 85) return 'A+'; if (s >= 70) return 'A'; if (s >= 55) return 'B';
+        if (s >= 40) return 'C'; if (s >= 33) return 'D'; return 'E';
+    }
+
+    function getProficiency(s) {
+        if (s >= 85) return 'Sky'; if (s >= 55) return 'Mountain'; return 'Stream';
+    }
+
+    function generateAllMarksheets() {
+        const wrapper = document.getElementById('marksheetWrapper');
+        wrapper.innerHTML = '';
+
+        const studentsWithTotals = allStudentsData.map(r => ({
+            row: r,
+            total: (Number(r[17])||0)+(Number(r[27])||0)+(Number(r[37])||0)+(Number(r[47])||0)+(Number(r[57])||0),
+            class: r[2]
+        }));
+
+        const schoolSorted = [...studentsWithTotals].sort((a,b) => b.total - a.total);
+
+        studentsWithTotals.forEach((std) => {
+            const row = std.row;
+            const name = row[3].toString().toUpperCase();
+            
+            const sRank = schoolSorted.findIndex(s => s.total === std.total) + 1;
+            const classStudents = studentsWithTotals.filter(s => s.class === std.class);
+            const classSorted = [...classStudents].sort((a,b) => b.total - a.total);
+            const cRank = classSorted.findIndex(s => s.total === std.total) + 1;
+
+            const subjects = [
+                {n:'English', g:row[17]||0, fa:[row[8],row[9],row[10],row[11],row[12],row[13]], t:row[14]||0, cc:row[15]||0, s:row[16]||0},
+                {n:'Math', g:row[27]||0, fa:[row[18],row[19],row[20],row[21],row[22],row[23]], t:row[24]||0, cc:row[25]||0, s:row[26]||0},
+                {n:'EVS', g:row[37]||0, fa:[row[28],row[29],row[30],row[31],row[32],row[33]], t:row[34]||0, cc:row[35]||0, s:row[36]||0},
+                {n:'Urdu', g:row[47]||0, fa:[row[38],row[39],row[40],row[41],row[42],row[43]], t:row[44]||0, cc:row[45]||0, s:row[46]||0},
+                {n:'Kashmiri', g:row[57]||0, fa:[row[48],row[49],row[50],row[51],row[52],row[53]], t:row[54]||0, cc:row[55]||0, s:row[56]||0}
+            ];
+
+            const perc = std.total / 5;
+            const bestSub = subjects.reduce((prev, curr) => (prev.g > curr.g) ? prev : curr);
+            const weakSub = subjects.reduce((prev, curr) => (prev.g < curr.g) ? prev : curr);
+
+            // Grand Totals Calculation
+            const grandFA = [0, 0, 0, 0, 0, 0];
+            subjects.forEach(s => { s.fa.forEach((v, i) => grandFA[i] += (Number(v) || 0)); });
+            const grandT30 = subjects.reduce((a, b) => a + (Number(b.t) || 0), 0);
+            const grandCC20 = subjects.reduce((a, b) => a + (Number(b.cc) || 0), 0);
+            const grandSum50 = subjects.reduce((a, b) => a + (Number(b.s) || 0), 0);
+            const grandTotal100 = subjects.reduce((a, b) => a + (Number(b.g) || 0), 0);
+
+            const div = document.createElement('div');
+            div.className = 'marksheet-container page-break';
+            div.innerHTML = `
+                <div class="header-bg p-2 flex justify-between items-center">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[10px] text-black font-bold">LOGO</div>
+                    <div class="text-center flex-grow"><h1 class="text-2xl font-black uppercase">Government Primary School</h1><h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2></div>
+                </div>
+
+                <div class="flex mt-1">
+                    <div class="flex-grow grid grid-cols-4 border-l border-t">
+                        <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${name}</div>
+                        <div class="cell-label">Adm. No:</div><div class="cell-value">${row[0]||''}</div>
+                        <div class="cell-label">Fathers Name:</div><div class="cell-value">${row[4]||''}</div>
+                        <div class="cell-label">D.O.B:</div><div class="cell-value">${row[7] ? new Date((row[7]-25569)*86400*1000).toLocaleDateString('en-GB') : ''}</div>
+                        <div class="cell-label">Mothers Name:</div><div class="cell-value">${row[5]||''}</div>
+                        <div class="cell-label">Class:</div><div class="cell-value">${row[2]||''}</div>
+                        <div class="cell-label">Academic Session:</div><div class="cell-value">Nov. 2025</div>
+                        <div class="cell-label">Roll No:</div><div class="cell-value">${row[1]||''}</div>
+                        <div class="cell-label">Apaar ID:</div><div class="cell-value">${row[65]||'N/A'}</div>
+                        <div class="cell-label">PEN No.</div><div class="cell-value">${row[66]||'N/A'}</div>
+                    </div>
+                    <div class="photo-box ml-1">
+                        ${studentPhotos[name] ? `<img src="${studentPhotos[name]}" class="w-full h-full object-cover">` : `<span class="text-gray-400">PHOTO</span>`}
+                    </div>
+                </div>
+
+                <table class="mt-1">
+                    <thead class="bg-indigo-100">
+                        <tr><th rowspan="2">Subject</th><th colspan="6">Formative (5 each)</th><th rowspan="2">T(30)</th><th rowspan="2">CC(20)</th><th rowspan="2">Sum(50)</th><th rowspan="2">Total</th><th rowspan="2">Grade</th><th rowspan="2">Proficiency</th></tr>
+                        <tr class="text-[9px]"><th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th></tr>
+                    </thead>
+                    <tbody>
+                        ${subjects.map(s => `<tr><td class="sub-name">${s.n}</td>${s.fa.map(v=>`<td>${v||0}</td>`).join('')}<td class="font-bold">${s.t}</td><td>${s.cc}</td><td>${s.s}</td><td class="font-bold bg-blue-50">${s.g}</td><td>${getGrade(s.g)}</td><td class="font-bold text-blue-800">${getProficiency(s.g)}</td></tr>`).join('')}
+                    </tbody>
+                    <tfoot class="bg-gray-200 font-bold">
+                        <tr>
+                            <td>Grand Total</td>${grandFA.map(v => `<td>${v}</td>`).join('')}
+                            <td>${grandT30}</td><td>${grandCC20}</td><td>${grandSum50}</td><td class="bg-blue-100">${grandTotal100}</td>
+                            <td colspan="2" class="text-center">Overall: ${getGrade(perc)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="grid grid-cols-3 gap-1 mt-1">
+                    <div class="border border-slate-300">
+                        <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Percentage/Grade Key</div>
+                        <table class="text-[9px] w-full">
+                            <tr><td>>85% to 100%</td><td>A+</td></tr>
+                            <tr><td>>70% to 85%</td><td>A</td></tr>
+                            <tr><td>>55% to 70%</td><td>B</td></tr>
+                            <tr><td>>40% to 55%</td><td>C</td></tr>
+                            <tr><td>>33% to 40%</td><td>D</td></tr>
+                        </table>
+                    </div>
+                    <div class="border border-slate-300">
+                        <div class="bg-red-500 text-white text-[10px] font-bold text-center py-1">Level of Proficiency</div>
+                        <table class="w-full text-[10px]">
+                            <tr><td class="font-bold">Sky</td><td><img src="https://img.freepik.com/free-photo/blue-sky-with-white-clouds_1127-282.jpg" class="prof-img"></td><td>${perc >= 85 ? '✔' : ''}</td></tr>
+                            <tr><td class="font-bold">Mountain</td><td><img src="https://img.freepik.com/free-photo/snowy-mountain-peak-starry-night-sky-generated-by-ai_188544-23588.jpg" class="prof-img"></td><td>${perc >= 55 && perc < 85 ? '✔' : ''}</td></tr>
+                            <tr><td class="font-bold">Stream</td><td><img src="https://img.freepik.com/free-photo/beautiful-river-woods_23-2148115024.jpg" class="prof-img"></td><td>${perc < 55 ? '✔' : ''}</td></tr>
+                        </table>
+                    </div>
+                    <div class="border border-slate-300">
+                        <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Final Results</div>
+                        <table class="w-full text-[10px] text-left">
+                            <tr><td class="bg-blue-50 px-1 border">Total Marks Obtained</td><td class="font-bold border text-center">${std.total}</td></tr>
+                            <tr><td class="bg-blue-50 px-1 border">Max. Marks</td><td class="font-bold border text-center">500</td></tr>
+                            <tr><td class="bg-blue-50 px-1 border">Overall %age</td><td class="font-bold border text-center">${perc.toFixed(1)}%</td></tr>
+                            <tr><td class="bg-blue-50 px-1 border">Result</td><td class="font-bold border text-center">${perc >= 33 ? 'PROMOTED' : 'REPEATER'}</td></tr>
+                            <tr><td class="bg-blue-50 px-1 border">Class Position</td><td class="font-bold border text-center">${cRank === 1 ? '1st Position' : cRank === 2 ? '2nd Position' : cRank === 3 ? '3rd Position' : 'Qualified'}</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-1 mt-1">
+                    <div class="border p-1">
+                        <div class="bg-orange-400 text-white text-[10px] font-bold text-center mb-1">Subject wise Bar Graph Chart</div>
+                        <div class="bar-container">
+                            ${subjects.map(s => `<div class="bar-item"><span class="text-[9px]">${s.g}</span><div class="bar" style="height: ${s.g}%;"></div><span class="text-[8px]">${s.n}</span></div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="grid grid-rows-2 gap-1">
+                        <div class="grid grid-cols-2 gap-1">
+                            <div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">SCHOOL RANK</div><div class="text-xl font-bold">${sRank}</div></div>
+                            <div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">CLASS RANK</div><div class="text-xl font-bold">${cRank}</div></div>
+                        </div>
+                        <div class="border border-slate-400">
+                            <table class="w-full h-full text-[9px]">
+                                <tr><td class="bg-red-700 text-white font-bold px-1">Attendance</td><td></td><td class="bg-red-700 text-white font-bold px-1">Discipline</td><td></td></tr>
+                                <tr><td class="bg-red-700 text-white font-bold px-1">Sports/Art</td><td></td><td class="bg-red-700 text-white font-bold px-1">Teamwork</td><td></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-400 mt-1">
+                    <div class="bg-purple-500 text-white text-[10px] font-bold text-center py-1 uppercase">General Remarks</div>
+                    <div class="p-2 text-[11px] font-bold min-h-[45px]">
+                        ${name} has shown ${getProficiency(perc)} level performance. Exceptional in ${bestSub.n} (${bestSub.g}). 
+                        ${perc < 55 ? 'Focus needed on ' + weakSub.n + '.' : 'Keep maintaining excellence.'} Overall: ${getGrade(perc)}.
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 mt-8 gap-4">
+                    <div class="footer-tab">Sign. Form Teacher</div><div class="footer-tab">Sign. Exam I/C</div><div class="footer-tab">Parents Signature</div><div class="footer-tab">Seal & Sign. Headmaster</div>
+                </div>
+            `;
+            wrapper.appendChild(div);
         });
-
-        function renderStudentList() {
-            const listContainer = document.getElementById('studentListControl');
-            const tbody = document.getElementById('studentTableBody');
-            listContainer.classList.remove('hidden');
-            tbody.innerHTML = '';
-            allStudentsData.forEach((row, index) => {
-                const name = row[3].toString().toUpperCase();
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="p-2 border text-center">${row[1]}</td>
-                        <td class="p-2 border font-bold">${name}</td>
-                        <td class="p-2 border text-center" id="status-${index}">${studentPhotos[name] ? '✅' : '❌'}</td>
-                        <td class="p-2 border text-center">
-                            <input type="file" id="input-${index}" class="hidden" onchange="uploadPhoto(this, '${name}', ${index})">
-                            <button onclick="document.getElementById('input-${index}').click()" class="bg-emerald-500 text-white px-2 py-1 rounded text-xs">Upload Photo</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        function uploadPhoto(input, name, index) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    studentPhotos[name] = e.target.result;
-                    document.getElementById(`status-${index}`).innerText = '✅';
-                    generateAllMarksheets();
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function getGrade(s) {
-            if (s >= 85) return 'A+'; if (s >= 70) return 'A'; if (s >= 55) return 'B';
-            if (s >= 40) return 'C'; if (s >= 33) return 'D'; return 'E';
-        }
-
-        function getProficiency(s) {
-            if (s >= 85) return 'Sky'; if (s >= 55) return 'Mountain'; return 'Stream';
-        }
-
-        function generateAllMarksheets() {
-            const wrapper = document.getElementById('marksheetWrapper');
-            wrapper.innerHTML = '';
-
-            // Calculate Rankings
-            const studentsWithTotals = allStudentsData.map(r => ({
-                row: r,
-                total: (r[17]||0)+(r[27]||0)+(r[37]||0)+(r[47]||0)+(r[57]||0),
-                class: r[2]
-            }));
-
-            const schoolSorted = [...studentsWithTotals].sort((a,b) => b.total - a.total);
-
-            studentsWithTotals.forEach((std) => {
-                const row = std.row;
-                const name = row[3].toString().toUpperCase();
-                
-                // Auto-Rank Logic
-                const sRank = schoolSorted.findIndex(s => s.total === std.total) + 1;
-                const classSorted = schoolSorted.filter(s => s.class === std.class);
-                const cRank = classSorted.findIndex(s => s.total === std.total) + 1;
-
-                const subjects = [
-                    {n:'English', g:row[17]||0, fa:[row[8],row[9],row[10],row[11],row[12],row[13]], t:row[14]||0, cc:row[15]||0, s:row[16]||0},
-                    {n:'Math', g:row[27]||0, fa:[row[18],row[19],row[20],row[21],row[22],row[23]], t:row[24]||0, cc:row[25]||0, s:row[26]||0},
-                    {n:'EVS', g:row[37]||0, fa:[row[28],row[29],row[30],row[31],row[32],row[33]], t:row[34]||0, cc:row[35]||0, s:row[36]||0},
-                    {n:'Urdu', g:row[47]||0, fa:[row[38],row[39],row[40],row[41],row[42],row[43]], t:row[44]||0, cc:row[45]||0, s:row[46]||0},
-                    {n:'Kashmiri', g:row[57]||0, fa:[row[48],row[49],row[50],row[51],row[52],row[53]], t:row[54]||0, cc:row[55]||0, s:row[56]||0}
-                ];
-
-                const perc = std.total / 5;
-                const bestSub = subjects.reduce((prev, curr) => (prev.g > curr.g) ? prev : curr);
-                const weakSub = subjects.reduce((prev, curr) => (prev.g < curr.g) ? prev : curr);
-
-                const div = document.createElement('div');
-                div.className = 'marksheet-container page-break';
-                div.innerHTML = `
-                    <div class="header-bg p-2 flex justify-between items-center">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[10px] text-black font-bold">LOGO</div>
-                        <div class="text-center flex-grow"><h1 class="text-2xl font-black uppercase">Government Primary School</h1><h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2></div>
-                    </div>
-
-                    <div class="flex mt-1">
-                        <div class="flex-grow grid grid-cols-4 border-l border-t">
-                            <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${name}</div>
-                            <div class="cell-label">Adm. No:</div><div class="cell-value">${row[0]||''}</div>
-                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${row[4]||''}</div>
-                            <div class="cell-label">D.O.B:</div><div class="cell-value">${row[7] ? new Date((row[7]-25569)*86400*1000).toLocaleDateString('en-GB') : ''}</div>
-                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${row[5]||''}</div>
-                            <div class="cell-label">Class:</div><div class="cell-value">${row[2]||''}</div>
-                            <div class="cell-label">Academic Session:</div><div class="cell-value">Nov. 2025</div>
-                            <div class="cell-label">Roll No:</div><div class="cell-value">${row[1]||''}</div>
-                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${row[65]||'N/A'}</div>
-                            <div class="cell-label">PEN No.</div><div class="cell-value">${row[66]||'N/A'}</div>
-                        </div>
-                        // 1. PERFORM CALCULATIONS BEFORE THE RETURN
-const grandFA = [0, 0, 0, 0, 0, 0];
-subjects.forEach(s => {
-    s.fa.forEach((v, i) => grandFA[i] += (Number(v) || 0));
-});
-
-const grandT30 = subjects.reduce((a, b) => a + (Number(b.t) || 0), 0);
-const grandCC20 = subjects.reduce((a, b) => a + (Number(b.cc) || 0), 0);
-const grandSum50 = subjects.reduce((a, b) => a + (Number(b.s) || 0), 0);
-const grandTotal100 = subjects.reduce((a, b) => a + (Number(b.g) || 0), 0);
-
-// 2. NOW RETURN THE FULL HTML STRING
-return `
-    <div class="photo-box ml-1">
-        ${studentPhotos[name] ? `<img src="${studentPhotos[name]}" class="w-full h-full object-cover">` : `<span class="text-gray-400">PHOTO</span>`}
-    </div>
-</div>
-
-<table class="mt-1">
-    <thead class="bg-indigo-100">
-        <tr>
-            <th rowspan="2">Subject</th>
-            <th colspan="6">Formative (5 each)</th>
-            <th rowspan="2">T(30)</th>
-            <th rowspan="2">CC(20)</th>
-            <th rowspan="2">Sum(50)</th>
-            <th rowspan="2">Total</th>
-            <th rowspan="2">Grade</th>
-            <th rowspan="2">Proficiency</th>
-        </tr>
-        <tr class="text-[9px]">
-            <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
-        </tr>
-    </thead>
-    <tbody>
-        ${subjects.map(s => `
-            <tr>
-                <td class="sub-name">${s.n}</td>
-                ${s.fa.map(v => `<td>${v || 0}</td>`).join('')}
-                <td class="font-bold">${s.t}</td>
-                <td>${s.cc}</td>
-                <td>${s.s}</td>
-                <td class="font-bold bg-blue-50">${s.g}</td>
-                <td>${getGrade(s.g)}</td>
-                <td class="font-bold text-blue-800">${getProficiency(s.g)}</td>
-            </tr>
-        `).join('')}
-    </tbody>
-    <tfoot class="bg-gray-200 font-bold">
-        <tr>
-            <td class="text-center">Grand Total</td>
-            ${grandFA.map(v => `<td>${v}</td>`).join('')}
-            <td>${grandT30}</td>
-            <td>${grandCC20}</td>
-            <td>${grandSum50}</td>
-            <td class="bg-blue-100">${grandTotal100}</td>
-            <td colspan="2" class="text-center bg-indigo-50">
-                Overall: ${getGrade(grandTotal100 / 5)}
-            </td>
-        </tr>
-    </tfoot>
-</table>
-`;
-
-                    <div class="grid grid-cols-3 gap-1 mt-1">
-                        <div class="border border-slate-300">
-                            <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Percentage/Grade Key</div>
-                            <table class="text-[9px] w-full">
-                                <tr><td>>85% to 100%</td><td>A+</td></tr>
-                                <tr><td>>70% to 85%</td><td>A</td></tr>
-                                <tr><td>>55% to 70%</td><td>B</td></tr>
-                                <tr><td>>40% to 55%</td><td>C</td></tr>
-                                <tr><td>>33% to 40%</td><td>D</td></tr>
-                            </table>
-                        </div>
-                        <div class="border border-slate-300">
-                            <div class="bg-red-500 text-white text-[10px] font-bold text-center py-1">Level of Proficiency</div>
-                            <table class="w-full text-[10px]">
-                                <tr><td class="font-bold">Sky</td><td><img src="https://img.freepik.com/free-photo/blue-sky-with-white-clouds_1127-282.jpg" class="prof-img"></td><td>${perc >= 85 ? '✔' : ''}</td></tr>
-                                <tr><td class="font-bold">Mountain</td><td><img src="https://img.freepik.com/free-photo/snowy-mountain-peak-starry-night-sky-generated-by-ai_188544-23588.jpg" class="prof-img"></td><td>${perc >= 55 && perc < 85 ? '✔' : ''}</td></tr>
-                                <tr><td class="font-bold">Stream</td><td><img src="https://img.freepik.com/free-photo/beautiful-river-woods_23-2148115024.jpg" class="prof-img"></td><td>${perc < 55 ? '✔' : ''}</td></tr>
-                            </table>
-                        </div>
-                        <div class="border border-slate-300">
-                            <div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Final Results</div>
-                            <table class="w-full text-[10px] text-left">
-    <tr>
-        <td class="bg-blue-50 px-1 border">Total Marks Obtained</td>
-        <td class="font-bold border text-center">${std.total}</td>
-    </tr>
-    <tr>
-        <td class="bg-blue-50 px-1 border">Max. Marks</td>
-        <td class="font-bold border text-center">500</td>
-    </tr>
-    <tr>
-        <td class="bg-blue-50 px-1 border">Overall Percentage</td>
-        <td class="font-bold border text-center">${perc.toFixed(1)}%</td>
-    </tr>
-    <tr>
-        <td class="bg-blue-50 px-1 border">Overall Grade</td>
-        <td class="font-bold border text-center">${getGrade(perc)}</td>
-    </tr>
-    <tr>
-        <td class="bg-blue-50 px-1 border">Result</td>
-        <td class="font-bold border text-center">${perc >= 33 ? 'PROMOTED' : 'REPEATER'}</td>
-    </tr>
-    <tr>
-        <td class="bg-blue-50 px-1 border">Position in Class</td>
-        <td class="font-bold border text-center">
-            ${
-                cRank === 1 ? '1st Position' : 
-                cRank === 2 ? '2nd Position' : 
-                cRank === 3 ? '3rd Position' : 
-                'Qualified'
-            }
-        </td>
-    </tr>
-</table>
-
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-1 mt-1">
-                        <div class="border p-1">
-                            <div class="bg-orange-400 text-white text-[10px] font-bold text-center mb-1">Subject wise Bar Graph Chart</div>
-                            <div class="bar-container">
-                                ${subjects.map(s => `<div class="bar-item"><span class="text-[9px]">${s.g}</span><div class="bar" style="height: ${s.g}%;"></div><span class="text-[8px]">${s.n}</span></div>`).join('')}
-                            </div>
-                        </div>
-                        <div class="grid grid-rows-2 gap-1">
-                            <div class="grid grid-cols-2 gap-1">
-                                <div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">SCHOOL RANK</div><div class="text-xl font-bold">${sRank}</div></div>
-                                <div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">CLASS RANK</div><div class="text-xl font-bold">${cRank}</div></div>
-                            </div>
-                            <div class="border border-slate-400">
-                                <table class="w-full h-full text-[9px]">
-                                    <tr><td class="bg-red-700 text-white font-bold px-1">Attendance</td><td></td><td class="bg-red-700 text-white font-bold px-1">Discipline</td><td></td></tr>
-                                    <tr><td class="bg-red-700 text-white font-bold px-1">Sports/Art</td><td></td><td class="bg-red-700 text-white font-bold px-1">Teamwork</td><td></td></tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border border-slate-400 mt-1">
-                        <div class="bg-purple-500 text-white text-[10px] font-bold text-center py-1">GENERAL REMARKS</div>
-                        <div class="p-2 text-[11px] font-bold min-h-[45px]">
-                            ${name} has shown ${getProficiency(perc)} level performance. They are exceptional in ${bestSub.n} (${bestSub.g}). 
-                            ${perc < 55 ? 'Needs significant improvement in ' + weakSub.n + '. ' : 'Should maintain consistency in ' + weakSub.n + '. '} 
-                            Overall, a ${getGrade(perc)} grade performance.
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-4 mt-8 gap-4">
-                        <div class="footer-tab">Sign. Form Teacher</div><div class="footer-tab">Sign. Exam I/C</div><div class="footer-tab">Parents Signature</div><div class="footer-tab">Seal & Sign. Headmaster</div>
-                    </div>
-                `;
-                wrapper.appendChild(div);
-            });
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
                 
