@@ -2,131 +2,240 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PM POSHAN - MDCF Digital Entry</title>
+    <title>PM-POSHAN MDCF Generator</title>
     <style>
         :root {
-            --form-width: 850px; /* Standard A4 Width */
-            --form-height: 1100px;
+            --border-col: #000;
         }
-
         body {
             background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px;
+            font-size: 12px;
         }
-
-        /* Container that holds the image and the inputs */
-        .form-container {
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             position: relative;
-            width: var(--form-width);
-            height: var(--form-height);
-            background-image: url('1000249071.jpg'); /* Replace with your image path */
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            box-sizing: border-box;
         }
-
-        /* Styling for the input boxes */
+        header { text-align: center; margin-bottom: 10px; }
+        h1 { font-size: 16px; margin: 5px 0; }
+        h2 { font-size: 14px; margin: 5px 0; text-decoration: underline; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid var(--border-col);
+            padding: 5px;
+            text-align: left;
+        }
+        th { background-color: #f2f2f2; }
+        
+        .section-title {
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+            font-size: 13px;
+        }
         input {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.7);
-            border: 1px solid #444;
-            padding: 2px;
+            width: 95%;
+            border: none;
             font-size: 12px;
             outline: none;
         }
-
-        input:focus {
-            background: #fff;
-            border-color: blue;
-        }
+        .calc-field { background-color: #f9f9f9; font-weight: bold; }
 
         .no-print {
-            margin-bottom: 20px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: white;
             padding: 15px;
-            background: #fff;
+            border: 2px solid #27ae60;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        /* PRINT SETTINGS */
         @media print {
+            body { background: none; padding: 0; }
             .no-print { display: none; }
-            body { margin: 0; background: none; }
-            .form-container { box-shadow: none; border: none; }
-            input { border: none; background: transparent; }
+            .page { margin: 0; box-shadow: none; page-break-after: always; }
+            input { background: transparent; }
         }
-
-        /* SPECIFIC FIELD MAPPING (Examples) */
-        /* You will adjust 'top' and 'left' to match the exact boxes on your paper */
-        #school_name { top: 100px; left: 550px; width: 250px; }
-        #udise_code { top: 100px; left: 325px; width: 150px; }
-        
-        #meals_bal_vatika { top: 220px; left: 450px; width: 100px; }
-        #meals_primary { top: 220px; left: 570px; width: 100px; }
-        #meals_upper { top: 220px; left: 700px; width: 100px; }
-
-        #closing_bal_1 { top: 350px; left: 740px; width: 80px; } /* Auto-calc field */
     </style>
 </head>
 <body>
 
-    <div class="no-print">
-        <strong>Digital Data Capture:</strong> 
-        Fill the fields below. The math is calculated automatically.
-        <button onclick="window.print()">Print for Physical Signature</button>
+<div class="no-print">
+    <button onclick="window.print()" style="padding: 10px 20px; cursor:pointer; background:#27ae60; color:white; border:none; border-radius:4px;">Print Report (2 Pages)</button>
+</div>
+
+<div class="page">
+    <header>
+        <strong>Office of the Headmaster Government Primary School</strong><br>
+        Pethgam Wagoora (Zone Wagoora) 193109<br>
+        <h1>Pradhan Mantri Poshan School Monthly Data Capture Format (MDCF)</h1>
+    </header>
+
+    <div class="section-title">1. School Details</div>
+    <table>
+        <tr>
+            <th>Month-Year</th>
+            <td><input type="text" placeholder="MM-YYYY"></td>
+            <th>UDISE Code</th>
+            <td><input type="text"></td>
+            <th>School Name</th>
+            <td><input type="text"></td>
+        </tr>
+    </table>
+
+    <div class="section-title">2. Meals Availed Status</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Bal Vatika</th>
+                <th>Primary</th>
+                <th>Upper Primary</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Enrolment during the Month</td>
+                <td><input type="number"></td>
+                <td><input type="number"></td>
+                <td><input type="number"></td>
+            </tr>
+            <tr>
+                <td>Actual number of days MDM served</td>
+                <td><input type="number"></td>
+                <td><input type="number"></td>
+                <td><input type="number"></td>
+            </tr>
+            <tr>
+                <td>Total Meals served during month</td>
+                <td><input type="number"></td>
+                <td><input type="number"></td>
+                <td><input type="number"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">3. Fund Details (In Rs.)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Opening Bal</th>
+                <th>Received</th>
+                <th>Expenditure</th>
+                <th>Closing Bal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cooking Cost</td>
+                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">4. Cook Cum Helper Payment Details</div>
+    <table>
+        <tr>
+            <th>S.No</th>
+            <th>Cook Name</th>
+            <th>Gender</th>
+            <th>Category</th>
+            <th>Mode</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="number"></td>
+        </tr>
+    </table>
+</div>
+
+<div class="page">
+    <div class="section-title">5. Food Grains Details (In KG.)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Opening Bal</th>
+                <th>Received</th>
+                <th>Consumption</th>
+                <th>Closing Bal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Rice (Primary)</td>
+                <td><input type="number" id="g_op1" oninput="calcGrains()"></td>
+                <td><input type="number" id="g_re1" oninput="calcGrains()"></td>
+                <td><input type="number" id="g_co1" oninput="calcGrains()"></td>
+                <td><input type="number" id="g_cl1" class="calc-field" readonly></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">6. Children Health Status</div>
+    <table>
+        <tr><td>No. of children received 4 IFA tablets (Boys)</td><td><input type="number"></td></tr>
+        <tr><td>No. of children received 4 IFA tablets (Girls)</td><td><input type="number"></td></tr>
+        <tr><td>No. of children screened by RBSK team</td><td><input type="number"></td></tr>
+    </table>
+
+    <div class="section-title">7. School Inspection</div>
+    <table>
+        <tr>
+            <td>Inspection done during month?</td>
+            <td><input type="text" placeholder="Yes/No"></td>
+        </tr>
+        <tr><td>By District Officials</td><td><input type="text"></td></tr>
+        <tr><td>By SMC Members</td><td><input type="text"></td></tr>
+    </table>
+
+    <div style="margin-top: 100px; display: flex; justify-content: space-between;">
+        <div style="border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px;">
+            Signature of SMC Chairperson
+        </div>
+        <div style="border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px;">
+            Signature of Head Teacher
+        </div>
     </div>
+</div>
 
-    <form class="form-container" id="mdcfForm">
-        
-        <input type="text" id="month_year" placeholder="MM-YYYY" style="top:98px; left:210px; width:100px;">
-        <input type="text" id="udise_code" placeholder="UDISE">
-        <input type="text" id="school_name" placeholder="School Name">
-
-        <input type="number" id="enrol_bal" style="top:198px; left:448px; width:110px;">
-        <input type="number" id="enrol_pri" style="top:198px; left:568px; width:110px;">
-        <input type="number" id="enrol_upp" style="top:198px; left:688px; width:110px;">
-
-        <input type="number" id="opening_1" placeholder="Op" style="top:348px; left:308px; width:110px;">
-        <input type="number" id="received_1" placeholder="Rec" style="top:348px; left:438px; width:110px;">
-        <input type="number" id="expend_1" placeholder="Exp" style="top:348px; left:588px; width:110px;">
-        <input type="number" id="closing_1" readonly placeholder="Auto" style="top:348px; left:738px; width:90px; background:#eee;">
-
-        </form>
-
-    <script>
-        // Automatic Calculation Logic
-        const op = document.getElementById('opening_1');
-        const rec = document.getElementById('received_1');
-        const exp = document.getElementById('expend_1');
-        const close = document.getElementById('closing_1');
-
-        function calculateClosing() {
-            const result = (Number(op.value) + Number(rec.value)) - Number(exp.value);
-            close.value = result;
-        }
-
-        // Trigger calculation on input
-        [op, rec, exp].forEach(el => {
-            el.addEventListener('input', calculateClosing);
-        });
-    </script>
+<script>
+    function calcFunds() {
+        const op = Number(document.getElementById('f_op1').value);
+        const re = Number(document.getElementById('f_re1').value);
+        const ex = Number(document.getElementById('f_ex1').value);
+        document.getElementById('f_cl1').value = (op + re) - ex;
+    }
+    function calcGrains() {
+        const op = Number(document.getElementById('g_op1').value);
+        const re = Number(document.getElementById('g_re1').value);
+        const co = Number(document.getElementById('g_co1').value);
+        document.getElementById('g_cl1').value = (op + re) - co;
+    }
+</script>
 
 </body>
 </html>
-
