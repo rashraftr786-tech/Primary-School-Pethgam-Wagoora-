@@ -159,11 +159,18 @@
             div.className = 'marksheet-container page-break';
             div.innerHTML = `
                 <div class="header-bg p-2 flex justify-between items-center">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[10px] text-black font-bold">LOGO</div>
-                    <div class="text-center flex-grow"><h1 class="text-2xl font-black uppercase">Government Primary School</h1><h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2></div>
-                </div>
+    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
+        <img src="new-logo.png" alt="School Logo" class="w-full h-full object-contain">
+    </div>
+    <div class="text-center flex-grow">
+        <h1 class="text-2xl font-black uppercase leading-tight">Government Primary School</h1>
+        <h2 class="text-lg font-bold leading-tight">PETHGAM WAGOORA 193109</h2>
+        <p class="text-[10px] font-medium uppercase tracking-wide">Wagoora Babareshi Road Near Zonal Education office Wagoora</p>
+    </div>
+</div>
 
-                <div class="flex mt-1">
+</div>
+         <div class="flex mt-1">
                     <div class="flex-grow grid grid-cols-4 border-l border-t">
                         <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${name}</div>
                         <div class="cell-label">Adm. No:</div><div class="cell-value">${admNo}</div>
