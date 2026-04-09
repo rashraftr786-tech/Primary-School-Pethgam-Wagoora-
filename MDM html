@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM POSHAN - MDCF Digital Entry</title>
+    <style>
+        :root {
+            --form-width: 850px; /* Standard A4 Width */
+            --form-height: 1100px;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+
+        /* Container that holds the image and the inputs */
+        .form-container {
+            position: relative;
+            width: var(--form-width);
+            height: var(--form-height);
+            background-image: url('1000249071.jpg'); /* Replace with your image path */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        /* Styling for the input boxes */
+        input {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #444;
+            padding: 2px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        input:focus {
+            background: #fff;
+            border-color: blue;
+        }
+
+        .no-print {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* PRINT SETTINGS */
+        @media print {
+            .no-print { display: none; }
+            body { margin: 0; background: none; }
+            .form-container { box-shadow: none; border: none; }
+            input { border: none; background: transparent; }
+        }
+
+        /* SPECIFIC FIELD MAPPING (Examples) */
+        /* You will adjust 'top' and 'left' to match the exact boxes on your paper */
+        #school_name { top: 100px; left: 550px; width: 250px; }
+        #udise_code { top: 100px; left: 325px; width: 150px; }
+        
+        #meals_bal_vatika { top: 220px; left: 450px; width: 100px; }
+        #meals_primary { top: 220px; left: 570px; width: 100px; }
+        #meals_upper { top: 220px; left: 700px; width: 100px; }
+
+        #closing_bal_1 { top: 350px; left: 740px; width: 80px; } /* Auto-calc field */
+    </style>
+</head>
+<body>
+
+    <div class="no-print">
+        <strong>Digital Data Capture:</strong> 
+        Fill the fields below. The math is calculated automatically.
+        <button onclick="window.print()">Print for Physical Signature</button>
+    </div>
+
+    <form class="form-container" id="mdcfForm">
+        
+        <input type="text" id="month_year" placeholder="MM-YYYY" style="top:98px; left:210px; width:100px;">
+        <input type="text" id="udise_code" placeholder="UDISE">
+        <input type="text" id="school_name" placeholder="School Name">
+
+        <input type="number" id="enrol_bal" style="top:198px; left:448px; width:110px;">
+        <input type="number" id="enrol_pri" style="top:198px; left:568px; width:110px;">
+        <input type="number" id="enrol_upp" style="top:198px; left:688px; width:110px;">
+
+        <input type="number" id="opening_1" placeholder="Op" style="top:348px; left:308px; width:110px;">
+        <input type="number" id="received_1" placeholder="Rec" style="top:348px; left:438px; width:110px;">
+        <input type="number" id="expend_1" placeholder="Exp" style="top:348px; left:588px; width:110px;">
+        <input type="number" id="closing_1" readonly placeholder="Auto" style="top:348px; left:738px; width:90px; background:#eee;">
+
+        </form>
+
+    <script>
+        // Automatic Calculation Logic
+        const op = document.getElementById('opening_1');
+        const rec = document.getElementById('received_1');
+        const exp = document.getElementById('expend_1');
+        const close = document.getElementById('closing_1');
+
+        function calculateClosing() {
+            const result = (Number(op.value) + Number(rec.value)) - Number(exp.value);
+            close.value = result;
+        }
+
+        // Trigger calculation on input
+        [op, rec, exp].forEach(el => {
+            el.addEventListener('input', calculateClosing);
+        });
+    </script>
+
+</body>
+</html>
+
