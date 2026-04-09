@@ -272,12 +272,35 @@
 
                 <div class="mt-24"></div> 
 
-                <div class="grid grid-cols-4 gap-4">
-                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Sign. Form Teacher</div>
-                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Sign. Exam I/C</div>
-                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Parents Signature</div>
-                    <div class="footer-tab border-t-2 border-slate-500 pt-2">Seal & Sign. Headmaster</div>
+                                <div class="flex justify-between items-center px-4 mt-4">
+                    <div class="text-center">
+                        <div class="border border-slate-300 p-1 bg-white">
+                            <div style="font-family: 'Libre Barcode 39', cursive; font-size: 40px;">
+                                *${row[0]}*
+                            </div>
+                        </div>
+                        <p class="text-[8px] uppercase font-bold mt-1 text-slate-500">Student Identity Barcode</p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="w-16 h-16 border-2 border-slate-800 flex items-center justify-center bg-white mx-auto">
+                            <div class="grid grid-cols-3 gap-0.5 p-1">
+                                ${Array(9).fill('<div class="w-3 h-3 bg-black"></div>').join('')}
+                            </div>
+                        </div>
+                        <p class="text-[8px] uppercase font-bold mt-1 text-slate-500">Scan for Verification</p>
+                    </div>
                 </div>
+
+                <div class="mt-20"></div> 
+
+                <div class="grid grid-cols-4 gap-4 px-2">
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Sign. Form Teacher</div>
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Sign. Exam I/C</div>
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Parents Signature</div>
+                    <div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Seal & Sign. Headmaster</div>
+                </div>
+
             `;
             wrapper.appendChild(div);
         });
