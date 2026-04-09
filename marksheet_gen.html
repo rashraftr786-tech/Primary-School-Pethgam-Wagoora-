@@ -9,13 +9,14 @@
     <style>
         @media print { 
             .no-print { display: none !important; } 
-            .page-break { page-break-after: always; }
-            body { background: white; p: 0; }
-            .marksheet-container { margin: 0 auto; border: 4px solid #6d59c0 !important; }
+            .page-break { page-break-after: always; display: block; }
+            body { background: white; padding: 0; margin: 0; }
+            .marksheet-container { margin: 0 auto; border: 4px solid #6d59c0 !important; box-shadow: none; }
         }
         .marksheet-container {
-            width: 210mm; min-height: 297mm; padding: 5mm; margin: auto;
+            width: 210mm; min-height: 290mm; padding: 5mm; margin: 20px auto;
             border: 4px solid #6d59c0; background-color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
         }
         .header-bg { background-color: #6d59c0; color: white; border-bottom: 2px solid #000; }
         .cell-label { background-color: #e0e7ff; color: #1e40af; font-weight: bold; border: 1px solid #94a3b8; padding: 4px; font-size: 11px; }
@@ -26,68 +27,51 @@
         .footer-tab { background-color: #334155; color: white; font-size: 10px; padding: 4px; text-align: center; }
         .photo-box { width: 100px; height: 110px; border: 2px solid #6d59c0; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
         
-        /* Bar Graph Fixed Styles */
-        .bar-container { display: flex; align-items: flex-end; height: 100px; gap: 12px; padding: 10px; border-bottom: 2px solid #334155; position: relative; }
-        .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
-        .bar { width: 100%; background-color: #3b82f6; border-top: 1px solid #1e40af; min-height: 1px; transition: height 0.3s ease; }
-        .bar-label { font-size: 10px; font-weight: bold; margin-top: 4px; text-align: center; color: #1e293b; }
-        .bar-value { font-size: 10px; font-weight: bold; margin-bottom: 2px; color: #1e293b; }
+        /* Bar Graph Fix */
+        .bar-container { display: flex; align-items: flex-end; height: 100px; gap: 10px; padding: 5px 10px; border-bottom: 2px solid #334155; }
+        .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .bar { width: 100%; background-color: #3b82f6; min-height: 2px; transition: height 0.3s; }
+        .bar-label { font-size: 9px; font-weight: bold; margin-top: 4px; }
+        .bar-value { font-size: 9px; font-weight: bold; }
 
         .info-table td { padding: 4px; font-size: 10px; border: 1px solid #cbd5e1; }
         .info-label { background-color: #b91c1c; color: white; text-align: left; padding-left: 8px; font-weight: bold; width: 60%; }
     </style>
 </head>
-<body class="bg-gray-200 p-4">
+<body class="bg-gray-100 p-4">
 
-    <div class="no-print max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
+    <div class="no-print max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-indigo-900">Marksheet Control Panel</h2>
-            <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition">Print / Download PDF</button>
+            <h2 class="text-2xl font-bold text-indigo-900">GPS Pethgam Marksheet System</h2>
+            <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700">Print All (PDF)</button>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <label class="block text-sm font-bold text-gray-700 mb-2">1. Upload Student Data (Excel)</label>
-                <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
-            </div>
-            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <label class="block text-sm font-bold text-gray-700 mb-2">2. Upload Student Photos</label>
-                <input type="file" id="photoUpload" multiple accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-emerald-600 file:text-white hover:file:bg-emerald-700" />
-                <p class="text-[10px] text-gray-500 mt-2">*Files must match Student Name exactly (e.g. SHAHID AHMAD MALLA.jpg)</p>
-            </div>
+        <div class="mb-8 p-4 bg-indigo-50 rounded-lg">
+            <label class="block text-sm font-bold text-indigo-900 mb-2">Step 1: Upload Excel File</label>
+            <input type="file" id="excelUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+        </div>
+
+        <div id="studentListControl" class="hidden overflow-x-auto">
+            <h3 class="font-bold text-gray-700 mb-2">Step 2: Manage Students & Photos</h3>
+            <table class="w-full text-sm text-left border">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="p-2 border">Roll</th>
+                        <th class="p-2 border">Student Name</th>
+                        <th class="p-2 border">Photo Status</th>
+                        <th class="p-2 border">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody"></tbody>
+            </table>
         </div>
     </div>
 
     <div id="marksheetWrapper"></div>
 
     <script>
+        let allStudentsData = [];
         let studentPhotos = {};
-        let rawExcelData = null;
-
-        function formatExcelDate(dateVal) {
-            if (!dateVal) return "N/A";
-            if (!isNaN(dateVal)) {
-                const date = new Date((dateVal - 25569) * 86400 * 1000);
-                return date.toLocaleDateString('en-GB');
-            }
-            return dateVal;
-        }
-
-        // Fix: Update photos and refresh display immediately
-        document.getElementById('photoUpload').addEventListener('change', function(e) {
-            const files = e.target.files;
-            let loaded = 0;
-            for (let file of files) {
-                const reader = new FileReader();
-                const name = file.name.split('.')[0].toUpperCase().trim();
-                reader.onload = (f) => { 
-                    studentPhotos[name] = f.target.result;
-                    loaded++;
-                    if (loaded === files.length && rawExcelData) processData(rawExcelData);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
 
         document.getElementById('excelUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -95,11 +79,61 @@
             reader.onload = (evt) => {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                rawExcelData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-                processData(rawExcelData);
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                allStudentsData = rows.slice(3).filter(r => r[3]); 
+                renderStudentList();
+                generateAllMarksheets();
             };
             reader.readAsArrayBuffer(file);
         });
+
+        function renderStudentList() {
+            const listContainer = document.getElementById('studentListControl');
+            const tbody = document.getElementById('studentTableBody');
+            listContainer.classList.remove('hidden');
+            tbody.innerHTML = '';
+
+            allStudentsData.forEach((row, index) => {
+                const name = row[3].toString().toUpperCase().trim();
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2 border">${row[1]}</td>
+                    <td class="p-2 border font-bold">${name}</td>
+                    <td class="p-2 border text-center" id="status-${index}">
+                        ${studentPhotos[name] ? '✅ Uploaded' : '❌ No Photo'}
+                    </td>
+                    <td class="p-2 border space-x-2">
+                        <input type="file" id="input-${index}" class="hidden" accept="image/*" onchange="uploadIndividualPhoto(this, '${name}', ${index})">
+                        <button onclick="document.getElementById('input-${index}').click()" class="bg-emerald-500 text-white px-2 py-1 rounded text-xs">Upload Photo</button>
+                        <button onclick="printSingle(${index})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Print Marksheet</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function uploadIndividualPhoto(input, studentName, index) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    studentPhotos[studentName] = e.target.result;
+                    document.getElementById(`status-${index}`).innerText = '✅ Uploaded';
+                    generateAllMarksheets();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function printSingle(index) {
+            const allSheets = document.querySelectorAll('.marksheet-container');
+            allSheets.forEach((sheet, i) => {
+                if(i === index) sheet.classList.remove('no-print');
+                else sheet.classList.add('no-print');
+            });
+            window.print();
+            // Reset for "Print All"
+            allSheets.forEach(sheet => sheet.classList.remove('no-print'));
+        }
 
         function getGrade(score) {
             if (score >= 85) return 'A+';
@@ -110,34 +144,30 @@
             return 'E';
         }
 
-        function processData(rows) {
+        function generateAllMarksheets() {
             const wrapper = document.getElementById('marksheetWrapper');
             wrapper.innerHTML = '';
-            
-            const students = rows.slice(3).filter(r => r[3]); 
 
-            students.forEach(row => {
-                const studentName = String(row[3]).toUpperCase().trim();
-                const photoSrc = studentPhotos[studentName] || '';
-
+            allStudentsData.forEach((row, idx) => {
+                const studentName = row[3].toString().toUpperCase().trim();
                 const subjectsArr = [
-                    {n: 'English', d: {fa: [row[8],row[9],row[10],row[11],row[12],row[13]], tot: row[14]||0, cc: row[15]||0, sum: row[16]||0, grand: row[17]||0 }},
-                    {n: 'Math', d: {fa: [row[18],row[19],row[20],row[21],row[22],row[23]], tot: row[24]||0, cc: row[25]||0, sum: row[26]||0, grand: row[27]||0 }},
-                    {n: 'EVS', d: {fa: [row[28],row[29],row[30],row[31],row[32],row[33]], tot: row[34]||0, cc: row[35]||0, sum: row[36]||0, grand: row[37]||0 }},
-                    {n: 'Urdu', d: {fa: [row[38],row[39],row[40],row[41],row[42],row[43]], tot: row[44]||0, cc: row[45]||0, sum: row[46]||0, grand: row[47]||0 }},
-                    {n: 'Kashmiri', d: {fa: [row[48],row[49],row[50],row[51],row[52],row[53]], tot: row[54]||0, cc: row[55]||0, sum: row[56]||0, grand: row[57]||0 }}
+                    {n: 'English', g: row[17]||0, fa: [row[8],row[9],row[10],row[11],row[12],row[13]], t: row[14]||0, cc: row[15]||0, s: row[16]||0},
+                    {n: 'Math', g: row[27]||0, fa: [row[18],row[19],row[20],row[21],row[22],row[23]], t: row[24]||0, cc: row[25]||0, s: row[26]||0},
+                    {n: 'EVS', g: row[37]||0, fa: [row[28],row[29],row[30],row[31],row[32],row[33]], t: row[34]||0, cc: row[35]||0, s: row[36]||0},
+                    {n: 'Urdu', g: row[47]||0, fa: [row[38],row[39],row[40],row[41],row[42],row[43]], t: row[44]||0, cc: row[45]||0, s: row[46]||0},
+                    {n: 'Kashmiri', g: row[57]||0, fa: [row[48],row[49],row[50],row[51],row[52],row[53]], t: row[54]||0, cc: row[55]||0, s: row[56]||0}
                 ];
 
-                const totalMarks = subjectsArr.reduce((acc, curr) => acc + curr.d.grand, 0);
-                const avgPerc = totalMarks / 5;
+                const total = subjectsArr.reduce((a, b) => a + b.g, 0);
+                const perc = (total / 5).toFixed(1);
 
                 const div = document.createElement('div');
-                div.className = 'marksheet-container mb-8 page-break';
+                div.className = 'marksheet-container page-break';
                 div.innerHTML = `
                     <div class="header-bg p-2 flex justify-between items-center">
                         <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[8px] text-black font-bold">LOGO</div>
                         <div class="text-center flex-grow">
-                            <h1 class="text-2xl font-black leading-none uppercase">Government Primary School</h1>
+                            <h1 class="text-2xl font-black uppercase">Government Primary School</h1>
                             <h2 class="text-lg font-bold">PETHGAM WAGOORA 193109</h2>
                         </div>
                     </div>
@@ -145,18 +175,18 @@
                     <div class="flex mt-1">
                         <div class="flex-grow grid grid-cols-4 border-l border-t">
                             <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${studentName}</div>
-                            <div class="cell-label">Adm. No:</div><div class="cell-value">${row[0] || ''}</div>
-                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${row[4] || ''}</div>
-                            <div class="cell-label">D.O.B:</div><div class="cell-value">${formatExcelDate(row[7])}</div>
-                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${row[5] || ''}</div>
-                            <div class="cell-label">Class:</div><div class="cell-value">${row[2] || ''}</div>
+                            <div class="cell-label">Adm. No:</div><div class="cell-value">${row[0]||''}</div>
+                            <div class="cell-label">Fathers Name:</div><div class="cell-value">${row[4]||''}</div>
+                            <div class="cell-label">D.O.B:</div><div class="cell-value">${row[7] ? new Date((row[7]-25569)*86400*1000).toLocaleDateString('en-GB') : ''}</div>
+                            <div class="cell-label">Mothers Name:</div><div class="cell-value">${row[5]||''}</div>
+                            <div class="cell-label">Class:</div><div class="cell-value">${row[2]||''}</div>
                             <div class="cell-label">Academic Session:</div><div class="cell-value">Nov. 2025</div>
-                            <div class="cell-label">Roll No:</div><div class="cell-value">${row[1] || ''}</div>
-                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${row[65] || 'N/A'}</div>
-                            <div class="cell-label">PEN No.</div><div class="cell-value">${row[66] || 'N/A'}</div>
+                            <div class="cell-label">Roll No:</div><div class="cell-value">${row[1]||''}</div>
+                            <div class="cell-label">Apaar ID:</div><div class="cell-value">${row[65]||'N/A'}</div>
+                            <div class="cell-label">PEN No.</div><div class="cell-value">${row[66]||'N/A'}</div>
                         </div>
                         <div class="photo-box ml-1">
-                            ${photoSrc ? `<img src="${photoSrc}" class="w-full h-full object-cover">` : `<span class="text-[10px] text-gray-400">PHOTO</span>`}
+                            ${studentPhotos[studentName] ? `<img src="${studentPhotos[studentName]}" class="w-full h-full object-cover">` : `<span class="text-[10px] text-gray-400">PHOTO</span>`}
                         </div>
                     </div>
 
@@ -164,28 +194,18 @@
                         <thead class="bg-indigo-100">
                             <tr>
                                 <th rowspan="2">Subject</th>
-                                <th colspan="6">Formative Assessment (5 marks each)</th>
-                                <th rowspan="2">Total (30)</th>
-                                <th rowspan="2">Co-Curricular (20)</th>
-                                <th rowspan="2">Summative (50)</th>
-                                <th rowspan="2">Total (100)</th>
-                                <th rowspan="2">Grade</th>
-                                <th rowspan="2">Proficiency Level</th>
+                                <th colspan="6">Formative Assessment (5 each)</th>
+                                <th rowspan="2">Total(30)</th><th rowspan="2">CC(20)</th><th rowspan="2">Summ(50)</th><th rowspan="2">Total(100)</th><th rowspan="2">Grade</th>
                             </tr>
-                            <tr class="text-[9px]">
-                                <th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th>
-                            </tr>
+                            <tr class="text-[9px]"><th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th></tr>
                         </thead>
                         <tbody>
-                            ${subjectsArr.map(sub => `
+                            ${subjectsArr.map(s => `
                                 <tr>
-                                    <td class="sub-name">${sub.n}</td>
-                                    ${sub.d.fa.map(v => `<td>${v || 0}</td>`).join('')}
-                                    <td class="font-bold">${sub.d.tot}</td>
-                                    <td>${sub.d.cc}</td>
-                                    <td>${sub.d.sum}</td>
-                                    <td class="font-bold bg-blue-50">${sub.d.grand}</td>
-                                    <td class="font-bold">${getGrade(sub.d.grand)}</td>
+                                    <td class="sub-name">${s.n}</td>
+                                    ${s.fa.map(v => `<td>${v||0}</td>`).join('')}
+                                    <td class="font-bold">${s.t}</td><td>${s.cc}</td><td>${s.s}</td>
+                                    <td class="font-bold bg-blue-50">${s.g}</td><td>${getGrade(s.g)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -193,18 +213,17 @@
 
                     <div class="grid grid-cols-2 gap-2 mt-1">
                         <div class="border border-slate-300 p-1">
-                             <div class="bg-orange-400 text-white text-[11px] font-bold text-center py-1 mb-2">Subject wise Bar Graph Chart</div>
+                             <div class="bg-orange-400 text-white text-[11px] font-bold text-center py-1 mb-1">Subject wise Bar Graph Chart</div>
                              <div class="bar-container">
-                                ${subjectsArr.map(sub => `
+                                ${subjectsArr.map(s => `
                                     <div class="bar-item">
-                                        <span class="bar-value">${sub.d.grand}</span>
-                                        <div class="bar" style="height: ${sub.d.grand}%;"></div>
-                                        <span class="bar-label">${sub.n}</span>
+                                        <span class="bar-value">${s.g}</span>
+                                        <div class="bar" style="height: ${s.g}%;"></div>
+                                        <span class="bar-label">${s.n}</span>
                                     </div>
                                 `).join('')}
                              </div>
                         </div>
-
                         <div class="grid grid-rows-2 gap-1">
                              <div class="grid grid-cols-2 gap-1">
                                 <div class="border border-indigo-200 text-center">
@@ -216,22 +235,19 @@
                                     <div class="text-xl font-bold p-1">${row[68] || '-'}</div>
                                 </div>
                              </div>
-                             
                              <div class="border border-slate-400">
                                 <table class="info-table h-full">
                                     <tr><td class="info-label">Attendance %age</td><td></td></tr>
-                                    <tr><td class="info-label">Empathy & Teamwork</td><td></td></tr>
                                     <tr><td class="info-label">Discipline</td><td></td></tr>
-                                    <tr><td class="info-label">Sports</td><td></td></tr>
-                                    <tr><td class="info-label">Art and Craft</td><td></td></tr>
+                                    <tr><td class="info-label">Sports / Art</td><td></td></tr>
                                 </table>
                              </div>
                         </div>
                     </div>
 
                     <div class="border border-slate-400 bg-white mt-1">
-                        <div class="bg-[#a855f7] text-white text-[12px] p-1 font-bold text-center uppercase">General Remarks</div>
-                        <div class="p-3 text-[12px] font-bold text-black leading-relaxed text-left">
+                        <div class="bg-[#a855f7] text-white text-[12px] p-1 font-bold text-center">GENERAL REMARKS</div>
+                        <div class="p-2 text-[12px] font-bold text-black min-h-[40px]">
                             ${studentName} needs to focus more on all subjects. Work hard!
                         </div>
                     </div>
@@ -239,27 +255,15 @@
                     <div class="mt-1 border border-indigo-200">
                         <table class="w-full text-[11px]">
                             <tr>
-                                <td class="bg-[#93c5fd] font-bold px-2">Total Marks</td>
-                                <td class="font-bold">${totalMarks}</td>
-                                <td class="bg-[#93c5fd] font-bold px-2">Maximum Marks</td>
-                                <td class="font-bold">500</td>
-                                <td class="bg-[#93c5fd] font-bold px-2">Percentage</td>
-                                <td class="font-bold">${avgPerc.toFixed(1)}%</td>
-                                <td class="bg-[#93c5fd] font-bold px-2">Overall Grade</td>
-                                <td class="font-bold">${getGrade(avgPerc)}</td>
-                                <td class="bg-[#93c5fd] font-bold px-2">Result</td>
-                                <td class="font-bold">${result}</td>
-                                <td class="bg-[#93c5fd] font-bold px-2">Position in Class</td>
-                                <td class="font-bold">${getPosituon(1)}%</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Total Marks</td><td class="font-bold">${total} / 500</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Percentage</td><td class="font-bold">${perc}%</td>
+                                <td class="bg-[#93c5fd] font-bold px-2">Overall Grade</td><td class="font-bold">${getGrade(perc)}</td>
                             </tr>
                         </table>
                     </div>
 
-                    <div class="grid grid-cols-4 mt-10 gap-4">
-                        <div class="footer-tab">Sign. Form Teacher</div>
-                        <div class="footer-tab">Sign. Exam I/C</div>
-                        <div class="footer-tab">Parents Signature</div>
-                        <div class="footer-tab">Seal of Headmaster</div>
+                    <div class="grid grid-cols-4 mt-8 gap-4">
+                        <div class="footer-tab">Sign. Form Teacher</div><div class="footer-tab">Sign. Exam I/C</div><div class="footer-tab">Parents Signature</div><div class="footer-tab">Seal of Headmaster</div>
                     </div>
                 `;
                 wrapper.appendChild(div);
@@ -267,5 +271,5 @@
         }
     </script>
 </body>
-</html>                        
-                        
+</html>
+                                
