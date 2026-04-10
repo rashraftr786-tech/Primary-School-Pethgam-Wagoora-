@@ -25,7 +25,6 @@
             box-sizing: border-box;
         }
         
-        /* Updated Header for Logo */
         header { 
             display: flex; 
             align-items: center; 
@@ -111,87 +110,88 @@
 <body>
 
 <div class="no-print">
-    <button onclic<div class="section-title">1. School Details</div>
-<table>
-    <tr>
-        <th style="width: 15%;">Month-Year</th>
-        <td style="width: 18%;"><input type="text" value="March-2026"></td>
-        <th style="width: 15%;">UDISE Code</th>
-        <td style="width: 18%;"><input type="text" value="01022202207"></td>
-        <th style="width: 15%;">School Name</th>
-        <td style="width: 19%;"><input type="text" value="PS Pethgam Wagoora"></td>
-    </tr>
-
-    <tr>
-        <th>Type</th>
-        <td colspan="5">
-            <div class="inline-group">
-                <label><input type="checkbox" checked> Government</label>
-                <label><input type="checkbox"> Local Body</label>
-                <label><input type="checkbox"> EGS/AIE Centers</label>
-                <label><input type="checkbox"> NCLP</label>
-                <label><input type="checkbox"> Madras / Maqtab</label>
-            </div>
-        </td>
-    </tr>
-    
-    <tr>
-        <th>Category</th>
-        <td colspan="5">
-            <div class="inline-group">
-                <label><input type="checkbox" checked> Primary</label>
-                <label><input type="checkbox"> Upper Primary</label>
-                <label><input type="checkbox"> Primary with Upper Primary</label>
-            </div>
-        </td>
-    </tr>
-
-    <tr>
-        <th>State / UT</th>
-        <td><input type="text" value="Jammu and Kashmir"></td>
-        <th>District</th>
-        <td><input type="text" value="Baramulla"></td>
-        <th>Block/NP</th>
-        <td><input type="text" value="Wagoora"></td>
-    </tr>
-
-    <tr>
-        <th>Village/Ward</th>
-        <td><input type="text" value="Wagoora"></td>
-        <th>Kitchen Type</th>
-        <td><input type="text" value="School Kitchen"></td>
-        <th>NGO/SHG</th>
-        <td><input type="text"></td>
-    </tr>
-
-    <tr>
-        <th>Enrolment</th>
-        <td colspan="5"><input type="text" placeholder="Total Students"></td>
-    </tr>
-</table>
-k="window.print()" style="padding: 10px 20px; cursor:pointer; background:#27ae60; color:white; border:none; border-radius:4px;">Print Report (2 Pages)</button>
+    <button onclick="window.print()" style="padding: 10px 20px; cursor:pointer; background:#27ae60; color:white; border:none; border-radius:4px;">Print Report (2 Pages)</button>
 </div>
 
 <div class="page">
     <header>
-    <img src="new-logo.png" alt="School Logo" class="school-logo">
-    
-    <div class="header-content">
-        <h1>Pradhan Mantri Poshan (PM-POSHAN)</h1>
-        <h2>Monthly Data Capture Format (MDCF)</h2>
-        
-        <div class="school-info">
-            <strong>Office of the Headmaster Government Primary School</strong><br>
-            <span>Pethgam Wagoora (Zone Wagoora) 193109</span>
+        <img src="new-logo.png" alt="School Logo" class="school-logo">
+        <div class="header-content">
+            <h1>Pradhan Mantri Poshan (PM-POSHAN)</h1>
+            <h2>Monthly Data Capture Format (MDCF)</h2>
+            <div class="school-info">
+                <strong>Office of the Headmaster Government Primary School</strong><br>
+                <span>Pethgam Wagoora (Zone Wagoora) 193109</span>
+            </div>
         </div>
-    </div>
-    
-    <div style="width:80px;"></div> 
-</header>
-    
+        <div style="width:80px;"></div> 
+    </header>
 
-    
- <tr>
+    <div class="section-title">1. School Details</div>
+    <table>
+        <tr>
+            <th style="width: 15%;">Month-Year</th>
+            <td style="width: 18%;"><input type="text" value="March-2026"></td>
+            <th style="width: 15%;">UDISE Code</th>
+            <td style="width: 18%;"><input type="text" value="01022202207"></td>
+            <th style="width: 15%;">School Name</th>
+            <td style="width: 19%;"><input type="text" value="PS Pethgam Wagoora"></td>
+        </tr>
+        <tr>
+            <th>Type</th>
+            <td colspan="5">
+                <div class="inline-group">
+                    <label><input type="checkbox" checked> Government</label>
+                    <label><input type="checkbox"> Local Body</label>
+                    <label><input type="checkbox"> EGS/AIE Centers</label>
+                    <label><input type="checkbox"> NCLP</label>
+                    <label><input type="checkbox"> Madras / Maqtab</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td colspan="5">
+                <div class="inline-group">
+                    <label><input type="checkbox" checked> Primary</label>
+                    <label><input type="checkbox"> Upper Primary</label>
+                    <label><input type="checkbox"> Primary with Upper Primary</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>State / UT</th>
+            <td><input type="text" value="Jammu and Kashmir"></td>
+            <th>District</th>
+            <td><input type="text" value="Baramulla"></td>
+            <th>Block/NP</th>
+            <td><input type="text" value="Wagoora"></td>
+        </tr>
+        <tr>
+            <th>Village/Ward</th>
+            <td><input type="text" value="Wagoora"></td>
+            <th>Kitchen Type</th>
+            <td><input type="text" value="School Kitchen"></td>
+            <th>NGO/SHG</th>
+            <td><input type="text"></td>
+        </tr>
+        <tr>
+            <th>Enrolment</th>
+            <td colspan="5"><input type="text" placeholder="Total Students"></td>
+        </tr>
+    </table>
+
+    <div class="section-title">2. Working Days & Meals Served</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Detail</th>
+                <th>Primary (1-5)</th>
+                <th>Upper Primary (6-8)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
                 <td>Number of School days during the month</td>
                 <td><input type="number"></td>
                 <td><input type="number"></td>
@@ -210,64 +210,66 @@ k="window.print()" style="padding: 10px 20px; cursor:pointer; background:#27ae60
     </table>
 
     <div class="section-title">3. Fund Details (In Rs.)</div>
-<table>
-    <thead>
-        <tr>
-            <th>Component</th>
-            <th>Opening Bal</th>
-            <th>Received</th>
-            <th>Expenditure</th>
-            <th>Closing Bal</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Cooking Cost-Bal Vatika</td>
-            <td><input type="number" id="f_op1" oninput="calcFunds(1)"></td>
-            <td><input type="number" id="f_re1" oninput="calcFunds(1)"></td>
-            <td><input type="number" id="f_ex1" oninput="calcFunds(1)"></td>
-            <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
-        </tr>
-        <tr>
-            <td>Cooking Cost-Primary</td>
-            <td><input type="number" id="f_op2" oninput="calcFunds(2)"></td>
-            <td><input type="number" id="f_re2" oninput="calcFunds(2)"></td>
-            <td><input type="number" id="f_ex2" oninput="calcFunds(2)"></td>
-            <td><input type="number" id="f_cl2" class="calc-field" readonly></td>
-        </tr>
-        <tr>
-            <td>Cook Cum Helper</td>
-            <td><input type="number" id="f_op3" oninput="calcFunds(3)"></td>
-            <td><input type="number" id="f_re3" oninput="calcFunds(3)"></td>
-            <td><input type="number" id="f_ex3" oninput="calcFunds(3)"></td>
-            <td><input type="number" id="f_cl3" class="calc-field" readonly></td>
-        </tr>
-        <tr>
-            <td>MME Expenses</td>
-            <td><input type="number" id="f_op4" oninput="calcFunds(4)"></td>
-            <td><input type="number" id="f_re4" oninput="calcFunds(4)"></td>
-            <td><input type="number" id="f_ex4" oninput="calcFunds(4)"></td>
-            <td><input type="number" id="f_cl4" class="calc-field" readonly></td>
-        </tr>
-        <tr>
-            <th colspan="3" style="text-align: left;">
-                Whether the Sum of above Closing Balance matches with Bank Account Closing Balance?
-            </th>
-            <td colspan="2">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <label style="display: flex; align-items: center; gap: 4px;">
-                        <input type="checkbox" style="width: auto;"> Yes
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 4px;">
-                        <input type="checkbox" style="width: auto;"> No
-                    </label>
-                    <input type="text" placeholder="Remarks if any" style="border-bottom: 1px solid #ccc; width: 60%;">
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Opening Bal</th>
+                <th>Received</th>
+                <th>Expenditure</th>
+                <th>Closing Bal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cooking Cost-Bal Vatika</td>
+                <td><input type="number" id="f_op1" oninput="calcFunds(1)"></td>
+                <td><input type="number" id="f_re1" oninput="calcFunds(1)"></td>
+                <td><input type="number" id="f_ex1" oninput="calcFunds(1)"></td>
+                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+            </tr>
+            <tr>
+                <td>Cooking Cost-Primary</td>
+                <td><input type="number" id="f_op2" oninput="calcFunds(2)"></td>
+                <td><input type="number" id="f_re2" oninput="calcFunds(2)"></td>
+                <td><input type="number" id="f_ex2" oninput="calcFunds(2)"></td>
+                <td><input type="number" id="f_cl2" class="calc-field" readonly></td>
+            </tr>
+            <tr>
+                <td>Cook Cum Helper</td>
+                <td><input type="number" id="f_op3" oninput="calcFunds(3)"></td>
+                <td><input type="number" id="f_re3" oninput="calcFunds(3)"></td>
+                <td><input type="number" id="f_ex3" oninput="calcFunds(3)"></td>
+                <td><input type="number" id="f_cl3" class="calc-field" readonly></td>
+            </tr>
+            <tr>
+                <td>MME Expenses</td>
+                <td><input type="number" id="f_op4" oninput="calcFunds(4)"></td>
+                <td><input type="number" id="f_re4" oninput="calcFunds(4)"></td>
+                <td><input type="number" id="f_ex4" oninput="calcFunds(4)"></td>
+                <td><input type="number" id="f_cl4" class="calc-field" readonly></td>
+            </tr>
+            <tr>
+                <th colspan="3" style="text-align: left;">
+                    Whether the Sum of above Closing Balance matches with Bank Account Closing Balance?
+                </th>
+                <td colspan="2">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label style="display: flex; align-items: center; gap: 4px;">
+                            <input type="checkbox" style="width: auto;"> Yes
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px;">
+                            <input type="checkbox" style="width: auto;"> No
+                        </label>
+                        <input type="text" placeholder="Remarks if any" style="border-bottom: 1px solid #ccc; width: 60%;">
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
+<div class="page">
     <div class="section-title">4. Cook Cum Helper Payment Details</div>
     <table>
         <thead>
@@ -291,6 +293,7 @@ k="window.print()" style="padding: 10px 20px; cursor:pointer; background:#27ae60
             </tr>
         </tbody>
     </table>
+
     <div class="section-title">5. Food Grains (Rice) Details (In KG.)</div>
     <table>
         <thead>
@@ -327,51 +330,41 @@ k="window.print()" style="padding: 10px 20px; cursor:pointer; background:#27ae60
         <tr><td>No. of children screened by mobile health RBSK team</td><td><input type="number"></td></tr>
         <tr><td>No. of children referred by mobile health RBSK team</td><td><input type="number"></td></tr>
     </table>
-</div>
-
-<div class="page">
 
     <div class="section-title">7. School Inspection</div>
-<table style="width: 100%; border-collapse: collapse;">
-    <thead>
-        <tr style="background-color: #f2f2f2;">
-            <th style="width: 60%; text-align: left; padding: 8px; border: 1px solid #000;">
-                School Inspection done during the month
-            </th>
-            <th style="width: 10%; text-align: center; border: 1px solid #000;">Yes</th>
-            <th style="width: 10%; text-align: center; border: 1px solid #000;">
-                <input type="checkbox" style="width: auto; cursor: pointer;">
-            </th>
-            <th style="width: 10%; text-align: center; border: 1px solid #000;">No</th>
-            <th style="width: 10%; text-align: center; border: 1px solid #000;">
-                <input type="checkbox" style="width: auto; cursor: pointer;">
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td style="padding: 8px; border: 1px solid #000;">By Members of Task Force</td>
-            <td colspan="4" style="border: 1px solid #000;"><input type="text" style="width: 98%; border: none; outline: none;"></td>
-        </tr>
-        <tr>
-            <td style="padding: 8px; border: 1px solid #000;">By District Officials</td>
-            <td colspan="4" style="border: 1px solid #000;"><input type="text" style="width: 98%; border: none; outline: none;"></td>
-        </tr>
-        <tr>
-            <td style="padding: 8px; border: 1px solid #000;">By Block/Taluka Level Officials</td>
-            <td colspan="4" style="border: 1px solid #000;"><input type="text" style="width: 98%; border: none; outline: none;"></td>
-        </tr>
-        <tr>
-            <td style="padding: 8px; border: 1px solid #000;">By SMC Members</td>
-            <td colspan="4" style="border: 1px solid #000;"><input type="text" style="width: 98%; border: none; outline: none;"></td>
-        </tr>
-    </tbody>
-<table style="width: 100%; border-collapse: collapse;">
-    <tbody>
-        <td>Number of untoward incidents occurred</td>
-                <td><input type="number"></td>
-    </tbody>
-</table>
+    <table>
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="width: 60%; text-align: left; padding: 8px;">School Inspection done during the month</th>
+                <th style="width: 10%; text-align: center;">Yes</th>
+                <th style="width: 10%; text-align: center;"><input type="checkbox" style="width: auto;"></th>
+                <th style="width: 10%; text-align: center;">No</th>
+                <th style="width: 10%; text-align: center;"><input type="checkbox" style="width: auto;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>By Members of Task Force</td>
+                <td colspan="4"><input type="text"></td>
+            </tr>
+            <tr>
+                <td>By District Officials</td>
+                <td colspan="4"><input type="text"></td>
+            </tr>
+            <tr>
+                <td>By Block/Taluka Level Officials</td>
+                <td colspan="4"><input type="text"></td>
+            </tr>
+            <tr>
+                <td>By SMC Members</td>
+                <td colspan="4"><input type="text"></td>
+            </tr>
+            <tr>
+                <td>Number of untoward incidents occurred</td>
+                <td colspan="4"><input type="number"></td>
+            </tr>
+        </tbody>
+    </table>
     
     <div style="margin-top: 80px; display: flex; justify-content: space-between;">
         <div style="border-top: 1px solid #000; width: 220px; text-align: center; padding-top: 5px;">
@@ -400,4 +393,5 @@ k="window.print()" style="padding: 10px 20px; cursor:pointer; background:#27ae60
 
 </body>
 </html>
-                        
+
+                
