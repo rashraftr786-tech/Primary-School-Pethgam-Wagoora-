@@ -207,7 +207,7 @@
                         <div class="cell-label">Student Name:</div><div class="cell-value col-span-1">${name}</div>
                         <div class="cell-label">Adm. No:</div><div class="cell-value">${admNo}</div>
                         <div class="cell-label">Fathers Name:</div><div class="cell-value">${row[4]||''}</div>
-                        <div class="cell-label">D.O.B:</div><div class="cell-value">${row[7] ? new Date((row[7]-25569)*86400*1000).toLocaleDateString('en-GB') : ''}</div>
+                        <div class="cell-label">D.O.B:</div><div class="cell-value">${row[7] || ''}</div>
                         <div class="cell-label">Mothers Name:</div><div class="cell-value">${row[5]||''}</div>
                         <div class="cell-label">Class:</div><div class="cell-value">${row[2]||''}</div>
                         <div class="cell-label">Academic Session:</div><div class="cell-value">Nov. 2025</div>
