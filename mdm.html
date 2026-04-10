@@ -214,53 +214,63 @@
     </table>
 
     <div class="section-title">3. Fund Details (In Rs.)</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Component</th>
-                <th>Opening Bal</th>
-                <th>Received</th>
-                <th>Expenditure</th>
-                <th>Closing Bal</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Cooking Cost-Bal Vatika</td>
-                <td><input type="number" id="f_op1" oninput="calcFunds(1)"></td>
-                <td><input type="number" id="f_re1" oninput="calcFunds(1)"></td>
-                <td><input type="number" id="f_ex1" oninput="calcFunds(1)"></td>
-                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
-            </tr>
-            <tr>
-                <td>Cooking Cost-Primary</td>
-                <td><input type="number" id="f_op2" oninput="calcFunds(2)"></td>
-                <td><input type="number" id="f_re2" oninput="calcFunds(2)"></td>
-                <td><input type="number" id="f_ex2" oninput="calcFunds(2)"></td>
-                <td><input type="number" id="f_cl2" class="calc-field" readonly></td>
-            </tr>
-            <tr>
-                <td>Cook Cum Helper</td>
-                <td><input type="number" id="f_op3" oninput="calcFunds(3)"></td>
-                <td><input type="number" id="f_re3" oninput="calcFunds(3)"></td>
-                <td><input type="number" id="f_ex3" oninput="calcFunds(3)"></td>
-                <td><input type="number" id="f_cl3" class="calc-field" readonly></td>
-            </tr>
-            <tr>
-                <td>MME Expenses</td>
-                <td><input type="number" id="f_op4" oninput="calcFunds(4)"></td>
-                <td><input type="number" id="f_re4" oninput="calcFunds(4)"></td>
-                <td><input type="number" id="f_ex4" oninput="calcFunds(4)"></td>
-                <td><input type="number" id="f_cl4" class="calc-field" readonly></td>
-            </tr>
-            <tr>
-            <th>Whether the Sum of above Closing Balance matches with Bank Account Closing Balance.</th>
-                <label><input type="checkbox">Yes</label>
-                <label><input type="checkbox">No</label>
-            <td colspan="5"><input type="text"></td>
-            </tr>
-        </tbody>
-    </table>
+<table>
+    <thead>
+        <tr>
+            <th>Component</th>
+            <th>Opening Bal</th>
+            <th>Received</th>
+            <th>Expenditure</th>
+            <th>Closing Bal</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Cooking Cost-Bal Vatika</td>
+            <td><input type="number" id="f_op1" oninput="calcFunds(1)"></td>
+            <td><input type="number" id="f_re1" oninput="calcFunds(1)"></td>
+            <td><input type="number" id="f_ex1" oninput="calcFunds(1)"></td>
+            <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+        </tr>
+        <tr>
+            <td>Cooking Cost-Primary</td>
+            <td><input type="number" id="f_op2" oninput="calcFunds(2)"></td>
+            <td><input type="number" id="f_re2" oninput="calcFunds(2)"></td>
+            <td><input type="number" id="f_ex2" oninput="calcFunds(2)"></td>
+            <td><input type="number" id="f_cl2" class="calc-field" readonly></td>
+        </tr>
+        <tr>
+            <td>Cook Cum Helper</td>
+            <td><input type="number" id="f_op3" oninput="calcFunds(3)"></td>
+            <td><input type="number" id="f_re3" oninput="calcFunds(3)"></td>
+            <td><input type="number" id="f_ex3" oninput="calcFunds(3)"></td>
+            <td><input type="number" id="f_cl3" class="calc-field" readonly></td>
+        </tr>
+        <tr>
+            <td>MME Expenses</td>
+            <td><input type="number" id="f_op4" oninput="calcFunds(4)"></td>
+            <td><input type="number" id="f_re4" oninput="calcFunds(4)"></td>
+            <td><input type="number" id="f_ex4" oninput="calcFunds(4)"></td>
+            <td><input type="number" id="f_cl4" class="calc-field" readonly></td>
+        </tr>
+        <tr>
+            <th colspan="3" style="text-align: left;">
+                Whether the Sum of above Closing Balance matches with Bank Account Closing Balance?
+            </th>
+            <td colspan="2">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" style="width: auto;"> Yes
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" style="width: auto;"> No
+                    </label>
+                    <input type="text" placeholder="Remarks if any" style="border-bottom: 1px solid #ccc; width: 60%;">
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
     <div class="section-title">4. Cook Cum Helper Payment Details</div>
     <table>
