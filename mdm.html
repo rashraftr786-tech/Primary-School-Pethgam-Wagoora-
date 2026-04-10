@@ -24,54 +24,70 @@
             position: relative;
             box-sizing: border-box;
         }
-        header { text-align: center; margin-bottom: 10px; }
+        
+        /* Updated Header for Logo */
+        header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-bottom: 10px;
+            text-align: center;
+            gap: 20px;
+        }
+        .header-content { flex-grow: 1; }
+        .school-logo { width: 80px; height: 80px; object-fit: contain; }
+
         h1 { font-size: 16px; margin: 5px 0; }
         h2 { font-size: 14px; margin: 5px 0; text-decoration: underline; }
         
         table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed; /* Forces the table to stay within its container width */
-    }
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-bottom: 10px;
+        }
 
-    th, td {
-        border: 1px solid #000;
-        padding: 8px;
-        text-align: center;
-        font-size: 14px;
-        
-        /* Key properties for text wrapping */
-        white-space: normal;    /* Allows text to wrap to the next line */
-        word-wrap: break-word;  /* Breaks long words if necessary */
-        overflow-wrap: break-word;
-    }
-
-    /* Optional: Assign specific widths to columns to control the wrap point */
-    .col-sno { width: 10%; }
-    .col-name { width: 25%; }
-    .col-gender { width: 10%; }
-    .col-cat { width: 20%; }
-    .col-mode { width: 15%; }
-    .col-amount { width: 20%; }
         th, td {
             border: 1px solid var(--border-col);
-            padding: 5px;
+            padding: 6px;
             text-align: left;
+            font-size: 13px;
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
-        th { background-color: #f2f2f2; }
+
+        th { background-color: #f2f2f2; text-align: center; }
         
         .section-title {
             font-weight: bold;
-            margin: 10px 0 5px 0;
+            margin: 15px 0 5px 0;
             font-size: 13px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #ccc;
         }
+        
         input {
             width: 95%;
             border: none;
             font-size: 12px;
             outline: none;
         }
-        .calc-field { background-color: #f9f9f9; font-weight: bold; }
+        
+        .calc-field { background-color: #f9f9f9; font-weight: bold; text-align: center; }
+
+        .inline-group {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .inline-group label {
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
         .no-print {
             position: fixed;
@@ -100,103 +116,55 @@
 
 <div class="page">
     <header>
-        <strong>Office of the Headmaster Government Primary School</strong><br>
-        Pethgam Wagoora (Zone Wagoora) 193109<br>
-        <h1>Pradhan Mantri Poshan School Monthly Data Capture Format (MDCF)</h1>
-    </header>
+        <img src="new-logo.png" alt="School Logo" class="school-logo">
+        <div class="header-content">
+            <strong>Office of the Headmaster Government Primary School</strong><br>
+            Pethgam Wagoora (Zone Wagoora) 193109<br>
+            <h1>Pradhan Mantri Poshan School Monthly Data Capture Format (MDCF)</h1>
+        </div>
+        <div style="width:80px;"></div> </header>
 
     <div class="section-title">1. School Details</div>
-    <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: sans-serif;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #f2f2f2;
-        white-space: nowrap;
-    }
-    /* This ensures checkboxes and labels stay on one line */
-    .inline-group {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 15px;
-        align-items: center;
-    }
-    .inline-group label {
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    input[type="text"] {
-        width: 100%;
-        box-sizing: border-box;
-    }
-</style>
-
-<table>
-    <tr>
-        <th>Month-Year</th>
-        <td><input type="text" value="March-2026"></td>
-        <th>UDISE Code</th>
-        <td><input type="text" value="01022202207"></td>
-        <th>School Name</th>
-        <td><input type="text" value="Government Primary School Pethgam Wagoora"></td>
-    </tr>
-
-    <tr>
-        <th>Type</th>
-        <td colspan="5">
-            <div class="inline-group">
-                <label><input type="checkbox" checked> Government</label>
-                <label><input type="checkbox"> Local Body</label>
-                <label><input type="checkbox"> EGS/AIE Centers</label>
-                <label><input type="checkbox"> NCLP</label>
-                <label><input type="checkbox"> Madras / Maqtab</label>
-            </div>
-        </td>
-    </tr>
-
-    <tr>
-        <th>Category</th>
-        <td colspan="5">
-            <div class="inline-group">
-                <label><input type="checkbox" checked> Primary</label>
-                <label><input type="checkbox"> Upper Primary</label>
-                <label><input type="checkbox"> Primary with Upper Primary</label>
-            </div>
-        </td>
-    </tr>
-
-    <tr>
-        <th>State / UT</th>
-        <td><input type="text" value="Jammu and Kashmir"></td>
-        <th>District</th>
-        <td><input type="text" value="Baramulla"></td>
-        <th>Block/NP</th>
-        <td><input type="text" value="Wagoora"></td>
-    </tr>
-
-    <tr>
-        <th>Kitchen Type</th>
-        <td><input type="text" value="School Kitchen"></td>
-        <th>NGO/SHG</th>
-        <td><input type="text"></td>
-        <th>Village/Ward</th>
-        <td><input type="text" value="Wagoora"></td>
-    </tr>
-
-    <tr>
-        <th>Enrolment</th>
-        <td colspan="5"><input type="text"></td>
-    </tr>
-</table>
+    <table>
+        <tr>
+            <th style="width: 15%;">Month-Year</th>
+            <td style="width: 18%;"><input type="text" value="March-2026"></td>
+            <th style="width: 15%;">UDISE Code</th>
+            <td style="width: 18%;"><input type="text" value="01022202207"></td>
+            <th style="width: 15%;">School Name</th>
+            <td style="width: 19%;"><input type="text" value="Govt PS Pethgam Wagoora"></td>
+        </tr>
+        <tr>
+            <th>Type</th>
+            <td colspan="5">
+                <div class="inline-group">
+                    <label><input type="checkbox" checked> Government</label>
+                    <label><input type="checkbox"> Local Body</label>
+                    <label><input type="checkbox"> EGS/AIE Centers</label>
+                    <label><input type="checkbox"> NCLP</label>
+                    <label><input type="checkbox"> Madras / Maqtab</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td colspan="5">
+                <div class="inline-group">
+                    <label><input type="checkbox" checked> Primary</label>
+                    <label><input type="checkbox"> Upper Primary</label>
+                    <label><input type="checkbox"> Primary with Upper Primary</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>State / UT</th>
+            <td><input type="text" value="Jammu and Kashmir"></td>
+            <th>District</th>
+            <td><input type="text" value="Baramulla"></td>
+            <th>Block/NP</th>
+            <td><input type="text" value="Wagoora"></td>
+        </tr>
+    </table>
 
     <div class="section-title">2. Meals Availed Status</div>
     <table>
@@ -245,57 +213,57 @@
         <tbody>
             <tr>
                 <td>Cooking Cost-Bal Vatika</td>
-                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_op1" oninput="calcFunds(1)"></td>
+                <td><input type="number" id="f_re1" oninput="calcFunds(1)"></td>
+                <td><input type="number" id="f_ex1" oninput="calcFunds(1)"></td>
                 <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
             </tr>
             <tr>
                 <td>Cooking Cost-Primary</td>
-                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+                <td><input type="number" id="f_op2" oninput="calcFunds(2)"></td>
+                <td><input type="number" id="f_re2" oninput="calcFunds(2)"></td>
+                <td><input type="number" id="f_ex2" oninput="calcFunds(2)"></td>
+                <td><input type="number" id="f_cl2" class="calc-field" readonly></td>
             </tr>
             <tr>
                 <td>Cook Cum Helper</td>
-                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+                <td><input type="number" id="f_op3" oninput="calcFunds(3)"></td>
+                <td><input type="number" id="f_re3" oninput="calcFunds(3)"></td>
+                <td><input type="number" id="f_ex3" oninput="calcFunds(3)"></td>
+                <td><input type="number" id="f_cl3" class="calc-field" readonly></td>
             </tr>
             <tr>
-                <td>School Expenses:MME Expenses</td>
-                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
-                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+                <td>MME Expenses</td>
+                <td><input type="number" id="f_op4" oninput="calcFunds(4)"></td>
+                <td><input type="number" id="f_re4" oninput="calcFunds(4)"></td>
+                <td><input type="number" id="f_ex4" oninput="calcFunds(4)"></td>
+                <td><input type="number" id="f_cl4" class="calc-field" readonly></td>
             </tr>
         </tbody>
     </table>
 
-    <h3>4. Cook Cum Helper Payment Details</h3>
-
-<table>
-    <thead>
-        <tr>
-            <th class="col-sno">S.No</th>
-            <th class="col-name">Cook Name</th>
-            <th class="col-gender">Gender (M/F)</th>
-            <th class="col-cat">Category (SC/ST/OBC/GEN.)</th>
-            <th class="col-mode">Payment Mode (Cash/Bank)</th>
-            <th class="col-amount">Amount Received During The Month (in Rs)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>1</td>
-            <td><input type="text"></td>
-            <td><input type="text"></td>
-            <td><input type="text"></td>
-            <td><input type="text"></td>
-            <td><input type="number"></td>
-        </tr>
+    <div class="section-title">4. Cook Cum Helper Payment Details</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40px;">S.No</th>
+                <th>Cook Name</th>
+                <th>Gender</th>
+                <th>Category</th>
+                <th>Mode</th>
+                <th>Amount (Rs)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align:center;">1</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="number"></td>
+            </tr>
+        </tbody>
     </table>
 </div>
 
@@ -306,25 +274,25 @@
             <tr>
                 <th>Category</th>
                 <th>Opening Bal</th>
-                <th>Received During the month</th>
-                <th>Consumption During the month</th>
+                <th>Received</th>
+                <th>Consumption</th>
                 <th>Closing Balance</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>Rice (Bal Vatika)</td>
-                <td><input type="number" id="g_op1" oninput="calcGrains()"></td>
-                <td><input type="number" id="g_re1" oninput="calcGrains()"></td>
-                <td><input type="number" id="g_co1" oninput="calcGrains()"></td>
+                <td><input type="number" id="g_op1" oninput="calcGrains(1)"></td>
+                <td><input type="number" id="g_re1" oninput="calcGrains(1)"></td>
+                <td><input type="number" id="g_co1" oninput="calcGrains(1)"></td>
                 <td><input type="number" id="g_cl1" class="calc-field" readonly></td>
             </tr>
             <tr>
                 <td>Rice (Primary)</td>
-                <td><input type="number" id="g_op1" oninput="calcGrains()"></td>
-                <td><input type="number" id="g_re1" oninput="calcGrains()"></td>
-                <td><input type="number" id="g_co1" oninput="calcGrains()"></td>
-                <td><input type="number" id="g_cl1" class="calc-field" readonly></td>
+                <td><input type="number" id="g_op2" oninput="calcGrains(2)"></td>
+                <td><input type="number" id="g_re2" oninput="calcGrains(2)"></td>
+                <td><input type="number" id="g_co2" oninput="calcGrains(2)"></td>
+                <td><input type="number" id="g_cl2" class="calc-field" readonly></td>
             </tr>
         </tbody>
     </table>
@@ -339,37 +307,38 @@
     <div class="section-title">7. School Inspection</div>
     <table>
         <tr>
-            <td>Inspection done during month?</td>
+            <td style="width: 40%;">Inspection done during month?</td>
             <td><input type="text" placeholder="Yes/No"></td>
         </tr>
         <tr><td>By District Officials</td><td><input type="text"></td></tr>
         <tr><td>By SMC Members</td><td><input type="text"></td></tr>
     </table>
 
-    <div style="margin-top: 100px; display: flex; justify-content: space-between;">
-        <div style="border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px;">
+    <div style="margin-top: 80px; display: flex; justify-content: space-between;">
+        <div style="border-top: 1px solid #000; width: 220px; text-align: center; padding-top: 5px;">
             Signature of SMC Chairperson
         </div>
-        <div style="border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px;">
+        <div style="border-top: 1px solid #000; width: 220px; text-align: center; padding-top: 5px;">
             Signature of Head Teacher
         </div>
     </div>
 </div>
 
 <script>
-    function calcFunds() {
-        const op = Number(document.getElementById('f_op1').value);
-        const re = Number(document.getElementById('f_re1').value);
-        const ex = Number(document.getElementById('f_ex1').value);
-        document.getElementById('f_cl1').value = (op + re) - ex;
+    function calcFunds(row) {
+        const op = Number(document.getElementById('f_op' + row).value) || 0;
+        const re = Number(document.getElementById('f_re' + row).value) || 0;
+        const ex = Number(document.getElementById('f_ex' + row).value) || 0;
+        document.getElementById('f_cl' + row).value = (op + re) - ex;
     }
-    function calcGrains() {
-        const op = Number(document.getElementById('g_op1').value);
-        const re = Number(document.getElementById('g_re1').value);
-        const co = Number(document.getElementById('g_co1').value);
-        document.getElementById('g_cl1').value = (op + re) - co;
+    function calcGrains(row) {
+        const op = Number(document.getElementById('g_op' + row).value) || 0;
+        const re = Number(document.getElementById('g_re' + row).value) || 0;
+        const co = Number(document.getElementById('g_co' + row).value) || 0;
+        document.getElementById('g_cl' + row).value = ((op + re) - co).toFixed(2);
     }
 </script>
 
 </body>
 </html>
+                        
