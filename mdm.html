@@ -237,6 +237,20 @@
                 <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
                 <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
             </tr>
+            <tr>
+                <td>Cook Cum Helper</td>
+                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+            </tr>
+            <tr>
+                <td>School Expenses:MME Expenses</td>
+                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+            </tr>
         </tbody>
     </table>
 
@@ -245,10 +259,10 @@
         <tr>
             <th>S.No</th>
             <th>Cook Name</th>
-            <th>Gender</th>
-            <th>Category</th>
-            <th>Mode</th>
-            <th>Amount</th>
+            <th>Gender (M/F)</th>
+            <th>Category (SC/ST/OBC/GEN.)</th>
+            <th>Payment Mode (Cash/Bank)</th>
+            <th>Amount Received During The Month (in Rs)</th>
         </tr>
         <tr>
             <td>1</td>
@@ -262,18 +276,25 @@
 </div>
 
 <div class="page">
-    <div class="section-title">5. Food Grains Details (In KG.)</div>
+    <div class="section-title">5. Food Grains (Rice) Details (In KG.)</div>
     <table>
         <thead>
             <tr>
                 <th>Category</th>
                 <th>Opening Bal</th>
-                <th>Received</th>
-                <th>Consumption</th>
-                <th>Closing Bal</th>
+                <th>Received During the month</th>
+                <th>Consumption During the month</th>
+                <th>Closing Balance</th>
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <td>Rice (Bal Vatika)</td>
+                <td><input type="number" id="g_op1" oninput="calcGrains()"></td>
+                <td><input type="number" id="g_re1" oninput="calcGrains()"></td>
+                <td><input type="number" id="g_co1" oninput="calcGrains()"></td>
+                <td><input type="number" id="g_cl1" class="calc-field" readonly></td>
+            </tr>
             <tr>
                 <td>Rice (Primary)</td>
                 <td><input type="number" id="g_op1" oninput="calcGrains()"></td>
