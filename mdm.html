@@ -164,7 +164,6 @@
     </tr>
 
     <tr>
-        
         <th>Kitchen Type</th>
         <td><input type="text" value="School Kitchen"></td>
         <th>NGO/SHG</th>
@@ -186,7 +185,6 @@
                 <th>Category</th>
                 <th>Bal Vatika</th>
                 <th>Primary</th>
-                <th>Upper Primary</th>
             </tr>
         </thead>
         <tbody>
@@ -194,17 +192,19 @@
                 <td>Enrolment during the Month</td>
                 <td><input type="number"></td>
                 <td><input type="number"></td>
+            </tr>
+            <tr>
+                <td>Number of School days during the month</td>
+                <td><input type="number"></td>
                 <td><input type="number"></td>
             </tr>
             <tr>
                 <td>Actual number of days MDM served</td>
                 <td><input type="number"></td>
                 <td><input type="number"></td>
-                <td><input type="number"></td>
             </tr>
             <tr>
                 <td>Total Meals served during month</td>
-                <td><input type="number"></td>
                 <td><input type="number"></td>
                 <td><input type="number"></td>
             </tr>
@@ -224,7 +224,14 @@
         </thead>
         <tbody>
             <tr>
-                <td>Cooking Cost</td>
+                <td>Cooking Cost-Bal Vatika</td>
+                <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
+                <td><input type="number" id="f_cl1" class="calc-field" readonly></td>
+            </tr>
+            <tr>
+                <td>Cooking Cost-Primary</td>
                 <td><input type="number" id="f_op1" oninput="calcFunds()"></td>
                 <td><input type="number" id="f_re1" oninput="calcFunds()"></td>
                 <td><input type="number" id="f_ex1" oninput="calcFunds()"></td>
