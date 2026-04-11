@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Result Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px dashed #4facfe;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #00f2fe;
+            background: #f0f8ff;
+        }
+
+        .upload-section input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            margin: 10px;
+        }
+
+        .file-label:hover {
+            transform: translateY(-3px);
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ff;
+        }
+
+        .student-info {
+            margin-bottom: 15px;
+        }
+
+        .student-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .photo-upload {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px dashed #ddd;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .photo-upload img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .marks-display {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .download-section {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .student-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Student Result System</h1>
+            <p>Upload Excel results, add photos & generate marksheets</p>
+        </div>
+
+        <div class="content">
+            <!-- Excel Upload Section -->
+            <div class="upload-section">
+                <h3>📊 Upload Excel Result File</h3>
+                <p>Expected columns: Roll No, Name, Subject1, Subject2, Subject3, Total, Percentage</p>
+                <label for="excelFile" class="file-label">📁 Choose Excel File</label>
+                <input type="file" id="excelFile" accept=".xlsx,.xls" />
+                <div id="excelInfo" class="file-info" style="display: none;"></div>
+            </div>
+
+            <!-- Photo Upload Section -->
+            <div class="upload-section">
+                <h3>📸 Upload Student Photos</h3>
+                <p>(Optional) Add profile pictures for students</p>
+                <label for="photoFolder" class="file-label">📁 Upload Photos Folder</label>
+                <input type="file" id="photoFolder" webkitdirectory multiple />
+                <div id="photoInfo" class="file-info" style="display: none;"></div>
+            </div>
+
+            <!-- Process Button -->
+            <div style="text-align: center; margin: 30px 0;">
+                <button id="processBtn" class="btn" disabled>🚀 Process Results & Photos</button>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="status" class="status" style="display: none;"></div>
+
+            <!-- Students Grid -->
+            <div id="studentsGrid" class="student-grid" style="display: none;"></div>
+
+            <!-- Download Section -->
+            <div id="downloadSection" class="download-section" style="display: none;">
+                <h3>📥 Download Individual Marksheets</h3>
+                <p>Click on any student card to generate their personalized marksheet</p>
+                <button id="downloadAll" class="btn">📦 Download All Marksheets (ZIP)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class StudentResultManager {
+            constructor() {
+                this.students = [];
+                this.excelFile = null;
+                this.photoFiles = {};
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+            }
+
+            bindEvents() {
+                const excelInput = document.getElementById('excelFile');
+                const photoInput = document.getElementById('photoFolder');
+                const processBtn = document.getElementById('processBtn');
+
+                excelInput.addEventListener('change', (e) => this.handleExcelUpload(e));
+                photoInput.addEventListener('change', (e) => this.handlePhotoUpload(e));
+                processBtn.addEventListener('click', () => this.processResults());
+            }
+
+            handleExcelUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    this.excelFile = file;
+                    document.getElementById('excelInfo').innerHTML = `
+                        <strong>✅ ${file.name}</strong><br>
+                        Size: ${(file.size / 1024 / 1024).toFixed(2)} MB
+                    `;
+                    document.getElementById('excelInfo').style.display = 'block';
+                    this.checkProcessReady();
+                }
+            }
+
+            handlePhotoUpload(event) {
+                const files = Array.from(event.target.files);
+                this.photoFiles = {};
+                
+                files.forEach(file => {
+                    const rollNo = this.extractRollNoFromFilename(file.name);
+                    if (rollNo) {
+                        this.photoFiles[rollNo] = file;
+                    }
+                });
+
+                document.getElementById('photoInfo').innerHTML = `
+                    <strong>✅ ${Object.keys(this.photoFiles).length} photos uploaded</strong>
+                `;
+                document.getElementById('photoInfo').style.display = 'block';
+                this.checkProcessReady();
+            }
+
+            extractRollNoFromFilename(filename) {
+                // Extract roll number from filename (e.g., "001_John.jpg" -> "001")
+                const match = filename.match(/^(d+)/);
+                return match ? match[1].padStart(3, '0') : null;
+            }
+
+            checkProcessReady() {
+                const processBtn = document.getElementById('processBtn');
+                processBtn.disabled = !this.excelFile;
+            }
+
+            async processResults() {
+                if (!this.excelFile) return;
+
+                this.showStatus('⏳ Processing Excel file...', 'success');
+                
+                try {
+                    const excelData = await this.readExcel(this.excelFile);
+                    this.students = excelData;
+                    
+                    this.renderStudents();
+                    this.showDownloadSection();
+                    this.showStatus('✅ Results processed successfully!', 'success');
+                } catch (error) {
+                    this.showStatus('❌ Error processing file: ' + error.message, 'error');
+                }
+            }
+
+            async readExcel(file) {
+                // Simulate Excel parsing (in real implementation, use SheetJS library)
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        // Mock data structure
+                        resolve([
+                            { rollNo: '001', name: 'John Doe', subject1: 85, subject2: 92, subject3: 78, total: 255, percentage: 85.0 },
+                            { rollNo: '002', name: 'Jane Smith', subject1: 78, subject2: 88, subject3: 91, total: 257, percentage: 85.7 },
+                            { rollNo: '003', name: 'Mike Johnson', subject1: 92, subject2: 85, subject3: 79, total: 256, percentage: 85.3 }
+                        ]);
+                    }, 1500);
+                });
+            }
+
+            renderStudents() {
+                const container = document.getElementById('studentsGrid');
+                container.innerHTML = '';
+
+                this.students.forEach(student => {
+                    const card = this.createStudentCard(student);
+                    container.appendChild(card);
+                });
+
+                container.style.display = 'grid';
+            }
+
+            createStudentCard(student) {
+                const div = document.createElement('div');
+                div.className = 'student-card';
+                div.onclick = () => this.generateMarksheet(student);
+
+                const hasPhoto = this.photoFiles[student.rollNo];
+                const photoSrc = hasPhoto ? URL.createObjectURL(this.photoFiles[student.rollNo]) : null;
+
+                div.innerHTML = `
+                    <div class="photo-upload" title="Click to generate marksheet">
+                        ${photoSrc ? `<img src="${photoSrc}" alt="${student.name}">` : '📷'}
+                    </div>
+                    <div class="student-info">
+                        <div class="student-name">${student.name}</div>
+                        <div>Roll No: ${student.rollNo}</div>
+                        <div>Percentage: ${student.percentage}%</div>
+                    </div>
+                    <div class="marks-display">
+                        <strong>Marks:</strong><br>
+                        Subject 1: ${student.subject1}<br>
+                        Subject 2: ${student.subject2}<br>
+                        Subject 3: ${student.subject3}<br>
+                        Total: ${student.total}
+                    </div>
+                `;
+
+                return div;
+            }
+
+            generateMarksheet(student) {
+                // Generate and download marksheet PDF (simplified)
+                const marksheetContent = `
+Student Marksheet
+
+Roll No: ${student.rollNo}
+Name: ${student.name}
+-------------------------
+Subject 1: ${student.subject1}
+Subject 2: ${student.subject2}
+Subject 3: ${student.subject3}
+-------------------------
+Total: ${student.total}
+Percentage: ${student.percentage}%
+
+Generated on: ${new Date().toLocaleDateString()}
+                `;
+                
+                const blob = new Blob([marksheetContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Marksheet_${student.rollNo}_${student.name.replace(/s+/g, '_')}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            showStatus(message, type) {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = `status ${type}`;
+                status.style.display = 'block';
+            }
+
+            showDownloadSection() {
+                document.getElementById('downloadSection').style.display = 'block';
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new StudentResultManager();
+        });
+    </script>
+</body>
+  </html>
