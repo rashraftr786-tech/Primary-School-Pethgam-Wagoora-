@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>General Admission Register | Government Primary School Pethgam Wagoora</title>
+<style>
+:root{--blue:#0b5cab;--dark:#08376d;--green:#087443;--red:#c62828;--orange:#e67e22;--bg:#f3f6fa;--card:#fff;--line:#d8e0ea;--text:#17212b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}.top{background:linear-gradient(135deg,var(--blue),var(--dark));color:#fff;padding:18px 20px;position:sticky;top:0;z-index:20;box-shadow:0 3px 15px #0002}
+.school{font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}.sub{font-size:12px;margin-top:4px;opacity:.95}
+.wrap{max-width:1500px;margin:auto;padding:18px}.toolbar,.stats,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 18px #18324a0b}
+.toolbar{padding:14px;display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:15px}
+.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff}.success{background:var(--green);color:#fff}.danger{background:var(--red);color:#fff}.warning{background:var(--orange);color:#fff}.light{background:#eef4fb;color:var(--blue);border:1px solid #cbdced}
+.search{flex:1;min-width:220px;padding:10px 12px;border:1px solid var(--line);border-radius:9px}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:10px;margin-bottom:15px}
+.stat{padding:13px;border-radius:10px;background:#f7faff;border:1px solid #e2ebf5}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:#607080}
+.card{overflow:hidden}.cardhead{padding:14px 16px;background:#f8fbff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.cardhead h2{font-size:17px;margin:0}.tablewrap{overflow:auto;max-height:67vh}table{width:100%;border-collapse:collapse;min-width:1450px}th,td{border-bottom:1px solid #e6ebf1;padding:9px 8px;text-align:left;font-size:12px;white-space:nowrap}th{position:sticky;top:0;background:#eaf2fb;color:#123a62;z-index:3}tr:hover td{background:#f8fbff}.badge{padding:4px 7px;border-radius:20px;font-weight:700;font-size:11px}.approved{background:#dcf7e8;color:#087443}.pending{background:#fff0d8;color:#9a5a00}.rejected{background:#fde2e2;color:#a21b1b}
+.actions{display:flex;gap:5px}.mini{padding:6px 8px;font-size:11px;border-radius:7px}
+.empty{text-align:center;padding:35px;color:#6b7785}
+.modal{display:none;position:fixed;inset:0;background:#07152299;z-index:100;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.modalbox{background:#fff;border-radius:15px;width:min(1100px,100%);max-height:92vh;overflow:auto}.modalhead{padding:15px 18px;background:linear-gradient(135deg,var(--blue),var(--dark));color:#fff;display:flex;justify-content:space-between;align-items:center}.modalbody{padding:18px}.formgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px 12px}.field{grid-column:span 4}.field.s6{grid-column:span 6}.field.s12{grid-column:span 12}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.field input,.field select{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px}.section{grid-column:span 12;border-top:1px solid #e4eaf0;padding-top:9px;margin-top:4px;color:var(--blue);font-weight:800}.modalfoot{padding:14px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+.notice{font-size:12px;color:#536474;margin-top:5px}.file{display:none}.check{display:flex;align-items:center;gap:7px}.footer{text-align:center;color:#667585;font-size:11px;padding:15px}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.field,.field.s6{grid-column:span 6}.field.s12,.section{grid-column:span 12}}
+@media(max-width:550px){.wrap{padding:8px}.stats{grid-template-columns:1fr 1fr}.field,.field.s6,.field.s12{grid-column:span 12}.school{font-size:15px}.toolbar{padding:9px}.btn{padding:9px 10px}}
+@media print{body{background:#fff}.top,.toolbar,.stats,.cardhead,.footer{display:none!important}.wrap{padding:0}.card{border:0;box-shadow:none}.tablewrap{max-height:none;overflow:visible}table{min-width:0;font-size:8px}th,td{font-size:8px;padding:4px;white-space:normal}.actions{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="school">Government Primary School Pethgam Wagoora</div>
+  <div class="sub">General Admission Register / Master Student Database • Wagoora Babareshi Road Near Zonal Education Office Wagoora • UDISE: 01022202207</div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <button class="btn primary" onclick="openForm()">＋ New Admission</button>
+    <button class="btn success" onclick="document.getElementById('excelInput').click()">⇧ Import Excel</button>
+    <input id="excelInput" class="file" type="file" accept=".xlsx,.xls,.csv" onchange="importExcel(event)">
+    <button class="btn light" onclick="downloadTemplate()">⇩ Excel Template</button>
+    <button class="btn light" onclick="exportExcel()">⇩ Export Register</button>
+    <button class="btn light" onclick="window.print()">🖨 Print Register</button>
+    <input id="search" class="search" placeholder="Search by admission no., name, Aadhaar, PEN, class, father, phone..." oninput="render()">
+    <select id="classFilter" class="search" style="max-width:180px" onchange="render()"><option value="">All Classes</option></select>
+    <select id="statusFilter" class="search" style="max-width:150px" onchange="render()"><option value="">All Status</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select>
+  </div>
+
+  <section class="stats">
+    <div class="stat"><b id="total">0</b><span>Total Records</span></div>
+    <div class="stat"><b id="approved">0</b><span>Approved</span></div>
+    <div class="stat"><b id="pending">0</b><span>Pending</span></div>
+    <div class="stat"><b id="boys">0</b><span>Boys</span></div>
+    <div class="stat"><b id="girls">0</b><span>Girls</span></div>
+  </section>
+
+  <section class="card">
+    <div class="cardhead">
+      <h2>Master Admission Records</h2>
+      <div class="notice">Approved records become the master profile source for Result Register, Attendance, Mid-Day Meal, ID Card, Bonafide Certificate and Marksheet modules.</div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>Admission No.</th><th>Student Name</th><th>Class</th><th>Gender</th><th>DOB</th><th>Aadhaar</th><th>PEN</th><th>Father's Name</th><th>Mother's Name</th><th>Contact</th><th>Category</th><th>Bank A/C</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+  <div class="footer">Local browser database is enabled. For multi-device/school-wide synchronization, connect the same data model to Firebase/Firestore or your existing school ERP backend.</div>
+</main>
+
+<div class="modal" id="modal">
+ <div class="modalbox">
+  <div class="modalhead"><b id="modalTitle">New Admission</b><button class="btn light" onclick="closeForm()">✕</button></div>
+  <form id="admissionForm" onsubmit="saveRecord(event)">
+   <div class="modalbody">
+    <div class="formgrid">
+      <div class="section">Admission Details</div>
+      <div class="field"><label>Admission Number *</label><input id="admissionNo" required></div>
+      <div class="field"><label>Admission Date *</label><input id="admissionDate" type="date" required></div>
+      <div class="field"><label>Class Joining *</label><select id="classJoining" required><option value="">Select</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option></select></div>
+      <div class="field"><label>Admission Status</label><select id="status"><option>Pending</option><option>Approved</option><option>Rejected</option></select></div>
+      <div class="field"><label>Gender *</label><select id="gender" required><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+      <div class="field"><label>PEN Number</label><input id="penNumber"></div>
+
+      <div class="section">Student Name</div>
+      <div class="field"><label>First Name *</label><input id="studentFirst" required></div>
+      <div class="field"><label>Middle Name</label><input id="studentMiddle"></div>
+      <div class="field"><label>Last Name</label><input id="studentLast"></div>
+
+      <div class="section">Name As Per Aadhaar</div>
+      <div class="field"><label>First Name</label><input id="aadhaarFirst"></div>
+      <div class="field"><label>Middle Name</label><input id="aadhaarMiddle"></div>
+      <div class="field"><label>Last Name</label><input id="aadhaarLast"></div>
+
+      <div class="section">Parents / Guardian</div>
+      <div class="field"><label>Father First Name</label><input id="fatherFirst"></div>
+      <div class="field"><label>Father Middle Name</label><input id="fatherMiddle"></div>
+      <div class="field"><label>Father Last Name</label><input id="fatherLast"></div>
+      <div class="field"><label>Mother First Name</label><input id="motherFirst"></div>
+      <div class="field"><label>Mother Middle Name</label><input id="motherMiddle"></div>
+      <div class="field"><label>Mother Last Name</label><input id="motherLast"></div>
+      <div class="field"><label>Father Contact</label><input id="fatherContact" inputmode="tel"></div>
+      <div class="field"><label>Mother Contact</label><input id="motherContact" inputmode="tel"></div>
+
+      <div class="section">Identity & Address</div>
+      <div class="field s6"><label>Aadhaar Number</label><input id="aadhaarNumber" inputmode="numeric" maxlength="12"></div>
+      <div class="field s6"><label>Date of Birth</label><input id="dob" type="date"></div>
+      <div class="field s12"><label>Date of Birth in Words</label><input id="dobWords"></div>
+      <div class="field s12"><label>Residence / Address</label><input id="residence"></div>
+      <div class="field"><label>Tehsil</label><input id="tehsil"></div>
+      <div class="field"><label>District</label><input id="district"></div>
+
+      <div class="section">Bank / Social Details</div>
+      <div class="field"><label>Bank Account Number</label><input id="bankAccount"></div>
+      <div class="field"><label>Bank Name</label><input id="bankName"></div>
+      <div class="field"><label>Bank Branch</label><input id="bankBranch"></div>
+      <div class="field"><label>IFSC Code</label><input id="ifsc"></div>
+      <div class="field"><label>Category</label><select id="category"><option value="">Select</option><option>SC</option><option>ST</option><option>OBC</option><option>GENERAL</option></select></div>
+      <div class="field"><label>Blood Group</label><select id="bloodGroup"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+      <div class="field"><label>Ration Card Number</label><input id="rationNumber"></div>
+      <div class="field"><label>Ration Card Type</label><input id="rationType"></div>
+      <div class="field s12"><label>Student Photo</label><input id="photo" type="file" accept="image/*"><div class="notice">Photo is stored in the record when supported by the browser.</div></div>
+    </div>
+   </div>
+   <div class="modalfoot"><button type="button" class="btn light" onclick="closeForm()">Cancel</button><button type="submit" class="btn primary">Save Admission</button></div>
+  </form>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const STORAGE_KEY="GPSPETHGAM_MASTER_ADMISSION_V1";
+const PROFILE_PAGE="student-profile.html";
+let records=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+let editId=null;
+
+const fields=[
+"admissionNo","admissionDate","classJoining","status","gender","penNumber",
+"studentFirst","studentMiddle","studentLast","aadhaarFirst","aadhaarMiddle","aadhaarLast",
+"fatherFirst","fatherMiddle","fatherLast","motherFirst","motherMiddle","motherLast",
+"fatherContact","motherContact","aadhaarNumber","dob","dobWords","residence","tehsil","district",
+"bankAccount","bankName","bankBranch","ifsc","category","bloodGroup","rationNumber","rationType"
+];
+
+function val(id){return document.getElementById(id)?.value?.trim()||""}
+function full(r,prefix){return [r[prefix+"First"],r[prefix+"Middle"],r[prefix+"Last"]].filter(Boolean).join(" ")}
+function studentName(r){return full(r,"student")}
+function today(){return new Date().toISOString().slice(0,10)}
+function save(){records.forEach((r,i)=>{if(!r.studentId)r.studentId="GPSPGW-"+(r.admissionDate||today()).slice(0,4)+"-"+String(i+1).padStart(4,"0")});localStorage.setItem(STORAGE_KEY,JSON.stringify(records))}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function maskedAadhaar(s){return s&&s.length>=4?"XXXX XXXX "+s.slice(-4):s||""}
+
+function nextAdmission(){
+  const nums=records.map(r=>parseInt(r.admissionNo,10)).filter(Number.isFinite);
+  return String((Math.max(0,...nums)+1)).padStart(3,"0");
+}
+function openForm(id=null){
+  editId=id; document.getElementById("modal").classList.add("show");
+  document.getElementById("modalTitle").textContent=id?"Edit Admission":"New Admission";
+  document.getElementById("admissionForm").reset();
+  if(id){
+    const r=records.find(x=>x.id===id); if(!r)return;
+    fields.forEach(k=>{let e=document.getElementById(k);if(e)e.value=r[k]||""});
+  }else{
+    document.getElementById("admissionNo").value=nextAdmission();
+    document.getElementById("admissionDate").value=today();
+    document.getElementById("status").value="Pending";
+  }
+}
+function closeForm(){document.getElementById("modal").classList.remove("show");editId=null}
+
+async function saveRecord(e){
+  e.preventDefault();
+  const r={id:editId||crypto.randomUUID(),updatedAt:new Date().toISOString()};
+  fields.forEach(k=>r[k]=val(k));
+  if(!r.admissionNo||!r.studentFirst){alert("Admission Number and Student First Name are required.");return}
+  const duplicate=records.find(x=>x.admissionNo===r.admissionNo&&x.id!==r.id);
+  if(duplicate){alert("This Admission Number already exists.");return}
+  const photo=document.getElementById("photo");
+  if(photo.files[0]){
+    r.photo=await fileToDataURL(photo.files[0]);
+  }else if(editId){
+    const old=records.find(x=>x.id===editId);r.photo=old?.photo||"";
+  }
+  if(editId) records=records.map(x=>x.id===editId?r:x); else records.push(r);
+  save(); closeForm(); render();
+}
+function fileToDataURL(file){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=reject;fr.readAsDataURL(file)})}
+
+function approve(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  r.status="Approved";r.approvedAt=new Date().toISOString();save();render();
+}
+function rejectAdmission(id){
+  if(!confirm("Mark this admission as Rejected?"))return;
+  const r=records.find(x=>x.id===id);if(!r)return;r.status="Rejected";save();render();
+}
+function deleteAdmission(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  if(confirm("Delete admission "+r.admissionNo+" for "+studentName(r)+"? This cannot be undone.")){
+    records=records.filter(x=>x.id!==id);save();render();
+  }
+}
+function profile(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  const data={
+    admissionId:r.id,admissionNo:r.admissionNo,status:r.status,
+    studentName:studentName(r),class:r.classJoining,gender:r.gender,dob:r.dob,
+    dobWords:r.dobWords,aadhaarNumber:r.aadhaarNumber,penNumber:r.penNumber,
+    fatherName:full(r,"father"),motherName:full(r,"mother"),
+    fatherContact:r.fatherContact,motherContact:r.motherContact,residence:r.residence,
+    tehsil:r.tehsil,district:r.district,category:r.category,bloodGroup:r.bloodGroup,
+    rationNumber:r.rationNumber,rationType:r.rationType,bankAccount:r.bankAccount,
+    bankName:r.bankName,bankBranch:r.bankBranch,ifsc:r.ifsc,photo:r.photo||""
+  };
+  const url=PROFILE_PAGE+"?id="+encodeURIComponent(r.id);
+  window.open(url,"_blank");
+}
+
+function render(){
+  const q=val("search").toLowerCase(), cf=val("classFilter"), sf=val("statusFilter");
+  const filtered=records.filter(r=>{
+    const hay=[r.admissionNo,studentName(r),r.aadhaarNumber,r.penNumber,r.classJoining,r.gender,full(r,"father"),full(r,"mother"),r.fatherContact,r.motherContact].join(" ").toLowerCase();
+    return (!q||hay.includes(q))&&(!cf||r.classJoining===cf)&&(!sf||r.status===sf);
+  });
+  document.getElementById("tbody").innerHTML=filtered.length?filtered.map((r,i)=>`
+    <tr>
+      <td>${i+1}</td><td><b>${esc(r.admissionNo)}</b><br><small>${esc(r.studentId||"")}</small></td><td>${esc(studentName(r))}</td><td>${esc(r.classJoining)}</td><td>${esc(r.gender)}</td>
+      <td>${esc(r.dob)}</td><td>${esc(maskedAadhaar(r.aadhaarNumber))}</td><td>${esc(r.penNumber)}</td><td>${esc(full(r,"father"))}</td><td>${esc(full(r,"mother"))}</td>
+      <td>${esc(r.fatherContact||r.motherContact)}</td><td>${esc(r.category)}</td><td>${esc(r.bankAccount)}</td>
+      <td><span class="badge ${r.status==="Approved"?"approved":r.status==="Rejected"?"rejected":"pending"}">${esc(r.status)}</span></td>
+      <td><div class="actions">
+        ${r.status!=="Approved"?`<button class="btn success mini" onclick="approve('${r.id}')">Approve</button>`:""}
+        <button class="btn light mini" onclick="openForm('${r.id}')">Edit</button>
+        <button class="btn light mini" onclick="profile('${r.id}')">Profile</button>
+        ${r.status!=="Rejected"?`<button class="btn warning mini" onclick="rejectAdmission('${r.id}')">Reject</button>`:""}
+        <button class="btn danger mini" onclick="deleteAdmission('${r.id}')">Delete</button>
+      </div></td>
+    </tr>`).join(""):`<tr><td colspan="15" class="empty">No admission records found.</td></tr>`;
+  document.getElementById("total").textContent=records.length;
+  document.getElementById("approved").textContent=records.filter(r=>r.status==="Approved").length;
+  document.getElementById("pending").textContent=records.filter(r=>r.status==="Pending").length;
+  document.getElementById("boys").textContent=records.filter(r=>r.gender==="Male").length;
+  document.getElementById("girls").textContent=records.filter(r=>r.gender==="Female").length;
+  const classes=[...new Set(records.map(r=>r.classJoining).filter(Boolean))];
+  const select=document.getElementById("classFilter"), old=select.value;
+  select.innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option>${esc(c)}</option>`).join("");
+  select.value=classes.includes(old)?old:"";
+}
+
+const EXCEL_HEADERS=[
+"admissionNo","admissionDate","classJoining","status","gender","penNumber",
+"studentFirst","studentMiddle","studentLast","aadhaarFirst","aadhaarMiddle","aadhaarLast",
+"fatherFirst","fatherMiddle","fatherLast","motherFirst","motherMiddle","motherLast",
+"fatherContact","motherContact","aadhaarNumber","dob","dobWords","residence","tehsil","district",
+"bankAccount","bankName","bankBranch","ifsc","category","bloodGroup","rationNumber","rationType"
+];
+function downloadTemplate(){
+  if(typeof XLSX==="undefined"){alert("Excel library is not loaded. Connect to the internet and try again.");return}
+  const ws=XLSX.utils.aoa_to_sheet([EXCEL_HEADERS,["001",today(),"1st","Pending","Male","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]]);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Admissions");XLSX.writeFile(wb,"General_Admission_Register_Template.xlsx");
+}
+function exportExcel(){
+  if(typeof XLSX==="undefined"){alert("Excel library is not loaded.");return}
+  if(!records.length){alert("No records to export.");return}
+  const rows=records.map(r=>{const o={};EXCEL_HEADERS.forEach(k=>o[k]=r[k]||"");o.id=r.id;o.updatedAt=r.updatedAt||"";return o});
+  const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Admissions");
+  XLSX.writeFile(wb,"General_Admission_Register.xlsx");
+}
+function importExcel(e){
+  const file=e.target.files[0];if(!file)return;
+  if(typeof XLSX==="undefined"){alert("Excel library is not loaded. Connect to the internet and try again.");e.target.value="";return}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const wb=XLSX.read(ev.target.result,{type:"array"}), ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{defval:""});
+      if(!rows.length){alert("The Excel file has no data rows.");return}
+      let added=0,updated=0,skipped=0;
+      rows.forEach(row=>{
+        const r={id:crypto.randomUUID(),updatedAt:new Date().toISOString()};
+        EXCEL_HEADERS.forEach(k=>r[k]=String(row[k]??"").trim());
+        if(!r.admissionNo||!r.studentFirst){skipped++;return}
+        const existing=records.find(x=>x.admissionNo===r.admissionNo);
+        if(existing){r.id=existing.id;r.photo=existing.photo||"";records=records.map(x=>x.id===r.id?r:x);updated++}
+        else{if(!r.status)r.status="Pending";records.push(r);added++}
+      });
+      save();render();alert(`Import complete.\nAdded: ${added}\nUpdated: ${updated}\nSkipped: ${skipped}`);
+    }catch(err){console.error(err);alert("Could not read this Excel file. Please use the supplied Excel Template.")}
+    e.target.value="";
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+document.addEventListener("DOMContentLoaded",()=>{render();document.getElementById("admissionDate").value=today()});
+window.addEventListener("click",e=>{if(e.target.id==="modal")closeForm()});
+</script>
+</body>
+</html>
