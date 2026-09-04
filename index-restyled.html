@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Government Primary School Pethgam Wagoora Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+:root{--navy:#12355b;--blue:#1f6fb2;--sky:#eaf4ff;--gold:#d6a93a;--text:#18324b;--muted:#637487;--border:#dbe7f2}
+*{box-sizing:border-box}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;min-height:100vh;color:var(--text);background:radial-gradient(circle at top left,#f8fcff 0,#eef6fd 40%,#f5f8fb 100%);padding:24px 16px 40px}
+.portal{width:min(1050px,100%);margin:auto}
+.header{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy),#1d6098);color:#fff;border-radius:24px;padding:24px;box-shadow:0 10px 30px rgba(18,53,91,.12);display:flex;align-items:center;gap:20px}
+.header:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-90px;top:-100px;background:rgba(255,255,255,.08)}
+.logo-wrap{flex:0 0 auto;width:88px;height:88px;border-radius:50%;background:#fff;display:grid;place-items:center;padding:7px;box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:1}
+.logo-wrap img{width:100%;height:100%;object-fit:contain;border-radius:50%}
+.school-info{z-index:1;text-align:left}
+.school-info h1{margin:0 0 5px;font-size:clamp(1.2rem,3vw,2rem);line-height:1.15;color:#fff}
+.school-info p{margin:0;color:#e4f2ff;font-size:.95rem}
+.badge{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 10px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.1);font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:28px 4px 12px}
+.section-title h2{margin:0;font-size:1.05rem;color:var(--navy)}
+.section-title span{font-size:.75rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.btn{position:relative;min-height:132px;background:#fff;padding:20px 12px 16px;border:1px solid var(--border);border-radius:17px;text-decoration:none;color:var(--text);box-shadow:0 5px 18px rgba(18,53,91,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:.2s;overflow:hidden}
+.btn:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--gold))}
+.btn:hover,.btn:focus-visible{transform:translateY(-4px);box-shadow:0 12px 26px rgba(18,53,91,.13);border-color:#b8d1e7;outline:none}
+.btn i{width:52px;height:52px;display:grid;place-items:center;border-radius:15px;background:var(--sky);font-size:24px;margin-bottom:11px}
+.btn span{font-size:.78rem;font-weight:800;line-height:1.25;text-transform:uppercase;letter-spacing:.25px}
+.fa-user-check{color:#218a59}.fa-utensils{color:#d8781d}.fa-poll{color:#7651a8}.fa-file-invoice-dollar{color:#21855b}.fa-file-signature{color:#2874ad}.fa-medal{color:#b78914}.fa-file-alt{color:#17639d}.fa-folder-plus,.fa-file-circle-plus{color:#d44848}.fa-id-card{color:#7a5bb5}.fa-clipboard-check{color:#218a59}
+.footer{text-align:center;margin-top:24px;color:var(--muted);font-size:.72rem}
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){body{padding:14px 10px 28px}.header{border-radius:20px;padding:18px 16px;gap:14px}.logo-wrap{width:68px;height:68px}.school-info h1{font-size:1.15rem}.school-info p{font-size:.82rem}.grid{grid-template-columns:repeat(2,1fr);gap:10px}.btn{min-height:118px;padding:17px 8px 13px;border-radius:14px}.btn i{width:46px;height:46px;font-size:21px;margin-bottom:9px}.btn span{font-size:.69rem}.section-title{margin-top:20px}.section-title span{display:none}}
+@media(max-width:360px){.logo-wrap{width:58px;height:58px}.school-info h1{font-size:1rem}.grid{gap:8px}.btn{min-height:108px}}
+</style>
+</head>
+<body>
+<div class="portal">
+<header class="header">
+<div class="logo-wrap"><img src="new-logo.png" alt="Government Primary School Pethgam Wagoora Logo" onerror="this.style.display='none'"></div>
+<div class="school-info">
+<h1>Government Primary School Pethgam Wagoora</h1>
+<p>School Administration Portal</p>
+<div class="badge"><i class="fas fa-shield-halved"></i> Official School Workspace</div>
+</div>
+</header>
+
+<div class="section-title"><h2>Student Management</h2><span>Daily student records &amp; academic work</span></div>
+<div class="grid">
+<a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Student_Master" class="btn" target="_blank" rel="noopener"><i class="fas fa-user-check"></i><span>Attendance</span></a>
+<a href="general_admission_register.html" class="btn"><i class="fas fa-folder-plus"></i><span>Admission Register</span></a>
+<a href="admission.html" class="btn"><i class="fas fa-file-circle-plus"></i><span>Admission Form</span></a>
+<a href="child-profile.html" class="btn"><i class="fas fa-id-card"></i><span>Child Profile</span></a>
+<a href="marksheet.html" class="btn"><i class="fas fa-clipboard-check"></i><span>Students Marksheet</span></a>
+<a href="marksheet_gen.html" class="btn" target="_blank"><i class="fas fa-file-circle-plus"></i><span>Upload Result</span></a>
+<a href="results.html" class="btn" target="_blank"><i class="fas fa-poll"></i><span>Results</span></a>
+</div>
+
+<div class="section-title"><h2>School Administration</h2><span>Official records &amp; documents</span></div>
+<div class="grid">
+<a href="MDM.html" class="btn" target="_blank"><i class="fas fa-utensils"></i><span>MDM</span></a>
+<a href="salary-inc.html" class="btn"><i class="fas fa-file-invoice-dollar"></i><span>Salary Increment</span></a>
+<a href="duty-certificate.html" class="btn"><i class="fas fa-file-signature"></i><span>Duty Certificate</span></a>
+<a href="bonafide-certificate.html" class="btn"><i class="fas fa-medal"></i><span>Bonafide Certificate</span></a>
+<a href="work-behaviour.html" class="btn"><i class="fas fa-medal"></i><span>Work &amp; Behavior</span></a>
+<a href="school-lh.html" class="btn"><i class="fas fa-file-alt"></i><span>School Letterhead</span></a>
+</div>
+<div class="footer">Government Primary School Pethgam Wagoora &bull; School Administration Portal</div>
+</div>
+</body>
+</html>
