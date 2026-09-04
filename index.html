@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Government Primary School Pethgam Wagoora Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        
+        /* Grid adjusted for 3 columns on desktop, 2 columns on small mobiles */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            max-width: 500px; 
+            margin: 20px auto; 
+        }
+
+        @media (max-width: 400px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .btn { 
+            background: white; 
+            padding: 20px 10px; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            color: #333; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            background-color: #fafafa;
+        }
+
+        /* Icon colors updated for variety and recognition */
+        .btn i { font-size: 30px; margin-bottom: 10px; }
+        .fa-user-check { color: #2ecc71; } /* Green for Attendance */
+        .fa-utensils { color: #e67e22; }   /* Orange for MDM */
+        .fa-poll { color: #9b59b6; }       /* Purple for Results */
+        .fa-file-invoice-dollar { color: #27ae60; } /* Dark Green for Salary */
+        .fa-file-signature { color: #2980b9; }      /* Blue for Duty Cert */
+        .fa-medal { color: #f1c40f; }               /* Gold for Work/Behavior */
+        .fa-file-alt { color: #0056b3; }            /* School Blue for Letterhead */
+        .fa-folder-plus { color: #e74c3c; }         /* Red for New Document */
+
+        .btn span { font-size: 11px; font-weight: bold; line-height: 1.2; text-transform: uppercase; }
+        h1 { color: #0056b3; font-size: 1.5rem; margin-bottom: 5px; }
+        p { color: #666; font-size: 0.9rem; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>Government Primary School Pethgam Wagoora</h1>
+    <p>School Administration Portal</p>
+
+    <div class="grid">
+    <a href="general_admission_register.html" class="btn" target="_blank"><i class="fas fa-users"></i><span>Student Database</span></a>
+
+        <a href="https://www.appsheet.com/start/4148e2b1-6583-45fa-9bc3-bb48f152d568#view=Student_Master" class="btn" target="_blank">
+            <i class="fas fa-user-check"></i><span>Attendance</span>
+        </a>
+        <a href="MDM.html" class="btn" target="_blank">
+            <i class="fas fa-utensils"></i><span>MDM</span>
+        </a>
+        <a href="marksheet_gen.html" class="btn" target="_blank">
+            <i class="fas fa-user-check"></i><span>Upload Result</span>
+        </a>
+        <a href="results.html" class="btn" target="_blank">
+            <i class="fas fa-poll"></i><span>Results</span>
+        </a>
+
+        <a href="salary-inc.html" class="btn">
+            <i class="fas fa-file-invoice-dollar"></i><span>Salary Increment</span>
+        </a>
+
+        <a href="duty-certificate.html" class="btn">
+            <i class="fas fa-file-signature"></i><span>Duty Certificate</span>
+        </a>
+
+        <a href="bonafide-certificate.html" class="btn">
+            <i class="fas fa-medal"></i><span>Bonafide Certificate</span>
+        </a>
+
+        <a href="work-behaviour.html" class="btn">
+            <i class="fas fa-medal"></i><span>Work & Behavior</span>
+        </a>
+
+        <a href="child-profile.html" class="btn">
+            <i class="fas fa-medal"></i><span>Child Profile</span>
+        </a>
+
+        <a href="marksheet.html" class="btn">
+            <i class="fas fa-medal"></i><span>Students Marksheet</span>
+        </a>
+
+        <a href="school-lh.html" class="btn">
+            <i class="fas fa-file-alt"></i><span>School Letterhead</span>
+        </a>
+
+        <a href="general_admission_register.html" class="btn">
+            <i class="fas fa-folder-plus"></i><span>New Document</span>
+        </a>
+        
+        <a href="admission.html" class="btn">
+            <i class="fas fa-medal"></i><span>Admission Form</span>
+        </a>
+    </div>
+</body>
+</html>
