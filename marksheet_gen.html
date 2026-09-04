@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPS Pethgam Wagoora – Professional Marksheet System</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+    </script>
+
+    <!-- Firebase SDKs (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js">
+    </script>
+
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .page-break {
+                page-break-after: always;
+                display: block;
+            }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .marksheet-container {
+                margin: 10px auto;
+                border: 4px solid #6d59c0 !important;
+                box-shadow: none;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                page-break-inside: avoid;
+            }
+            .marksheet-container:not(.active-print) {
+                display: none !important;
+            }
+        }
+
+        .marksheet-container {
+            background: white;
+            width: 210mm;
+            min-height: 290mm;
+            padding: 15px;
+            margin: 20px auto;
+            position: relative;
+            border: 4px solid #6d59c0;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .marksheet-container::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            width: 400px;
+            height: 400px;
+            background-image: url('new-new-logo.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header-bg {
+            position: relative;
+            z-index: 1;
+            background-color: #6d59c0 !important;
+            color: white !important;
+            border-bottom: 2px solid #000;
+        }
+        .cell-label {
+            background-color: #e0e7ff !important;
+            color: #1e40af !important;
+            font-weight: bold;
+            border: 1px solid #94a3b8;
+            padding: 4px;
+            font-size: 11px;
+        }
+        .cell-value {
+            border: 1px solid #94a3b8;
+            padding: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            color: #000;
+        }
+        table {
+            position: relative;
+            z-index: 1;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th,
+        td {
+            border: 1px solid #94a3b8;
+            text-align: center;
+            font-size: 11px;
+            padding: 3px;
+        }
+        .sub-name {
+            color: #b91c1c;
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            font-size: 12px;
+        }
+        .footer-tab {
+            background-color: #334155 !important;
+            color: white !important;
+            font-size: 10px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #000;
+        }
+        .photo-box {
+            position: relative;
+            z-index: 1;
+            width: 110px;
+            height: 120px;
+            border: 2px solid #6d59c0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+        }
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            height: 120px;
+            gap: 8px;
+            padding: 10px;
+            border-bottom: 2px solid #334155;
+        }
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+        }
+        .bar {
+            width: 100%;
+            background-color: #3b82f6 !important;
+            border: 1px solid #1e40af;
+            min-height: 1px;
+        }
+        .prof-img {
+            width: 40px;
+            height: 30px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+        .grid,
+        .border,
+        .flex {
+            position: relative;
+            z-index: 1;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .toast.success {
+            background: #065f46;
+            border-left: 6px solid #34d399;
+        }
+        .toast.error {
+            background: #7f1d1d;
+            border-left: 6px solid #f87171;
+        }
+        .toast.info {
+            background: #1e3a5f;
+            border-left: 6px solid #60a5fa;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-sm {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+        .btn-sm:hover {
+            transform: scale(1.04);
+            opacity: 0.9;
+        }
+        .action-cell {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .config-card {
+            border: 2px dashed #6d59c0;
+            background: #f8f5ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .config-card input {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            width: 100%;
+        }
+        .config-card label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #334155;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 600px) {
+            .config-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .logo-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #6d59c0;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+        }
+            /* New Student Evaluation interface */
+        #studentListControl { display:none !important; }
+        .eval-panel { border:1px solid #dbe3ef; background:#fff; border-radius:12px; overflow:hidden; }
+        .eval-tabs { display:flex; flex-wrap:wrap; gap:2px; border-bottom:1px solid #dbe3ef; background:#f8fafc; padding:8px 8px 0; }
+        .eval-tab { border:0; background:transparent; padding:11px 14px; font-size:12px; font-weight:700; color:#334155; cursor:pointer; border-bottom:3px solid transparent; }
+        .eval-tab.active { color:#1d4ed8; border-bottom-color:#2563eb; background:#fff; }
+        .eval-card { border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#fff; }
+        .eval-input { width:100%; border:1px solid #cbd5e1; border-radius:7px; padding:8px 10px; font-size:12px; background:#fff; }
+        .eval-label { display:block; font-size:11px; font-weight:700; color:#334155; margin-bottom:4px; }
+        .eval-search { background:#f8fafc; border:1px solid #dbe3ef; border-radius:12px; padding:14px; }
+        .eval-profile { display:grid; grid-template-columns:96px 1fr; gap:14px; align-items:center; }
+        .eval-photo { width:96px; height:110px; border-radius:10px; border:1px solid #cbd5e1; object-fit:cover; background:#f1f5f9; }
+        .eval-category { font-weight:800; color:#0f2b59; }
+        .eval-desc { font-size:11px; color:#475569; }
+        .eval-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#e2e8f0; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; }
+        .eval-row { display:grid; grid-template-columns:180px 1fr 1fr; gap:10px; align-items:center; background:#fff; padding:8px 10px; }
+        @media(max-width:700px){ .eval-tabs{overflow-x:auto;flex-wrap:nowrap}.eval-tab{white-space:nowrap}.eval-profile{grid-template-columns:76px 1fr}.eval-photo{width:76px;height:88px}.eval-row{grid-template-columns:1fr}.eval-grid{display:block}.eval-grid .eval-row{margin-bottom:1px} }
+        </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ====== TOP PANEL ====== -->
+    <div class="no-print max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-xl mb-10 border-b-4 border-indigo-600">
+
+        <!-- Title & Print All -->
+        <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+            <h2 class="text-2xl font-bold text-indigo-900">📋 GPS Pethgam Marksheet Panel</h2>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="previewSelectedMarksheet()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 transition">
+                    👁 Preview Selected
+                </button>
+                <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 transition">
+                    🖨️ Print All (PDF)
+                </button>
+                <button onclick="saveAllToFirestore()" class="bg-emerald-600 text-white px-6 py-2 rounded font-bold hover:bg-emerald-700 transition" id="saveAllBtn">
+                    ☁️ Save All to Firestore
+                </button>
+            </div>
+        </div>
+
+        <!-- Firestore Config -->
+        <div class="config-card">
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold text-indigo-800">🔥 Firestore Configuration</span>
+                <button onclick="toggleFirestoreConfig()" class="text-sm text-indigo-600 underline">Toggle</button>
+            </div>
+            <div id="firestoreConfigArea">
+                <div class="config-row">
+                    <div>
+                        <label>Project ID</label>
+                        <input id="fbProjectId" placeholder="your-project-id" value="pry-school-pethgam-wagoora" />
+                    </div>
+                    <div>
+                        <label>Collection Name</label>
+                        <input id="fbCollection" placeholder="marksheets" value="marksheets" />
+                    </div>
+                </div>
+                <div class="text-xs text-slate-500 mt-2">
+                    ⚠️ Make sure Firestore security rules allow writes. For production, use environment variables.
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Excel -->
+        <div class="mb-6 p-4 bg-indigo-50 rounded-lg">
+            <label class="block text-sm font-bold text-indigo-900 mb-2">📂 Upload Excel Data</label>
+            <input type="file" id="excelUpload" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+            <div class="flex flex-wrap gap-2 mt-2">
+                <button type="button" onclick="saveDataLocally()" class="btn-sm bg-emerald-600 text-white">💾 Save Data Locally</button>
+                <button type="button" onclick="restoreAppState(true)" class="btn-sm bg-blue-600 text-white">↩️ Restore Saved Data</button>
+                <button type="button" onclick="downloadStoredExcel()" class="btn-sm bg-slate-600 text-white">⬇️ Download Stored Excel</button>
+                <button type="button" onclick="clearStoredData()" class="btn-sm bg-red-600 text-white">🗑️ Clear Stored Data</button>
+            </div>
+            <div id="storedExcelStatus" class="text-xs text-slate-600 mt-2">No saved Excel file yet.</div>
+            <div id="cloudExcelStatus" class="text-xs text-slate-500 mt-1">Cloud Excel backup: not uploaded.</div>
+        </div>
+
+        <!-- ====== NEW STUDENT EVALUATION PANEL ====== -->
+        <div id="studentEvaluationPanel" class="mt-6 hidden">
+            <div class="mb-4">
+                <h2 class="text-2xl font-bold text-slate-900">Student Evaluation</h2>
+                <p class="text-sm text-slate-600">Search student by Admission Number to view and update details.</p>
+            </div>
+
+            <div class="eval-search mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-3 items-end">
+                    <div>
+                        <label class="eval-label">Search by Admission No.</label>
+                        <input id="evaluationSearchAdm" class="eval-input" placeholder="Enter Admission Number"
+                               onkeydown="if(event.key==='Enter') searchEvaluationStudent()">
+                    </div>
+                    <button type="button" onclick="searchEvaluationStudent()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold text-sm">
+                        🔍 Search Student
+                    </button>
+                    <button type="button" onclick="clearEvaluationStudent()"
+                            class="border border-slate-300 bg-white text-slate-700 px-6 py-2 rounded-lg font-bold text-sm">
+                        ↻ Clear
+                    </button>
+                </div>
+            </div>
+
+            <div id="evaluationStudentArea" class="hidden">
+                <div class="eval-card mb-4">
+                    <div class="eval-profile">
+                        <div>
+                            <img id="evaluationPhotoPreview" class="eval-photo" alt="Student Photograph">
+                        </div>
+                        <div>
+                            <h3 id="evaluationStudentName" class="text-xl font-extrabold text-slate-900"></h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 text-sm">
+                                <div><span class="text-slate-500">Adm. No.</span><div id="evaluationAdm" class="font-bold text-blue-700"></div></div>
+                                <div><span class="text-slate-500">Class</span><div id="evaluationClass" class="font-bold"></div></div>
+                                <div><span class="text-slate-500">Roll No.</span><div id="evaluationRoll" class="font-bold"></div></div>
+                                <div><span class="text-slate-500">Date of Birth</span><div id="evaluationDob" class="font-bold"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="eval-panel">
+                    <div class="eval-tabs">
+                        <button class="eval-tab active" data-eval-tab="general" onclick="switchEvaluationTab('general',this)">⭐ General Evaluation</button>
+                        <button class="eval-tab" data-eval-tab="attendance" onclick="switchEvaluationTab('attendance',this)">▣ Attendance</button>
+                        <button class="eval-tab" data-eval-tab="discipline" onclick="switchEvaluationTab('discipline',this)">⚖ Discipline</button>
+                        <button class="eval-tab" data-eval-tab="sports" onclick="switchEvaluationTab('sports',this)">⚽ Sports</button>
+                        <button class="eval-tab" data-eval-tab="artCraft" onclick="switchEvaluationTab('artCraft',this)">🎨 Art & Craft</button>
+                        <button class="eval-tab" data-eval-tab="teamwork" onclick="switchEvaluationTab('teamwork',this)">👥 Teamwork</button>
+                        <button class="eval-tab" data-eval-tab="socialSkills" onclick="switchEvaluationTab('socialSkills',this)">☺ Social Skills</button>
+                        <button class="eval-tab" data-eval-tab="photo" onclick="switchEvaluationTab('photo',this)">▣ Photo</button>
+                    </div>
+
+                    <div class="p-4">
+                        <div id="evalTabGeneral" class="eval-tab-content">
+                            <div class="eval-grid">
+                                <div class="eval-row">
+                                    <div class="eval-category">Adm. No.</div>
+                                    <div><input id="evalAdmInput" class="eval-input font-bold" onchange="updateEvaluationAdm(this.value)"></div>
+                                    <div class="eval-desc">Admission Number of the student</div>
+                                </div>
+                                <div class="eval-row">
+                                    <div class="eval-category">Overall Grade</div>
+                                    <div id="evalOverallGrade" class="font-bold text-blue-700"></div>
+                                    <div class="eval-desc">Automatically calculated from academic marks</div>
+                                </div>
+                                <div class="eval-row">
+                                    <div class="eval-category">Overall Proficiency</div>
+                                    <div id="evalOverallProficiency" class="font-bold text-blue-700"></div>
+                                    <div class="eval-desc">Automatically calculated from academic marks</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="evalTabCategory" class="hidden">
+                            <div class="eval-row" style="grid-template-columns:180px 1fr 1fr;">
+                                <div class="eval-category" id="evalCategoryTitle"></div>
+                                <div>
+                                    <label class="eval-label">Grade / Input</label>
+                                    <select id="evalCategoryGrade" class="eval-input" onchange="updateEvaluationCategory(this.value)">
+                                        <option value="">Select Grade</option>
+                                        <option value="A (Excellent)">A (Excellent)</option>
+                                        <option value="B (Very Good)">B (Very Good)</option>
+                                        <option value="C (Good)">C (Good)</option>
+                                        <option value="D (Average)">D (Average)</option>
+                                        <option value="E (Needs Improvement)">E (Needs Improvement)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="eval-label">Remarks (Optional)</label>
+                                    <input id="evalCategoryRemarks" class="eval-input" placeholder="Enter remarks" onchange="updateEvaluationRemarks(this.value)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="evalTabPhoto" class="hidden">
+                            <div class="flex flex-wrap items-center gap-5">
+                                <img id="evaluationPhotoLarge" class="eval-photo" style="width:120px;height:140px" alt="Student Photograph">
+                                <div>
+                                    <input type="file" id="evaluationPhotoInput" accept="image/*" class="hidden" onchange="uploadEvaluationPhoto(this)">
+                                    <button type="button" onclick="document.getElementById('evaluationPhotoInput').click()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold">
+                                        📷 Upload / Change Photograph
+                                    </button>
+                                    <p class="text-xs text-slate-500 mt-2">The photograph is attached to the selected student and is used on the marksheet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-end gap-3 mt-5">
+                            <button type="button" onclick="resetEvaluationStudent()" class="border border-slate-300 bg-white text-slate-700 px-5 py-2 rounded-lg font-bold">↻ Reset</button>
+                            <button type="button" onclick="saveEvaluationDetails()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-bold">💾 Save Details</button>
+                            <button type="button" onclick="previewSelectedMarksheet()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold">👁 Preview Marksheet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="evaluationNoStudent" class="text-center text-slate-500 bg-slate-50 border border-dashed border-slate-300 rounded-lg p-8">
+                Upload the Excel file, then enter an Admission Number above to begin.
+            </div>
+        </div>
+
+        <!-- Student List -->
+        <div id="studentListControl" class="hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm border min-w-[1100px]">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-2 border">Adm No.</th><th class="p-2 border">Roll</th><th class="p-2 border">Name</th>
+                            <th class="p-2 border">Attendance</th><th class="p-2 border">Discipline</th><th class="p-2 border">Sports</th>
+                            <th class="p-2 border">Art & Craft</th><th class="p-2 border">Teamwork</th><th class="p-2 border">Social Skills</th>
+                            <th class="p-2 border">Photo</th><th class="p-2 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== MARKSHEET WRAPPER ====== -->
+    <div id="marksheetWrapper"></div>
+
+    <script>
+        // ============================================================
+        // 1. GLOBALS
+        // ============================================================
+        let allStudentsData = [];
+        let studentPhotos = {};
+        let firebaseInitialized = false;
+        let firestoreInstance = null;
+        let storageInstance = null;
+        let columnMap = {};
+        let lastExcelFileData = null;
+        let lastExcelFileName = '';
+        let lastExcelFileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        const HOLISTIC_START_INDEX = 67;
+        const HOLISTIC_FIELDS = ['attendance','discipline','sports','artCraft','teamwork','socialSkills'];
+        const HOLISTIC_LABELS = ['Attendance','Discipline','Sports','Art & Craft','Teamwork','Social Skills'];
+
+        // ============================================================
+        // 2. LOCAL DATA PERSISTENCE
+        // ============================================================
+        const APP_DB_NAME = 'GPS_Pethgam_Marksheet_DB';
+        const APP_STORE_NAME = 'marksheetState';
+
+        function openAppDB() {
+            return new Promise(function(resolve, reject) {
+                if (!window.indexedDB) { reject(new Error('IndexedDB is not supported.')); return; }
+                var req = indexedDB.open(APP_DB_NAME, 1);
+                req.onupgradeneeded = function(e) {
+                    if (!e.target.result.objectStoreNames.contains(APP_STORE_NAME)) {
+                        e.target.result.createObjectStore(APP_STORE_NAME);
+                    }
+                };
+                req.onsuccess = function(e) { resolve(e.target.result); };
+                req.onerror = function() { reject(req.error); };
+            });
+        }
+
+        function persistAppState() {
+            return openAppDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(APP_STORE_NAME, 'readwrite');
+                    tx.objectStore(APP_STORE_NAME).put({
+                        rows: allStudentsData,
+                        photos: studentPhotos,
+                        fileName: lastExcelFileName,
+                        fileType: lastExcelFileType,
+                        fileData: lastExcelFileData,
+                        savedAt: new Date().toISOString()
+                    }, 'current');
+                    tx.oncomplete = resolve;
+                    tx.onerror = function() { reject(tx.error); };
+                });
+            }).catch(function(err) { console.warn('Local save failed:', err); });
+        }
+
+        function restoreAppState(manualRestore) {
+            return openAppDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(APP_STORE_NAME, 'readonly');
+                    var req = tx.objectStore(APP_STORE_NAME).get('current');
+                    req.onsuccess = function() {
+                        var state = req.result;
+                        if (state && state.rows && state.rows.length) {
+                            allStudentsData = state.rows;
+                            studentPhotos = state.photos || {};
+                            lastExcelFileName = state.fileName || '';
+                            lastExcelFileType = state.fileType || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                            lastExcelFileData = state.fileData || null;
+                            renderStudentList();
+                            generateAllMarksheets();
+                            updateStoredExcelStatus();
+                            if (manualRestore) showToast('↩️ Restored ' + allStudentsData.length + ' students and saved details.', 'success');
+                        } else updateStoredExcelStatus();
+                        resolve();
+                    };
+                    req.onerror = function() { reject(req.error); };
+                });
+            }).catch(function(err) { console.warn('Restore failed:', err); });
+        }
+
+        function saveDataLocally() {
+            persistAppState().then(function() {
+                updateStoredExcelStatus();
+                showToast('💾 Excel, student details and photographs saved on this device.', 'success');
+            });
+            try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){}); } catch(e) {}
+        }
+
+        function updateStoredExcelStatus() {
+            var el = document.getElementById('storedExcelStatus');
+            if (!el) return;
+            el.textContent = lastExcelFileName ? '✅ Saved locally: ' + lastExcelFileName + (allStudentsData.length ? ' (' + allStudentsData.length + ' students)' : '') : 'No saved Excel file yet.';
+        }
+
+        function downloadStoredExcel() {
+            if (!lastExcelFileData) { showToast('No stored Excel file is available.', 'error'); return; }
+            var blob = new Blob([lastExcelFileData], {type: lastExcelFileType || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            var url = URL.createObjectURL(blob); var a = document.createElement('a');
+            a.href=url; a.download=lastExcelFileName || 'GPS_Pethgam_Marksheet_Data.xlsx'; document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(function(){URL.revokeObjectURL(url);},1000);
+        }
+
+        function clearStoredData() {
+            if (!confirm('Clear the stored Excel file, student data, photographs and assessment details from this browser?')) return;
+            openAppDB().then(function(db){
+                return new Promise(function(resolve,reject){
+                    var tx=db.transaction(APP_STORE_NAME,'readwrite'); tx.objectStore(APP_STORE_NAME).delete('current');
+                    tx.oncomplete=resolve; tx.onerror=function(){reject(tx.error);};
+                });
+            }).then(function(){
+                allStudentsData=[]; studentPhotos={}; lastExcelFileData=null; lastExcelFileName='';
+                document.getElementById('marksheetWrapper').innerHTML=''; document.getElementById('studentTableBody').innerHTML='';
+                document.getElementById('studentListControl').classList.add('hidden'); updateStoredExcelStatus();
+                showToast('🗑️ Stored data cleared.','success');
+            }).catch(function(err){showToast('Could not clear stored data: '+err.message,'error');});
+        }
+
+        // ============================================================
+        // 2. TOAST
+        // ============================================================
+        function showToast(message, type) {
+            type = type || 'info';
+            const el = document.getElementById('toast');
+            el.textContent = message;
+            el.className = 'toast ' + type + ' show';
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
+        }
+
+        // ============================================================
+        // 3. FIRESTORE INIT
+        // ============================================================
+        function getFirestoreConfig() {
+            var projectId = document.getElementById('fbProjectId').value.trim() || 'pry-school-pethgam-wagoora';
+            var collection = document.getElementById('fbCollection').value.trim() || 'marksheets';
+            return { projectId: projectId, collection: collection };
+        }
+
+        function initFirebase() {
+            try {
+                var config = {
+                    apiKey: "AIzaSyDgVFdfKpCrLkoRsMI2gS7ajlJUzVdYLZU",
+                    authDomain: "pry-school-pethgam-wagoora.firebaseapp.com",
+                    projectId: "pry-school-pethgam-wagoora",
+                    storageBucket: "pry-school-pethgam-wagoora.firebasestorage.app",
+                    messagingSenderId: "255417366612",
+                    appId: "1:255417366612:web:81cec46aa75cb7d4ba95c1",
+                    measurementId: "G-JE9WY9T6FJ"
+                };
+
+                if (!firebase.apps || !firebase.apps.length) {
+                    firebase.initializeApp(config);
+                }
+                firebaseInitialized = true;
+                firestoreInstance = firebase.firestore();
+                try { storageInstance = firebase.storage(); } catch (e) { storageInstance = null; }
+                return firestoreInstance;
+            } catch (e) {
+                console.warn('Firebase init warning:', e);
+                showToast('⚠️ Firebase not configured. Save disabled.', 'error');
+                firebaseInitialized = false;
+                firestoreInstance = null;
+                return null;
+            }
+        }
+
+        function getDb() {
+            if (!firebaseInitialized || !firestoreInstance) {
+                return initFirebase();
+            }
+            return firestoreInstance;
+        }
+
+
+        function uploadExcelToFirebaseStorage(file) {
+            if (!file) return;
+            var status=document.getElementById('cloudExcelStatus');
+            try {
+                if (!storageInstance) { try { storageInstance=firebase.storage(); } catch(e){} }
+                if (!storageInstance) { if(status)status.textContent='⚠️ Firebase Storage unavailable. Local copy is still saved.'; return; }
+                if(status)status.textContent='☁️ Uploading Excel backup to Firebase Storage...';
+                var safe=(file.name||'marksheet.xlsx').replace(/[^a-zA-Z0-9._-]/g,'_');
+                var path='excel_uploads/latest_'+safe;
+                storageInstance.ref().child(path).put(file).then(function(snap){return snap.ref.getDownloadURL();}).then(function(url){
+                    if(status)status.innerHTML='✅ Cloud Excel backup saved. <a href="'+url+'" target="_blank" class="underline text-indigo-700">Open file</a>';
+                    return getDb().collection('marksheet_uploads').doc('latest').set({fileName:file.name||'marksheet.xlsx',storagePath:path,downloadURL:url,uploadedAt:new Date().toISOString()},{merge:true});
+                }).catch(function(err){if(status)status.textContent='⚠️ Cloud backup failed. Local Excel copy is still saved.';console.warn(err);});
+            } catch(err){if(status)status.textContent='⚠️ Cloud backup unavailable. Local Excel copy is still saved.';}
+        }
+
+        // ============================================================
+        // 4. EXCEL UPLOAD
+        // ============================================================
+        document.getElementById('excelUpload').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    var data = new Uint8Array(evt.target.result);
+                    var workbook = XLSX.read(data, {type:'array'});
+                    var rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header:1});
+
+                    var oldByAdm = {}, oldByName = {};
+                    allStudentsData.forEach(function(r, i) {
+                        var a=(r[0]||'').toString().trim(), n=(r[3]||'').toString().trim().toLowerCase();
+                        if(a) oldByAdm[a]={row:r,index:i}; if(n) oldByName[n]={row:r,index:i};
+                    });
+
+                    var headerRowIndex=-1, headerRow=null;
+                    for(var i=0;i<Math.min(10,rows.length);i++){
+                        var rr=rows[i]; if(!rr||!rr.length) continue;
+                        var rs=rr.join(' ').toLowerCase();
+                        if(rs.includes('student name')||rs.includes('adm no')||rs.includes('roll no')||rs.includes('father name')){headerRowIndex=i;headerRow=rr;break;}
+                    }
+                    if(headerRowIndex!==-1){
+                        columnMap={};
+                        var fields={'adm no':'admNo','student name':'name','roll no':'rollNo','class':'class','father name':'fatherName','mother name':'motherName','date of birth':'dob'};
+                        for(var j=0;j<headerRow.length;j++){
+                            var cell=headerRow[j]?headerRow[j].toString().trim().toLowerCase():'';
+                            for(var key in fields){if(cell.includes(key)){columnMap[fields[key]]=j;break;}}
+                        }
+                    }
+                    var dataRows=[];
+                    if(headerRowIndex!==-1){
+                        dataRows=rows.slice(headerRowIndex+1).filter(function(r){var ni=columnMap.name!==undefined?columnMap.name:3;return r.length&&r[ni]&&r[ni].toString().trim();});
+                    }else{
+                        dataRows=rows.slice(3).filter(function(r){return r.length&&r[3]&&r[3].toString().trim();});
+                    }
+                    allStudentsData=dataRows.map(function(r){return processRow(r);});
+                    allStudentsData.forEach(function(nr,ni){
+                        var a=(nr[0]||'').toString().trim(), n=(nr[3]||'').toString().trim().toLowerCase(), match=oldByAdm[a]||oldByName[n];
+                        if(match){
+                            for(var hf=0;hf<HOLISTIC_FIELDS.length;hf++){
+                                var v=match.row[HOLISTIC_START_INDEX+hf]; if(v!==undefined&&v!==null&&v!=='') nr[HOLISTIC_START_INDEX+hf]=v;
+                            }
+                            var ph=studentPhotos[match.index]||studentPhotos[(match.row[0]||'000').toString()]; if(ph) studentPhotos[ni]=ph;
+                        }
+                    });
+                    lastExcelFileName=file.name||'Uploaded Excel'; lastExcelFileType=file.type||'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; lastExcelFileData=data.buffer.slice(0);
+                    if(!allStudentsData.length){showToast('No student data found. Check your Excel layout.','error');return;}
+                    renderStudentList(); generateAllMarksheets(); persistAppState(); updateStoredExcelStatus();
+                    uploadExcelToFirebaseStorage(file);
+                    showToast('✅ Loaded '+allStudentsData.length+' students. Excel file is saved locally.','success');
+                }catch(err){console.error('Upload error:',err);showToast('❌ Error reading Excel: '+err.message,'error');}
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Helper to process a single row – APAAR and PEN always at indices 65 and 66
+        function processRow(row) {
+            // Determine indices for other fields (fallback to fixed if not mapped)
+            var nameIdx = columnMap['name'] !== undefined ? columnMap['name'] : 3;
+            var admIdx = columnMap['admNo'] !== undefined ? columnMap['admNo'] : 0;
+            var rollIdx = columnMap['rollNo'] !== undefined ? columnMap['rollNo'] : 1;
+            var classIdx = columnMap['class'] !== undefined ? columnMap['class'] : 2;
+            var fatherIdx = columnMap['fatherName'] !== undefined ? columnMap['fatherName'] : 4;
+            var motherIdx = columnMap['motherName'] !== undefined ? columnMap['motherName'] : 5;
+            var dobIdx = columnMap['dob'] !== undefined ? columnMap['dob'] : 7;
+
+            var rowArray = row.slice(0);
+            while (rowArray.length < HOLISTIC_START_INDEX + HOLISTIC_FIELDS.length) rowArray.push('');
+
+            // Convert DOB to dd Mmm yyyy format (e.g. 23 Mar 2002)
+            // Handles Excel serial numbers whether XLSX returns them as
+            // numbers (e.g. 42433) or numeric text (e.g. "42433").
+            var dobVal = rowArray[dobIdx];
+            var dob = '';
+            if (dobVal !== null && dobVal !== undefined && dobVal !== '') {
+                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+                var numericDob = Number(dobVal);
+
+                if (!isNaN(numericDob) && numericDob > 30000 && numericDob < 60000) {
+                    // Excel 1900 date system
+                    var dateObj = new Date((numericDob - 25569) * 86400 * 1000);
+                    dob = String(dateObj.getUTCDate()).padStart(2, '0') + ' ' +
+                          months[dateObj.getUTCMonth()] + ' ' +
+                          dateObj.getUTCFullYear();
+                } else if (dobVal instanceof Date && !isNaN(dobVal.getTime())) {
+                    dob = String(dobVal.getDate()).padStart(2, '0') + ' ' +
+                          months[dobVal.getMonth()] + ' ' +
+                          dobVal.getFullYear();
+                } else {
+                    dob = dobVal.toString().trim();
+
+                    // Convert DOB strings such as 23/03/2002, 23-03-2002,
+                    // 23 Mar 2002, or other parseable date strings.
+                    var parsedDate = null;
+                    var match = dob.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+
+                    if (match) {
+                        parsedDate = new Date(Date.UTC(
+                            Number(match[3]),
+                            Number(match[2]) - 1,
+                            Number(match[1])
+                        ));
+                    } else {
+                        var candidate = new Date(dob);
+                        if (!isNaN(candidate.getTime())) {
+                            parsedDate = candidate;
+                        }
+                    }
+
+                    if (parsedDate && !isNaN(parsedDate.getTime())) {
+                        dob = String(parsedDate.getDate()).padStart(2, '0') + ' ' +
+                              months[parsedDate.getMonth()] + ' ' +
+                              parsedDate.getFullYear();
+                    }
+                }
+            }
+
+            rowArray[7] = dob;
+
+            // --- APAAR ID is at column BN → index 65 (zero-based) ---
+            // --- PEN No is at column BO → index 66 ---
+            var apaarId = rowArray[65] || 'N/A';
+            var penNo = rowArray[66] || 'N/A';
+            rowArray[65] = apaarId;
+            rowArray[66] = penNo;
+
+            // Convert marks to numbers for columns 8-66
+            for (var i = 8; i <= 66; i++) {
+                var val = rowArray[i];
+                if (val !== undefined && val !== null && val !== '') {
+                    var num = Number(val);
+                    rowArray[i] = isNaN(num) ? 0 : num;
+                } else {
+                    rowArray[i] = 0;
+                }
+            }
+
+            return rowArray;
+        }
+
+        // ============================================================
+        // 5. STUDENT LIST & INDIVIDUAL DETAILS
+        // ============================================================
+        function escapeHtml(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+        function getPhotoForStudent(row,index){var adm=(row[0]||'000').toString();return studentPhotos[index]||studentPhotos[adm]||'';}
+
+        function renderStudentList(){
+            var panel = document.getElementById('studentEvaluationPanel');
+            if (panel) {
+                panel.classList.remove('hidden');
+                document.getElementById('evaluationNoStudent').classList.remove('hidden');
+            }
+            // Preserve the existing table function as a data fallback, but keep it hidden.
+            var oldContainer = document.getElementById('studentListControl');
+            if (oldContainer) oldContainer.classList.add('hidden');
+        }
+
+        function updateStudentAdmNo(index,value){
+            var row=allStudentsData[index]; if(!row)return; var old=(row[0]||'000').toString(), neu=String(value||'').trim();
+            if(!neu){showToast('Admission No. cannot be blank.','error');renderStudentList();return;}
+            if(neu!==old){var ph=studentPhotos[index]||studentPhotos[old];if(ph)studentPhotos[index]=ph;delete studentPhotos[old];row[0]=neu;row._dataObj=null;persistAppState();renderStudentList();generateAllMarksheets();}
+        }
+        function updateHolisticField(index,fieldIndex,value){var row=allStudentsData[index];if(!row)return;row[HOLISTIC_START_INDEX+fieldIndex]=String(value==null?'':value).trim();row._dataObj=null;generateAllMarksheets();persistAppState();}
+        function uploadPhoto(input,index){
+            if(!input||!input.files||!input.files[0])return;var row=allStudentsData[index];if(!row)return;var adm=(row[0]||'000').toString();
+            var reader=new FileReader();reader.onload=function(e){studentPhotos[index]=e.target.result;studentPhotos[adm]=e.target.result;var st=document.getElementById('status-'+index);if(st)st.innerText='✅';generateAllMarksheets();persistAppState();showToast('📸 Photograph attached to '+(row[3]||'student')+'.','success');};reader.readAsDataURL(input.files[0]);input.value='';
+        }
+
+        // ============================================================
+        // NEW STUDENT EVALUATION / SEARCH / PREVIEW
+        // ============================================================
+        var selectedEvaluationIndex = -1;
+        var selectedEvaluationCategory = 'attendance';
+        var evaluationRemarks = {};
+
+        function evaluationCategoryIndex(category) {
+            return HOLISTIC_FIELDS.indexOf(category);
+        }
+
+        function findStudentByAdm(adm) {
+            var key = String(adm || '').trim().toLowerCase();
+            for (var i = 0; i < allStudentsData.length; i++) {
+                if (String(allStudentsData[i][0] || '').trim().toLowerCase() === key) return i;
+            }
+            return -1;
+        }
+
+        function searchEvaluationStudent() {
+            var adm = document.getElementById('evaluationSearchAdm').value.trim();
+            if (!adm) {
+                showToast('Please enter an Admission Number.', 'error');
+                return;
+            }
+            var idx = findStudentByAdm(adm);
+            if (idx < 0) {
+                showToast('Student with Admission No. ' + adm + ' was not found.', 'error');
+                document.getElementById('evaluationStudentArea').classList.add('hidden');
+                document.getElementById('evaluationNoStudent').classList.remove('hidden');
+                return;
+            }
+            selectedEvaluationIndex = idx;
+            renderEvaluationStudent();
+        }
+
+        function clearEvaluationStudent() {
+            selectedEvaluationIndex = -1;
+            document.getElementById('evaluationSearchAdm').value = '';
+            document.getElementById('evaluationStudentArea').classList.add('hidden');
+            document.getElementById('evaluationNoStudent').classList.remove('hidden');
+        }
+
+        function renderEvaluationStudent() {
+            var row = allStudentsData[selectedEvaluationIndex];
+            if (!row) return;
+
+            document.getElementById('evaluationStudentArea').classList.remove('hidden');
+            document.getElementById('evaluationNoStudent').classList.add('hidden');
+
+            var adm = String(row[0] || '');
+            var name = String(row[3] || 'UNKNOWN').toUpperCase().trim();
+            document.getElementById('evaluationStudentName').textContent = name;
+            document.getElementById('evaluationAdm').textContent = adm;
+            document.getElementById('evaluationAdmInput').value = adm;
+            document.getElementById('evaluationClass').textContent = row[2] || '';
+            document.getElementById('evaluationRoll').textContent = row[1] || '';
+            document.getElementById('evaluationDob').textContent = row[7] || '';
+
+            var photo = getPhotoForStudent(row, selectedEvaluationIndex);
+            document.getElementById('evaluationPhotoPreview').src = photo || 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="96" height="110"><rect width="100%" height="100%" fill="#f1f5f9"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="#64748b" font-size="12">PHOTO</text></svg>');
+            document.getElementById('evaluationPhotoLarge').src = document.getElementById('evaluationPhotoPreview').src;
+
+            var dataObj = buildStudentData(row);
+            document.getElementById('evalOverallGrade').textContent = dataObj.overallGrade || getGrade(dataObj.percentage || 0);
+            document.getElementById('evalOverallProficiency').textContent = dataObj.proficiencyLevel || getProficiency(dataObj.percentage || 0);
+
+            renderEvaluationCategory();
+        }
+
+        function switchEvaluationTab(tab, btn) {
+            var tabs = document.querySelectorAll('.eval-tab');
+            tabs.forEach(function(t) { t.classList.remove('active'); });
+            if (btn) btn.classList.add('active');
+
+            document.getElementById('evalTabGeneral').classList.add('hidden');
+            document.getElementById('evalTabCategory').classList.add('hidden');
+            document.getElementById('evalTabPhoto').classList.add('hidden');
+
+            if (tab === 'general') {
+                document.getElementById('evalTabGeneral').classList.remove('hidden');
+                selectedEvaluationCategory = 'attendance';
+            } else if (tab === 'photo') {
+                document.getElementById('evalTabPhoto').classList.remove('hidden');
+                selectedEvaluationCategory = 'photo';
+            } else {
+                selectedEvaluationCategory = tab;
+                document.getElementById('evalTabCategory').classList.remove('hidden');
+                renderEvaluationCategory();
+            }
+        }
+
+        function renderEvaluationCategory() {
+            if (selectedEvaluationIndex < 0 || selectedEvaluationCategory === 'photo') return;
+            var row = allStudentsData[selectedEvaluationIndex];
+            var fi = evaluationCategoryIndex(selectedEvaluationCategory);
+            if (fi < 0) return;
+
+            var labels = {
+                attendance: ['Attendance', 'Regularity and punctuality in attendance'],
+                discipline: ['Discipline', 'Behavior and conduct in school'],
+                sports: ['Sports', 'Participation and performance in sports'],
+                artCraft: ['Art and Craft', 'Creativity and skills in art and craft'],
+                teamwork: ['Teamwork', 'Ability to work effectively in a team'],
+                socialSkills: ['Social Skills', 'Interaction and communication with others']
+            };
+
+            document.getElementById('evalCategoryTitle').textContent = labels[selectedEvaluationCategory][0];
+            document.getElementById('evalCategoryGrade').value = row[HOLISTIC_START_INDEX + fi] || '';
+            document.getElementById('evalCategoryRemarks').value =
+                evaluationRemarks[selectedEvaluationIndex + ':' + selectedEvaluationCategory] || '';
+        }
+
+        function updateEvaluationCategory(value) {
+            if (selectedEvaluationIndex < 0) return;
+            var fi = evaluationCategoryIndex(selectedEvaluationCategory);
+            if (fi < 0) return;
+            allStudentsData[selectedEvaluationIndex][HOLISTIC_START_INDEX + fi] = value;
+            allStudentsData[selectedEvaluationIndex]._dataObj = null;
+            generateAllMarksheets();
+            persistAppState();
+        }
+
+        function updateEvaluationRemarks(value) {
+            if (selectedEvaluationIndex < 0) return;
+            evaluationRemarks[selectedEvaluationIndex + ':' + selectedEvaluationCategory] = String(value || '');
+            persistAppState();
+        }
+
+        function updateEvaluationAdm(value) {
+            if (selectedEvaluationIndex < 0) return;
+            updateStudentAdmNo(selectedEvaluationIndex, value);
+            document.getElementById('evaluationSearchAdm').value = value;
+            renderEvaluationStudent();
+        }
+
+        function uploadEvaluationPhoto(input) {
+            if (!input || !input.files || !input.files[0] || selectedEvaluationIndex < 0) return;
+            uploadPhoto(input, selectedEvaluationIndex);
+            setTimeout(function() { renderEvaluationStudent(); }, 250);
+        }
+
+        function saveEvaluationDetails() {
+            if (selectedEvaluationIndex < 0) {
+                showToast('Search and select a student first.', 'error');
+                return;
+            }
+            allStudentsData[selectedEvaluationIndex]._dataObj = null;
+            generateAllMarksheets();
+            persistAppState().then(function() {
+                showToast('✅ Evaluation details saved for ' + (allStudentsData[selectedEvaluationIndex][3] || 'student') + '.', 'success');
+            });
+        }
+
+        function resetEvaluationStudent() {
+            if (selectedEvaluationIndex < 0) return;
+            if (!confirm('Reset the six evaluation fields for this student?')) return;
+            for (var i = 0; i < HOLISTIC_FIELDS.length; i++) {
+                allStudentsData[selectedEvaluationIndex][HOLISTIC_START_INDEX + i] = '';
+            }
+            Object.keys(evaluationRemarks).forEach(function(k) {
+                if (k.indexOf(selectedEvaluationIndex + ':') === 0) delete evaluationRemarks[k];
+            });
+            allStudentsData[selectedEvaluationIndex]._dataObj = null;
+            generateAllMarksheets();
+            persistAppState();
+            renderEvaluationStudent();
+            showToast('Evaluation fields reset.', 'info');
+        }
+
+        function previewSelectedMarksheet() {
+            if (selectedEvaluationIndex < 0) {
+                showToast('Search and select a student first.', 'error');
+                return;
+            }
+            var row = allStudentsData[selectedEvaluationIndex];
+            var adm = String(row[0] || '');
+            generateAllMarksheets();
+
+            setTimeout(function() {
+                var target = document.querySelector('.marksheet-container[data-adm="' + CSS.escape(adm) + '"]');
+                if (!target) {
+                    showToast('Marksheet preview could not be generated.', 'error');
+                    return;
+                }
+                document.querySelectorAll('.marksheet-container').forEach(function(el) {
+                    el.classList.remove('active-preview');
+                });
+                target.classList.add('active-preview');
+                target.scrollIntoView({behavior:'smooth', block:'start'});
+                showToast('👁 Preview opened for Adm. No. ' + adm + '.', 'success');
+            }, 300);
+        }
+
+        /* Preview mode: show only the selected marksheet without changing the print layout. */
+        var previewStyle = document.createElement('style');
+        previewStyle.textContent = '.marksheet-container.active-preview{display:block !important}.marksheet-container:not(.active-preview){display:none !important}@media print{.marksheet-container:not(.active-print){display:none !important}.marksheet-container.active-print{display:block !important}}';
+        document.head.appendChild(previewStyle);
+
+        // ============================================================
+        // 6. GRADE & PROFICIENCY HELPERS
+        // ============================================================
+        function getGrade(s) {
+            var score = Number(s) || 0;
+            if (score >= 85) return 'A+';
+            if (score >= 70) return 'A';
+            if (score >= 55) return 'B';
+            if (score >= 40) return 'C';
+            if (score >= 33) return 'D';
+            return 'E';
+        }
+
+        function getProficiency(s) {
+            var score = Number(s) || 0;
+            if (score >= 85) return 'Sky';
+            if (score >= 55) return 'Mountain';
+            return 'Stream';
+        }
+
+        // ============================================================
+        // 7. BUILD STUDENT DATA OBJECT
+        // ============================================================
+        function buildStudentData(row) {
+            var name = row[3] ? row[3].toString().toUpperCase().trim() : 'UNKNOWN';
+            var admNo = (row[0] || '000').toString();
+
+            var subjects = [
+                { n: 'English', g: row[17] || 0, fa: [row[8], row[9], row[10], row[11], row[12], row[13]], t: row[14] || 0,
+                    cc: row[15] || 0, s: row[16] || 0 },
+                { n: 'Math', g: row[27] || 0, fa: [row[18], row[19], row[20], row[21], row[22], row[23]], t: row[24] || 0,
+                    cc: row[25] || 0, s: row[26] || 0 },
+                { n: 'EVS', g: row[37] || 0, fa: [row[28], row[29], row[30], row[31], row[32], row[33]], t: row[34] || 0,
+                    cc: row[35] || 0, s: row[36] || 0 },
+                { n: 'Urdu', g: row[47] || 0, fa: [row[38], row[39], row[40], row[41], row[42], row[43]], t: row[44] || 0,
+                    cc: row[45] || 0, s: row[46] || 0 },
+                { n: 'Kashmiri', g: row[57] || 0, fa: [row[48], row[49], row[50], row[51], row[52], row[53]], t: row[54] ||
+                        0, cc: row[55] || 0, s: row[56] || 0 }
+            ];
+
+            var total = subjects.reduce(function(a, b) { return a + (Number(b.g) || 0); }, 0);
+            var perc = total / 5;
+
+            var grandFA = [0, 0, 0, 0, 0, 0];
+            subjects.forEach(function(s) {
+                s.fa.forEach(function(v, i) { grandFA[i] += (Number(v) || 0); });
+            });
+            var grandT30 = subjects.reduce(function(a, b) { return a + (Number(b.t) || 0); }, 0);
+            var grandCC20 = subjects.reduce(function(a, b) { return a + (Number(b.cc) || 0); }, 0);
+            var grandSum50 = subjects.reduce(function(a, b) { return a + (Number(b.s) || 0); }, 0);
+            var grandTotal100 = subjects.reduce(function(a, b) { return a + (Number(b.g) || 0); }, 0);
+
+            var bestSub = subjects.reduce(function(prev, curr) { return (Number(prev.g) > Number(curr.g)) ? prev : curr; });
+            var weakSub = subjects.reduce(function(prev, curr) { return (Number(prev.g) < Number(curr.g)) ? prev : curr; });
+
+            return {
+                admNo: admNo,
+                name: name,
+                rollNo: row[1] || '',
+                class: row[2] || '',
+                fatherName: row[4] || '',
+                motherName: row[5] || '',
+                dob: row[7] || '',
+                apaarId: row[65] || 'N/A',
+                penNo: row[66] || 'N/A',
+                photo: getPhotoForStudent(row, allStudentsData.indexOf(row)),
+                subjects: subjects.map(function(s) {
+                    return {
+                        name: s.n,
+                        total: Number(s.g) || 0,
+                        grade: getGrade(s.g),
+                        proficiency: getProficiency(s.g),
+                        fa1: Number(s.fa[0]) || 0,
+                        fa2: Number(s.fa[1]) || 0,
+                        fa3: Number(s.fa[2]) || 0,
+                        fa4: Number(s.fa[3]) || 0,
+                        fa5: Number(s.fa[4]) || 0,
+                        fa6: Number(s.fa[5]) || 0,
+                        t: Number(s.t) || 0,
+                        cc: Number(s.cc) || 0,
+                        s: Number(s.s) || 0,
+                    };
+                }),
+                grandTotal: total,
+                percentage: parseFloat(perc.toFixed(1)),
+                overallGrade: getGrade(perc),
+                proficiencyLevel: getProficiency(perc),
+                result: perc >= 33 ? 'PROMOTED' : 'REPEATER',
+                bestSubject: bestSub.n,
+                bestSubjectMarks: Number(bestSub.g),
+                weakSubject: weakSub.n,
+                weakSubjectMarks: Number(weakSub.g),
+                grandFA: grandFA,
+                grandT30: grandT30,
+                grandCC20: grandCC20,
+                grandSum50: grandSum50,
+                grandTotal100: grandTotal100,
+                schoolRank: 0,
+                classRank: 0,
+                attendance: row[HOLISTIC_START_INDEX] || '',
+                discipline: row[HOLISTIC_START_INDEX + 1] || '',
+                sports: row[HOLISTIC_START_INDEX + 2] || '',
+                artCraft: row[HOLISTIC_START_INDEX + 3] || '',
+                teamwork: row[HOLISTIC_START_INDEX + 4] || '',
+                socialSkills: row[HOLISTIC_START_INDEX + 5] || '',
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // ============================================================
+        // 8. GENERATE ALL MARKSHEETS (unchanged except logo filename)
+        // ============================================================
+        function generateAllMarksheets() {
+            var wrapper = document.getElementById('marksheetWrapper');
+            wrapper.innerHTML = '';
+            if (allStudentsData.length === 0) return;
+
+            var studentsWithTotals = allStudentsData.map(function(row) {
+                var total = (Number(row[17]) || 0) + (Number(row[27]) || 0) + (Number(row[37]) || 0) + (Number(row[47]) ||
+                        0) + (Number(row[57]) || 0);
+                return { row: row, total: total, class: row[2] || '' };
+            });
+
+            var schoolSorted = studentsWithTotals.slice().sort(function(a, b) { return b.total - a.total; });
+
+            studentsWithTotals.forEach(function(std, idx) {
+                var row = std.row;
+                var name = row[3] ? row[3].toString().toUpperCase().trim() : 'UNKNOWN';
+                var admNo = (row[0] || '000').toString();
+
+                var sRank = 1;
+                for (var i = 0; i < schoolSorted.length; i++) {
+                    if (schoolSorted[i].total === std.total) {
+                        sRank = i + 1;
+                        break;
+                    }
+                }
+
+                var classStudents = studentsWithTotals.filter(function(s) { return s.class === std.class; });
+                var classSorted = classStudents.slice().sort(function(a, b) { return b.total - a.total; });
+                var cRank = 1;
+                for (var j = 0; j < classSorted.length; j++) {
+                    if (classSorted[j].total === std.total) {
+                        cRank = j + 1;
+                        break;
+                    }
+                }
+
+                var dataObj = buildStudentData(row);
+                dataObj.schoolRank = sRank;
+                dataObj.classRank = cRank;
+                row._dataObj = dataObj;
+
+                var subjects = [
+                    { n: 'English', g: row[17] || 0, fa: [row[8], row[9], row[10], row[11], row[12], row[13]], t: row[14] ||
+                            0, cc: row[15] || 0, s: row[16] || 0 },
+                    { n: 'Math', g: row[27] || 0, fa: [row[18], row[19], row[20], row[21], row[22], row[23]], t: row[24] ||
+                            0, cc: row[25] || 0, s: row[26] || 0 },
+                    { n: 'EVS', g: row[37] || 0, fa: [row[28], row[29], row[30], row[31], row[32], row[33]], t: row[34] ||
+                            0, cc: row[35] || 0, s: row[36] || 0 },
+                    { n: 'Urdu', g: row[47] || 0, fa: [row[38], row[39], row[40], row[41], row[42], row[43]], t: row[44] ||
+                            0, cc: row[45] || 0, s: row[46] || 0 },
+                    { n: 'Kashmiri', g: row[57] || 0, fa: [row[48], row[49], row[50], row[51], row[52], row[53]], t: row[
+                            54] || 0, cc: row[55] || 0, s: row[56] || 0 }
+                ];
+
+                var perc = std.total / 5;
+
+                var grandFA = [0, 0, 0, 0, 0, 0];
+                subjects.forEach(function(s) {
+                    s.fa.forEach(function(v, i) { grandFA[i] += (Number(v) || 0); });
+                });
+                var grandT30 = subjects.reduce(function(a, b) { return a + (Number(b.t) || 0); }, 0);
+                var grandCC20 = subjects.reduce(function(a, b) { return a + (Number(b.cc) || 0); }, 0);
+                var grandSum50 = subjects.reduce(function(a, b) { return a + (Number(b.s) || 0); }, 0);
+                var grandTotal100 = subjects.reduce(function(a, b) { return a + (Number(b.g) || 0); }, 0);
+
+                var bestSub = subjects.reduce(function(prev, curr) { return (Number(prev.g) > Number(curr.g)) ? prev :
+                    curr; });
+                var weakSub = subjects.reduce(function(prev, curr) { return (Number(prev.g) < Number(curr.g)) ? prev :
+                    curr; });
+
+                var photoHtml = '';
+                var studentPhoto = getPhotoForStudent(row, idx);
+                if (studentPhoto) {
+                    photoHtml = '<img src="' + studentPhoto + '" class="w-full h-full object-cover" alt="photo">';
+                } else {
+                    photoHtml = '<span class="text-gray-400 text-xs">PHOTO</span>';
+                }
+
+                var div = document.createElement('div');
+                div.className = 'marksheet-container page-break';
+                div.id = 'marksheet-' + admNo;
+                div.setAttribute('data-adm', admNo);
+
+                var logoHtml = '<div class="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white">' +
+                    '<img src="new-logo.png" alt="School Logo" class="w-full h-full object-contain" onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<div class=\'logo-fallback\'>GPS</div>\';">' +
+                    '</div>';
+
+                div.innerHTML =
+                    '<div class="header-bg p-2 flex justify-between items-center">' +
+                    logoHtml +
+                    '<div class="text-center flex-grow">' +
+                    '<h1 class="text-2xl font-black uppercase leading-tight">Government Primary School</h1>' +
+                    '<h2 class="text-lg font-bold leading-tight">PETHGAM WAGOORA 193109</h2>' +
+                    '<p class="text-[10px] font-medium uppercase tracking-wide">Wagoora Babareshi Road Near Zonal Education office Wagoora</p>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '<div class="flex mt-1">' +
+                    '<div class="flex-grow grid grid-cols-4 border-l border-t">' +
+                    '<div class="cell-label">Student Name:</div><div class="cell-value col-span-1">' + name + '</div>' +
+                    '<div class="cell-label">Adm. No:</div><div class="cell-value">' + admNo + '</div>' +
+                    '<div class="cell-label">Fathers Name:</div><div class="cell-value">' + (row[4] || '') + '</div>' +
+                    '<div class="cell-label">D.O.B:</div><div class="cell-value">' + (row[7] || '') + '</div>' +
+                    '<div class="cell-label">Mothers Name:</div><div class="cell-value">' + (row[5] || '') + '</div>' +
+                    '<div class="cell-label">Class:</div><div class="cell-value">' + (row[2] || '') + '</div>' +
+                    '<div class="cell-label">Academic Session:</div><div class="cell-value">Nov. 2025</div>' +
+                    '<div class="cell-label">Roll No:</div><div class="cell-value">' + (row[1] || '') + '</div>' +
+                    '<div class="cell-label">Apaar ID:</div><div class="cell-value">' + (row[65] || 'N/A') + '</div>' +
+                    '<div class="cell-label">PEN No.</div><div class="cell-value">' + (row[66] || 'N/A') + '</div>' +
+                    '</div>' +
+                    '<div class="photo-box ml-1">' + photoHtml + '</div>' +
+                    '</div>' +
+
+                    '<table class="mt-1">' +
+                    '<thead class="bg-indigo-100">' +
+                    '<tr><th rowspan="2">Subject</th><th colspan="6">Formative (5 each)</th><th rowspan="2">T(30)</th><th rowspan="2">CC(20)</th><th rowspan="2">Sum(50)</th><th rowspan="2">Total</th><th rowspan="2">Grade</th><th rowspan="2">Proficiency</th></tr>' +
+                    '<tr class="text-[9px]"><th>FA1</th><th>FA2</th><th>FA3</th><th>FA4</th><th>FA5</th><th>FA6</th></tr>' +
+                    '</thead>' +
+                    '<tbody>' +
+                    subjects.map(function(s) {
+                        return '<tr><td class="sub-name">' + s.n + '</td>' +
+                            s.fa.map(function(v) { return '<td>' + (v || 0) + '</td>'; }).join('') +
+                            '<td class="font-bold">' + s.t + '</td><td>' + s.cc + '</td><td>' + s.s +
+                            '</td><td class="font-bold bg-blue-50">' + s.g +
+                            '</td><td>' + getGrade(s.g) + '</td><td class="font-bold text-blue-800">' +
+                            getProficiency(s.g) + '</td></tr>';
+                    }).join('') +
+                    '</tbody>' +
+                    '<tfoot class="bg-gray-200 font-bold">' +
+                    '<tr><td>Grand Total</td>' + grandFA.map(function(v) { return '<td>' + v + '</td>'; }).join('') +
+                    '<td>' + grandT30 + '</td><td>' + grandCC20 + '</td><td>' + grandSum50 +
+                    '</td><td class="bg-blue-100">' + grandTotal100 +
+                    '</td><td class="text-center">Overall Grade: ' + getGrade(perc) + '</td><td class="text-center text-blue-800">Overall Proficiency: ' + getProficiency(perc) + '</td></tr>' +
+                    '</tfoot>' +
+                    '</table>' +
+
+                    '<div class="grid grid-cols-3 gap-1 mt-1">' +
+                    '<div class="border border-slate-300">' +
+                    '<div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Percentage/Grade Key</div>' +
+                    '<table class="text-[9px] w-full">' +
+                    '<tr><td>>85% to 100%</td><td>A+</td></tr>' +
+                    '<tr><td>>70% to 85%</td><td>A</td></tr>' +
+                    '<tr><td>>55% to 70%</td><td>B</td></tr>' +
+                    '<tr><td>>40% to 55%</td><td>C</td></tr>' +
+                    '<tr><td>>33% to 40%</td><td>D</td></tr>' +
+                    '</table></div>' +
+                    '<div class="border border-slate-300">' +
+                    '<div class="bg-red-500 text-white text-[10px] font-bold text-center py-1">Level of Proficiency</div>' +
+                    '<table class="w-full text-[10px]">' +
+                    '<tr><td class="font-bold">Sky</td><td><img src="https://img.freepik.com/free-photo/blue-sky-with-white-clouds_1127-282.jpg" class="prof-img"></td><td>' +
+                    (perc >= 85 ? '✔' : '') + '</td></tr>' +
+                    '<tr><td class="font-bold">Mountain</td><td><img src="https://i.ibb.co/dsD45z0Z/IMG-20260409-201036.jpg" class="prof-img"></td><td>' +
+                    (perc >= 55 && perc < 85 ? '✔' : '') + '</td></tr>' +
+                    '<tr><td class="font-bold">Stream</td><td><img src="https://i.ibb.co/JwkmZSc0/IMG-20260407-220351.jpg" class="prof-img"></td><td>' +
+                    (perc < 55 ? '✔' : '') + '</td></tr>' +
+                    '</table></div>' +
+                    '<div class="border border-slate-300">' +
+                    '<div class="bg-purple-600 text-white text-[10px] font-bold text-center py-1">Final Results</div>' +
+                    '<table class="w-full text-[10px] text-left">' +
+                    '<tr><td class="bg-blue-50 px-1 border">Total Marks Obtained</td><td class="font-bold border text-center">' +
+                    std.total + '</td></tr>' +
+                    '<tr><td class="bg-blue-50 px-1 border">Max. Marks</td><td class="font-bold border text-center">500</td></tr>' +
+                    '<tr><td class="bg-blue-50 px-1 border">Overall %age</td><td class="font-bold border text-center">' +
+                    perc.toFixed(1) + '%</td></tr>' +
+                    '<tr><td class="bg-blue-50 px-1 border">Result</td><td class="font-bold border text-center">' +
+                    (perc >= 33 ? 'PROMOTED' : 'REPEATER') + '</td></tr>' +
+                    '<tr><td class="bg-blue-50 px-1 border">Class Position</td><td class="font-bold border text-center">' +
+                    (cRank === 1 ? '1st Position' : cRank === 2 ? '2nd Position' : cRank === 3 ? '3rd Position' :
+                        'Qualified') + '</td></tr>' +
+                    '</table></div></div>' +
+
+                    '<div class="grid grid-cols-2 gap-1 mt-1">' +
+                    '<div class="border p-1">' +
+                    '<div class="bg-orange-400 text-white text-[10px] font-bold text-center mb-1">Subject wise Bar Graph Chart</div>' +
+                    '<div class="bar-container">' +
+                    subjects.map(function(s) {
+                        var h = Math.min(Math.max(Number(s.g) || 0, 1), 100);
+                        return '<div class="bar-item"><span class="text-[9px]">' + s.g +
+                            '</span><div class="bar" style="height:' + h +
+                            '%;"></div><span class="text-[8px]">' + s.n + '</span></div>';
+                    }).join('') +
+                    '</div></div>' +
+                    '<div class="grid grid-rows-2 gap-1">' +
+                    '<div class="grid grid-cols-2 gap-1">' +
+                    '<div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">SCHOOL RANK</div><div class="text-xl font-bold">' +
+                    sRank + '</div></div>' +
+                    '<div class="border border-slate-700 text-center"><div class="bg-slate-700 text-white text-[9px] py-1">CLASS RANK</div><div class="text-xl font-bold">' +
+                    cRank + '</div></div></div>' +
+                    '<div class="border border-slate-400">' +
+                    '<table class="w-full h-full text-[9px] border-collapse">' +
+                    '<tr><td class="bg-red-700 text-white font-bold px-1 border border-slate-400">Attendance</td><td class="border border-slate-400 w-12 text-center font-bold">' + (row[HOLISTIC_START_INDEX] || '') + '</td><td class="bg-red-700 text-white font-bold px-1 border border-slate-400">Discipline</td><td class="border border-slate-400 w-12 text-center font-bold">' + (row[HOLISTIC_START_INDEX + 1] || '') + '</td></tr>' +
+                    '<tr><td class="bg-red-700 text-white font-bold px-1 border border-slate-400">Sports</td><td class="border border-slate-400 text-center font-bold">' + (row[HOLISTIC_START_INDEX + 2] || '') + '</td><td class="bg-red-700 text-white font-bold px-1 border border-slate-400">Art & Craft</td><td class="border border-slate-400 text-center font-bold">' + (row[HOLISTIC_START_INDEX + 3] || '') + '</td></tr>' +
+                    '<tr><td class="bg-red-700 text-white font-bold px-1 border border-slate-400">Teamwork</td><td class="border border-slate-400 text-center font-bold">' + (row[HOLISTIC_START_INDEX + 4] || '') + '</td><td class="bg-red-700 text-white font-bold px-1 border border-slate-400">Social Skills</td><td class="border border-slate-400 text-center font-bold">' + (row[HOLISTIC_START_INDEX + 5] || '') + '</td></tr>' +
+                    '</table></div></div></div>' +
+
+                    '<div class="border border-slate-400 mt-1">' +
+                    '<div class="bg-purple-500 text-white text-[10px] font-bold text-center py-1 uppercase">General Remarks</div>' +
+                    '<div class="p-2 text-[11px] font-bold min-h-[60px]">' +
+                    name + ' has shown ' + getProficiency(perc) +
+                    ' level performance. Exceptional in ' + bestSub.n + ' (' + bestSub.g + '). ' +
+                    (perc < 55 ? 'Focus needed on ' + weakSub.n + '.' : 'Keep maintaining excellence.') +
+                    ' Overall: ' + getGrade(perc) + '.' +
+                    '</div></div>' +
+
+                    '<div class="flex justify-between items-end px-4 mt-4">' +
+                    '<div class="text-center"><svg id="barcode-' + admNo +
+                    '"></svg><p class="text-[8px] uppercase font-bold text-slate-500">Student Identity Barcode</p></div>' +
+                    '<div class="text-center"><div id="qrcode-' + admNo +
+                    '" class="mx-auto bg-white p-1 border border-slate-800"></div><p class="text-[8px] uppercase font-bold mt-1 text-slate-500">Scan for Verification</p></div>' +
+                    '</div>' +
+
+                    '<div class="mt-16"></div>' +
+
+                    '<div class="grid grid-cols-4 gap-4 px-2">' +
+                    '<div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Sign. Form Teacher</div>' +
+                    '<div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Sign. Exam I/C</div>' +
+                    '<div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Parents Signature</div>' +
+                    '<div class="footer-tab border-t-2 border-slate-500 pt-2 font-bold">Seal & Sign. Headmaster</div>' +
+                    '</div>';
+
+                wrapper.appendChild(div);
+
+                setTimeout(function() {
+                    try {
+                        JsBarcode('#barcode-' + admNo, admNo, {
+                            format: 'CODE39',
+                            width: 1.5,
+                            height: 40,
+                            displayValue: true,
+                            fontSize: 10,
+                            margin: 5
+                        });
+                    } catch (e) { /* ignore */ }
+                    try {
+                        var qrEl = document.getElementById('qrcode-' + admNo);
+                        if (qrEl) {
+                            new QRCode(qrEl, {
+                                text: 'VERIFIED: ' + name + ' | Adm: ' + admNo +
+                                    ' | GPS Pethgam Wagoora',
+                                width: 80,
+                                height: 80,
+                                colorDark: '#000000',
+                                colorLight: '#ffffff',
+                                correctLevel: QRCode.CorrectLevel.M
+                            });
+                        }
+                    } catch (e) { /* ignore */ }
+                }, 200);
+            });
+        }
+
+        // ============================================================
+        // 9. INDIVIDUAL DOWNLOAD (unchanged)
+        // ============================================================
+        function downloadIndividual(admNo) {
+            var allMarksheets = document.querySelectorAll('.marksheet-container');
+            if (allMarksheets.length === 0) {
+                showToast('No marksheets to download.', 'error');
+                return;
+            }
+
+            var target = null;
+            allMarksheets.forEach(function(el) {
+                if (el.getAttribute('data-adm') === admNo) target = el;
+            });
+
+            if (!target) {
+                showToast('Marksheet for Adm ' + admNo + ' not found.', 'error');
+                return;
+            }
+
+            allMarksheets.forEach(function(el) { el.classList.remove('active-print'); });
+            target.classList.add('active-print');
+
+            var panel = document.querySelector('.no-print');
+            if (panel) panel.style.display = 'none';
+
+            window.print();
+
+            setTimeout(function() {
+                allMarksheets.forEach(function(el) { el.classList.remove('active-print'); });
+                if (panel) panel.style.display = '';
+                showToast('📄 Marksheet for Adm ' + admNo + ' sent to print.', 'info');
+            }, 1000);
+        }
+
+        // ============================================================
+        // 10. FIRESTORE SAVE FUNCTIONS (unchanged)
+        // ============================================================
+        function saveSingleToFirestore(admNo) {
+            var btn = null;
+            var btns = document.querySelectorAll('button[onclick*="saveSingleToFirestore(\'' + admNo + '\')"]');
+            if (btns.length) btn = btns[0];
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span>Saving...';
+            }
+
+            try {
+                var db = getDb();
+                if (!db) {
+                    showToast('❌ Firebase not initialized. Check config.', 'error');
+                    if (btn) { btn.disabled = false;
+                        btn.innerHTML = '☁️ Save'; }
+                    return;
+                }
+
+                var row = null;
+                for (var i = 0; i < allStudentsData.length; i++) {
+                    if ((allStudentsData[i][0] || '000').toString() === admNo) {
+                        row = allStudentsData[i];
+                        break;
+                    }
+                }
+                if (!row) {
+                    showToast('❌ Student with Adm ' + admNo + ' not found.', 'error');
+                    if (btn) { btn.disabled = false;
+                        btn.innerHTML = '☁️ Save'; }
+                    return;
+                }
+
+                var dataObj = row._dataObj;
+                if (!dataObj) {
+                    dataObj = buildStudentData(row);
+                    var studentsWithTotals = allStudentsData.map(function(r) {
+                        var total = (Number(r[17]) || 0) + (Number(r[27]) || 0) + (Number(r[37]) || 0) + (Number(
+                            r[47]) || 0) + (Number(r[57]) || 0);
+                        return { row: r, total: total, class: r[2] || '' };
+                    });
+                    var schoolSorted = studentsWithTotals.slice().sort(function(a, b) { return b.total - a.total; });
+                    var sRank = 1;
+                    for (var k = 0; k < schoolSorted.length; k++) {
+                        if (schoolSorted[k].total === dataObj.grandTotal) { sRank = k + 1; break; }
+                    }
+                    var classStudents = studentsWithTotals.filter(function(s) { return s.class === dataObj.class; });
+                    var classSorted = classStudents.slice().sort(function(a, b) { return b.total - a.total; });
+                    var cRank = 1;
+                    for (var m = 0; m < classSorted.length; m++) {
+                        if (classSorted[m].total === dataObj.grandTotal) { cRank = m + 1; break; }
+                    }
+                    dataObj.schoolRank = sRank;
+                    dataObj.classRank = cRank;
+                    row._dataObj = dataObj;
+                }
+
+                var collection = document.getElementById('fbCollection').value.trim() || 'marksheets';
+                var docRef = db.collection(collection).doc(admNo);
+                docRef.set(dataObj, { merge: true })
+                    .then(function() {
+                        showToast('✅ Saved ' + dataObj.name + ' (Adm: ' + admNo + ') to Firestore.', 'success');
+                        if (btn) { btn.disabled = false;
+                            btn.innerHTML = '☁️ Save'; }
+                    })
+                    .catch(function(err) {
+                        console.error('Firestore save error:', err);
+                        showToast('❌ Save failed: ' + err.message, 'error');
+                        if (btn) { btn.disabled = false;
+                            btn.innerHTML = '☁️ Save'; }
+                    });
+            } catch (err) {
+                console.error('saveSingleToFirestore error:', err);
+                showToast('❌ Save failed: ' + err.message, 'error');
+                if (btn) { btn.disabled = false;
+                    btn.innerHTML = '☁️ Save'; }
+            }
+        }
+
+        function saveAllToFirestore() {
+            var btn = document.getElementById('saveAllBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Saving All...';
+
+            try {
+                var db = getDb();
+                if (!db) {
+                    showToast('❌ Firebase not initialized. Check config.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '☁️ Save All to Firestore';
+                    return;
+                }
+
+                if (allStudentsData.length === 0) {
+                    showToast('No student data to save.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '☁️ Save All to Firestore';
+                    return;
+                }
+
+                var collection = document.getElementById('fbCollection').value.trim() || 'marksheets';
+                var successCount = 0;
+                var failCount = 0;
+
+                var studentsWithTotals = allStudentsData.map(function(row) {
+                    var totalMarks = (Number(row[17]) || 0) + (Number(row[27]) || 0) + (Number(row[37]) || 0) + (
+                        Number(row[47]) || 0) + (Number(row[57]) || 0);
+                    return { row: row, total: totalMarks, class: row[2] || '' };
+                });
+                var schoolSorted = studentsWithTotals.slice().sort(function(a, b) { return b.total - a.total; });
+
+                var promises = [];
+                for (var i = 0; i < allStudentsData.length; i++) {
+                    var row = allStudentsData[i];
+                    var admNo = (row[0] || '000').toString();
+                    var dataObj = buildStudentData(row);
+
+                    var sRank = 1;
+                    for (var k = 0; k < schoolSorted.length; k++) {
+                        if (schoolSorted[k].total === dataObj.grandTotal) { sRank = k + 1; break; }
+                    }
+                    var classStudents = studentsWithTotals.filter(function(s) { return s.class === dataObj.class; });
+                    var classSorted = classStudents.slice().sort(function(a, b) { return b.total - a.total; });
+                    var cRank = 1;
+                    for (var m = 0; m < classSorted.length; m++) {
+                        if (classSorted[m].total === dataObj.grandTotal) { cRank = m + 1; break; }
+                    }
+                    dataObj.schoolRank = sRank;
+                    dataObj.classRank = cRank;
+
+                    var docRef = db.collection(collection).doc(admNo);
+                    var p = docRef.set(dataObj, { merge: true })
+                        .then(function() { successCount++; })
+                        .catch(function(e) {
+                            failCount++;
+                            console.warn('Failed to save ' + admNo + ':', e);
+                        });
+                    promises.push(p);
+                }
+
+                Promise.all(promises)
+                    .then(function() {
+                        if (failCount === 0) {
+                            showToast('✅ All ' + successCount + ' students saved to Firestore!', 'success');
+                        } else {
+                            showToast('⚠️ Saved ' + successCount + ', failed ' + failCount +
+                                '. Check console.', 'error');
+                        }
+                        btn.disabled = false;
+                        btn.innerHTML = '☁️ Save All to Firestore';
+                    })
+                    .catch(function(err) {
+                        console.error('Batch save error:', err);
+                        showToast('❌ Batch save failed: ' + err.message, 'error');
+                        btn.disabled = false;
+                        btn.innerHTML = '☁️ Save All to Firestore';
+                    });
+
+            } catch (err) {
+                console.error('saveAllToFirestore error:', err);
+                showToast('❌ Batch save failed: ' + err.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '☁️ Save All to Firestore';
+            }
+        }
+
+        // ============================================================
+        // 11. TOGGLE FIRESTORE CONFIG (unchanged)
+        // ============================================================
+        function toggleFirestoreConfig() {
+            var area = document.getElementById('firestoreConfigArea');
+            area.style.display = (area.style.display === 'none') ? '' : 'none';
+        }
+
+        // ============================================================
+        // 12. INIT (unchanged)
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                initFirebase();
+            } catch (e) {
+                console.warn('Firebase init on load skipped:', e);
+            }
+            document.getElementById('firestoreConfigArea').style.display = '';
+            restoreAppState(false);
+        });
+
+        // Expose functions globally
+        window.downloadIndividual = downloadIndividual;
+        window.saveSingleToFirestore = saveSingleToFirestore;
+        window.saveAllToFirestore = saveAllToFirestore;
+        window.toggleFirestoreConfig = toggleFirestoreConfig;
+        window.uploadPhoto = uploadPhoto;
+        window.updateStudentAdmNo = updateStudentAdmNo;
+        window.updateHolisticField = updateHolisticField;
+        window.generateAllMarksheets = generateAllMarksheets;
+        window.renderStudentList = renderStudentList;
+        window.saveDataLocally = saveDataLocally;
+        window.restoreAppState = restoreAppState;
+        window.downloadStoredExcel = downloadStoredExcel;
+        window.clearStoredData = clearStoredData;
+        window.uploadExcelToFirebaseStorage = uploadExcelToFirebaseStorage;
+    </script>
+
+</body>
+</html>
