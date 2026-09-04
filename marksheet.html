@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GPS Pethgam Wagoora - Digital Register</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+    :root { 
+        --primary: #5b2c91; 
+        --primary-dark: #451f70;
+        --bg-light: #f4f7f6; 
+    }
+
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        background: var(--bg-light); 
+        margin: 0; 
+        padding: 20px; 
+        display: flex; 
+        justify-content: center;
+        gap: 20px; 
+    }
+    
+    /* UPDATION FORM STYLE */
+    .admin-panel { 
+        width: 350px; 
+        background: white; 
+        padding: 20px; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        height: fit-content; 
+        position: sticky; 
+        top: 20px; 
+    }
+    
+    .admin-panel h2 { 
+        color: var(--primary); 
+        font-size: 18px; 
+        margin: 0 0 15px 0; 
+        padding-bottom: 5px;
+        border-bottom: 2px solid var(--primary); 
+    }
+
+    .input-group { margin-bottom: 10px; }
+    
+    label { 
+        display: block; 
+        font-size: 12px; 
+        font-weight: bold; 
+        margin-bottom: 3px; 
+        color: #555;
+    }
+
+    input { 
+        width: 100%; 
+        padding: 8px; 
+        border: 1px solid #ccc; 
+        border-radius: 4px; 
+        box-sizing: border-box; 
+    }
+
+    .btn-group { 
+        margin-top: 20px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+    }
+
+    button {
+        background: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+    }
+
+    button:hover { background: var(--primary-dark); }
+    
+    /* A4 MARKSHEET STYLE */
+    .a4-container {
+        width: 8.27in;
+        height: 11.69in;
+        padding: 0.4in;
+        box-sizing: border-box;
+        font-size: 12px;
+        color: #333;
+        background: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Typography & Utility */
+    h1, h2, h3 { margin: 0; text-align: center; }
+    .text-center { text-align: center; }
+    
+    /* Header */
+    .header {
+        background-color: var(--primary);
+        color: white;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+    .header h1 { font-size: 22px; letter-spacing: 1px; }
+    .header h2 { font-size: 16px; margin-top: 5px; font-weight: normal; }
+
+    /* Student Info Section */
+    .student-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr 2fr 80px;
+        gap: 10px;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+    .info-label { font-weight: bold; color: var(--primary); }
+    .info-value { border-bottom: 1px solid #ccc; padding-bottom: 2px; }
+    .student-photo {
+        width: 80px;
+        height: 95px;
+        border: 1px solid #999;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #666;
+        grid-row: span 2; /* Adjust based on your HTML layout */
+    }
+
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 6px 4px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f0f7;
+        color: var(--primary);
+        font-size: 11px;
+    }
+    .subject-col { text-align: left; font-weight: bold; padding-left: 8px; }
+
+    /* Bottom Section Grid */
+    .bottom-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1.5fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .box {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+    }
+    .box h3 {
+        font-size: 12px;
+        background: var(--primary);
+        color: white;
+        padding: 4px;
+        border-radius: 3px;
+        margin-bottom: 8px;
+    }
+
+    /* Results & Ranks Box */
+    .result-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 3px 0;
+        border-bottom: 1px dashed #eee;
+    }
+    .result-label { font-weight: bold; }
+
+    /* Footer / Signatures */
+    .signatures {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        bottom: 0.5in;
+        left: 0.4in;
+        right: 0.4in;
+    }
+    .sig-box {
+        width: 1.5in;
+        border-top: 1px solid #333;
+        text-align: center;
+        padding-top: 5px;
+        font-size: 11px;
+    }
+
+    /* Controls (Invisible in Print) */
+    .controls {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    /* PRINT OPTIMIZATION */
+    @media print {
+        body { background: white; padding: 0; display: block; }
+        .admin-panel, .controls { display: none !important; }
+        .a4-container { 
+            border: none; 
+            box-shadow: none; 
+            margin: 0; 
+            width: 100%; 
+            height: auto;
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
+    }
+</style>
+</head>
+<body>
+
+    <div class="admin-panel">
+        <h2>Result Updation Form</h2>
+        
+        <div class="input-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="input-group">
+                <label>Student Name</label>
+                <input type="text" id="in-name" value="AAYAT RIYAZ WANI" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Admission No</label>
+                <input type="text" id="in-adm" value="133" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Father's Name</label>
+                <input type="text" id="in-father" value="RIYAZ AHMAD WANI" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Mother's Name</label>
+                <input type="text" id="in-mother" value="AFROZA BEGUM" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Class</label>
+                <input type="text" id="in-class" value="3rd" oninput="syncData()">
+            </div>
+            <div class="input-group">
+                <label>Roll No</label>
+                <input type="text" id="in-roll" value="303" oninput="syncData()">
+            </div>
+        </div>
+
+        <hr>
+        
+        <h3>Subject Marks (Breakdown)</h3>
+        <p style="font-size: 0.8em; color: #666;">Note: Enter Summative Marks (Out of 50) and Co-Curricular (Out of 20)</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+                <tr style="font-size: 12px; background: #eee;">
+                    <th>Subject</th>
+                    <th>FA (Total 30)</th>
+                    <th>Co-Curr (20)</th>
+                    <th>Summative (50)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>English</td>
+                    <td><input type="number" id="in-eng-fa" value="23" oninput="syncData()"></td>
+                    <td><input type="number" id="in-eng-co" value="16" oninput="syncData()"></td>
+                    <td><input type="number" id="in-eng-sum" value="38" oninput="syncData()"></td>
+                </tr>
+                <tr>
+                    <td>Math</td>
+                    <td><input type="number" id="in-math-fa" value="27" oninput="syncData()"></td>
+                    <td><input type="number" id="in-math-co" value="18" oninput="syncData()"></td>
+                    <td><input type="number" id="in-math-sum" value="45" oninput="syncData()"></td>
+                </tr>
+                </tbody>
+        </table>
+        
+        <div class="btn-group">
+            <button onclick="saveToRegister()" style="background: #28a745; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 4px;">Save to Register</button>
+            <button onclick="window.print()" style="background: #007bff; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 4px;">Print / Save PDF</button>
+        </div>
+    </div>
+
+    <div class="a4-container" id="printable-marksheet">
+        
+        <div class="header" style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 24px;">GOVERNMENT PRIMARY SCHOOL</h1>
+            <h2 style="margin: 0; font-size: 18px;">PETHGAM WAGOORA 193109</h2>
+            <p style="margin: 5px 0 0 0;">Progress Report Card - Session 2024</p>
+        </div>
+
+        <div class="student-info-grid" style="display: grid; grid-template-columns: 150px 1fr 150px 1fr 120px; gap: 8px; font-size: 13px; margin-bottom: 20px;">
+            <div class="info-label"><strong>Student Name:</strong></div>
+            <div class="info-value" id="val-name">AAYAT RIYAZ WANI</div>
+            <div class="info-label"><strong>Adm. No:</strong></div>
+            <div class="info-value" id="val-adm">133</div>
+            <div class="student-photo" style="grid-row: span 4; border: 1px solid #ccc; width: 100px; height: 120px; display: flex; align-items: center; text-align: center; font-size: 10px;">
+                Photo
+            </div>
+
+            <div class="info-label"><strong>Father's Name:</strong></div>
+            <div class="info-value" id="val-father">RIYAZ AHMAD WANI</div>
+            <div class="info-label"><strong>D.O.B:</strong></div>
+            <div class="info-value" id="val-dob">03-03-2017</div>
+
+            <div class="info-label"><strong>Mother's Name:</strong></div>
+            <div class="info-value" id="val-mother">AFROZA BEGUM</div>
+            <div class="info-label"><strong>Class:</strong></div>
+            <div class="info-value" id="val-class">3rd</div>
+
+            <div class="info-label"><strong>Roll No:</strong></div>
+            <div class="info-value" id="val-roll">303</div>
+            <div class="info-label"><strong>Session:</strong></div>
+            <div class="info-value">Nov.-Dec. 2024</div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;">
+            <thead>
+                <tr style="background: #f2f2f2;">
+                    <th style="border: 1px solid #000; padding: 8px;">Subject</th>
+                    <th style="border: 1px solid #000;">FA Total (30)</th>
+                    <th style="border: 1px solid #000;">Co-Curricular (20)</th>
+                    <th style="border: 1px solid #000;">Summative (50)</th>
+                    <th style="border: 1px solid #000;">Grand Total (100)</th>
+                    <th style="border: 1px solid #000;">Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #000; text-align: left; padding-left: 5px;">English</td>
+                    <td style="border: 1px solid #000;" id="val-eng-fa">23</td>
+                    <td style="border: 1px solid #000;" id="val-eng-co">16</td>
+                    <td style="border: 1px solid #000;" id="val-eng-sum">38</td>
+                    <td style="border: 1px solid #000; font-weight: bold;" id="val-eng-total">77</td>
+                    <td style="border: 1px solid #000;" id="val-eng-grade">A</td>
+                </tr>
+                </tbody>
+        </table>
+
+        </div>
+
+    <script>
+    function syncData() {
+        const get = id => document.getElementById(id);
+        const set = (id, value) => { const el=get(id); if(el) el.innerText=value ?? ""; };
+        set('val-name', get('in-name')?.value || '');
+        set('val-adm', get('in-adm')?.value || '');
+        set('val-father', get('in-father')?.value || '');
+        set('val-mother', get('in-mother')?.value || '');
+        set('val-class', get('in-class')?.value || '');
+        set('val-roll', get('in-roll')?.value || '');
+
+        const subjects = [
+            { id:'eng', name:'English', max:100 },
+            { id:'math', name:'Math', max:100 },
+            { id:'evs', name:'EVS', max:100 },
+            { id:'urdu', name:'Urdu', max:100 },
+            { id:'kash', name:'Kashmiri', max:100 }
+        ];
+        let totalMarks=0, maxMarks=0;
+        subjects.forEach(sub=>{
+            const inputs=['fa','co','sum'].map(x=>get(`in-${sub.id}-${x}`)).filter(Boolean);
+            let value=0;
+            if(inputs.length){
+                inputs.forEach(el=>{ let n=parseFloat(el.value); if(!Number.isFinite(n))n=0; value+=Math.max(0,n); });
+            } else {
+                const single=get(`in-${sub.id}`); if(single){let n=parseFloat(single.value); value=Number.isFinite(n)?Math.max(0,n):0;}
+                else return;
+            }
+            const bar=get(`bar-${sub.id}`); if(bar){bar.style.height=Math.min(value,100)+'%'; const bv=bar.querySelector('.bar-value'); if(bv)bv.innerText=Math.round(value);}
+            const totalEl=get(`val-${sub.id}-total`); if(totalEl) totalEl.innerText=Math.round(value);
+            totalMarks+=value; maxMarks+=100;
+        });
+        if(maxMarks===0){ maxMarks=500; }
+        const percentage=(totalMarks/maxMarks)*100;
+        const resultRows=document.querySelectorAll('.box:nth-child(2) .result-row span:last-child');
+        if(resultRows.length>=3){
+            resultRows[0].innerText=`${Math.round(totalMarks)} / ${maxMarks}`;
+            resultRows[1].innerText=`${percentage.toFixed(1)}%`;
+            resultRows[2].innerText=getOverallGrade(percentage);
+        }
+        const remarksBox=document.querySelector('.box p strong');
+        if(remarksBox) remarksBox.innerText=`Remarks: ${get('in-name')?.value || ''}`;
+    }
+
+    /**
+     * Determines the grade string based on the percentage
+     */
+    function getOverallGrade(pct) {
+        if (pct > 85) return "Outstanding";
+        if (pct > 70) return "Very Good";
+        if (pct > 55) return "Good";
+        if (pct > 40) return "Fair";
+        if (pct > 33) return "Average";
+        return "Needs Improvement";
+    }
+
+    /**
+     * Triggers the PDF generation
+     */
+    function downloadPDF() {
+        const element = document.getElementById('printable-marksheet');
+        const studentName = document.getElementById('val-name').innerText;
+        
+        // Use a slightly larger scale for better text clarity in PDF
+        const opt = {
+            margin:       0,
+            filename:     `Marksheet_${studentName.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 3, useCORS: true, logging: false }, 
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save();
+    }
+
+    // Alias for the button in your admin panel
+    function generatePDF() {
+        downloadPDF();
+    }
+
+    function saveToRegister() {
+        const studentName = document.getElementById('val-name').innerText;
+        alert(`Data for ${studentName} has been synchronized and is ready for export.`);
+        // Note: You could implement localStorage saving here if needed.
+    }
+
+    // Run once on load to ensure chart matches initial values
+    window.onload = syncData;
+</script>
+</body>
+</html>
+        .                        
