@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Certificate Generator - GPS Pethgam Wagoora</title>
+
+<!-- PDF libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #eef2f7;
+        color: #222;
+    }
+
+    .app-header {
+        background: #17365d;
+        color: white;
+        padding: 18px 15px;
+        text-align: center;
+    }
+
+    .app-header h1 { margin: 0 0 6px; font-size: 24px; }
+    .app-header p { margin: 0; font-size: 13px; }
+
+    .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 12px 30px;
+    }
+
+    .panel {
+        background: white;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 18px;
+        box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .panel h2 {
+        margin: 0 0 15px;
+        color: #17365d;
+        font-size: 19px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+    }
+
+    .field { display: flex; flex-direction: column; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px 11px;
+        border: 1px solid #b8c2cc;
+        border-radius: 7px;
+        font-size: 14px;
+        background: white;
+    }
+
+    input:focus, select:focus {
+        outline: 2px solid #9cc4ef;
+        border-color: #337ab7;
+    }
+
+    .photo-box {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    #photoPreview {
+        width: 105px;
+        height: 125px;
+        border: 1px solid #777;
+        object-fit: cover;
+        background: #f3f3f3;
+        display: none;
+    }
+
+    .photo-placeholder {
+        width: 105px;
+        height: 125px;
+        border: 1px dashed #888;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #777;
+        font-size: 12px;
+        background: #fafafa;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 15px;
+    }
+
+    button {
+        border: 0;
+        border-radius: 7px;
+        padding: 11px 15px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-primary { background: #17365d; color: white; }
+    .btn-success { background: #198754; color: white; }
+    .btn-warning { background: #f0ad4e; color: #111; }
+    .btn-danger { background: #c82333; color: white; }
+    button:hover { opacity: .9; }
+
+    /* A4 certificate - enlarged, balanced full-page government-style layout */
+    #certificate {
+        width: 210mm;
+        height: 297mm;
+        margin: 0 auto;
+        background: white;
+        padding: 10mm 13mm 10mm;
+        position: relative;
+        overflow: hidden;
+        color: #222;
+    }
+
+    .cert-border {
+        position: absolute;
+        inset: 5mm;
+        border: 1.2px solid #555;
+        pointer-events: none;
+    }
+
+    .cert-inner {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+    }
+
+    .certificate-header {
+        min-height: 47mm;
+        display: grid;
+        grid-template-columns: 32mm 1fr 32mm;
+        align-items: center;
+        column-gap: 5mm;
+        border-bottom: 1px solid #555;
+        padding: 1mm 2mm 4mm;
+    }
+
+    .header-logo {
+        width: 28mm;
+        height: 28mm;
+        object-fit: contain;
+        justify-self: center;
+        display: block;
+    }
+
+    .header-logo-placeholder {
+        width: 28mm;
+        height: 28mm;
+        border: 1px dashed #888;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 8px;
+        color: #777;
+        justify-self: center;
+    }
+
+    .header-center {
+        text-align: center;
+    }
+
+    .office-title {
+        text-align: center;
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: .5px;
+        margin: 0 0 3mm;
+        text-transform: uppercase;
+    }
+
+    .school-name {
+        text-align: center;
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 1.15;
+        margin: 0 0 2.5mm;
+        text-transform: uppercase;
+    }
+
+    .school-details {
+        text-align: center;
+        font-size: 10px;
+        line-height: 1.35;
+        margin: 0;
+    }
+
+    .header-right {
+        text-align: center;
+        font-size: 9px;
+        line-height: 1.25;
+        font-weight: 700;
+    }
+
+    .header-right .cert-label {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-bottom: 2mm;
+    }
+
+    .main-title {
+        text-align: center;
+        font-weight: 800;
+        font-size: 16px;
+        line-height: 1.35;
+        margin: 6mm 14mm 1.5mm;
+        text-transform: uppercase;
+    }
+
+    .title-subline {
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        margin-bottom: 5mm;
+    }
+
+    .title-line {
+        width: 85%;
+        border-bottom: 1px dotted #555;
+        margin: 0 auto 4mm;
+    }
+
+    /* Certificate details: one field per line, kept clear of the photograph */
+    .meta-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3.5mm;
+        font-size: 12px;
+        margin: 2mm 42mm 5mm 0;
+    }
+
+    .meta-row {
+        display: flex;
+        gap: 4px;
+        margin: 0;
+        align-items: baseline;
+    }
+
+    .meta-label {
+        font-weight: 700;
+        text-decoration: underline;
+        white-space: nowrap;
+    }
+
+    .line-value {
+        flex: 1;
+        border-bottom: 1px solid #777;
+        min-height: 17px;
+        padding: 0 4px;
+    }
+
+    .cert-photo {
+        position: absolute;
+        right: 4mm;
+        top: 58mm;
+        width: 31mm;
+        height: 39mm;
+        object-fit: cover;
+        border: 1px solid #555;
+        display: none;
+        background: white;
+    }
+
+    .photo-empty {
+        position: absolute;
+        right: 4mm;
+        top: 58mm;
+        width: 31mm;
+        height: 39mm;
+        border: 1px solid #777;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 8px;
+        color: #888;
+        background: #fafafa;
+    }
+
+    .notice {
+        font-size: 9px;
+        font-style: italic;
+        margin: 2mm 36mm 5mm 0;
+        line-height: 1.35;
+    }
+
+    .body-text {
+        font-size: 16px;
+        line-height: 3.55; /* Increased vertical spacing between certificate response lines */
+        margin-top: 6mm;
+        min-height: 55mm; /* Removes unnecessary blank space after the academic session */
+        padding-right: 39mm;
+        text-align: justify;
+    }
+
+    .blank {
+        display: inline-block;
+        min-width: 43mm;
+        border-bottom: 1px solid #555;
+        padding: 0 4px 2px;
+        min-height: 8mm; /* More writing space for Name, Father's Name, etc. */
+        line-height: 1.3;
+        vertical-align: middle;
+    }
+
+    .blank.small { min-width: 20mm; }
+    .blank.medium { min-width: 32mm; }
+
+    .session {
+        font-weight: 800;
+        text-decoration: underline;
+        white-space: nowrap;
+    }
+
+    .certify-box {
+        clear: both;
+        margin-top: 5mm; /* Keeps certificate text closer after the session */
+        font-size: 15px;
+        line-height: 2.55;
+        min-height: 50mm;
+        text-align: justify;
+        padding-right: 2mm;
+    }
+
+    .signature-area {
+        position: absolute;
+        left: 13mm;
+        right: 13mm;
+        bottom: 31mm;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .signature {
+        width: 72mm;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    .signature-line {
+        border-bottom: 1px solid #777;
+        height: 30mm; /* Extra blank space moved here for signature */
+        margin-bottom: 2mm;
+    }
+
+    .footer-note {
+        position: absolute;
+        left: 13mm;
+        right: 13mm;
+        bottom: 9mm;
+        font-size: 8.5px;
+        color: #555;
+        line-height: 1.45;
+    }
+
+    .footer-note ol { margin: 2px 0 0 15px; padding: 0; }
+
+    .preview-wrap {
+        overflow-x: auto;
+        background: #dfe5eb;
+        padding: 20px 0;
+    }
+
+    @media (max-width: 700px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .field.full { grid-column: auto; }
+        #certificate { margin-left: 0; }
+        .preview-wrap { overflow-x: scroll; }
+    }
+
+    @media print {
+        body { background: white; }
+        .app-header, .form-panel, .preview-tools { display: none !important; }
+        .container { margin: 0; padding: 0; max-width: none; }
+        .panel { box-shadow: none; padding: 0; }
+        .preview-wrap { padding: 0; background: white; overflow: visible; }
+        #certificate { margin: 0; width: 210mm; height: 297mm; }
+        @page { size: A4 portrait; margin: 0; }
+    }
+</style>
+</head>
+
+<body>
+<header class="app-header">
+    <h1>Certificate Generator</h1>
+    <p>Government Primary School Pethgam Wagoora • Zone Wagoora • District Baramulla</p>
+</header>
+
+<div class="container">
+
+    <section class="panel form-panel">
+        <h2>1. Enter Certificate Details</h2>
+
+        <div class="form-grid">
+
+            <div class="field">
+                <label for="schoolName">School / Institution Name</label>
+                <input id="schoolName" value="Government Primary School Pethgam Wagoora">
+            </div>
+
+            <div class="field">
+                <label for="dispatchNo">Dispatch No.</label>
+                <input id="dispatchNo" placeholder="e.g. GPS/PGW/2026/16">
+            </div>
+
+            <div class="field">
+                <label for="issueDate">Date of Issue</label>
+                <input id="issueDate" type="date">
+            </div>
+
+            <div class="field">
+                <label for="contactNo">Contact No. of Institute / Department</label>
+                <input id="contactNo" value="9596449881">
+            </div>
+
+            <div class="field">
+                <label for="studentName">Student Name</label>
+                <input id="studentName" placeholder="Full name">
+            </div>
+
+            <div class="field">
+                <label for="parentName">S/O, D/O, W/O</label>
+                <input id="parentName" placeholder="Parent / Guardian name">
+            </div>
+
+            <div class="field">
+                <label for="address">R/O</label>
+                <input id="address" value="Wagoora">
+            </div>
+
+            <div class="field">
+                <label for="className">Class</label>
+                <select id="className">
+                    <option value="">Select Class</option>
+                    <option>Nursery</option>
+                    <option>KG</option>
+                    <option>1st</option>
+                    <option>2nd</option>
+                    <option>3rd</option>
+                    <option>4th</option>
+                    <option>5th</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="rollNo">Class Roll No. / Enrollment No.</label>
+                <input id="rollNo" placeholder="e.g. 01">
+            </div>
+
+            <div class="field">
+                <label for="session">Academic Session</label>
+                <select id="session"></select>
+            </div>
+
+            <div class="field">
+                <label for="assistance">Education Assistance / Scholarship</label>
+                <select id="assistance">
+                    <option value="No">No — Student has not availed any assistance/scholarship</option>
+                    <option value="Yes">Yes — Student has availed assistance/scholarship</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="recognitionNo">Recognition No.</label>
+                <input id="recognitionNo" placeholder="Recognition number">
+            </div>
+
+            <div class="field">
+                <label for="recognitionDate">Recognition Date</label>
+                <input id="recognitionDate" type="date">
+            </div>
+
+            <div class="field full">
+                <label>Student Photograph</label>
+                <div class="photo-box">
+                    <div class="photo-placeholder" id="photoPlaceholder">Photo<br>3.2 × 4.0 cm</div>
+                    <img id="photoPreview" alt="Student photograph preview">
+                    <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp">
+                </div>
+            </div>
+
+            <div class="field full">
+                <label>School Logo (optional — default: logo.png beside this HTML file)</label>
+                <input id="logoInput" type="file" accept="image/jpeg,image/png,image/webp">
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button class="btn-primary" onclick="updateCertificate()">Update Certificate</button>
+            <button class="btn-success" onclick="downloadPDF()">Download Certificate PDF</button>
+            <button class="btn-warning" onclick="window.print()">Print / Save as PDF</button>
+            <button class="btn-danger" onclick="resetForm()">Clear Form</button>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2 class="preview-tools">2. Certificate Preview</h2>
+        <div class="preview-wrap">
+            <div id="certificate">
+                <div class="cert-border"></div>
+
+                <div class="cert-inner">
+                    <div class="certificate-header">
+                        <div>
+                            <img id="certLogo" class="header-logo" src="logo.png" alt="School Logo"
+                                 onerror="this.style.display='none';document.getElementById('logoEmpty').style.display='flex';">
+                            <div id="logoEmpty" class="header-logo-placeholder" style="display:none;">SCHOOL<br>LOGO</div>
+                        </div>
+
+                        <div class="header-center">
+                            <div class="office-title">OFFICE OF THE HEAD OF THE INSTITUTION</div>
+                            <div class="school-name" id="cSchool">Government Primary School Pethgam Wagoora</div>
+                            <p class="school-details">
+                                Wagoora Babareshi Road Near Zonal Education Office Wagoora<br>
+                                UDISE Code: 01022202207<br>
+                                E-mail ID: pspethgam@gmail.com &nbsp; | &nbsp; Contact: 9596449881
+                            </p>
+                        </div>
+
+                        <div class="header-right">
+                            <span class="cert-label">Certificate</span>
+                            From<br>Head of the Institution
+                        </div>
+                    </div>
+
+                    <div class="main-title">
+                        CERTIFICATE FROM THE HEAD OF THE INSTITUTION
+                    </div>
+                    <div class="title-line"></div>
+
+                    <img id="certPhoto" class="cert-photo" alt="Student photograph">
+                    <div id="photoEmpty" class="photo-empty">STUDENT<br>PHOTOGRAPH</div>
+
+                    <div class="meta-grid">
+                        <div class="meta-row">
+                            <span class="meta-label">Dispatch No.:</span>
+                            <span class="line-value" id="cDispatch"></span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Date of Issue:</span>
+                            <span class="line-value" id="cIssueDate"></span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Contact No. of Institute/Department:</span>
+                            <span class="line-value" id="cContact"></span>
+                        </div>
+                    </div>
+
+                    <div class="notice">
+                        Note: All the fields are mandatory to fill. Bonafide/certificate with cutting or tampering shall be rejected.
+                    </div>
+
+                    <div class="body-text">
+                        It is certified that student namely
+                        <span class="blank" id="cStudent"></span>
+                        S/O, D/O
+                        <span class="blank" id="cParent"></span>
+                        R/O
+                        <span class="blank medium" id="cAddress"></span>
+                        is presently reading in Class
+                        <span class="blank small" id="cClass"></span>
+                        Under Class Roll No./Enrollment No.
+                        <span class="blank small" id="cRoll"></span>
+                        in our Institute for the current academic Session
+                        <span class="session" id="cSession"></span>.
+                    </div>
+
+                    <div class="certify-box" id="cAssistance">
+                        It is further certified that the said student has not availed any education assistance/scholarship through
+                        this institute during the current academic session. This institution is recognized with J&amp;K Government
+                        vide, bearing Recognition No. <span class="blank medium" id="cRecognitionNo"></span>
+                        Dated <span class="blank medium" id="cRecognitionDate"></span>.
+                    </div>
+
+                    <div class="signature-area">
+                        <div class="signature">
+                            <div class="signature-line"></div>
+                            <strong>Mohammad Ashraf Rather</strong><br>
+                            <strong>Head of the Institution</strong><br>
+                            <strong>Contact 9596449881</strong><br>
+                            <strong>(Seal &amp; Signature)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-note">
+                    <strong>Note:</strong>
+                    <ol>
+                        <li>All the above fields are mandatory to fill and failing on the case will be rejected.</li>
+                        <li>Certificate with cuttings and over writing is not valid.</li>
+                        <li>Certificate without Dispatch No. &amp; Date of Issuance from the concerned Institute/Department is not valid and will not be accepted.</li>
+                        <li>For scholarship/assistance purposes, upload the required supporting documents wherever applicable.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    const ids = [
+        "schoolName","dispatchNo","issueDate","contactNo","studentName","parentName",
+        "address","className","rollNo","session","assistance","recognitionNo",
+        "recognitionDate","signatoryName","signatoryPhone"
+    ];
+
+    function formatDate(value) {
+        if (!value) return "";
+        const d = new Date(value + "T00:00:00");
+        return d.toLocaleDateString("en-GB", {
+            day: "2-digit", month: "2-digit", year: "numeric"
+        });
+    }
+
+    function createSessions() {
+        const select = document.getElementById("session");
+        select.innerHTML = "";
+
+        // Academic session runs November to October.
+        // Starts with the requested November 2025 – October 2026 session.
+        for (let start = 2025; start <= 2035; start++) {
+            const option = document.createElement("option");
+            option.value = `${start}-${start + 1}`;
+            option.textContent = `November ${start} – October ${start + 1}`;
+            if (start === 2025) option.selected = true;
+            select.appendChild(option);
+        }
+    }
+
+    function updateCertificate() {
+        const get = id => document.getElementById(id).value.trim();
+
+        document.getElementById("cSchool").textContent = get("schoolName");
+        document.getElementById("cDispatch").textContent = get("dispatchNo");
+        document.getElementById("cIssueDate").textContent = formatDate(get("issueDate"));
+        document.getElementById("cContact").textContent = get("contactNo");
+        document.getElementById("cStudent").textContent = get("studentName");
+        document.getElementById("cParent").textContent = get("parentName");
+        document.getElementById("cAddress").textContent = get("address");
+        document.getElementById("cClass").textContent = get("className");
+        document.getElementById("cRoll").textContent = get("rollNo");
+
+        const sessionText = document.getElementById("session").selectedOptions[0]?.textContent || "";
+        document.getElementById("cSession").textContent = sessionText;
+
+        document.getElementById("cRecognitionNo").textContent = get("recognitionNo");
+        document.getElementById("cRecognitionDate").textContent = formatDate(get("recognitionDate"));
+        // Signatory details are fixed as requested:
+        // Mohammad Ashraf Rather, Head of the Institution, Contact 9596449881.
+
+        const assistance = get("assistance");
+        document.getElementById("cAssistance").innerHTML =
+            assistance === "Yes"
+            ? `It is further certified that the said student has availed education assistance/scholarship through this institute during the current academic session. This institution is recognized with J&amp;K Government vide, bearing Recognition No. <span class="blank medium">${escapeHTML(get("recognitionNo"))}</span> Dated <span class="blank medium">${escapeHTML(formatDate(get("recognitionDate")))}</span>.`
+            : `It is further certified that the said student has not availed any education assistance/scholarship through this institute during the current academic session. This institution is recognized with J&amp;K Government vide, bearing Recognition No. <span class="blank medium">${escapeHTML(get("recognitionNo"))}</span> Dated <span class="blank medium">${escapeHTML(formatDate(get("recognitionDate")))}</span>.`;
+    }
+
+    function escapeHTML(str) {
+        return String(str).replace(/[&<>"']/g, m => ({
+            "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+        }[m]));
+    }
+
+    document.getElementById("logoInput").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a JPG, PNG or WebP logo.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const logo = document.getElementById("certLogo");
+            logo.src = event.target.result;
+            logo.style.display = "block";
+            document.getElementById("logoEmpty").style.display = "none";
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById("photoInput").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a JPG, PNG or WebP image.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const src = event.target.result;
+
+            const preview = document.getElementById("photoPreview");
+            preview.src = src;
+            preview.style.display = "block";
+            document.getElementById("photoPlaceholder").style.display = "none";
+
+            const certPhoto = document.getElementById("certPhoto");
+            certPhoto.src = src;
+            certPhoto.style.display = "block";
+            document.getElementById("photoEmpty").style.display = "none";
+        };
+        reader.readAsDataURL(file);
+    });
+
+    async function downloadPDF() {
+        updateCertificate();
+
+        const button = event?.target;
+        if (button) {
+            button.disabled = true;
+            button.textContent = "Creating PDF...";
+        }
+
+        try {
+            const certificate = document.getElementById("certificate");
+
+            const canvas = await html2canvas(certificate, {
+                scale: 2.5,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: "#ffffff",
+                width: certificate.scrollWidth,
+                height: certificate.scrollHeight
+            });
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            const imgData = canvas.toDataURL("image/jpeg", 0.95);
+            pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+
+            const student = document.getElementById("studentName").value.trim()
+                .replace(/[^a-z0-9]+/gi, "_") || "Student";
+            const session = document.getElementById("session").value;
+
+            pdf.save(`Certificate_${student}_${session}.pdf`);
+        } catch (error) {
+            console.error(error);
+            alert("PDF generation failed. Please use Print / Save as PDF instead.");
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Download Certificate PDF";
+            }
+        }
+    }
+
+    function resetForm() {
+        if (!confirm("Clear all entered certificate details?")) return;
+        document.querySelectorAll("input").forEach(input => {
+            if (input.id === "schoolName") input.value = "Government Primary School Pethgam Wagoora";
+            else if (input.id === "contactNo" || input.id === "signatoryPhone") input.value = "9596449881";
+            else if (input.id === "address") input.value = "Wagoora";
+            else input.value = "";
+        });
+
+        document.getElementById("className").value = "";
+        document.getElementById("assistance").value = "No";
+        document.getElementById("session").value = "2025-2026";
+
+        document.getElementById("photoInput").value = "";
+        document.getElementById("photoPreview").style.display = "none";
+        document.getElementById("photoPlaceholder").style.display = "flex";
+        document.getElementById("certPhoto").style.display = "none";
+        document.getElementById("photoEmpty").style.display = "flex";
+
+        updateCertificate();
+    }
+
+    // Update certificate automatically whenever a field changes.
+    document.addEventListener("input", updateCertificate);
+    document.addEventListener("change", updateCertificate);
+
+    createSessions();
+
+    // Default issue date: current date.
+    const today = new Date();
+    document.getElementById("issueDate").value =
+        today.toISOString().split("T")[0];
+
+    updateCertificate();
+</script>
+</body>
+</html>
