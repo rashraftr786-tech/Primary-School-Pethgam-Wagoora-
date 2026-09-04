@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Student Attendance | Government Primary School Pethgam Wagoora</title>
+<style>
+:root{--blue:#0b5cab;--dark:#08376d;--green:#087443;--red:#c62828;--orange:#e67e22;--purple:#6f42c1;--bg:#f3f6fa;--card:#fff;--line:#d8e0ea;--text:#17212b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}button,input,select{font:inherit}
+.top{background:linear-gradient(135deg,var(--blue),var(--dark));color:#fff;padding:16px 20px;box-shadow:0 3px 15px #0002}.school{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:800}.logo{width:50px;height:50px;object-fit:contain;background:#fff;border-radius:8px;padding:3px}.sub{font-size:12px;margin-top:5px;opacity:.95}
+.wrap{max-width:1450px;margin:auto;padding:16px}.toolbar,.stats,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 18px #18324a0b}.toolbar{padding:14px;display:flex;gap:9px;flex-wrap:wrap;align-items:end;margin-bottom:14px}.control{min-width:155px}.control label{display:block;font-size:11px;font-weight:800;color:#526273;margin-bottom:5px}.control input,.control select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff}.success{background:var(--green);color:#fff}.danger{background:var(--red);color:#fff}.warning{background:var(--orange);color:#fff}.purple{background:var(--purple);color:#fff}.light{background:#eef4fb;color:var(--blue);border:1px solid #cbdced}.toolbar .grow{flex:1;min-width:220px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:10px;margin-bottom:14px}.stat{padding:12px;border-radius:10px;background:#f7faff;border:1px solid #e2ebf5}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:#607080}
+.card{overflow:hidden;margin-bottom:14px}.cardhead{padding:13px 16px;background:#f8fbff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.cardhead h2{font-size:16px;margin:0}.notice{font-size:12px;color:#536474}.tablewrap{overflow:auto;max-height:65vh}table{width:100%;border-collapse:collapse;min-width:900px}th,td{border-bottom:1px solid #e6ebf1;padding:8px;text-align:left;font-size:12px;white-space:nowrap}th{position:sticky;top:0;background:#eaf2fb;color:#123a62;z-index:3}.name{font-weight:800}.studentid{font-size:10px;color:#728092;margin-top:2px}.status-select{padding:7px;border-radius:7px;border:1px solid #cbd5e1;font-weight:800;min-width:105px}.present{background:#e5f7ed;color:#087443}.absent{background:#fde8e8;color:#b42323}.holiday{background:#fff2db;color:#9a5a00}.leave{background:#eee8fb;color:#5d36a4}.late{background:#e8f1ff;color:#1557a6}.summary{font-weight:800}.footer{text-align:center;color:#667585;font-size:11px;padding:15px}
+.monthgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px}.monthstat{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fbfdff}.monthstat b{font-size:20px}.monthstat small{display:block;color:#667585;margin-top:4px}.hidden{display:none!important}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.monthgrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:550px){.wrap{padding:8px}.school{font-size:15px}.logo{width:42px;height:42px}.toolbar{padding:9px}.control{min-width:calc(50% - 8px);flex:1}.control.grow{min-width:100%}.monthgrid{grid-template-columns:1fr}.btn{padding:9px 10px}}
+@media print{body{background:#fff}.top{background:#fff;color:#000;box-shadow:none;border-bottom:2px solid #000}.logo{display:block}.toolbar,.stats,.footer,#monthCard{display:none!important}.wrap{padding:0}.card{border:0;box-shadow:none}.tablewrap{max-height:none;overflow:visible}table{min-width:0}th,td{font-size:9px;padding:5px}.status-select{border:0;background:none!important;padding:0}.no-print{display:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="school"><img class="logo" src="new-logo.png" alt="School Logo" onerror="this.style.display='none'"><div>Government Primary School Pethgam Wagoora<div class="sub">Student Attendance Management • Linked with General Admission Register / Master Student Database</div></div></div></header>
+<main class="wrap">
+<section class="toolbar">
+  <div class="control"><label>Attendance Date</label><input id="attDate" type="date" onchange="loadAttendance()"></div>
+  <div class="control"><label>Academic Session</label><select id="session" onchange="loadAttendance()"></select></div>
+  <div class="control"><label>Class</label><select id="classFilter" onchange="renderStudents()"><option value="">All Classes</option></select></div>
+  <div class="control grow"><label>Search Student / Admission No.</label><input id="search" placeholder="Search by name, admission no., Student ID, father..." oninput="renderStudents()"></div>
+  <button class="btn success" onclick="markAll('Present')">✓ All Present</button>
+  <button class="btn danger" onclick="markAll('Absent')">✕ All Absent</button>
+  <button class="btn light" onclick="markAll('Not Marked')">↺ Reset</button>
+  <button class="btn primary" onclick="saveAttendance()">💾 Save Attendance</button>
+  <button class="btn purple" onclick="window.print()">🖨 Print</button>
+</section>
+<section class="stats">
+ <div class="stat"><b id="total">0</b><span>Total Students</span></div><div class="stat"><b id="present">0</b><span>Present</span></div><div class="stat"><b id="absent">0</b><span>Absent</span></div><div class="stat"><b id="leave">0</b><span>Leave (Half/Full)</span></div><div class="stat"><b id="unmarked">0</b><span>Not Marked</span></div>
+</section>
+<section class="card">
+ <div class="cardhead"><h2 id="heading">Daily Student Attendance</h2><div class="notice">Attendance is stored locally and linked by permanent Student ID, so names/admission numbers remain connected to the master record.</div></div>
+ <div class="tablewrap"><table><thead><tr><th>#</th><th>Admission No.</th><th>Student</th><th>Class</th><th>Gender</th><th>Father / Guardian</th><th>Status</th><th>Remarks</th></tr></thead><tbody id="tbody"></tbody></table></div>
+</section>
+<section class="card" id="monthCard">
+ <div class="cardhead"><h2>Monthly Attendance Summary</h2><div class="notice">Select a month below to view student-wise totals.</div><div><input id="monthPicker" type="month" onchange="renderMonthly()" style="padding:8px;border:1px solid #cbd5e1;border-radius:8px"><button class="btn light" onclick="exportCSV()">⇩ Export CSV</button></div></div>
+ <div class="tablewrap"><table><thead><tr><th>#</th><th>Admission No.</th><th>Student</th><th>Class</th><th>Working Days Marked</th><th>Present</th><th>Absent</th><th>Leave</th><th>Attendance %</th></tr></thead><tbody id="monthlyBody"></tbody></table></div>
+</section>
+<div class="footer">Data source: GPSPETHGAM_MASTER_ADMISSION_V1 • Attendance: GPSPETHGAM_ATTENDANCE_V1 • For multi-device synchronization, connect this same model to Firebase/Firestore.</div>
+</main>
+<script>
+const MASTER_KEY='GPSPETHGAM_MASTER_ADMISSION_V1';
+const ATT_KEY='GPSPETHGAM_ATTENDANCE_V1';
+let students=[]; let attendance={};
+const todayISO=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function full(r,p){return [r[p+'First'],r[p+'Middle'],r[p+'Last']].filter(Boolean).join(' ').trim()}
+function studentName(r){return [r.studentFirst,r.studentMiddle,r.studentLast].filter(Boolean).join(' ').trim()||'Unnamed Student'}
+function loadMaster(){try{students=JSON.parse(localStorage.getItem(MASTER_KEY)||'[]')}catch(e){students=[]}students=students.filter(r=>r&&r.status!=='Rejected')}
+function loadDB(){try{attendance=JSON.parse(localStorage.getItem(ATT_KEY)||'{}')}catch(e){attendance={}}}
+function saveDB(){localStorage.setItem(ATT_KEY,JSON.stringify(attendance))}
+function setup(){
+ const d=new Date(); document.getElementById('attDate').value=todayISO(); document.getElementById('monthPicker').value=todayISO().slice(0,7);
+ const y=d.getFullYear(), s=document.getElementById('session'); [''+(y-1)+'-'+y,''+y+'-'+(y+1),''+(y+1)+'-'+(y+2)].forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;s.appendChild(o)}); s.value=y+'-'+(y+1);
+ const classes=[...new Set(students.map(r=>r.classJoining).filter(Boolean))]; classes.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})); classes.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;document.getElementById('classFilter').appendChild(o)});
+ loadAttendance(); renderMonthly();
+}
+function key(){return (document.getElementById('session').value||'')+'|'+document.getElementById('attDate').value}
+function getDay(){return attendance[key()]||{session:document.getElementById('session').value,date:document.getElementById('attDate').value,records:{}}}
+function loadAttendance(){renderStudents();renderMonthly()}
+function filtered(){const q=(document.getElementById('search').value||'').toLowerCase().trim(), c=document.getElementById('classFilter').value; return students.filter(r=>{const hay=[r.admissionNo,r.studentId,studentName(r),r.classJoining,full(r,'father'),r.fatherContact].join(' ').toLowerCase();return (!q||hay.includes(q))&&(!c||r.classJoining===c)})}
+function renderStudents(){
+ const day=getDay(), list=filtered(), body=document.getElementById('tbody');
+ document.getElementById('heading').textContent='Daily Student Attendance — '+new Date(document.getElementById('attDate').value+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+ body.innerHTML=list.length?list.map((r,i)=>{const st=day.records[r.studentId]?.status||'Not Marked', rem=day.records[r.studentId]?.remarks||'';return `<tr><td>${i+1}</td><td><b>${esc(r.admissionNo||'')}</b><div class="studentid">${esc(r.studentId||'')}</div></td><td class="name">${esc(studentName(r))}</td><td>${esc(r.classJoining||'')}</td><td>${esc(r.gender||'')}</td><td>${esc(full(r,'father'))}</td><td><select class="status-select ${statusClass(st)}" data-id="${esc(r.studentId)}" onchange="setStatus(this)"><option>Not Marked</option><option>Present</option><option>Absent</option><option>Leave — Full Day</option><option>Leave — 1st Half</option><option>Leave — 2nd Half</option><option>Late</option></select></td><td><input data-rem="${esc(r.studentId)}" value="${esc(rem)}" placeholder="Optional remark" style="padding:7px;border:1px solid #d4dce5;border-radius:7px;min-width:180px" oninput="setRemark(this)"></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No students found. Add students through the General Admission Register first.</td></tr>';
+ list.forEach(r=>{const el=document.querySelector(`select[data-id="${CSS.escape(r.studentId||'')}"]`);if(el){el.value=day.records[r.studentId]?.status||'Not Marked';el.className='status-select '+statusClass(el.value)}}); updateStats(list,day);
+}
+function statusClass(s){return ({Present:'present',Absent:'absent',Leave:'leave','Leave — Full Day':'leave','Leave — 1st Half':'leave','Leave — 2nd Half':'leave',Late:'late'}[s]||'')}
+function setStatus(el){const d=getDay();d.records[el.dataset.id]=d.records[el.dataset.id]||{};d.records[el.dataset.id].status=el.value;attendance[key()]=d;el.className='status-select '+statusClass(el.value);updateStats(filtered(),d)}
+function setRemark(el){const d=getDay();d.records[el.dataset.rem]=d.records[el.dataset.rem]||{};d.records[el.dataset.rem].remarks=el.value;attendance[key()]=d}
+function markAll(status){const d=getDay();filtered().forEach(r=>{d.records[r.studentId]=d.records[r.studentId]||{};d.records[r.studentId].status=status});attendance[key()]=d;renderStudents()}
+function updateStats(list,day){let p=0,a=0,l=0,u=0;list.forEach(r=>{const s=day.records[r.studentId]?.status||'Not Marked';if(s==='Present'||s==='Late')p++;else if(s==='Absent')a++;else if(s==='Leave'||s==='Leave — Full Day'||s==='Leave — 1st Half'||s==='Leave — 2nd Half')l++;else u++});document.getElementById('total').textContent=list.length;document.getElementById('present').textContent=p;document.getElementById('absent').textContent=a;document.getElementById('leave').textContent=l;document.getElementById('unmarked').textContent=u}
+function saveAttendance(){attendance[key()]=getDay();saveDB();alert('Attendance saved successfully for '+document.getElementById('attDate').value+'.');renderMonthly()}
+function renderMonthly(){
+ const m=document.getElementById('monthPicker').value||todayISO().slice(0,7), body=document.getElementById('monthlyBody'); const rows=students.filter(r=>!document.getElementById('classFilter').value||r.classJoining===document.getElementById('classFilter').value);
+ body.innerHTML=rows.map((r,i)=>{let w=0,p=0,a=0,l=0;Object.values(attendance).forEach(d=>{if(!d||!d.date||d.date.slice(0,7)!==m)return;const x=d.records?.[r.studentId];if(!x||!x.status||x.status==='Not Marked')return;w++;if(x.status==='Present'||x.status==='Late')p++;else if(x.status==='Absent')a++;else if(x.status==='Leave'||x.status==='Leave — 1st Half'||x.status==='Leave — 2nd Half')l++});const pct=w?((p/w)*100).toFixed(1):'—';return `<tr><td>${i+1}</td><td>${esc(r.admissionNo||'')}</td><td class="name">${esc(studentName(r))}</td><td>${esc(r.classJoining||'')}</td><td>${w}</td><td>${p}</td><td>${a}</td><td>${l}</td><td class="summary">${pct}${pct!=='—'?'%':''}</td></tr>`}).join('')||'<tr><td colspan="9" class="empty">No student records.</td></tr>';
+}
+function exportCSV(){const m=document.getElementById('monthPicker').value||todayISO().slice(0,7), rows=[['Admission No.','Student Name','Class','Working Days Marked','Present','Absent','Leave','Attendance %']];students.forEach(r=>{let w=0,p=0,a=0,l=0;Object.values(attendance).forEach(d=>{if(d?.date?.slice(0,7)!==m)return;const x=d.records?.[r.studentId];if(!x||!x.status||x.status==='Not Marked')return;w++;if(x.status==='Present'||x.status==='Late')p++;else if(x.status==='Absent')a++;else if(x.status==='Leave'||x.status==='Leave — 1st Half'||x.status==='Leave — 2nd Half')l++});rows.push([r.admissionNo||'',studentName(r),r.classJoining||'',w,p,a,l,w?((p/w)*100).toFixed(1):''])});const csv=rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Attendance-'+m+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+loadMaster();loadDB();setup();
+</script>
+</body>
+</html>
