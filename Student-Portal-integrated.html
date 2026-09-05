@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b5cab">
+<title>Student Portal | Government Primary School Pethgam Wagoora</title>
+<style>
+:root{--blue:#0b5cab;--dark:#08376d;--bg:#f3f6fa;--card:#fff;--line:#d8e0ea;--text:#17212b;--muted:#657484;--green:#087443;--red:#c62828;--gold:#d99a00;--shadow:0 5px 20px rgba(24,50,74,.09)}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}button,input{font:inherit}.hidden{display:none!important}
+.top{background:linear-gradient(135deg,var(--blue),var(--dark));color:#fff;padding:14px 18px;display:flex;align-items:center;gap:13px;box-shadow:0 3px 15px #0002}.logo{width:54px;height:54px;object-fit:contain;background:#fff;border-radius:9px;padding:3px}.top h1{font-size:20px;margin:0}.top p{font-size:12px;margin:4px 0 0;opacity:.92}
+.login{min-height:100vh;background:linear-gradient(135deg,#e9f5fa,#f7fafb);display:flex;flex-direction:column}.login-card{width:min(430px,92%);margin:auto;background:#fff;border-radius:20px;padding:28px;box-shadow:var(--shadow)}.login-card h2{text-align:center;margin:0 0 6px}.hint{text-align:center;color:var(--muted);font-size:13px;margin:0 0 22px}.group{margin-bottom:14px}.group label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.group input{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:#fbfdff}.btn{border:0;border-radius:9px;padding:11px 14px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff}.light{background:#eef4fb;color:var(--blue);border:1px solid #cbdced}.danger{background:#fee8e7;color:#a52019}.error,.success{padding:10px;border-radius:9px;margin-top:12px;font-size:12px}.error{background:#fee4e2;color:#8d2119}.success{background:#e6f6ed;color:#096536}.initial{margin-top:15px;background:#eef7fb;border-radius:9px;padding:10px;font-size:11px;color:#486879}
+.app{min-height:100vh}.bar{height:62px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:10}.bar-left{display:flex;align-items:center;gap:10px}.mini{width:38px;height:38px;object-fit:contain;background:#eef4fb;border-radius:8px}.bar small{color:var(--muted)}.logout{border:0;border-radius:8px;padding:8px 11px;background:#fee8e7;color:#a52019;font-weight:700;cursor:pointer}
+.layout{display:flex;min-height:calc(100vh - 62px)}aside{width:225px;background:#fff;border-right:1px solid var(--line);padding:14px;position:fixed;top:62px;bottom:0;overflow:auto}.nav{display:block;width:100%;text-align:left;border:0;background:transparent;padding:11px 12px;border-radius:9px;cursor:pointer;font-weight:700;color:#415160;margin-bottom:3px}.nav:hover,.nav.active{background:#eaf3fb;color:var(--blue)}main{margin-left:225px;width:calc(100% - 225px);padding:18px;max-width:1250px}.page{display:none}.page.active{display:block}.title{margin-bottom:14px}.title h2{margin:0 0 4px;font-size:21px}.title p{margin:0;color:var(--muted);font-size:12px}.hero,.card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:14px}.hero{padding:18px;display:flex;gap:18px;align-items:center}.photo{width:105px;height:125px;object-fit:cover;border:1px solid #cbd5df;border-radius:8px;background:#f5f7fa}.placeholder{width:105px;height:125px;border:1px dashed #aab6c1;border-radius:8px;display:grid;place-items:center;text-align:center;color:#788692;font-size:12px}.hero h3{margin:0 0 5px;font-size:22px}.pill{display:inline-block;background:#eaf2fb;color:#174d80;border-radius:18px;padding:5px 9px;font-size:11px;font-weight:700;margin:2px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}.stat b{display:block;font-size:23px;color:var(--blue)}.stat span{font-size:11px;color:var(--muted)}
+.card-head{padding:13px 16px;border-bottom:1px solid var(--line);font-weight:800}.card-body{padding:15px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.item{padding:10px;background:#f8fbff;border:1px solid #e4ebf3;border-radius:9px}.label{font-size:10px;color:var(--muted);font-weight:800}.value{font-size:13px;margin-top:3px;word-break:break-word}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:600px}th,td{border-bottom:1px solid #e5ebf1;padding:9px;text-align:left;font-size:12px}th{background:#f7faff;color:#415160}.badge{display:inline-block;border-radius:14px;padding:4px 8px;font-size:10px;font-weight:800}.present{background:#e5f6ed;color:#087443}.absent{background:#fee7e5;color:#b42318}.leave{background:#fff2d7;color:#8a5a00}.notice{padding:12px;border-bottom:1px solid #e8edf2}.notice:last-child{border-bottom:0}.notice h4{margin:0 0 4px;font-size:13px}.notice p{margin:0 0 5px;font-size:12px;color:#4e5d68}.notice small{color:var(--muted)}.empty{padding:30px;text-align:center;color:var(--muted);font-size:12px}.change{max-width:520px}.mobile-menu{display:none}
+@media(max-width:760px){aside{transform:translateX(-100%);transition:.2s;z-index:30;top:62px}.layout aside.open{transform:translateX(0)}main{margin-left:0;width:100%;padding:12px}.mobile-menu{display:inline-block;border:0;background:#eef4fb;color:var(--blue);border-radius:8px;padding:8px 10px;font-weight:800}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}.hero{align-items:flex-start}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.hero{flex-direction:column}.top h1{font-size:16px}.hero h3{font-size:19px}}
+@media print{aside,.bar,.no-print{display:none!important}main{margin:0;width:100%;padding:0}.card,.hero,.stat{box-shadow:none}.page{display:none!important}.page.active{display:block!important}}
+</style>
+</head>
+<body>
+
+<section id="loginPage" class="login">
+<header class="top"><img class="logo" src="new-logo.png" onerror="this.style.display='none'"><div><h1>Government Primary School Pethgam Wagoora</h1><p>Student Portal • Zone Wagoora • District Baramulla</p></div></header>
+<div class="login-card">
+<h2>🎓 Student Login</h2>
+<p class="hint">Login with your Admission Number or Student ID.</p>
+<form id="loginForm">
+<div class="group"><label>Admission Number / Student ID</label><input id="loginId" required autocomplete="username" placeholder="Enter Admission No."></div>
+<div class="group"><label>Password</label><input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Enter password"></div>
+<button class="btn primary" style="width:100%">Login</button>
+<div id="loginError" class="error hidden"></div>
+</form>
+<div class="initial"><b>Initial password:</b> <span id="initialPasswordText"></span><br>After first login, use <b>Change Password</b> to create a personal password.</div>
+</div>
+</section>
+
+<section id="app" class="app hidden">
+<div class="bar"><div class="bar-left"><button class="mobile-menu" onclick="toggleSide()">☰</button><img src="new-logo.png" class="mini" onerror="this.style.display='none'"><div><b>Student Portal</b><br><small id="barStudent">—</small></div></div><button class="logout" onclick="logout()">Logout</button></div>
+<div class="layout">
+<aside id="side">
+<button class="nav active" data-page="dashboard">🏠 Dashboard</button>
+<button class="nav" data-page="profile">👤 My Profile</button>
+<button class="nav" data-page="attendance">📅 Attendance</button>
+<button class="nav" data-page="results">📊 Results</button>
+<button class="nav" data-page="library">📚 Library</button>
+<button class="nav" data-page="notices">📢 Notices</button>
+<button class="nav" data-page="calendar">🗓 Calendar</button>
+<button class="nav" data-page="timetable">🕐 Timetable</button>
+<button class="nav" data-page="password">🔑 Change Password</button>
+</aside>
+<main>
+
+<div id="dashboard" class="page active">
+<div class="title"><h2 id="welcome">Welcome</h2><p>Your personal school information and academic dashboard.</p></div>
+<div class="hero"><div id="dashPhoto"></div><div><h3 id="studentName">—</h3><span class="pill" id="studentClass">—</span><span class="pill" id="studentAdm">—</span><div id="dashInfo" class="grid" style="margin-top:12px"></div></div></div>
+<div class="stats">
+<div class="stat"><b id="statAttend">—</b><span>Attendance</span></div><div class="stat"><b id="statResult">—</b><span>Overall Result</span></div><div class="stat"><b id="statBooks">0</b><span>Books Issued</span></div><div class="stat"><b id="statNotices">0</b><span>Notices</span></div>
+</div>
+<div class="card"><div class="card-head">Latest Notices</div><div id="dashNotices"></div></div>
+</div>
+
+<div id="profile" class="page"><div class="title"><h2>My Profile</h2><p>Information retrieved from the school's Master Student Database.</p></div><div class="hero"><div id="profilePhoto"></div><div><h3 id="profileName">—</h3><span class="pill" id="profileAdm">—</span></div></div><div class="card"><div class="card-head">Student Details</div><div class="card-body"><div id="profileGrid" class="grid"></div></div></div></div>
+
+<div id="attendance" class="page"><div class="title"><h2>My Attendance</h2><p>Attendance is read using your permanent Student ID from the school's attendance database.</p></div><div class="stats"><div class="stat"><b id="aPct">—</b><span>Attendance %</span></div><div class="stat"><b id="aPresent">0</b><span>Present</span></div><div class="stat"><b id="aAbsent">0</b><span>Absent</span></div><div class="stat"><b id="aLeave">0</b><span>Leave</span></div></div><div class="card"><div class="card-head">Attendance History</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Remarks</th></tr></thead><tbody id="attendanceBody"></tbody></table></div></div></div>
+
+<div id="results" class="page"><div class="title"><h2>My Results</h2><p>Results are read from the same marksheet data used by the school marksheet system.</p></div><div id="resultCard" class="card"><div class="card-body">Loading…</div></div></div>
+
+<div id="library" class="page"><div class="title"><h2>My Library</h2><p>Books issued against your Student ID / Admission Number.</p></div><div class="card"><div class="card-head">Issued / Returned Transactions</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Book</th><th>Action</th><th>Member</th></tr></thead><tbody id="libraryBody"></tbody></table></div></div></div>
+
+<div id="notices" class="page"><div class="title"><h2>School Notices</h2><p>Notices intended for students or the whole school.</p></div><div class="card" id="noticeBody"></div></div>
+
+<div id="calendar" class="page"><div class="title"><h2>School Calendar</h2><p>School events and holidays.</p></div><div class="card"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Event</th><th>Type</th></tr></thead><tbody id="calendarBody"></tbody></table></div></div></div>
+
+<div id="timetable" class="page"><div class="title"><h2>Timetable</h2><p>Your class timetable from the school's timetable data.</p></div><div class="card"><div class="table-wrap"><table><thead><tr><th>Day</th><th>Period</th><th>Time</th><th>Subject</th><th>Teacher</th></tr></thead><tbody id="timetableBody"></tbody></table></div></div></div>
+
+<div id="password" class="page"><div class="title"><h2>Change Password</h2><p>Your password is stored separately for your Student ID on this device.</p></div><div class="card change"><div class="card-body">
+<div class="group"><label>Current Password</label><input id="oldPass" type="password"></div><div class="group"><label>New Password</label><input id="newPass" type="password" minlength="6"></div><div class="group"><label>Confirm New Password</label><input id="confirmPass" type="password" minlength="6"></div><button class="btn primary" onclick="changePassword()">Change Password</button><div id="passMessage"></div>
+</div></div></div>
+
+</main></div>
+</section>
+
+<script>
+/* ============================================================
+   GPS PETHGAM WAGOORA — INTEGRATED STUDENT PORTAL
+   Reads the repository's existing storage structures:
+   Master Admission: GPSPETHGAM_MASTER_ADMISSION_V1
+   Attendance:       GPSPETHGAM_ATTENDANCE_V1
+   Notices:          GPSPETHGAM_SCHOOL_NOTICES_V1
+   Calendar:         GPSPETHGAM_SCHOOL_CALENDAR_V1
+   Timetable:        GPSPETHGAM_TIMETABLE_V1
+   Results/Photos:   GPS_Pethgam_Marksheet_DB / marksheetState (IndexedDB)
+
+   IMPORTANT:
+   The current repository is a browser-local architecture. Therefore
+   this portal can integrate with the real records on the same browser/
+   origin, but it cannot provide secure cross-device authentication or
+   private server-side record isolation until the repository is moved
+   to Firebase/another backend.
+   ============================================================ */
+
+const MASTER_KEY='GPSPETHGAM_MASTER_ADMISSION_V1';
+const ATT_KEY='GPSPETHGAM_ATTENDANCE_V1';
+const NOTICE_KEY='GPSPETHGAM_SCHOOL_NOTICES_V1';
+const CAL_KEY='GPSPETHGAM_SCHOOL_CALENDAR_V1';
+const TIME_KEY='GPSPETHGAM_TIMETABLE_V1';
+const PASS_KEY='GPSPETHGAM_STUDENT_PASSWORDS_V1';
+const INITIAL_PASSWORD='school@123';
+const MARK_DB='GPS_Pethgam_Marksheet_DB', MARK_STORE='marksheetState';
+
+let current=null, master=[], attendance={}, notices=[], calendar=[], timetable=[], markState=null;
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const safeJSON=(key,def)=>{try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(def))}catch{return def}};
+const full=(r,p)=>[r[p+'First'],r[p+'Middle'],r[p+'Last']].filter(Boolean).join(' ').trim();
+const nameOf=r=>[r.studentFirst,r.studentMiddle,r.studentLast].filter(Boolean).join(' ').trim()||r.name||'Unnamed Student';
+const idOf=r=>String(r.studentId||'').trim();
+const admOf=r=>String(r.admissionNo||'').trim();
+
+function loadLocal(){
+ master=safeJSON(MASTER_KEY,[]).filter(r=>r&&r.status!=='Rejected');
+ attendance=safeJSON(ATT_KEY,{});
+ notices=safeJSON(NOTICE_KEY,[]);
+ calendar=safeJSON(CAL_KEY,[]);
+ timetable=safeJSON(TIME_KEY,[]);
+}
+
+function passwords(){return safeJSON(PASS_KEY,{})}
+function savePasswords(x){localStorage.setItem(PASS_KEY,JSON.stringify(x))}
+function passwordFor(id){return passwords()[id]||INITIAL_PASSWORD}
+
+function findStudent(q){
+ const k=String(q||'').trim().toLowerCase();
+ return master.find(r=>idOf(r).toLowerCase()===k || admOf(r).toLowerCase()===k);
+}
+
+function photoFor(r){
+ if(r.photo)return r.photo;
+ if(!markState||!markState.photos)return '';
+ const i=markState.rows?.findIndex(x=>String(x?.[0]??'').trim()===admOf(r));
+ return i>=0 ? (markState.photos[i]||markState.photos[admOf(r)]||'') : (markState.photos[admOf(r)]||'');
+}
+
+function photoHTML(r){
+ const p=photoFor(r), n=nameOf(r);
+ return p ? `<img class="photo" src="${esc(p)}" alt="Student photograph">` : `<div class="placeholder">STUDENT<br>PHOTOGRAPH</div>`;
+}
+
+function attendanceFor(r){
+ const out=[];
+ Object.values(attendance||{}).forEach(day=>{
+   if(!day||!day.records)return;
+   const x=day.records[idOf(r)];
+   if(x&&x.status&&x.status!=='Not Marked') out.push({date:day.date||'',status:x.status,remarks:x.remarks||''});
+ });
+ out.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ return out;
+}
+
+function attendanceSummary(r){
+ const h=attendanceFor(r); let p=0,a=0,l=0;
+ h.forEach(x=>{if(x.status==='Present'||x.status==='Late')p++;else if(x.status==='Absent')a++;else if(String(x.status).startsWith('Leave'))l++});
+ const w=p+a+l;
+ return {p,a,l,w,pct:w?(p/w*100).toFixed(1)+'%':'—'};
+}
+
+function openMarksDB(){
+ return new Promise((resolve,reject)=>{
+  if(!indexedDB){reject(new Error('IndexedDB unavailable'));return}
+  const req=indexedDB.open(MARK_DB,1);
+  req.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(MARK_STORE))e.target.result.createObjectStore(MARK_STORE)};
+  req.onsuccess=e=>resolve(e.target.result); req.onerror=()=>reject(req.error);
+ });
+}
+async function loadMarkState(){
+ try{
+  const db=await openMarksDB();
+  return await new Promise((resolve,reject)=>{
+   const tx=db.transaction(MARK_STORE,'readonly'), req=tx.objectStore(MARK_STORE).get('current');
+   req.onsuccess=()=>resolve(req.result||null); req.onerror=()=>reject(req.error);
+  });
+ }catch{return null}
+}
+
+function buildMarks(row,index){
+ if(!row)return null;
+ const num=v=>Number(v)||0;
+ const subjects=[
+  ['English',8,14,15,16,17],['Math',18,24,25,26,27],['EVS',28,34,35,36,37],['Urdu',38,44,45,46,47],['Kashmiri',48,54,55,56,57]
+ ].map(s=>({name:s[0],fa:[0,1,2,3,4,5].map(k=>num(row[s[1]+k])),total:num(row[s[5]]),t:num(row[s[2]]),cc:num(row[s[3]]),sa:num(row[s[4]])}));
+ const total=subjects.reduce((a,s)=>a+s.total,0), pct=total/5;
+ const grade=x=>x>=91?'A+':x>=81?'A':x>=71?'B+':x>=61?'B':x>=51?'C+':x>=41?'C':x>=33?'D':'E';
+ const prof=x=>x>=91?'Outstanding':x>=81?'Excellent':x>=71?'Very Good':x>=61?'Good':x>=51?'Satisfactory':x>=41?'Developing':x>=33?'Basic':'Needs Improvement';
+ return {subjects,total,pct,grade:grade(pct),prof:prof(pct),photo:markState?.photos?.[index]||markState?.photos?.[String(row[0])]||''};
+}
+
+function resultFor(r){
+ if(!markState?.rows?.length)return null;
+ const i=markState.rows.findIndex(x=>String(x?.[0]??'').trim()===admOf(r));
+ return i>=0?buildMarks(markState.rows[i],i):null;
+}
+
+function render(){
+ const r=current, nm=nameOf(r), at=attendanceSummary(r), mr=resultFor(r);
+ $('barStudent').textContent=`${nm} • ${r.classJoining||'Class not specified'} • Adm. ${admOf(r)}`;
+ $('welcome').textContent=`Welcome, ${nm}`;
+ $('studentName').textContent=nm;
+ $('studentClass').textContent=r.classJoining||'Class';
+ $('studentAdm').textContent='Admission No. '+admOf(r);
+ $('dashPhoto').innerHTML=photoHTML(r);
+ $('profilePhoto').innerHTML=photoHTML(r);
+ $('profileName').textContent=nm;
+ $('profileAdm').textContent='Admission No. '+admOf(r);
+
+ const fields=[
+  ['Student ID',idOf(r)],['Admission Number',admOf(r)],['Class',r.classJoining],['Gender',r.gender],
+  ['Date of Birth',r.dob],['Father / Guardian',full(r,'father')],['Mother',full(r,'mother')],
+  ['Contact',r.fatherContact||r.motherContact],['PEN Number',r.penNumber],['APAAR ID',r.apaarId],
+  ['Category',r.category],['Blood Group',r.bloodGroup],['Residence',r.residence],['District',r.district]
+ ];
+ $('dashInfo').innerHTML=fields.slice(0,4).map(x=>`<div class="item"><div class="label">${esc(x[0])}</div><div class="value">${esc(x[1]||'—')}</div></div>`).join('');
+ $('profileGrid').innerHTML=fields.map(x=>`<div class="item"><div class="label">${esc(x[0])}</div><div class="value">${esc(x[1]||'—')}</div></div>`).join('');
+
+ $('statAttend').textContent=at.pct;
+ $('statResult').textContent=mr?mr.pct.toFixed(1)+'%':'—';
+
+ const hist=attendanceFor(r);
+ $('aPct').textContent=at.pct;$('aPresent').textContent=at.p;$('aAbsent').textContent=at.a;$('aLeave').textContent=at.l;
+ $('attendanceBody').innerHTML=hist.length?hist.map(x=>`<tr><td>${esc(x.date)}</td><td><span class="badge ${x.status==='Absent'?'absent':String(x.status).startsWith('Leave')?'leave':'present'}">${esc(x.status)}</span></td><td>${esc(x.remarks)}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">No attendance entries found.</td></tr>';
+
+ if(mr){
+  const rows=mr.subjects.map(s=>`<tr><td><b>${esc(s.name)}</b></td><td>${s.fa.join(' / ')}</td><td>${s.t}</td><td>${s.cc}</td><td>${s.sa}</td><td><b>${s.total}</b></td></tr>`).join('');
+  $('resultCard').innerHTML=`<div class="card-head">Academic Result</div><div class="card-body"><p><b>Overall Percentage:</b> ${mr.pct.toFixed(1)}% &nbsp; <b>Grade:</b> ${mr.grade} &nbsp; <b>Proficiency:</b> ${mr.prof}</p><div class="table-wrap"><table><thead><tr><th>Subject</th><th>FA1–FA6</th><th>FA Total</th><th>CCA</th><th>SA</th><th>Grand Total</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+ }else $('resultCard').innerHTML='<div class="card-body empty">No marksheet record was found for this Admission Number in the saved marksheet database.</div>';
+
+ const memberKeys=[idOf(r),admOf(r),nm].map(x=>String(x).toLowerCase());
+ let books=safeJSON('GPSPETHGAM_LIBRARY_TRANSACTIONS_V1',[]).filter(x=>memberKeys.some(k=>String(x.member||'').toLowerCase().includes(k)));
+ $('libraryBody').innerHTML=books.length?books.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.book)}</td><td>${esc(x.action||'')}</td><td>${esc(x.member)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">No library transactions found for this student.</td></tr>';
+ $('statBooks').textContent=books.filter(x=>String(x.action).toLowerCase()==='issue').length;
+
+ const ns=Array.isArray(notices)?notices.filter(n=>{
+   const audience=String(n.audience||n.target||n.for||'Students').toLowerCase();
+   return audience.includes('student')||audience.includes('all')||audience.includes('school')||!n.audience&&!n.target&&!n.for;
+ }):[];
+ $('statNotices').textContent=ns.length;
+ $('dashNotices').innerHTML=ns.slice(0,3).map(n=>`<div class="notice"><h4>${esc(n.title||n.subject||n.heading||'School Notice')}</h4><p>${esc(n.message||n.text||n.description||n.body||'')}</p><small>${esc(n.date||n.createdAt||'')}</small></div>`).join('')||'<div class="empty">No notices available.</div>';
+ $('noticeBody').innerHTML=ns.map(n=>`<div class="notice"><h4>${esc(n.title||n.subject||n.heading||'School Notice')}</h4><p>${esc(n.message||n.text||n.description||n.body||'')}</p><small>${esc(n.date||n.createdAt||'')}</small></div>`).join('')||'<div class="empty">No notices available.</div>';
+
+ $('calendarBody').innerHTML=(Array.isArray(calendar)?calendar:[]).map(x=>`<tr><td>${esc(x.date||x.eventDate||x[0]||'')}</td><td>${esc(x.title||x.event||x.name||x[1]||'')}</td><td>${esc(x.type||x.category||x[2]||'')}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">No calendar entries found.</td></tr>';
+
+ // Timetable records in the repository may use named properties or the older array form.
+ let className=String(r.classJoining||'').toLowerCase();
+ let tt=(Array.isArray(timetable)?timetable:[]).filter(x=>!x.class&&!x.className||String(x.class||x.className||'').toLowerCase()===className);
+ $('timetableBody').innerHTML=tt.map(x=>`<tr><td>${esc(x.day||x.weekday||x[0]||'')}</td><td>${esc(x.period||x[1]||'')}</td><td>${esc(x.time||x.timing||x[2]||'')}</td><td>${esc(x.subject||x[3]||'')}</td><td>${esc(x.teacher||x[4]||'')}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No timetable entries found for this class.</td></tr>';
+}
+
+function doLogin(e){
+ e.preventDefault(); loadLocal();
+ const q=$('loginId').value.trim(), pw=$('loginPassword').value;
+ const r=findStudent(q);
+ if(!r){showLoginError('Student not found. Please use the exact Admission Number or Student ID in the Master Student Database.');return}
+ if(passwordFor(idOf(r))!==pw){showLoginError('Incorrect password.');return}
+ current=r;sessionStorage.setItem('GPS_STUDENT_SESSION',idOf(r));
+ $('loginPage').classList.add('hidden');$('app').classList.remove('hidden');
+ loadMarkState().then(s=>{markState=s;render()});
+}
+
+function showLoginError(t){$('loginError').textContent=t;$('loginError').classList.remove('hidden')}
+function logout(){sessionStorage.removeItem('GPS_STUDENT_SESSION');current=null;$('app').classList.add('hidden');$('loginPage').classList.remove('hidden');$('loginForm').reset();$('loginError').classList.add('hidden')}
+function toggleSide(){$('side').classList.toggle('open')}
+
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(b.dataset.page).classList.add('active');$('side').classList.remove('open');scrollTo(0,0);
+});
+
+async function changePassword(){
+ if(!current)return;
+ const old=$('oldPass').value,n=$('newPass').value,c=$('confirmPass').value,m=$('passMessage');
+ if(old!==passwordFor(idOf(current))){m.className='error';m.textContent='Current password is incorrect.';return}
+ if(n.length<6){m.className='error';m.textContent='New password must contain at least 6 characters.';return}
+ if(n!==c){m.className='error';m.textContent='New passwords do not match.';return}
+ const p=passwords();p[idOf(current)]=n;savePasswords(p);
+ m.className='success';m.textContent='Password changed successfully for this Student ID on this device.';
+ $('oldPass').value=$('newPass').value=$('confirmPass').value='';
+}
+
+$('initialPasswordText').textContent=INITIAL_PASSWORD;
+$('loginForm').addEventListener('submit',doLogin);
+
+(async function(){
+ loadLocal();
+ const sid=sessionStorage.getItem('GPS_STUDENT_SESSION');
+ if(sid){
+   const r=master.find(x=>idOf(x)===sid);
+   if(r){current=r;$('loginPage').classList.add('hidden');$('app').classList.remove('hidden');markState=await loadMarkState();render();return}
+ }
+})();
+</script>
+</body>
+</html>
