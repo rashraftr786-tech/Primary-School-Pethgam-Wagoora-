@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letterhead - GPS Pethgam Wagoora</title>
+    <style>
+        :root {
+            --primary-orange: #f8c27d;
+            --dark-teal: #16363b;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #e0e0e0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        .letterhead-container {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Split Header Layout */
+        .header-bg {
+            display: flex;
+            position: relative;
+            height: 160px; 
+        }
+
+        .left-orange-side {
+            background-color: var(--primary-orange);
+            flex: 1;
+            padding: 25px 20px 25px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-white-side {
+            background-color: var(--white);
+            flex: 1;
+            padding: 25px 50px 25px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: right;
+        }
+
+        /* Text raised by 10px within fixed blocks */
+        .raised-text {
+            transform: translateY(-10px);
+        }
+
+        h1 { margin: 0; font-size: 20px; color: var(--dark-teal); text-transform: uppercase; }
+        h2 { margin: 2px 0; font-size: 18px; color: var(--dark-teal); }
+
+        .urdu-text {
+            font-size: 30px;
+            font-weight: bold;
+            font-family: 'Urdu Typesetting', 'Amiri', serif;
+            line-height: 1.1;
+        }
+
+        .address { font-size: 12px; color: #444; margin-top: 4px; }
+
+        /* Logo raised by 10px (changed from 55px to 45px) */
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            top: 45px; 
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        .logo-wrapper {
+            width: 120px;
+            height: 110px;
+            background: white;
+            border: 4px solid var(--dark-teal);
+            border-radius: 60px 60px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .logo-wrapper img {
+            width: 85%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .white-divider {
+            height: 5px;
+            background-color: var(--white);
+            width: 100%;
+            position: relative;
+            z-index: 5;
+        }
+
+        .contact-bar {
+            background-color: var(--dark-teal);
+            color: white;
+            padding: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            font-size: 16px;
+        }
+
+        .udise-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .doc-meta {
+            display: flex;
+            justify-content: space-between;
+            padding: 60px 60px 20px 60px;
+            font-size: 16px;
+        }
+
+        .content-area { flex-grow: 1; }
+
+        .footer-wrapper {
+            position: relative;
+            height: 140px;
+            width: 100%;
+        }
+
+        /* Black V line - kept at 15px from bottom */
+        .footer-margin-line {
+            position: absolute;
+            bottom: 15px; 
+            width: 100%;
+            height: 60px;
+            background-color: var(--dark-teal);
+            clip-path: polygon(0 0, 50% 100%, 100% 0, 100% 15%, 50% 115%, 0 15%);
+            z-index: 2;
+        }
+
+        .footer-orange-v {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            background-color: var(--primary-orange);
+            clip-path: polygon(0 40%, 50% 100%, 100% 40%, 100% 100%, 0 100%);
+            z-index: 1;
+        }
+
+        @media print {
+            body { background: none; padding: 0; }
+            .letterhead-container { box-shadow: none; margin: 0; width: 100%; height: 297mm; }
+            .left-orange-side, .contact-bar, .footer-orange-v, .footer-margin-line, .white-divider, .right-white-side {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="letterhead-container">
+        <header>
+            <div class="header-bg">
+                <div class="logo-container">
+                    <div class="logo-wrapper">
+                        <img src="logo.png" alt="Logo" onerror="this.style.display='none'; this.parentNode.innerHTML='logo.png'">
+                    </div>
+                </div>
+
+                <div class="left-orange-side">
+                    <div class="raised-text">
+                        <h1>Government Primary School</h1>
+                        <h2>Pethgam Wagoora</h2>
+                        <div class="address">Zone: Wagoora, District: Baramulla<br>J&K, India - 193109</div>
+                    </div>
+                </div>
+
+                <div class="right-white-side">
+                    <div class="raised-text">
+                        <div class="urdu-text">گورنمنٹ پرائمری سکول</div>
+                        <div class="urdu-text">پیٹھگام واگورہ</div>
+                        <div class="address">زون: واگورہ، ضلع: بارہمولہ ١٩٣١٠٩</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="white-divider"></div>
+
+            <div class="contact-bar">
+                <div class="contact-item"><strong>📞 +91 9596449881</strong></div>
+                <div class="contact-item"><strong>✉️ pspethgam@gmail.com</strong></div>
+                <div class="contact-item">
+                    <span>UDISE Code:</span>
+                    <span class="udise-badge">01022202207</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="doc-meta">
+            <div><strong>Ref. no:</strong> _________________</div>
+            <div><strong>Date:</strong> _________________</div>
+        </div>
+
+        <div class="content-area"></div>
+
+        <footer class="footer-wrapper">
+            <div class="footer-margin-line"></div>
+            <div class="footer-orange-v"></div>
+        </footer>
+    </div>
+
+</body>
+</html>
+                        
