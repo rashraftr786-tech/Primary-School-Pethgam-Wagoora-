@@ -360,12 +360,12 @@
             <input type="text" id="inputRegNo" placeholder="e.g. 452" oninput="updateField('outRegNo', this.value)">
         </div>
         <div class="form-group">
-            <label>Date of Admission</label>
-            <input type="text" id="inputAdmDate" placeholder="e.g. 12-03-2022" oninput="updateField('outAdmDate', this.value)">
+            <label>Date of Admission (Date Picker)</label>
+            <input type="date" id="inputAdmDate" onchange="handleAdmDateChange(this.value)">
         </div>
         <div class="form-group">
-            <label>Date of Birth (Figures)</label>
-            <input type="text" id="inputDobFig" placeholder="e.g. 22-06-2018 or 2018-06-22" oninput="handleDobChange(this.value)">
+            <label>Date of Birth (Figures - Date Picker)</label>
+            <input type="date" id="inputDobFig" onchange="handleDobChange(this.value)">
         </div>
         <div class="form-group">
             <label>Date of Birth (Words - Auto Generated)</label>
@@ -388,8 +388,8 @@
             <input type="text" id="inputRef" value="GPS/PW/2026/___" oninput="updateField('outRef', this.value)">
         </div>
         <div class="form-group">
-            <label>Certificate Date</label>
-            <input type="text" id="inputDate" value="DD / MM / YYYY" oninput="updateField('outDate', this.value)">
+            <label>Certificate Date (Date Picker)</label>
+            <input type="date" id="inputDate" onchange="handleCertDateChange(this.value)">
         </div>
         <div class="form-group full-width">
             <label>Purpose of Request</label>
@@ -515,11 +515,40 @@
 </div>
 
 <script>
+    // Initialize current date on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayIso = `${yyyy}-${mm}-${dd}`;
+        
+        document.getElementById('inputDate').value = todayIso;
+        handleCertDateChange(todayIso);
+    });
+
     function updateField(elementId, value) {
         const el = document.getElementById(elementId);
         if (value.trim() !== "") {
             el.innerText = value;
         }
+    }
+
+    function formatDateDisplay(isoDateStr) {
+        if (!isoDateStr) return '[ DD / MM / YYYY ]';
+        const parts = isoDateStr.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return isoDateStr;
+    }
+
+    function handleCertDateChange(val) {
+        updateField('outDate', formatDateDisplay(val));
+    }
+
+    function handleAdmDateChange(val) {
+        updateField('outAdmDate', formatDateDisplay(val));
     }
 
     function handleDobChange(val) {
@@ -532,15 +561,6 @@
         }
     }
 
-    function formatDateDisplay(val) {
-        if (!val) return '[ DD / MM / YYYY ]';
-        if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
-            const parts = val.split('-');
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        }
-        return val;
-    }
-
     function convertDobToWords(dobStr) {
         if (!dobStr) return '';
         let day, month, year;
@@ -550,14 +570,7 @@
             year = parseInt(parts[0], 10);
             month = parseInt(parts[1], 10);
             day = parseInt(parts[2], 10);
-        } else if (/^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{4}$/.test(dobStr)) {
-            const parts = dobStr.split(/[\/\-\.]/);
-            day = parseInt(parts[0], 10);
-            month = parseInt(parts[1], 10);
-            year = parseInt(parts[2], 10);
-        } else {
-            return '';
-        }
+        } else return '';
 
         const dayOrdinals = {
             1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth",
@@ -569,12 +582,6 @@
             31: "thirty first"
         };
 
-        const months = {
-            1: "June", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
-            7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"
-        };
-
-        // Standard Month Names Mapping
         const monthNames = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
@@ -643,8 +650,3 @@
 
 </body>
 </html>
-           
-           
-           
-                   
-                    
