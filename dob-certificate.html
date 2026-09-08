@@ -1,416 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Date of Birth Certificate Generator - GPS Pethgam Wagoora</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      background: #f2f6fb;
-      padding: 20px;
-      color: #222;
-    }
-
-    .page {
-      max-width: 900px;
-      margin: 0 auto;
-      background: #fff;
-      border: 2px solid #1a4f8b;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-
-    .header {
-      text-align: center;
-      padding: 20px;
-      border-bottom: 2px solid #1a4f8b;
-      position: relative;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      color: #1a4f8b;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .header h2 {
-      font-size: 18px;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .header p {
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .meta {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px 20px;
-      border-bottom: 1px solid #ddd;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-
-    .meta-left, .meta-right {
-      flex: 1;
-      min-width: 260px;
-    }
-
-    .meta p {
-      margin: 4px 0;
-      font-size: 14px;
-    }
-
-    .photo-box {
-      width: 130px;
-      height: 160px;
-      border: 2px dashed #1a4f8b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      color: #555;
-      background: #f9fbff;
-      text-align: center;
-      margin-left: auto;
-    }
-
-    .content {
-      padding: 22px;
-    }
-
-    .title {
-      text-align: center;
-      margin-bottom: 18px;
-    }
-
-    .title h3 {
-      font-size: 22px;
-      color: #1a4f8b;
-      text-decoration: underline;
-      text-transform: uppercase;
-    }
-
-    .certificate-box {
-      border: 1px solid #ccc;
-      padding: 18px;
-      border-radius: 6px;
-      background: #fcfdff;
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #1a4f8b;
-    }
-
-    .field input, .field textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #bbb;
-      border-radius: 4px;
-      font-size: 15px;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .actions {
-      text-align: center;
-      margin-top: 18px;
-    }
-
-    .btn {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 4px;
-      background: #1a4f8b;
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
-      margin: 4px;
-    }
-
-    .btn:hover {
-      background: #143f6f;
-    }
-
-    .output {
-      margin-top: 24px;
-      border-top: 2px dashed #1a4f8b;
-      padding-top: 24px;
-    }
-
-    .cert {
-      padding: 26px;
-      border: 2px solid #1a4f8b;
-      min-height: 520px;
-      position: relative;
-      background: #fff;
-    }
-
-    .cert-top {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .cert-top h4 {
-      font-size: 18px;
-      text-transform: uppercase;
-      color: #1a4f8b;
-      margin-bottom: 4px;
-    }
-
-    .cert-top p {
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .cert-body {
-      font-size: 16px;
-      line-height: 1.9;
-      margin-top: 20px;
-    }
-
-    .cert-body .line {
-      margin: 8px 0;
-    }
-
-    .signatures {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 50px;
-      gap: 20px;
-    }
-
-    .sign-box {
-      width: 42%;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    .sign-line {
-      border-top: 1px solid #222;
-      margin-top: 60px;
-      padding-top: 6px;
-    }
-
-    .photo-space {
-      width: 130px;
-      height: 160px;
-      border: 2px solid #1a4f8b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      color: #555;
-      position: absolute;
-      right: 22px;
-      top: 22px;
-      background: #f9fbff;
-      text-align: center;
-    }
-
-    @media print {
-      body {
-        background: #fff;
-        padding: 0;
-      }
-      .actions, .field, .meta, .title {
-        display: none;
-      }
-      .page {
-        box-shadow: none;
-        border: none;
-        max-width: 100%;
-      }
-      .output {
-        margin-top: 0;
-        border-top: none;
-        padding-top: 0;
-      }
-      .cert {
-        border: 1px solid #000;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Letter</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            color: #2c3e50;
+            max-width: 650px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fdfbf7;
+            border: 1px solid #e0dacf;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .header {
+            margin-bottom: 25px;
+        }
+        .salutation {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .content p {
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+        .closing {
+            margin-top: 30px;
+        }
+        .signature {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="page">
     <div class="header">
-      <h1>Government Primary School Pethgam Wagoora</h1>
-      <h2>Date of Birth Certificate Generator</h2>
-      <p>
-        Wagoora Babareshi Road Near Zonal Education Office Wagoora,<br>
-        Wagoora, Baramulla, Jammu and Kashmir, India<br>
-        Email: pspethgam@gmail.com | UDISE Code: 01022202207 | Contact: 9596449881
-      </p>
+        Pethgam, Wagoora<br>
+        Baramulla, Jammu &amp; Kashmir<br>
+        <span>[Date]</span>
     </div>
 
-    <div class="meta">
-      <div class="meta-left">
-        <p><strong>Certificate No.:</strong> <span id="certNoPreview">DOB-001</span></p>
-        <p><strong>Issue Date:</strong> <span id="issueDatePreview">--/--/----</span></p>
-        <p><strong>Student Name:</strong> <span id="studentNamePreview">________________</span></p>
-      </div>
-      <div class="meta-right">
-        <div class="photo-box">Photograph<br>Space</div>
-      </div>
+    <div class="salutation">
+        Dearest [Name],
     </div>
 
     <div class="content">
-      <div class="title">
-        <h3>Form Entry</h3>
-      </div>
+        <p>I hope this letter finds you in the best of health and spirits. It has been far too long since we last spoke, and I was thinking of you today as the evening turned quiet here in Pethgam.</p>
 
-      <div class="certificate-box">
-        <div class="row">
-          <div class="field">
-            <label>Certificate Number</label>
-            <input type="text" id="certNo" placeholder="DOB-001" />
-          </div>
-          <div class="field">
-            <label>Issue Date</label>
-            <input type="date" id="issueDate" />
-          </div>
-        </div>
+        <p>Life in the village has been peaceful. The apple orchards are looking lovely this season, and the weather in Wagoora is just starting to turn pleasantly cool. Everyone at home is doing well. We were all sitting together around the evening tea yesterday talking about old times, and your name came up. We truly miss your presence and the warmth you bring whenever you visit.</p>
 
-        <div class="row">
-          <div class="field">
-            <label>Student Name</label>
-            <input type="text" id="studentName" placeholder="Enter student name" />
-          </div>
-          <div class="field">
-            <label>Father's / Guardian's Name</label>
-            <input type="text" id="guardianName" placeholder="Enter father's or guardian's name" />
-          </div>
-        </div>
+        <p>I am writing mainly to check on how you and the family are doing, but also to urge you to plan a trip here soon. A few days away from your routine would do us both good, and I would love to host you. Mother has already said she will make your favorite meals the moment you tell us you are coming!</p>
 
-        <div class="row">
-          <div class="field">
-            <label>Date of Birth</label>
-            <input type="date" id="dob" />
-          </div>
-          <div class="field">
-            <label>Admission Number</label>
-            <input type="text" id="admNo" placeholder="Admission number" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Address</label>
-          <textarea id="address" rows="2" placeholder="Student address"></textarea>
-        </div>
-
-        <div class="actions">
-          <button class="btn" onclick="generateCertificate()">Generate Certificate</button>
-          <button class="btn" onclick="window.print()">Print / Save as PDF</button>
-        </div>
-      </div>
-
-      <div class="output">
-        <div class="cert" id="certificate">
-          <div class="photo-space">Photograph<br>Space</div>
-
-          <div class="cert-top">
-            <h4>Government Primary School Pethgam Wagoora</h4>
-            <p>
-              Wagoora Babareshi Road Near Zonal Education Office Wagoora,<br>
-              Wagoora, Baramulla, Jammu and Kashmir, India<br>
-              Email: pspethgam@gmail.com | UDISE Code: 01022202207 | Contact: 9596449881
-            </p>
-          </div>
-
-          <div class="cert-body">
-            <div class="line"><strong>Certificate No.:</strong> <span id="outCertNo">DOB-001</span></div>
-            <div class="line"><strong>Date:</strong> <span id="outIssueDate">--/--/----</span></div>
-            <br>
-            <div class="line">
-              This is to certify that <strong><span id="outStudentName">________________</span></strong>,
-              son/daughter of <strong><span id="outGuardianName">________________</span></strong>,
-              was born on <strong><span id="outDOB">--/--/----</span></strong>.
-            </div>
-            <div class="line">
-              Admission Number: <strong><span id="outAdmNo">________________</span></strong>
-            </div>
-            <div class="line">
-              Address: <strong><span id="outAddress">________________</span></strong>
-            </div>
-            <br>
-            <div class="line">
-              This certificate is issued on the basis of the school record for official use.
-            </div>
-          </div>
-
-          <div class="signatures">
-            <div class="sign-box">
-              <div class="sign-line">Class Teacher</div>
-            </div>
-            <div class="sign-box">
-              <div class="sign-line">Headmaster / Incharge</div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <p>Please write back when you get a moment and let me know how things are on your end. Give my warmest regards to everyone at home.</p>
     </div>
-  </div>
 
-  <script>
-    function formatDate(dateStr) {
-      if (!dateStr) return "--/--/----";
-      const d = new Date(dateStr);
-      if (isNaN(d)) return "--/--/----";
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const year = d.getFullYear();
-      return `${day}/${month}/${year}`;
-    }
-
-    function generateCertificate() {
-      const certNo = document.getElementById('certNo').value || 'DOB-001';
-      const issueDate = formatDate(document.getElementById('issueDate').value);
-      const studentName = document.getElementById('studentName').value || '________________';
-      const guardianName = document.getElementById('guardianName').value || '________________';
-      const dob = formatDate(document.getElementById('dob').value);
-      const admNo = document.getElementById('admNo').value || '________________';
-      const address = document.getElementById('address').value || '________________';
-
-      document.getElementById('certNoPreview').textContent = certNo;
-      document.getElementById('issueDatePreview').textContent = issueDate;
-      document.getElementById('studentNamePreview').textContent = studentName;
-
-      document.getElementById('outCertNo').textContent = certNo;
-      document.getElementById('outIssueDate').textContent = issueDate;
-      document.getElementById('outStudentName').textContent = studentName;
-      document.getElementById('outGuardianName').textContent = guardianName;
-      document.getElementById('outDOB').textContent = dob;
-      document.getElementById('outAdmNo').textContent = admNo;
-      document.getElementById('outAddress').textContent = address;
-    }
-
-    window.onload = function() {
-      generateCertificate();
-    };
-  </script>
+    <div class="closing">
+        With lots of love,
+        <div class="signature">Zahirah</div>
+    </div>
 
 </body>
 </html>
+            .    
