@@ -1,69 +1,467 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Letter</title>
-    <style>
-        body {
-            font-family: 'Georgia', serif;
-            line-height: 1.8;
-            color: #2c3e50;
-            max-width: 650px;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: #fdfbf7;
-            border: 1px solid #e0dacf;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-        .header {
-            margin-bottom: 25px;
-        }
-        .salutation {
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .content p {
-            margin-bottom: 16px;
-            text-align: justify;
-        }
-        .closing {
-            margin-top: 30px;
-        }
-        .signature {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-top: 5px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Date of Birth Certificate - GPS Pethgam Wagoora</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #eef3f8; padding: 20px; color: #222; }
+    
+    .page {
+      max-width: 980px;
+      margin: auto;
+      background: #fff;
+      border: 2px solid #1b4f8a;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    
+    /* Header Styling */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 2px solid #1b4f8a;
+      background: #fdfdfd;
+    }
+    .header-logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
+    .header-text {
+      text-align: center;
+      flex: 1;
+      padding: 0 15px;
+    }
+    .header-text h3 {
+      font-size: 15px;
+      color: #555;
+      font-weight: normal;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .header-text h1 {
+      font-size: 24px;
+      color: #1b4f8a;
+      text-transform: uppercase;
+      margin: 2px 0;
+    }
+    .header-text h2 {
+      font-size: 18px;
+      color: #111;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .header-text p {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #444;
+    }
+
+    .content { padding: 22px; }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .section-title h3 {
+      font-size: 20px;
+      color: #1b4f8a;
+      text-transform: uppercase;
+      text-decoration: underline;
+    }
+
+    /* Form Box Styling */
+    .form-box {
+      border: 1px solid #cfd8e3;
+      background: #fbfdff;
+      border-radius: 6px;
+      padding: 18px;
+      margin-bottom: 22px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #1b4f8a;
+      font-size: 13px;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #b9c3d0;
+      border-radius: 4px;
+      font-size: 14px;
+      background: #fff;
+    }
+    .field textarea { resize: vertical; }
+    .buttons {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .btn {
+      border: none;
+      background: #1b4f8a;
+      color: #fff;
+      padding: 10px 22px;
+      margin: 4px;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #143b69; }
+
+    /* Certificate View Styling */
+    .certificate {
+      border: 3px double #1b4f8a;
+      padding: 30px;
+      position: relative;
+      background: #fff;
+      min-height: 650px;
+    }
+    
+    .cert-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .cert-logo {
+      width: 85px;
+      height: 85px;
+      object-fit: contain;
+    }
+    .cert-head-center {
+      text-align: center;
+      flex: 1;
+      padding: 0 10px;
+    }
+    .cert-head-center h3 {
+      font-size: 16px;
+      font-style: italic;
+      color: #333;
+      font-family: 'Georgia', serif;
+    }
+    .cert-head-center h1 {
+      font-size: 26px;
+      color: #1b4f8a;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin: 4px 0;
+    }
+    .cert-title-tag {
+      display: inline-block;
+      border: 1px solid #1b4f8a;
+      border-radius: 15px;
+      padding: 4px 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #1b4f8a;
+      margin-top: 5px;
+      font-style: italic;
+      font-family: 'Georgia', serif;
+    }
+    .cert-photo-space {
+      width: 120px;
+      height: 140px;
+      border: 2px dashed #1b4f8a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #777;
+      background: #fdfdfd;
+      font-size: 12px;
+    }
+
+    .cert-meta-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      margin-bottom: 15px;
+      font-size: 15px;
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 8px;
+    }
+
+    .cert-intro-text {
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+
+    /* Certificate Table Structure */
+    .cert-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .cert-table td {
+      padding: 8px 10px;
+      font-size: 15px;
+      border-bottom: 1px dashed #d0d7de;
+      vertical-align: top;
+    }
+    .cert-table td.label {
+      width: 25%;
+      font-weight: bold;
+      color: #1b4f8a;
+    }
+    .cert-table td.val {
+      width: 75%;
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* Signatures Section */
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 50px;
+      text-align: center;
+    }
+    .sig-box {
+      flex: 1;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+    .sig-line {
+      border-top: 1px solid #000;
+      margin-top: 50px;
+      padding-top: 6px;
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .form-box, .buttons, .header, .section-title { display: none !important; }
+      .page { border: none; box-shadow: none; width: 100%; max-width: 100%; }
+      .certificate { border: 2px solid #1b4f8a; padding: 20px; }
+    }
+  </style>
 </head>
 <body>
 
+  <div class="page">
+    <!-- Header with Logo -->
     <div class="header">
-        Pethgam, Wagoora<br>
-        Baramulla, Jammu &amp; Kashmir<br>
-        <span>[Date]</span>
-    </div>
-
-    <div class="salutation">
-        Dearest [Name],
+      <img src="new-logo.png" alt="School Logo" class="header-logo" onerror="this.style.display='none'">
+      <div class="header-text">
+        <h3>Office of the Headmaster</h3>
+        <h1>Govt. Primary School Pethgam Wagoora</h1>
+        <h2>Date of Birth Certificate Generator</h2>
+        <p>
+          Wagoora Babareshi Road Near Zonal Education Office Wagoora, Baramulla, J&K<br>
+          Email: pspethgam@gmail.com | UDISE Code: 01022202207 | Contact: 9596449881
+        </p>
+      </div>
+      <img src="new-logo.png" alt="School Logo" class="header-logo" onerror="this.style.display='none'">
     </div>
 
     <div class="content">
-        <p>I hope this letter finds you in the best of health and spirits. It has been far too long since we last spoke, and I was thinking of you today as the evening turned quiet here in Pethgam.</p>
+      <div class="section-title">
+        <h3>Student Details Entry Form</h3>
+      </div>
 
-        <p>Life in the village has been peaceful. The apple orchards are looking lovely this season, and the weather in Wagoora is just starting to turn pleasantly cool. Everyone at home is doing well. We were all sitting together around the evening tea yesterday talking about old times, and your name came up. We truly miss your presence and the warmth you bring whenever you visit.</p>
+      <!-- Form Box -->
+      <div class="form-box">
+        <div class="row">
+          <div class="field">
+            <label>Certificate Ref. No.</label>
+            <input type="text" id="certNo" value="GPS/PW/2026/">
+          </div>
+          <div class="field">
+            <label>Date of Issue</label>
+            <input type="date" id="issueDate">
+          </div>
+        </div>
 
-        <p>I am writing mainly to check on how you and the family are doing, but also to urge you to plan a trip here soon. A few days away from your routine would do us both good, and I would love to host you. Mother has already said she will make your favorite meals the moment you tell us you are coming!</p>
+        <div class="row">
+          <div class="field">
+            <label>Student Name</label>
+            <input type="text" id="studentName" placeholder="Enter student name">
+          </div>
+          <div class="field">
+            <label>Father's Name</label>
+            <input type="text" id="fatherName" placeholder="Enter father's name">
+          </div>
+          <div class="field">
+            <label>Mother's Name</label>
+            <input type="text" id="motherName" placeholder="Enter mother's name">
+          </div>
+        </div>
 
-        <p>Please write back when you get a moment and let me know how things are on your end. Give my warmest regards to everyone at home.</p>
+        <div class="row">
+          <div class="field">
+            <label>Date of Birth (in Figures)</label>
+            <input type="date" id="dob">
+          </div>
+          <div class="field">
+            <label>Date of Birth (in Words)</label>
+            <input type="text" id="dobWords" placeholder="e.g. First January Two Thousand Fifteen">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Class</label>
+            <input type="text" id="className" placeholder="e.g. 5th">
+          </div>
+          <div class="field">
+            <label>Roll No.</label>
+            <input type="text" id="rollNo" placeholder="e.g. 12">
+          </div>
+          <div class="field">
+            <label>Admission No. (Ad. No.)</label>
+            <input type="text" id="admNo" placeholder="e.g. 341">
+          </div>
+          <div class="field">
+            <label>Department</label>
+            <input type="text" id="department" placeholder="e.g. General / Primary">
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom: 14px;">
+          <label>Residence / Address</label>
+          <textarea id="address" rows="2" placeholder="Enter residential address"></textarea>
+        </div>
+
+        <div class="buttons">
+          <button class="btn" onclick="generateCert()">Update Preview</button>
+          <button class="btn" style="background: #28a745;" onclick="window.print()">Print / Save PDF</button>
+        </div>
+      </div>
+
+      <!-- Live Certificate Output -->
+      <div class="certificate" id="certificate">
+        
+        <div class="cert-top">
+          <img src="new-logo.png" alt="School Logo" class="cert-logo" onerror="this.style.display='none'">
+          <div class="cert-head-center">
+            <h3>Office of the Headmaster</h3>
+            <h1>Govt. Primary School</h1>
+            <h2 style="font-size: 20px; color: #333;">Pethgam Wagoora</h2>
+            <div class="cert-title-tag">Date of Birth Certificate</div>
+          </div>
+          <div class="cert-photo-space">
+            Photograph<br>Space
+          </div>
+        </div>
+
+        <div class="cert-meta-row">
+          <div>No.: <span id="outCertNo">GPS/PW/2026/___</span></div>
+          <div>Date: <span id="outIssueDate">--/--/----</span></div>
+        </div>
+
+        <div class="cert-intro-text">
+          This is to certify that the student whose particulars are given below and whose photograph is attached and attested above is reading in our school.
+        </div>
+
+        <table class="cert-table">
+          <tr>
+            <td class="label">Ad. No.:</td>
+            <td class="val"><span id="outAdmNo">________</span></td>
+            <td class="label">Department:</td>
+            <td class="val"><span id="outDepartment">________</span></td>
+          </tr>
+          <tr>
+            <td class="label">Name:</td>
+            <td class="val" colspan="3"><span id="outStudentName">________________________</span></td>
+          </tr>
+          <tr>
+            <td class="label">Father's Name:</td>
+            <td class="val" colspan="3"><span id="outFatherName">________________________</span></td>
+          </tr>
+          <tr>
+            <td class="label">Mother's Name:</td>
+            <td class="val" colspan="3"><span id="outMotherName">________________________</span></td>
+          </tr>
+          <tr>
+            <td class="label">Class:</td>
+            <td class="val"><span id="outClass">________</span></td>
+            <td class="label">Roll No.:</td>
+            <td class="val"><span id="outRollNo">________</span></td>
+          </tr>
+          <tr>
+            <td class="label">Residence:</td>
+            <td class="val" colspan="3"><span id="outAddress">________________________</span></td>
+          </tr>
+          <tr>
+            <td class="label">Date of Birth (in figures):</td>
+            <td class="val" colspan="3"><span id="outDOB">--/--/----</span></td>
+          </tr>
+          <tr>
+            <td class="label">Date of Birth (in Words):</td>
+            <td class="val" colspan="3"><span id="outDOBWords">________________________</span></td>
+          </tr>
+        </table>
+
+        <!-- Signatures based on official layout -->
+        <div class="signatures">
+          <div class="sig-box">
+            <div class="sig-line">Teacher Incharge</div>
+          </div>
+          <div class="sig-box">
+            <div class="sig-line">Checked By</div>
+          </div>
+          <div class="sig-box">
+            <div class="sig-line">Headmaster</div>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </div>
 
-    <div class="closing">
-        With lots of love,
-        <div class="signature">Zahirah</div>
-    </div>
+  <script>
+    function formatDate(d) {
+      if (!d) return "--/--/----";
+      const x = new Date(d);
+      if (isNaN(x.getTime())) return "--/--/----";
+      const day = String(x.getDate()).padStart(2, "0");
+      const month = String(x.getMonth() + 1).padStart(2, "0");
+      return `${day}/${month}/${x.getFullYear()}`;
+    }
 
+    function getValue(id, fallback) {
+      const el = document.getElementById(id);
+      return (el && el.value.trim() !== "") ? el.value.trim() : fallback;
+    }
+
+    function generateCert() {
+      document.getElementById("outCertNo").textContent = getValue("certNo", "GPS/PW/2026/___");
+      document.getElementById("outIssueDate").textContent = formatDate(document.getElementById("issueDate").value);
+      document.getElementById("outStudentName").textContent = getValue("studentName", "________________________");
+      document.getElementById("outFatherName").textContent = getValue("fatherName", "________________________");
+      document.getElementById("outMotherName").textContent = getValue("motherName", "________________________");
+      document.getElementById("outDOB").textContent = formatDate(document.getElementById("dob").value);
+      document.getElementById("outDOBWords").textContent = getValue("dobWords", "________________________");
+      document.getElementById("outClass").textContent = getValue("className", "________");
+      document.getElementById("outRollNo").textContent = getValue("rollNo", "________");
+      document.getElementById("outAdmNo").textContent = getValue("admNo", "________");
+      document.getElementById("outDepartment").textContent = getValue("department", "________");
+      document.getElementById("outAddress").textContent = getValue("address", "________________________");
+    }
+
+    // Initialize with current date for issue date by default
+    document.addEventListener("DOMContentLoaded", function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("issueDate").value = today;
+      generateCert();
+    });
+  </script>
 </body>
 </html>
-            .    
