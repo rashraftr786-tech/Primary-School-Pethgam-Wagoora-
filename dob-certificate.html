@@ -132,14 +132,18 @@
     
     .cert-top {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      justify-content: center;
+      align-items: center;
       margin-bottom: 15px;
+      position: relative;
     }
     .cert-logo {
       width: 85px;
       height: 85px;
       object-fit: contain;
+      position: absolute;
+      left: 0;
+      top: 0;
     }
     .cert-head-center {
       text-align: center;
@@ -171,25 +175,6 @@
       font-style: italic;
       font-family: 'Georgia', serif;
     }
-    .cert-photo-space {
-      width: 120px;
-      height: 140px;
-      border: 2px dashed #1b4f8a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #777;
-      background: #fdfdfd;
-      font-size: 12px;
-      overflow: hidden;
-      position: relative;
-    }
-    .cert-photo-space img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
 
     .cert-meta-row {
       display: flex;
@@ -202,22 +187,54 @@
       padding-bottom: 8px;
     }
 
+    /* Certificate Body Container with Side-by-Side Layout */
+    .cert-body-container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .cert-details-column {
+      flex: 1;
+    }
+
     .cert-intro-text {
       font-size: 15px;
       line-height: 1.6;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       text-align: justify;
+    }
+
+    .cert-photo-space {
+      width: 125px;
+      height: 145px;
+      border: 2px dashed #1b4f8a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #777;
+      background: #fdfdfd;
+      font-size: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .cert-photo-space img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     /* Certificate Table Structure */
     .cert-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .cert-table td {
-      padding: 8px 10px;
-      font-size: 15px;
+      padding: 7px 8px;
+      font-size: 14px;
       border-bottom: 1px dashed #d0d7de;
       vertical-align: top;
     }
@@ -237,7 +254,7 @@
       display: flex;
       justify-content: space-between;
       gap: 15px;
-      margin-top: 50px;
+      margin-top: 45px;
       text-align: center;
     }
     .sig-box {
@@ -248,7 +265,7 @@
     }
     .sig-line {
       border-top: 1px solid #000;
-      margin-top: 50px;
+      margin-top: 45px;
       padding-top: 6px;
     }
 
@@ -257,6 +274,8 @@
       .form-box, .buttons, .header, .section-title { display: none !important; }
       .page { border: none; box-shadow: none; width: 100%; max-width: 100%; }
       .certificate { border: 2px solid #1b4f8a; padding: 20px; }
+      .cert-body-container { display: flex !important; }
+      .cert-photo-space { display: flex !important; }
     }
   </style>
 </head>
@@ -268,8 +287,8 @@
       <img src="new-logo.png" alt="School Logo" class="header-logo" onerror="this.style.display='none'">
       <div class="header-text">
         <h3>Office of the Headmaster</h3>
-        <h1>Government Primary School Pethgam Wagoora</h1>
-        <h2>Date of Birth Certificate</h2>
+        <h1>Govt. Primary School Pethgam Wagoora</h1>
+        <h2>Date of Birth Certificate Generator</h2>
         <p>
           Wagoora Babareshi Road Near Zonal Education Office Wagoora, Baramulla, J&K<br>
           Email: pspethgam@gmail.com | UDISE Code: 01022202207 | Contact: 9596449881
@@ -366,17 +385,14 @@
       <!-- Live Certificate Output -->
       <div class="certificate" id="certificate">
         
+        <!-- Header Section -->
         <div class="cert-top">
           <img src="new-logo.png" alt="School Logo" class="cert-logo" onerror="this.style.display='none'">
           <div class="cert-head-center">
             <h3>Office of the Headmaster</h3>
-            <h1>Government Primary School</h1>
+            <h1>Govt. Primary School</h1>
             <h2 style="font-size: 20px; color: #333;">Pethgam Wagoora</h2>
             <div class="cert-title-tag">Date of Birth Certificate</div>
-          </div>
-          <div class="cert-photo-space" id="certPhotoSpace">
-            <span id="photoPlaceholder">Photograph<br>Space</span>
-            <img id="uploadedPhoto" src="" alt="Student Photo" style="display: none;">
           </div>
         </div>
 
@@ -385,52 +401,63 @@
           <div>Date: <span id="outIssueDate">--/--/----</span></div>
         </div>
 
-        <div class="cert-intro-text">
-          This is to certify that the student whose photograph is attached and attested above is a Bonafide student of our school. As per school records his details are as below.
-        </div>
+        <!-- Body Section with Photograph Placement -->
+        <div class="cert-body-container">
+          <div class="cert-details-column">
+            <div class="cert-intro-text">
+              This is to certify that the student whose photograph is attached and attested above is a Bonafide student of our school. As per school records his details are as below.
+            </div>
 
-        <table class="cert-table">
-          <tr>
-            <td class="label">Ad. No.:</td>
-            <td class="val"><span id="outAdmNo">________</span></td>
-            <td class="label">Department:</td>
-            <td class="val"><span id="outDepartment">________</span></td>
-          </tr>
-          <tr>
-            <td class="label">Session:</td>
-            <td class="val"><span id="outSession">________</span></td>
-            <td class="label">Class:</td>
-            <td class="val"><span id="outClass">________</span></td>
-          </tr>
-          <tr>
-            <td class="label">Name:</td>
-            <td class="val" colspan="3"><span id="outStudentName">________________________</span></td>
-          </tr>
-          <tr>
-            <td class="label">Father's Name:</td>
-            <td class="val" colspan="3"><span id="outFatherName">________________________</span></td>
-          </tr>
-          <tr>
-            <td class="label">Mother's Name:</td>
-            <td class="val" colspan="3"><span id="outMotherName">________________________</span></td>
-          </tr>
-          <tr>
-            <td class="label">Roll No.:</td>
-            <td class="val" colspan="3"><span id="outRollNo">________</span></td>
-          </tr>
-          <tr>
-            <td class="label">Residence:</td>
-            <td class="val" colspan="3"><span id="outAddress">________________________</span></td>
-          </tr>
-          <tr>
-            <td class="label">Date of Birth (in figures):</td>
-            <td class="val" colspan="3"><span id="outDOB">--/--/----</span></td>
-          </tr>
-          <tr>
-            <td class="label">Date of Birth (in Words):</td>
-            <td class="val" colspan="3"><span id="outDOBWords">________________________</span></td>
-          </tr>
-        </table>
+            <table class="cert-table">
+              <tr>
+                <td class="label">Ad. No.:</td>
+                <td class="val"><span id="outAdmNo">________</span></td>
+                <td class="label">Department:</td>
+                <td class="val"><span id="outDepartment">________</span></td>
+              </tr>
+              <tr>
+                <td class="label">Session:</td>
+                <td class="val"><span id="outSession">________</span></td>
+                <td class="label">Class:</td>
+                <td class="val"><span id="outClass">________</span></td>
+              </tr>
+              <tr>
+                <td class="label">Name:</td>
+                <td class="val" colspan="3"><span id="outStudentName">________________________</span></td>
+              </tr>
+              <tr>
+                <td class="label">Father's Name:</td>
+                <td class="val" colspan="3"><span id="outFatherName">________________________</span></td>
+              </tr>
+              <tr>
+                <td class="label">Mother's Name:</td>
+                <td class="val" colspan="3"><span id="outMotherName">________________________</span></td>
+              </tr>
+              <tr>
+                <td class="label">Roll No.:</td>
+                <td class="val" colspan="3"><span id="outRollNo">________</span></td>
+              </tr>
+              <tr>
+                <td class="label">Residence:</td>
+                <td class="val" colspan="3"><span id="outAddress">________________________</span></td>
+              </tr>
+              <tr>
+                <td class="label">Date of Birth (in figures):</td>
+                <td class="val" colspan="3"><span id="outDOB">--/--/----</span></td>
+              </tr>
+              <tr>
+                <td class="label">Date of Birth (in Words):</td>
+                <td class="val" colspan="3"><span id="outDOBWords">________________________</span></td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Photo space placed in Body Section -->
+          <div class="cert-photo-space" id="certPhotoSpace">
+            <span id="photoPlaceholder">Photograph<br>Space</span>
+            <img id="uploadedPhoto" src="" alt="Student Photo" style="display: none;">
+          </div>
+        </div>
 
         <!-- Signatures Section -->
         <div class="signatures">
@@ -505,3 +532,4 @@
   </script>
 </body>
 </html>
+            
