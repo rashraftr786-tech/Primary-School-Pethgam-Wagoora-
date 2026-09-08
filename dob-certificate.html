@@ -1,544 +1,509 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Date of Birth Certificate - Government Primary School Pethgam Wagoora</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    body { background: #eef3f8; padding: 20px; color: #222; }
-    
-    .page {
-      max-width: 980px;
-      margin: auto;
-      background: #fff;
-      border: 2px solid #1b4f8a;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
-    
-    /* Input Web Header Styling */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 24px;
-      border-bottom: 2px solid #1b4f8a;
-      background: #fdfdfd;
-    }
-    .header-logo {
-      width: 85px;
-      height: 85px;
-      object-fit: contain;
-    }
-    .header-text {
-      text-align: center;
-      flex: 1;
-      padding: 0 15px;
-    }
-    .header-text h3 {
-      font-size: 14px;
-      color: #555;
-      font-weight: normal;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .header-text h1 {
-      font-size: 22px;
-      color: #1b4f8a;
-      text-transform: uppercase;
-      margin: 2px 0;
-    }
-    .header-text h2 {
-      font-size: 16px;
-      color: #111;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-    .header-text p {
-      font-size: 12px;
-      line-height: 1.4;
-      color: #444;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date of Birth Certificate Generator - GPS Pethgam Wagoora</title>
+<style>
+    *, *::before, *::after {
+        box-sizing: border-box;
     }
 
-    .content { padding: 22px; }
-    
-    .section-title {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    .section-title h3 {
-      font-size: 20px;
-      color: #1b4f8a;
-      text-transform: uppercase;
-      text-decoration: underline;
+    body {
+        margin: 0;
+        padding: 20px;
+        font-family: 'Times New Roman', Times, serif;
+        color: #1a202c;
+        background-color: #f0f2f5;
     }
 
-    /* Form Box Styling */
-    .form-box {
-      border: 1px solid #cfd8e3;
-      background: #fbfdff;
-      border-radius: 6px;
-      padding: 18px;
-      margin-bottom: 22px;
+    /* Form Control Panel (Visible on screen, hidden on print) */
+    .control-panel {
+        max-width: 800px;
+        margin: 0 auto 30px auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-    .field label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-      color: #1b4f8a;
-      font-size: 13px;
-    }
-    .field input, .field textarea, .field select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #b9c3d0;
-      border-radius: 4px;
-      font-size: 14px;
-      background: #fff;
-    }
-    .field textarea { resize: vertical; }
-    .buttons {
-      text-align: center;
-      margin-top: 15px;
-    }
-    .btn {
-      border: none;
-      background: #1b4f8a;
-      color: #fff;
-      padding: 10px 22px;
-      margin: 4px;
-      border-radius: 4px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: #143b69; }
 
-    /* Certificate View Styling */
-    .certificate {
-      border: 3px double #1b4f8a;
-      padding: 30px;
-      position: relative;
-      background: #fff;
-      min-height: 650px;
+    .control-panel h2 {
+        margin-top: 0;
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        color: #1a365d;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 8px;
     }
-    
-    /* Full Header for PDF Certificate */
-    .cert-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #1b4f8a;
-      padding-bottom: 12px;
-      margin-bottom: 12px;
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
-    .cert-logo {
-      width: 85px;
-      height: 85px;
-      object-fit: contain;
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
     }
-    .cert-head-center {
-      text-align: center;
-      flex: 1;
-      padding: 0 15px;
+
+    .form-group.full-width {
+        grid-column: span 2;
     }
-    .cert-head-center h3 {
-      font-size: 15px;
-      font-style: italic;
-      color: #333;
-      font-family: 'Georgia', serif;
+
+    .form-group label {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        color: #4a5568;
+        margin-bottom: 4px;
     }
-    .cert-head-center h1 {
-      font-size: 24px;
-      color: #1b4f8a;
-      text-transform: uppercase;
-      font-weight: bold;
-      margin: 2px 0;
+
+    .form-group input, .form-group select {
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #cbd5e0;
+        border-radius: 4px;
     }
-    .cert-address {
-      font-size: 12px;
-      color: #333;
-      line-height: 1.4;
-      margin-top: 4px;
+
+    .print-btn-container {
+        margin-top: 15px;
+        text-align: right;
     }
+
+    .print-btn {
+        background-color: #2b6cb0;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .print-btn:hover {
+        background-color: #2c5282;
+    }
+
+    /* Certificate Layout */
+    .certificate-container {
+        max-width: 210mm;
+        margin: 0 auto;
+        background-color: #fdfbf7;
+    }
+
+    .certificate-frame {
+        border: 4px double #1a365d;
+        padding: 24px 30px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        min-height: 260mm;
+        position: relative;
+    }
+
+    .header-layout {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid #1a365d;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+    }
+
+    .logo-box, .photo-box {
+        width: 85px;
+        height: 100px;
+        border: 1px dashed #a0aec0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 8pt;
+        color: #718096;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .header-center {
+        text-align: center;
+        flex-grow: 1;
+        padding: 0 10px;
+    }
+
+    .govt-heading {
+        font-size: 10.5pt;
+        font-weight: bold;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #2c5282;
+        margin: 0 0 3px 0;
+    }
+
+    .office-heading {
+        font-size: 12pt;
+        font-weight: bold;
+        letter-spacing: 1px;
+        color: #742a2a;
+        margin: 0 0 4px 0;
+    }
+
+    .school-title {
+        font-size: 18pt;
+        font-weight: bold;
+        color: #1a365d;
+        margin: 0 0 4px 0;
+        text-transform: uppercase;
+        font-family: 'Georgia', serif;
+    }
+
+    .school-subtext {
+        font-size: 9.5pt;
+        color: #4a5568;
+        font-style: italic;
+        margin: 0;
+    }
+
+    .meta-table {
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        font-size: 10.5pt;
+        font-weight: bold;
+    }
+
     .cert-title-container {
-      text-align: center;
-      margin: 12px 0 16px 0;
-    }
-    .cert-title-tag {
-      display: inline-block;
-      border: 1px solid #1b4f8a;
-      border-radius: 15px;
-      padding: 4px 20px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #1b4f8a;
-      font-style: italic;
-      font-family: 'Georgia', serif;
+        text-align: center;
+        margin: 20px 0 15px 0;
     }
 
-    .cert-meta-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-      font-size: 15px;
-      font-weight: bold;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 8px;
+    .cert-title {
+        display: inline-block;
+        font-size: 15pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #1a365d;
+        border-bottom: 2px solid #1a365d;
+        padding-bottom: 3px;
     }
 
-    /* Certificate Body Container with Side-by-Side Layout */
-    .cert-body-container {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-      margin-bottom: 10px;
-    }
-    .cert-details-column {
-      flex: 1;
+    .cert-body {
+        font-size: 11.5pt;
+        line-height: 1.8;
+        text-align: justify;
+        margin-bottom: 15px;
     }
 
-    .cert-intro-text {
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 18px;
-      text-align: justify;
+    .fill-output {
+        border-bottom: 1px dotted #2d3748;
+        font-weight: bold;
+        color: #2b6cb0;
+        padding: 0 4px;
+        display: inline-block;
+        min-height: 20px;
     }
 
-    .cert-photo-space {
-      width: 125px;
-      height: 145px;
-      border: 2px dashed #1b4f8a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #777;
-      background: #fdfdfd;
-      font-size: 12px;
-      overflow: hidden;
-      flex-shrink: 0;
-      margin-top: 5px;
-    }
-    .cert-photo-space img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .details-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: 10.5pt;
     }
 
-    /* Certificate Table Structure */
-    .cert-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 10px;
-    }
-    .cert-table td {
-      padding: 7px 8px;
-      font-size: 14px;
-      border-bottom: 1px dashed #d0d7de;
-      vertical-align: top;
-    }
-    .cert-table td.label {
-      width: 25%;
-      font-weight: bold;
-      color: #1b4f8a;
-    }
-    .cert-table td.val {
-      width: 25%;
-      font-weight: bold;
-      color: #000;
+    .details-table th, .details-table td {
+        border: 1px solid #cbd5e0;
+        padding: 7px 10px;
+        text-align: left;
     }
 
-    /* Signatures Section */
-    .signatures {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      margin-top: 45px;
-      text-align: center;
-    }
-    .sig-box {
-      flex: 1;
-      font-size: 14px;
-      font-weight: bold;
-      color: #333;
-    }
-    .sig-line {
-      border-top: 1px solid #000;
-      margin-top: 45px;
-      padding-top: 6px;
+    .details-table th {
+        background-color: #f7fafc;
+        color: #2d3748;
+        width: 40%;
+        font-weight: bold;
     }
 
+    .details-table td {
+        background-color: #ffffff;
+        color: #2b6cb0;
+        font-weight: bold;
+    }
+
+    .cert-footer-text {
+        font-size: 10.5pt;
+        line-height: 1.6;
+        margin-top: 15px;
+        margin-bottom: 35px;
+        text-align: justify;
+    }
+
+    .signature-table {
+        width: 100%;
+        margin-top: 35px;
+        font-size: 10.5pt;
+    }
+
+    .signature-table td {
+        vertical-align: bottom;
+        text-align: center;
+        padding: 0 10px;
+    }
+
+    .sig-title {
+        font-weight: bold;
+        color: #1a365d;
+        margin-top: 5px;
+    }
+
+    .sig-sub {
+        font-size: 9pt;
+        color: #4a5568;
+    }
+
+    .seal-box {
+        border: 1px dashed #a0aec0;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        line-height: 100px;
+        color: #a0aec0;
+        font-size: 7.5pt;
+        text-align: center;
+    }
+
+    /* Print media settings */
     @media print {
-      body { background: #fff; padding: 0; }
-      .form-box, .buttons, .header, .section-title { display: none !important; }
-      .page { border: none; box-shadow: none; width: 100%; max-width: 100%; }
-      .certificate { border: 2px solid #1b4f8a; padding: 20px; }
-      .cert-body-container { display: flex !important; }
-      .cert-photo-space { display: flex !important; }
+        body {
+            background-color: #ffffff;
+            padding: 0;
+        }
+        .control-panel {
+            display: none !important;
+        }
+        .certificate-container {
+            max-width: 100%;
+        }
+        .certificate-frame {
+            border: 4px double #1a365d;
+            box-shadow: none;
+            padding: 15px 20px;
+        }
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
     }
-  </style>
+</style>
 </head>
 <body>
 
-  <div class="page">
-    <!-- Web Interface Header -->
-    <div class="header">
-      <img src="new-logo.png" alt="School Logo" class="header-logo" onerror="this.style.display='none'">
-      <div class="header-text">
-        <h3>Office of the Headmaster</h3>
-        <h1>Government Primary School Pethgam Wagoora</h1>
-        <h2>Date of Birth Certificate Generator</h2>
-        <p>
-          Wagoora Babareshi Road Near Zonal Education Office Wagoora, Baramulla, J&K<br>
-          Email: pspethgam@gmail.com | UDISE Code: 01022202207 | Contact: 9596449881
-        </p>
-      </div>
-      <img src="new-logo.png" alt="School Logo" class="header-logo" onerror="this.style.display='none'">
-    </div>
-
-    <div class="content">
-      <div class="section-title">
-        <h3>Student Details Entry Form</h3>
-      </div>
-
-      <!-- Form Box -->
-      <div class="form-box">
-        <div class="row">
-          <div class="field">
-            <label>Certificate Ref. No.</label>
-            <input type="text" id="certNo" value="GPS/PW/2026/">
-          </div>
-          <div class="field">
-            <label>Date of Issue</label>
-            <input type="date" id="issueDate">
-          </div>
-          <div class="field">
-            <label>Session</label>
-            <input type="text" id="session" placeholder="e.g. 2025-26">
-          </div>
+<!-- INPUT FORM PANEL (Screen Only) -->
+<div class="control-panel">
+    <h2>Certificate Data & Media Input</h2>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Student Full Name</label>
+            <input type="text" id="inputName" placeholder="e.g. Shahid Ahmad" oninput="updateField('outName', this.value)">
         </div>
-
-        <div class="row">
-          <div class="field">
-            <label>Student Name</label>
-            <input type="text" id="studentName" placeholder="Enter student name">
-          </div>
-          <div class="field">
-            <label>Father's Name</label>
-            <input type="text" id="fatherName" placeholder="Enter father's name">
-          </div>
-          <div class="field">
+        <div class="form-group">
+            <label>Relation & Father's Name</label>
+            <input type="text" id="inputFather" placeholder="e.g. Ghulam Ahmad Mir" oninput="updateField('outFather', this.value)">
+        </div>
+        <div class="form-group">
             <label>Mother's Name</label>
-            <input type="text" id="motherName" placeholder="Enter mother's name">
-          </div>
+            <input type="text" id="inputMother" placeholder="e.g. Raja Begum" oninput="updateField('outMother', this.value)">
         </div>
-
-        <div class="row">
-          <div class="field">
-            <label>Date of Birth (in Figures)</label>
-            <input type="date" id="dob">
-          </div>
-          <div class="field">
-            <label>Date of Birth (in Words)</label>
-            <input type="text" id="dobWords" placeholder="e.g. First January Two Thousand Fifteen">
-          </div>
+        <div class="form-group">
+            <label>Address / Village</label>
+            <input type="text" id="inputAddress" placeholder="e.g. Pethgam Wagoora" oninput="updateField('outAddress', this.value)">
         </div>
-
-        <div class="row">
-          <div class="field">
-            <label>Class</label>
-            <input type="text" id="className" placeholder="e.g. 5th">
-          </div>
-          <div class="field">
-            <label>Roll No.</label>
-            <input type="text" id="rollNo" placeholder="e.g. 12">
-          </div>
-          <div class="field">
-            <label>Admission No. (Ad. No.)</label>
-            <input type="text" id="admNo" placeholder="e.g. 341">
-          </div>
-          <div class="field">
-            <label>Department</label>
-            <input type="text" id="department" placeholder="e.g. General / Primary">
-          </div>
+        <div class="form-group">
+            <label>Admission / Register No.</label>
+            <input type="text" id="inputRegNo" placeholder="e.g. 452" oninput="updateField('outRegNo', this.value)">
         </div>
-
-        <div class="row">
-          <div class="field" style="grid-column: 1 / -1;">
+        <div class="form-group">
+            <label>Date of Admission</label>
+            <input type="text" id="inputAdmDate" placeholder="e.g. 12-03-2022" oninput="updateField('outAdmDate', this.value)">
+        </div>
+        <div class="form-group">
+            <label>Date of Birth (Figures)</label>
+            <input type="text" id="inputDobFig" placeholder="e.g. 15-08-2018" oninput="updateField('outDobFig', this.value)">
+        </div>
+        <div class="form-group">
+            <label>Date of Birth (Words)</label>
+            <input type="text" id="inputDobWord" placeholder="e.g. Fifteenth August Two Thousand Eighteen" oninput="updateField('outDobWord', this.value)">
+        </div>
+        <div class="form-group">
+            <label>Class Studying / Passed</label>
+            <input type="text" id="inputClass" placeholder="e.g. 3rd Primary" oninput="updateField('outClass', this.value)">
+        </div>
+        <div class="form-group">
+            <label>Student PEN / UDISE ID</label>
+            <input type="text" id="inputPen" placeholder="e.g. 240501..." oninput="updateField('outPen', this.value)">
+        </div>
+        <div class="form-group">
+            <label>Aadhaar Number</label>
+            <input type="text" id="inputAadhaar" placeholder="e.g. 9123 4567 8910" oninput="updateField('outAadhaar', this.value)">
+        </div>
+        <div class="form-group">
+            <label>Reference No.</label>
+            <input type="text" id="inputRef" value="GPS/PW/2026/___" oninput="updateField('outRef', this.value)">
+        </div>
+        <div class="form-group">
+            <label>Certificate Date</label>
+            <input type="text" id="inputDate" value="DD / MM / YYYY" oninput="updateField('outDate', this.value)">
+        </div>
+        <div class="form-group">
             <label>Upload Student Photograph</label>
-            <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(event)">
-          </div>
+            <input type="file" accept="image/*" id="photoUpload" onchange="loadPhoto(event)">
         </div>
-
-        <div class="field" style="margin-bottom: 14px;">
-          <label>Residence / Address</label>
-          <textarea id="address" rows="2" placeholder="Enter residential address"></textarea>
+        <div class="form-group">
+            <label>Upload School Logo / Emblem</label>
+            <input type="file" accept="image/*" id="logoUpload" onchange="loadLogo(event)">
         </div>
+    </div>
+    <div class="print-btn-container">
+        <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+</div>
 
-        <div class="buttons">
-          <button class="btn" onclick="generateCert()">Update Preview</button>
-          <button class="btn" style="background: #28a745;" onclick="window.print()">Print / Save PDF</button>
-        </div>
-      </div>
-
-      <!-- Live Printable Certificate Output -->
-      <div class="certificate" id="certificate">
-        
-        <!-- Full Official Header -->
-        <div class="cert-top">
-          <img src="new-logo.png" alt="School Logo" class="cert-logo" onerror="this.style.display='none'">
-          <div class="cert-head-center">
-            <h3>Office of the Headmaster</h3>
-            <h1>Government Primary School</h1>
-            <h2 style="font-size: 18px; color: #1b4f8a; text-transform: uppercase;">Pethgam Wagoora</h2>
-            <div class="cert-address">
-              Wagoora Babareshi Road, Near Zonal Education Office Wagoora, District Baramulla, J&K<br>
-              Email: pspethgam@gmail.com | UDISE Code: 01022202207 | Contact: 9596449881
+<!-- CERTIFICATE PRINT AREA -->
+<div class="certificate-container">
+    <div class="certificate-frame">
+        <div class="header-layout">
+            <div class="logo-box" id="logoBox">School Logo / Emblem</div>
+            <div class="header-center">
+                <div class="govt-heading">Government of Jammu & Kashmir</div>
+                <div class="office-heading">Office of the Headmaster</div>
+                <div class="school-title">Government Primary School Pethgam Wagoora</div>
+                <div class="school-subtext">Zone: Wagoora &nbsp;|&nbsp; District: Baramulla &nbsp;|&nbsp; UT of Jammu & Kashmir - 193101</div>
             </div>
-          </div>
-          <img src="new-logo.png" alt="School Logo" class="cert-logo" onerror="this.style.display='none'">
+            <div class="photo-box" id="photoBox">Student Photograph</div>
         </div>
+
+        <table class="meta-table">
+            <tr>
+                <td style="text-align: left;">Ref. No: <span id="outRef" class="fill-output" style="min-width: 150px;">GPS/PW/2026/___</span></td>
+                <td style="text-align: right;">Date: <span id="outDate" class="fill-output" style="min-width: 120px;">DD / MM / YYYY</span></td>
+            </tr>
+        </table>
 
         <div class="cert-title-container">
-          <div class="cert-title-tag">Date of Birth Certificate</div>
+            <div class="cert-title">Date of Birth Certificate</div>
         </div>
 
-        <div class="cert-meta-row">
-          <div>No.: <span id="outCertNo">GPS/PW/2026/___</span></div>
-          <div>Date: <span id="outIssueDate">--/--/----</span></div>
+        <div class="cert-body">
+            This is to certify that 
+            <span id="outName" class="fill-output" style="min-width: 250px;">[ Student's Full Name ]</span>, 
+            Son / Daughter of Shri <span id="outFather" class="fill-output" style="min-width: 210px;">[ Father's Name ]</span> 
+            and Smt. <span id="outMother" class="fill-output" style="min-width: 210px;">[ Mother's Name ]</span>, 
+            resident of <span id="outAddress" class="fill-output" style="min-width: 260px;">[ Village / Locality / Address ]</span>, 
+            is / was a bonafide student of this institution.
         </div>
 
-        <!-- Body Section with Photograph Placement -->
-        <div class="cert-body-container">
-          <div class="cert-details-column">
-            <div class="cert-intro-text">
-              This is to certify that the student whose photograph is attached and attested above is a Bonafide student of our school. As per school records his details are as below.
-            </div>
-
-            <table class="cert-table">
-              <tr>
-                <td class="label">Ad. No.:</td>
-                <td class="val"><span id="outAdmNo">________</span></td>
-                <td class="label">Department:</td>
-                <td class="val"><span id="outDepartment">________</span></td>
-              </tr>
-              <tr>
-                <td class="label">Session:</td>
-                <td class="val"><span id="outSession">________</span></td>
-                <td class="label">Class:</td>
-                <td class="val"><span id="outClass">________</span></td>
-              </tr>
-              <tr>
-                <td class="label">Name:</td>
-                <td class="val" colspan="3"><span id="outStudentName">________________________</span></td>
-              </tr>
-              <tr>
-                <td class="label">Father's Name:</td>
-                <td class="val" colspan="3"><span id="outFatherName">________________________</span></td>
-              </tr>
-              <tr>
-                <td class="label">Mother's Name:</td>
-                <td class="val" colspan="3"><span id="outMotherName">________________________</span></td>
-              </tr>
-              <tr>
-                <td class="label">Roll No.:</td>
-                <td class="val" colspan="3"><span id="outRollNo">________</span></td>
-              </tr>
-              <tr>
-                <td class="label">Residence:</td>
-                <td class="val" colspan="3"><span id="outAddress">________________________</span></td>
-              </tr>
-              <tr>
-                <td class="label">Date of Birth (in figures):</td>
-                <td class="val" colspan="3"><span id="outDOB">--/--/----</span></td>
-              </tr>
-              <tr>
-                <td class="label">Date of Birth (in Words):</td>
-                <td class="val" colspan="3"><span id="outDOBWords">________________________</span></td>
-              </tr>
-            </table>
-          </div>
-
-          <!-- Photo space placed in Body Section -->
-          <div class="cert-photo-space" id="certPhotoSpace">
-            <span id="photoPlaceholder">Photograph<br>Space</span>
-            <img id="uploadedPhoto" src="" alt="Student Photo" style="display: none;">
-          </div>
+        <div style="font-weight: bold; font-size: 10.5pt; margin-bottom: 6px; color: #1a365d;">
+            As per the official Admission Register (General Register) of the school, the birth particulars are recorded as under:
         </div>
 
-        <!-- Signatures Section -->
-        <div class="signatures">
-          <div class="sig-box">
-            <div class="sig-line">Teacher Incharge</div>
-          </div>
-          <div class="sig-box">
-            <div class="sig-line">Checked By</div>
-          </div>
-          <div class="sig-box">
-            <div class="sig-line">Headmaster</div>
-          </div>
+        <table class="details-table">
+            <tr>
+                <th>1. Admission / Register No.</th>
+                <td><span id="outRegNo">[ Insert Reg No. ]</span></td>
+            </tr>
+            <tr>
+                <th>2. Date of Admission</th>
+                <td><span id="outAdmDate">[ DD / MM / YYYY ]</span></td>
+            </tr>
+            <tr>
+                <th>3. Date of Birth (in Figures)</th>
+                <td><span id="outDobFig">[ DD / MM / YYYY ]</span></td>
+            </tr>
+            <tr>
+                <th>4. Date of Birth (in Words)</th>
+                <td><span id="outDobWord">[ Insert Date in Words ]</span></td>
+            </tr>
+            <tr>
+                <th>5. Class Currently Studying / Passed</th>
+                <td>Class <span id="outClass">[ _____ ]</span></td>
+            </tr>
+            <tr>
+                <th>6. Student PEN / UDISE ID</th>
+                <td><span id="outPen">[ Insert PEN / UDISE ID ]</span></td>
+            </tr>
+            <tr>
+                <th>7. Aadhaar Number</th>
+                <td><span id="outAadhaar">[ Insert 12-Digit Aadhaar ]</span></td>
+            </tr>
+        </table>
+
+        <div class="cert-footer-text">
+            This certificate is issued on the official request of the parent / guardian for administrative purposes, including identity verification and official record updates. To the best of my knowledge and belief, the student bears a good moral character.
         </div>
 
-      </div>
+        <table class="signature-table">
+            <tr>
+                <td style="width: 30%;">
+                    <div style="height: 35px;"></div>
+                    ___________________________
+                    <div class="sig-title">Prepared By</div>
+                    <div class="sig-sub">(Name & Designation)</div>
+                </td>
+                <td style="width: 40%;">
+                    <div class="seal-box">OFFICIAL SEAL</div>
+                </td>
+                <td style="width: 30%;">
+                    <div style="height: 35px;"></div>
+                    ___________________________
+                    <div class="sig-title">Headmaster / HOI</div>
+                    <div class="sig-sub">Govt. Primary School Pethgam Wagoora</div>
+                </td>
+            </tr>
+        </table>
     </div>
-  </div>
+</div>
 
-  <script>
-    function formatDate(d) {
-      if (!d) return "--/--/----";
-      const x = new Date(d);
-      if (isNaN(x.getTime())) return "--/--/----";
-      const day = String(x.getDate()).padStart(2, "0");
-      const month = String(x.getMonth() + 1).padStart(2, "0");
-      return `${day}/${month}/${x.getFullYear()}`;
+<script>
+    function updateField(elementId, value) {
+        const el = document.getElementById(elementId);
+        if (value.trim() !== "") {
+            el.innerText = value;
+        }
     }
 
-    function getValue(id, fallback) {
-      const el = document.getElementById(id);
-      return (el && el.value.trim() !== "") ? el.value.trim() : fallback;
+    function loadPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const box = document.getElementById('photoBox');
+                box.style.backgroundImage = `url(${e.target.result})`;
+                box.innerText = "";
+            }
+            reader.readAsDataURL(file);
+        }
     }
 
-    function previewPhoto(event) {
-      const file = event.target.files[0];
-      const photoImg = document.getElementById("uploadedPhoto");
-      const placeholder = document.getElementById("photoPlaceholder");
-
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          photoImg.src = e.target.result;
-          photoImg.style.display = "block";
-          if (placeholder) placeholder.style.display = "none";
-        };
-        reader.readAsDataURL(file);
-      }
+    function loadLogo(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const box = document.getElementById('logoBox');
+                box.style.backgroundImage = `url(${e.target.result})`;
+                box.innerText = "";
+            }
+            reader.readAsDataURL(file);
+        }
     }
+</script>
 
-    function generateCert() {
-      document.getElementById("outCertNo").textContent = getValue("certNo", "GPS/PW/2026/___");
-      document.getElementById("outIssueDate").textContent = formatDate(document.getElementById("issueDate").value);
-      document.getElementById("outSession").textContent = getValue("session", "________");
-      document.getElementById("outStudentName").textContent = getValue("studentName", "________________________");
-      document.getElementById("outFatherName").textContent = getValue("fatherName", "________________________");
-      document.getElementById("outMotherName").textContent = getValue("motherName", "________________________");
-      document.getElementById("outDOB").textContent = formatDate(document.getElementById("dob").value);
-      document.getElementById("outDOBWords").textContent = getValue("dobWords", "________________________");
-      document.getElementById("outClass").textContent = getValue("className", "________");
-      document.getElementById("outRollNo").textContent = getValue("rollNo", "________");
-      document.getElementById("outAdmNo").textContent = getValue("admNo", "________");
-      document.getElementById("outDepartment").textContent = getValue("department", "________");
-      document.getElementById("outAddress").textContent = getValue("address", "________________________");
-    }
-
-    // Initialize default values on page load
+</body>
+</html>                      // Initialize default values on page load
     document.addEventListener("DOMContentLoaded", function() {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById("issueDate").value = today;
@@ -547,6 +512,3 @@
   </script>
 </body>
 </html>
-
-
-    
