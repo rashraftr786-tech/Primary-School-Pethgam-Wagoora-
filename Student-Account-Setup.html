@@ -258,6 +258,7 @@ import {
 import {
   getAuth,
   signInWithEmailAndPassword,
+  signOut,
   createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
@@ -273,7 +274,7 @@ import {
 
 
 /* =========================================================
-   FIREBASE INITIALIZATION
+   FIREBASE
    ========================================================= */
 
 const cfg = window.GPS_FIREBASE_CONFIG;
@@ -286,27 +287,15 @@ if (!cfg) {
   throw new Error("GPS_FIREBASE_CONFIG is missing");
 }
 
-
 const app =
   getApps().length
     ? getApp()
     : initializeApp(cfg);
 
-
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
-/* =========================================================
-   SHORTCUT
-   ========================================================= */
-
 const $ = id => document.getElementById(id);
-
-
-/* =========================================================
-   GLOBAL STATE
-   ========================================================= */
 
 let adminOk = false;
 let selected = null;
@@ -316,8 +305,7 @@ let selected = null;
    HELPERS
    ========================================================= */
 
-function esc(s){
-
+function esc(s) {
   return String(s ?? "").replace(
     /[&<>"']/g,
     m => ({
@@ -328,37 +316,26 @@ function esc(s){
       "'":"&#39;"
     }[m])
   );
-
 }
 
-
-function full(r,p){
-
+function full(r,p) {
   return [
     r[p+"First"],
     r[p+"Middle"],
     r[p+"Last"]
-  ]
-  .filter(Boolean)
-  .join(" ");
-
+  ].filter(Boolean).join(" ");
 }
 
-
-function nameOf(r){
-
+function nameOf(r) {
   return (
     full(r,"student") ||
     r.name ||
     r.studentName ||
     "Student"
   );
-
 }
 
-
-function emailFor(id){
-
+function emailFor(id) {
   return (
     "student-" +
     String(id)
@@ -366,6 +343,79 @@ function emailFor(id){
       .toLowerCase()
       .replace(/[^a-z0-9._-]/g,"-") +
     "@student.pethgam.local"
+  );
+}
+
+
+/* =========================================================
+   CREATE LOGIN BOX
+   ========================================================= */
+
+function showLogin() {
+
+  $("state").innerHTML = `
+
+    <div class="info">
+
+      <h2 style="margin-top:0">
+        🔐 Admin / HOI Sign In
+      </h2>
+
+      <p class="muted">
+        Sign in with the Firebase Authentication account
+        authorized for school administration.
+      </p>
+
+      <div style="max-width:500px">
+
+        <label>Admin / HOI Email</label>
+
+        <input
+          id="adminEmail"
+          type="email"
+          autocomplete="username"
+          placeholder="Enter Admin email"
+        >
+
+        <br><br>
+
+        <label>Password</label>
+
+        <input
+          id="adminPassword"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Enter Admin password"
+        >
+
+        <br><br>
+
+        <button id="adminSignIn">
+          Sign In as Admin / HOI
+        </button>
+
+      </div>
+
+      <div
+        id="loginMessage"
+        style="margin-top:12px">
+      </div>
+
+    </div>
+  `;
+
+
+  $("adminSignIn").onclick =
+    administratorLogin;
+
+
+  $("adminPassword").addEventListener(
+    "keydown",
+    e => {
+      if(e.key === "Enter") {
+        administratorLogin();
+      }
+    }
   );
 
 }
@@ -375,159 +425,276 @@ function emailFor(id){
    ADMIN VERIFICATION
    ========================================================= */
 
-async function verifyAdmin(email,pw){
-async function verifyAdmin(email,pw){
+async function verifyAdmin(email,pw) {
 
-  // 1. Sign in with Firebase Authentication
-  const credential = await signInWithEmailAndPassword(
-    auth,
-    email,
-    pw
-  );
+  /*
+   * Authenticate through Firebase Authentication.
+   */
 
-  const uid = credential.user.uid;
+  const credential =
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      pw
+    );
 
-  // 2. Read the administrator document
-  const adminRef = doc(db, "admins", uid);
-  const adminSnap = await getDoc(adminRef);
 
-  if (!adminSnap.exists()) {
+  const uid =
+    credential.user.uid;
+
+
+  /*
+   * Read:
+   *
+   * admins/{Firebase Auth UID}
+   */
+
+  const adminRef =
+    doc(
+      db,
+      "admins",
+      uid
+    );
+
+
+  const adminSnap =
+    await getDoc(adminRef);
+
+
+  if(!adminSnap.exists()) {
+
+    /*
+     * The email/password is valid,
+     * but this UID is not registered
+     * as a school administrator.
+     */
+
+    await signOut(auth);
+
     throw new Error(
-      "Administrator account authenticated, but no administrator record was found for UID: " + uid
+      "This Firebase account is authenticated, " +
+      "but it is not registered in the school " +
+      "admins collection."
     );
   }
 
-  const data = adminSnap.data() || {};
 
-  console.log("Firebase Admin document:", data);
-  console.log("Admin UID:", uid);
-  console.log("Admin role:", data.role);
-  console.log("Admin active:", data.active);
+  const data =
+    adminSnap.data() || {};
 
-  // 3. Check ACTIVE status
+
+  console.log(
+    "Administrator document:",
+    data
+  );
+
+
+  /*
+   * ACTIVE CHECK
+   */
+
   const active =
     data.active === true ||
-    String(data.active).trim().toLowerCase() === "true";
+    String(data.active ?? "")
+      .trim()
+      .toLowerCase() === "true";
 
-  if (!active) {
+
+  if(!active) {
+
+    await signOut(auth);
+
     throw new Error(
       "This account is not an active school admin."
     );
   }
 
-  // 4. Administrator document exists and is active.
-  // Role is displayed for diagnostic purposes but does not
-  // prevent the verified UID from accessing this page.
+
+  /*
+   * ROLE
+   *
+   * We accept admin/Admin/ADMIN etc.
+   */
+
+  const role =
+    String(data.role ?? "")
+      .trim()
+      .toLowerCase();
+
+
+  if(role && role !== "admin") {
+
+    await signOut(auth);
+
+    throw new Error(
+      'The administrator record has an invalid role: "' +
+      String(data.role) +
+      '". Expected "admin".'
+    );
+  }
+
+
   return credential;
 }
 
 
 /* =========================================================
-   ADMIN LOGIN
+   ADMIN LOGIN BUTTON
    ========================================================= */
 
-async function init(){
-
-  const state = $("state");
-
+async function administratorLogin() {
 
   const email =
-    prompt(
-      "Enter the Firebase School Admin email:"
-    );
+    $("adminEmail").value.trim();
+
+  const password =
+    $("adminPassword").value;
 
 
-  if(!email){
+  const message =
+    $("loginMessage");
 
-    state.textContent =
-      "Administrator sign-in cancelled.";
+
+  if(!email) {
+
+    message.innerHTML =
+      '<div class="err">' +
+      'Please enter the Admin/HOI email.' +
+      '</div>';
 
     return;
-
   }
 
 
-  const pw =
-    prompt(
-      "Enter the Firebase Admin password:"
-    );
+  if(!password) {
 
-
-  if(!pw){
-
-    state.textContent =
-      "Administrator sign-in cancelled.";
+    message.innerHTML =
+      '<div class="err">' +
+      'Please enter the Admin/HOI password.' +
+      '</div>';
 
     return;
-
   }
 
 
-  state.innerHTML =
-    '<div class="info">Verifying administrator account…</div>';
+  const button =
+    $("adminSignIn");
 
 
-  try{
+  button.disabled = true;
+
+  button.textContent =
+    "Signing in…";
+
+
+  message.innerHTML =
+    '<div class="info">' +
+    'Verifying Firebase administrator account…' +
+    '</div>';
+
+
+  try {
 
     const credential =
       await verifyAdmin(
-        email.trim(),
-        pw
+        email,
+        password
       );
 
 
     adminOk = true;
 
 
-    state.innerHTML =
-      '<div class="ok">' +
-      '<b>✓ Administrator verified.</b><br>' +
-      'Signed in as: ' +
-      esc(credential.user.email || "") +
-      '<br>UID: <code>' +
-      esc(credential.user.uid) +
-      '</code>' +
-      '</div>';
+    $("state").innerHTML = `
+
+      <div class="ok">
+
+        <b>✓ Administrator verified</b>
+
+        <br><br>
+
+        Signed in as:
+        <b>
+          ${esc(credential.user.email || email)}
+        </b>
+
+        <br>
+
+        Firebase UID:
+        <code>
+          ${esc(credential.user.uid)}
+        </code>
+
+        <br><br>
+
+        <button id="adminSignOut" class="secondary">
+          Sign Out
+        </button>
+
+      </div>
+    `;
+
+
+    $("adminSignOut").onclick =
+      async () => {
+
+        await signOut(auth);
+
+        adminOk = false;
+
+        selected = null;
+
+        $("formCard").style.display =
+          "none";
+
+        showLogin();
+
+      };
 
 
     $("formCard").style.display =
       "block";
 
 
-  }catch(e){
+  } catch(e) {
 
     console.error(
-      "Administrator verification error:",
+      "Administrator login failed:",
       e
     );
 
 
-    state.innerHTML =
+    message.innerHTML =
       '<div class="err">' +
-      '<b>Administrator verification failed.</b><br><br>' +
+      '<b>Administrator verification failed.</b>' +
+      '<br><br>' +
       esc(e?.message || e) +
       '</div>';
 
   }
 
+
+  button.disabled = false;
+
+  button.textContent =
+    "Sign In as Admin / HOI";
 }
 
 
 /* =========================================================
-   LOAD STUDENTS FROM FIREBASE
+   LOAD STUDENTS
    ========================================================= */
 
-async function loadStudents(){
+async function loadStudents() {
 
-  if(!adminOk){
+  if(!adminOk) {
 
     $("studentList").innerHTML =
       '<div class="err">' +
-      'Administrator verification is required.' +
+      'Please sign in as Admin/HOI first.' +
       '</div>';
 
     return;
-
   }
 
 
@@ -544,11 +711,14 @@ async function loadStudents(){
   let students = [];
 
 
-  try{
+  try {
 
     const snap =
       await getDocs(
-        collection(db,"students")
+        collection(
+          db,
+          "students"
+        )
       );
 
 
@@ -561,38 +731,37 @@ async function loadStudents(){
 
 
       /*
-       * Ignore student login-account records
-       * if any older records exist in students.
+       * Ignore future student-account records
+       * if any old records were created there.
        */
 
       if(
-        r.accountType === "studentAccount" ||
+        r.accountType ===
+        "studentAccount" ||
         r.isStudentAccount === true
-      ){
-
+      ) {
         return;
-
       }
 
 
       /*
-       * Ignore rejected admissions.
+       * Exclude rejected admissions.
        */
 
       if(
-        String(r.status || "Pending")
-          .trim()
-          .toLowerCase()
-          === "rejected"
-      ){
-
+        String(
+          r.status || "Pending"
+        )
+        .trim()
+        .toLowerCase()
+        === "rejected"
+      ) {
         return;
-
       }
 
 
       /*
-       * Only include genuine student master records.
+       * Genuine Student Master record.
        */
 
       if(
@@ -603,7 +772,7 @@ async function loadStudents(){
           r.name ||
           r.studentName
         )
-      ){
+      ) {
 
         students.push(r);
 
@@ -612,79 +781,76 @@ async function loadStudents(){
     });
 
 
-  }catch(e){
+  } catch(e) {
 
     console.error(
-      "Student Master read error:",
+      "Student Master error:",
       e
     );
 
 
     box.innerHTML =
       '<div class="err">' +
-      '<b>Could not read Firebase Student Master.</b><br>' +
+      '<b>Could not read Firebase Student Master.</b>' +
+      '<br>' +
       esc(e?.message || e) +
       '</div>';
 
     return;
-
   }
 
 
   /*
-   * LocalStorage fallback.
+   * Local fallback.
    */
 
-  if(!students.length){
+  if(!students.length) {
 
-    try{
+    try {
 
-      const local =
+      students =
         JSON.parse(
           localStorage.getItem(
             "GPSPETHGAM_MASTER_ADMISSION_V1"
           ) || "[]"
-        );
-
-
-      students =
-        local.filter(r =>
+        )
+        .filter(r =>
           r &&
-          String(r.status || "Pending")
-            .trim()
-            .toLowerCase()
-            !== "rejected"
+          String(
+            r.status || "Pending"
+          )
+          .trim()
+          .toLowerCase()
+          !== "rejected"
         );
 
-
-    }catch(e){
+    } catch(e) {
 
       console.warn(
-        "LocalStorage fallback failed:",
+        "Local student fallback failed:",
         e
       );
 
     }
-
   }
 
 
-  /*
-   * Sort by Admission Number.
-   */
-
   students.sort(
     (x,y) =>
-      String(x.admissionNo || "")
-        .localeCompare(
-          String(y.admissionNo || ""),
-          undefined,
-          {numeric:true}
-        )
+      String(
+        x.admissionNo || ""
+      )
+      .localeCompare(
+        String(
+          y.admissionNo || ""
+        ),
+        undefined,
+        {numeric:true}
+      )
   );
 
 
-  if(!students.length){
+  if(!students.length) {
 
     box.innerHTML =
       '<div class="student-row">' +
@@ -692,43 +858,46 @@ async function loadStudents(){
       '</div>';
 
     return;
-
   }
 
 
   box.innerHTML =
     students.map(
-      (r,i) =>
+      (r,i) => `
 
-      '<div class="student-row" data-i="' +
-      i +
-      '">' +
+        <div
+          class="student-row"
+          data-i="${i}"
+        >
 
-      '<b>' +
-      esc(nameOf(r)) +
-      '</b>' +
+          <b>
+            ${esc(nameOf(r))}
+          </b>
 
-      '<span>' +
-      'Adm. ' +
-      esc(r.admissionNo || "—") +
+          <span>
+            Adm.
+            ${esc(r.admissionNo || "—")}
 
-      ' • ' +
+            •
 
-      esc(r.studentId || "No Student ID") +
+            ${esc(r.studentId || "No Student ID")}
 
-      ' • Class ' +
+            •
 
-      esc(r.classJoining || "—") +
+            Class
+            ${esc(r.classJoining || "—")}
 
-      ' • ' +
+            •
 
-      esc(r.status || "Active") +
+            ${esc(r.status || "Active")}
 
-      '</span>' +
+          </span>
 
-      '</div>'
+        </div>
 
-    ).join("");
+      `
+    )
+    .join("");
 
 
   box
@@ -739,7 +908,9 @@ async function loadStudents(){
         () =>
           selectStudent(
             students[
-              Number(el.dataset.i)
+              Number(
+                el.dataset.i
+              )
             ]
           );
 
@@ -752,7 +923,7 @@ async function loadStudents(){
    SELECT STUDENT
    ========================================================= */
 
-function selectStudent(r){
+function selectStudent(r) {
 
   selected = r;
 
@@ -789,7 +960,7 @@ function selectStudent(r){
     '</div>';
 
 
-  if(!r.photo){
+  if(!r.photo) {
 
     $("photo").value = "";
 
@@ -799,10 +970,10 @@ function selectStudent(r){
 
 
 /* =========================================================
-   CLOUDINARY PHOTO UPLOAD
+   CLOUDINARY
    ========================================================= */
 
-async function cloudinary(file){
+async function cloudinary(file) {
 
   const c =
     window.GPS_CLOUDINARY;
@@ -812,7 +983,7 @@ async function cloudinary(file){
     !file ||
     !c?.cloudName ||
     !c.uploadPreset
-  ){
+  ) {
 
     return "";
 
@@ -845,7 +1016,7 @@ async function cloudinary(file){
     );
 
 
-  if(!response.ok){
+  if(!response.ok) {
 
     throw new Error(
       "Photo upload failed."
@@ -854,12 +1025,11 @@ async function cloudinary(file){
   }
 
 
-  const result =
+  const data =
     await response.json();
 
 
-  return result.secure_url || "";
-
+  return data.secure_url || "";
 }
 
 
@@ -868,21 +1038,20 @@ async function cloudinary(file){
    ========================================================= */
 
 $("create").onclick =
-async function(){
+async function() {
 
-  if(!adminOk){
+  if(!adminOk) {
 
     $("result").innerHTML =
       '<div class="err">' +
-      'Administrator verification is required.' +
+      'Please sign in as Admin/HOI first.' +
       '</div>';
 
     return;
-
   }
 
 
-  if(!selected){
+  if(!selected) {
 
     $("result").innerHTML =
       '<div class="err">' +
@@ -890,7 +1059,6 @@ async function(){
       '</div>';
 
     return;
-
   }
 
 
@@ -898,19 +1066,20 @@ async function(){
     $("result");
 
 
-  const createButton =
+  const button =
     $("create");
 
 
-  createButton.disabled =
-    true;
+  button.disabled = true;
 
 
   result.innerHTML =
-    '<div class="info">Creating student account…</div>';
+    '<div class="info">' +
+    'Creating student account…' +
+    '</div>';
 
 
-  try{
+  try {
 
     const sid =
       $("studentId")
@@ -929,11 +1098,7 @@ async function(){
         .value;
 
 
-    /*
-     * Validate Student ID and Admission Number.
-     */
-
-    if(!sid || !adm){
+    if(!sid || !adm) {
 
       throw new Error(
         "Select a student with Student ID and Admission Number."
@@ -942,11 +1107,7 @@ async function(){
     }
 
 
-    /*
-     * Password requirement.
-     */
-
-    if(pw.length < 8){
+    if(pw.length < 8) {
 
       throw new Error(
         "Initial password must be at least 8 characters."
@@ -955,19 +1116,13 @@ async function(){
     }
 
 
-    /*
-     * Generate student login email.
-     */
-
     const studentEmail =
       emailFor(sid);
 
 
     /*
-     * Use a SECONDARY Firebase application.
-     *
-     * This prevents creating the student account
-     * from signing the administrator out.
+     * Secondary Firebase application.
+     * Keeps Admin session active.
      */
 
     const secondaryName =
@@ -989,7 +1144,7 @@ async function(){
     let userCredential;
 
 
-    try{
+    try {
 
       userCredential =
         await createUserWithEmailAndPassword(
@@ -998,13 +1153,12 @@ async function(){
           pw
         );
 
-
-    }catch(e){
+    } catch(e) {
 
       if(
         e.code ===
         "auth/email-already-in-use"
-      ){
+      ) {
 
         throw new Error(
           "A Firebase account already exists for this Student ID."
@@ -1012,19 +1166,13 @@ async function(){
 
       }
 
-
       throw e;
-
     }
 
 
     const studentUid =
       userCredential.user.uid;
 
-
-    /*
-     * Photo.
-     */
 
     let photo =
       selected.photo || "";
@@ -1033,7 +1181,7 @@ async function(){
     if(
       $("photo").files &&
       $("photo").files[0]
-    ){
+    ) {
 
       photo =
         await cloudinary(
@@ -1044,16 +1192,15 @@ async function(){
 
 
     /*
-     * Build student login profile.
+     * Student login profile.
      *
      * IMPORTANT:
-     * This is stored in studentAccounts,
-     * NOT in students.
+     * Stored separately from Student Master.
      */
 
     const profile = {
 
-      studentUid:studentUid,
+      studentUid,
 
       studentId:sid,
 
@@ -1094,7 +1241,7 @@ async function(){
       bloodGroup:
         selected.bloodGroup || "",
 
-      photo:photo,
+      photo,
 
       active:true,
 
@@ -1114,9 +1261,9 @@ async function(){
 
 
     /*
-     * SAVE TO:
+     * SAVE:
      *
-     * studentAccounts/{Firebase Student UID}
+     * studentAccounts/{studentUid}
      */
 
     await setDoc(
@@ -1129,10 +1276,6 @@ async function(){
       {merge:true}
     );
 
-
-    /*
-     * Success.
-     */
 
     result.innerHTML =
       '<div class="ok">' +
@@ -1159,21 +1302,15 @@ async function(){
 
       '<br>' +
 
-      'Firebase Student UID: <code>' +
-      esc(studentUid) +
-      '</code>' +
-
-      '<br>' +
-
       'Login ID: <b>' +
       esc(studentEmail) +
       '</b>' +
 
       '<br>' +
 
-      'Initial password: <b>' +
-      esc(pw) +
-      '</b>' +
+      'Firebase UID: <code>' +
+      esc(studentUid) +
+      '</code>' +
 
       '<br><br>' +
 
@@ -1184,14 +1321,10 @@ async function(){
       '</div>';
 
 
-    /*
-     * Clear password after successful creation.
-     */
-
     $("initialPassword").value = "";
 
 
-  }catch(e){
+  } catch(e) {
 
     console.error(
       "Student account creation error:",
@@ -1201,21 +1334,21 @@ async function(){
 
     result.innerHTML =
       '<div class="err">' +
-      '<b>Account creation failed.</b><br>' +
+      '<b>Account creation failed.</b>' +
+      '<br><br>' +
       esc(e?.message || e) +
       '</div>';
 
   }
 
 
-  createButton.disabled =
-    false;
+  button.disabled = false;
 
 };
 
 
 /* =========================================================
-   BUTTON
+   LOAD BUTTON
    ========================================================= */
 
 $("loadStudents").onclick =
@@ -1223,10 +1356,11 @@ $("loadStudents").onclick =
 
 
 /* =========================================================
-   START
+   IMPORTANT:
+   ALWAYS SHOW LOGIN SCREEN
    ========================================================= */
 
-init();
+showLogin();
 
 </script>
 
