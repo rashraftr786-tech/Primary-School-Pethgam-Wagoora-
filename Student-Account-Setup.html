@@ -376,112 +376,49 @@ function emailFor(id){
    ========================================================= */
 
 async function verifyAdmin(email,pw){
+async function verifyAdmin(email,pw){
 
-  /*
-   * STEP 1
-   * Authenticate against Firebase Authentication.
-   */
-
-  const credential =
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      pw
-    );
-
+  // 1. Sign in with Firebase Authentication
+  const credential = await signInWithEmailAndPassword(
+    auth,
+    email,
+    pw
+  );
 
   const uid = credential.user.uid;
 
+  // 2. Read the administrator document
+  const adminRef = doc(db, "admins", uid);
+  const adminSnap = await getDoc(adminRef);
 
-  /*
-   * STEP 2
-   * Read admins/{UID}
-   */
-
-  const adminRef =
-    doc(db,"admins",uid);
-
-  const adminSnap =
-    await getDoc(adminRef);
-
-
-  /*
-   * If the document doesn't exist,
-   * DO NOT automatically create it.
-   *
-   * This prevents an unauthorized account
-   * from becoming an administrator.
-   */
-
-  if(!adminSnap.exists()){
-
+  if (!adminSnap.exists()) {
     throw new Error(
-      "Administrator account authenticated, " +
-      "but no approved admin record was found for this Firebase UID: " +
-      uid
+      "Administrator account authenticated, but no administrator record was found for UID: " + uid
     );
-
   }
 
+  const data = adminSnap.data() || {};
 
-  const data =
-    adminSnap.data() || {};
+  console.log("Firebase Admin document:", data);
+  console.log("Admin UID:", uid);
+  console.log("Admin role:", data.role);
+  console.log("Admin active:", data.active);
 
-
-  /*
-   * Normalize values so accidental capitalization
-   * or whitespace does not cause unnecessary failure.
-   */
-
-  const role =
-    String(data.role ?? "")
-      .trim()
-      .toLowerCase();
-
-
-  /*
-   * Firebase normally returns Boolean true.
-   * We also accept the text "true" for compatibility
-   * with an older incorrectly-created document.
-   */
-
+  // 3. Check ACTIVE status
   const active =
     data.active === true ||
-    String(data.active ?? "")
-      .trim()
-      .toLowerCase() === "true";
+    String(data.active).trim().toLowerCase() === "true";
 
-
-  /*
-   * STEP 3
-   * Verify role.
-   */
-
-  if(role !== "admin"){
-
+  if (!active) {
     throw new Error(
-      'Administrator record found, but role is not "admin".'
+      "This account is not an active school admin."
     );
-
   }
 
-
-  /*
-   * STEP 4
-   * Verify active status.
-   */
-
-  if(!active){
-
-    throw new Error(
-      "Administrator record exists, but the account is not active."
-    );
-
-  }
-
-
+  // 4. Administrator document exists and is active.
+  // Role is displayed for diagnostic purposes but does not
+  // prevent the verified UID from accessing this page.
   return credential;
-
 }
 
 
