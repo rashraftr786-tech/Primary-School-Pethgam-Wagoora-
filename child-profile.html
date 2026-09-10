@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Child Profile | GPS Pethgam Wagoora</title>
+<style>
+:root{--blue:#0b5cab;--dark:#08376d;--bg:#f3f6fa;--line:#d8e0ea;--text:#17212b;--muted:#657484;--card:#fff}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}.top{background:linear-gradient(135deg,var(--blue),var(--dark));color:#fff;padding:18px;text-align:center}.top img{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:4px}.top h1{margin:8px 0 3px;font-size:22px}.top p{margin:0;font-size:12px}.wrap{max-width:1100px;margin:18px auto;padding:0 12px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff}.light{background:#fff;color:var(--blue);border:1px solid #cbdced}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 18px #18324a0b;margin-bottom:15px;overflow:hidden}.hero{display:flex;gap:20px;align-items:center;padding:20px;background:linear-gradient(135deg,#fff,#f7fbff)}.photo{width:120px;height:145px;object-fit:cover;border:1px solid #aaa;background:#f6f6f6;border-radius:8px}.avatar{width:120px;height:145px;display:flex;align-items:center;justify-content:center;border:1px dashed #999;color:#777;text-align:center;border-radius:8px}.hero h2{margin:0 0 7px;font-size:25px}.pill{display:inline-block;background:#eaf2fb;color:#174d80;border-radius:20px;padding:5px 9px;font-size:12px;font-weight:700;margin:3px}.section{padding:16px}.section h3{margin:0 0 12px;color:var(--dark);font-size:17px;border-bottom:1px solid var(--line);padding-bottom:8px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.item{padding:10px;background:#f8fbff;border:1px solid #e5edf6;border-radius:9px}.label{font-size:11px;color:var(--muted);font-weight:700}.value{font-size:14px;margin-top:3px;word-break:break-word}.empty{text-align:center;padding:50px;color:var(--muted)}.status{padding:10px 12px;border-radius:9px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;margin-bottom:15px}.ok{background:#ecfdf5;border-color:#a7f3d0;color:#166534}.error{background:#fef2f2;border-color:#fecaca;color:#991b1b}.small{font-size:12px;color:var(--muted)}@media(max-width:700px){.hero{align-items:flex-start}.grid{grid-template-columns:1fr 1fr}}@media(max-width:480px){.hero{flex-direction:column}.grid{grid-template-columns:1fr}.hero h2{font-size:21px}}@media print{.top{background:#fff;color:#000}.bar,.status{display:none}.card{box-shadow:none}.wrap{margin:0}}
+</style>
+</head>
+<body>
+<header class="top"><img src="new-logo.png" onerror="this.style.display='none'"><h1>Government Primary School Pethgam Wagoora</h1><p>Real Student Child Profile • Zone Wagoora • District Baramulla</p></header>
+<main class="wrap">
+<div class="bar"><button class="btn light" onclick="history.back()">← Back</button><button class="btn primary" onclick="window.print()">Print Profile</button><button class="btn light" onclick="location.href='Student-Portal.html'">Student Portal</button><button class="btn light" onclick="location.href='general_admission_register.html'">Admission Register</button></div>
+<div id="status" class="status">Loading the authenticated student's real profile…</div><div id="app"></div>
+</main>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
+import {getAuth,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js';
+import {getFirestore,doc,getDoc,collection,getDocs} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js';
+
+const cfg=window.GPS_FIREBASE_CONFIG || {
+ apiKey:'AIzaSyADB32wJq886NNqMuJk5n1zO45oSi-bdLs',authDomain:'gps-pethgam-wagoora-portal.firebaseapp.com',projectId:'gps-pethgam-wagoora-portal',storageBucket:'gps-pethgam-wagoora-portal.firebasestorage.app',messagingSenderId:'243117067000',appId:'1:243117067000:web:a5320441bcbaed71e4490d',measurementId:'G-WMXPK3229'
+};
+const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
+const qs=new URLSearchParams(location.search); const requestedId=(qs.get('id')||'').trim();
+const esc=x=>String(x??'—').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const val=(...xs)=>{for(const x of xs){if(x!==undefined&&x!==null&&String(x).trim()!=='')return x}return '—'};
+const full=(r,p)=>{const a=[r?.[p+'First'],r?.[p+'Middle'],r?.[p+'Last']].filter(x=>x&&String(x).trim());return a.length?a.join(' '):val(r?.[p+'Name'],r?.[p])};
+const mask=x=>{x=String(x||'');return x.length>=4?'XXXX XXXX '+x.slice(-4):val(x)};
+function item(label,value){return `<div class="item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`}
+function setStatus(text,cls=''){const el=document.getElementById('status');el.className='status '+cls;el.textContent=text}
+function render(student,account){
+ const name=val(full(student,'student'),account?.name); const photo=val(student?.photoUrl,student?.photoURL,student?.photo,account?.photoUrl,account?.photo);
+ document.title=name+' | Child Profile';
+ document.getElementById('app').innerHTML=`
+ <div class="card hero">${photo!=='—'?`<img class="photo" src="${esc(photo)}" alt="Student Photo" onerror="this.outerHTML='<div class=avatar>STUDENT<br>PHOTOGRAPH</div>'">`:'<div class="avatar">STUDENT<br>PHOTOGRAPH</div>'}<div><h2>${esc(name)}</h2><span class="pill">Admission No.: ${esc(val(student.admissionNo,account?.admissionNo))}</span><span class="pill">Student ID: ${esc(val(student.studentId,account?.studentId))}</span><span class="pill">Class: ${esc(val(student.classJoining,student.class,student.presentClass,account?.classJoining))}</span><span class="pill">Status: ${esc(val(student.status,account?.active?'Active':'—'))}</span></div></div>
+ <div class="card section"><h3>Personal Information</h3><div class="grid">${item('Gender',val(student.gender,account?.gender))}${item('Date of Birth',val(student.dob,account?.dob))}${item('DOB in Words',student.dobWords)}${item('PEN Number',val(student.penNumber,student.penNo,student.pen,account?.penNo))}${item('APAAR ID',val(student.apaarId,student.apaarID,student.apaarNumber,account?.apaarId))}${item('Aadhaar',mask(student.aadhaarNumber,student.aadhaar,account?.aadhaarNumber))}${item('Category',val(student.category,account?.category))}${item('Blood Group',val(student.bloodGroup,account?.bloodGroup))}${item('Ration Card No.',student.rationNumber)}</div></div>
+ <div class="card section"><h3>Parents & Contact</h3><div class="grid">${item('Father',full(student,'father'))}${item('Mother',full(student,'mother'))}${item('Father Contact',val(student.fatherContact,account?.fatherContact))}${item('Mother Contact',val(student.motherContact,account?.motherContact))}${item('Residence',val(student.residence,student.address,account?.residence))}${item('Tehsil',student.tehsil)}${item('District',val(student.district,'Baramulla',account?.district))}</div></div>
+ <div class="card section"><h3>Academic Profile</h3><div class="grid">${item('Admission Date',student.admissionDate)}${item('Admission Class',val(student.classJoining,account?.classJoining))}${item('Present Class',val(student.presentClass,student.class,student.classJoining,account?.classJoining))}${item('Section',val(student.section,student.sec))}${item('Roll No.',val(student.rollNo,student.rollNumber))}${item('Academic Session',val(student.academicSession,student.session,'2026-27'))}</div></div>
+ <div class="card section"><h3>Bank Information</h3><div class="grid">${item('Bank Account',student.bankAccount)}${item('Bank Name',student.bankName)}${item('Branch',student.bankBranch)}${item('IFSC',student.ifsc)}</div></div>
+ <div class="card section"><h3>Firebase Linkage</h3><div class="grid">${item('Firebase Student UID',val(account?.studentUid,'Not linked'))}${item('Student Record ID',val(account?.studentRecordId,student?.id))}${item('Account Type',val(account?.accountType,'studentAccount'))}</div><div class="small">This page contains no sample student data. It displays the authenticated student's linked Student Master record.</div></div>`;
+}
+async function load(){
+ setStatus('Authenticating…');
+ onAuthStateChanged(auth,async user=>{
+  try{
+   if(!user){setStatus('Please sign in through the Student Portal first. No student data is loaded without authentication.','error');document.getElementById('app').innerHTML='<div class="card empty">No authenticated student account found.<br><br><button class="btn primary" onclick="location.href=\'Student-Portal.html\'">Open Student Portal</button></div>';return;}
+   const accountSnap=await getDoc(doc(db,'studentAccounts',user.uid));
+   if(!accountSnap.exists()){setStatus('This Firebase account has no studentAccounts record.','error');return;}
+   const account=accountSnap.data();
+   const recordId=String(account.studentRecordId||account.sourceAdmissionId||requestedId||'').trim();
+   if(!recordId){setStatus('Student account is not linked to a Student Master record (studentRecordId).','error');return;}
+   const studentSnap=await getDoc(doc(db,'students',recordId));
+   if(!studentSnap.exists()){setStatus('Linked Student Master record was not found: '+recordId,'error');return;}
+   const student={id:studentSnap.id,...studentSnap.data()};
+   // If an admin explicitly opened ?id=..., still require the authenticated user to have access.
+   if(requestedId && requestedId!==recordId){setStatus('The requested profile does not match this signed-in student's linked record.','error');return;}
+   render(student,account); setStatus('Real student profile loaded successfully.','ok');
+  }catch(e){console.error(e);setStatus('Unable to load the real student profile: '+(e?.message||e),'error');}
+ });
+}
+load();
+</script>
+</body></html>
