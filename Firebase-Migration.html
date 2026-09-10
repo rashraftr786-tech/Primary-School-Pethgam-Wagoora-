@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPS Pethgam Wagoora — Firebase Migration</title>
+<style>body{font-family:Arial;margin:0;background:#f4f8fc;color:#123}.wrap{max-width:900px;margin:auto;padding:20px}.card{background:#fff;border:1px solid #d8e2ec;border-radius:14px;padding:18px;margin:12px 0}button{padding:11px 14px;border:0;border-radius:9px;background:#0b5cab;color:#fff;font-weight:700;margin:4px;cursor:pointer}pre{white-space:pre-wrap;background:#0b1722;color:#e9f5ff;padding:14px;border-radius:9px;min-height:220px}.note{background:#fff8e7;border:1px solid #efd28a;padding:12px;border-radius:9px;line-height:1.5}</style></head>
+<body><main class="wrap"><h1>GPS Pethgam Wagoora — Firebase Migration</h1>
+<div class="card"><p>Sign in as the school administrator first. This migration copies existing browser data to Firestore and uploads existing Base64 student photographs to Cloudinary. It never deletes the local copy.</p><div class="note"><b>Photographs:</b> Firebase Storage is not used. Existing student photographs are uploaded to Cloudinary using the configured unsigned preset.</div>
+<button onclick="run()">Run Cloud Migration</button><button onclick="location.reload()">Refresh</button></div>
+<div class="card"><pre id="log">Ready.</pre></div></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script><script src="firebase-sync.js"></script><script src="cloudinary-upload.js"></script>
+<script>
+const log=m=>{document.getElementById('log').textContent+='\n'+m};
+async function run(){
+ document.getElementById('log').textContent='Starting…';
+ if(!GPSCloud.init()||!GPSCloud.db){log('Firebase could not initialize.');return}
+ if(!GPSCloud.signedIn()){log('No Firebase user is signed in. Open Student Account Setup, sign in as admin, then return here.');return}
+ const db=GPSCloud.db;
+ try{
+  const students=JSON.parse(localStorage.getItem('GPSPETHGAM_MASTER_ADMISSION_V1')||'[]'); let n=0, photoUploaded=0, photoFailed=0;
+  for(const r of students){
+   if(!r||!r.id)continue;
+   const x={...r};
+   if(String(x.photo||'').startsWith('data:')){delete x.photo;x.photoUploadPending=true;}
+   await db.collection('students').doc(r.id).set(x,{merge:true});
+   if(r.photo&&String(r.photo).startsWith('data:')){
+    try{
+     const up=await GPSCloudinary.uploadDataUrl(r.photo,{folder:(window.GPS_CLOUDINARY&&window.GPS_CLOUDINARY.folder)||'gps-pethgam/students',tags:['student',String(r.admissionNo||r.id)]});
+     await db.collection('students').doc(r.id).set({photoUrl:up.secureUrl,photoPublicId:up.publicId,photoUploadPending:false,photoUpdatedAt:new Date().toISOString()},{merge:true});
+     r.photo=up.secureUrl;r.photoUrl=up.secureUrl;r.photoPublicId=up.publicId;r.photoUploadPending=false;photoUploaded++;
+    }catch(e){photoFailed++;log('Photo failed '+r.id+': '+(e.message||e));}
+   }
+   n++;
+  }
+  localStorage.setItem('GPSPETHGAM_MASTER_ADMISSION_V1',JSON.stringify(students)); log('Student Master synced: '+n); log('Student photographs uploaded to Cloudinary: '+photoUploaded+(photoFailed?' (failed: '+photoFailed+')':''));
+  const noticeKeys=[['GPSPETHGAM_SCHOOL_NOTICES_V1','notices'],['GPSPETHGAM_SCHOOL_CALENDAR_V1','calendar'],['GPSPETHGAM_TIMETABLE_V1','timetables']];
+  for(const [key,col] of noticeKeys){const a=JSON.parse(localStorage.getItem(key)||'[]');let c=0;for(const x of a){if(x&&x.id){await db.collection(col).doc(String(x.id)).set({...x,updatedAt:new Date().toISOString()},{merge:true});c++}}log(col+': '+c)}
+  const att=JSON.parse(localStorage.getItem('GPSPETHGAM_ATTENDANCE_V1')||'{}');let ac=0;
+  for(const day of Object.values(att)){for(const [sid,v] of Object.entries(day.records||{})){const st=students.find(x=>String(x.studentId)===String(sid)||String(x.id)===String(sid));const rid=st?.id||sid;await db.collection('students').doc(rid).collection('attendance').doc(day.date).set({date:day.date,session:day.session,studentRecordId:rid,studentId:st?.studentId||sid,admissionNo:st?.admissionNo||'',status:v.status||'Not Marked',remarks:v.remarks||'',updatedAt:new Date().toISOString()},{merge:true});ac++}} log('attendance records: '+ac);
+  log('Migration finished. Local browser data was not deleted.');
+ }catch(e){console.error(e);log('FAILED: '+(e.message||e));}
+}
+</script></body></html>
