@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Student Account Setup — GPS Pethgam Wagoora</title>
+<style>
+:root{--blue:#0b5cab;--blue-dark:#084783;--green:#16833b;--red:#c62828;--ink:#153047;--muted:#66788a;--line:#dce6ef;--bg:#f4f8fc;--white:#fff;--shadow:0 8px 24px rgba(20,50,80,.10)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:#fff;padding:18px 16px;text-align:center;box-shadow:var(--shadow)}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:13px;opacity:.92}
+.container{width:min(900px,94%);margin:20px auto}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 15px;font-size:18px;color:var(--blue)}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
+input,select,button{width:100%;min-height:44px;border-radius:9px;border:1px solid #cbd8e4;padding:10px 12px;font-size:15px}
+input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,92,171,.12)}
+button{border:none;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;margin-top:14px}
+button:hover{background:var(--blue-dark)}
+button.green{background:var(--green)}
+button.red{background:var(--red)}
+button:disabled{opacity:.6;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.student-info{display:none;background:#f7fbff;border:1px solid var(--line);border-radius:10px;padding:15px;margin-top:15px}
+.info-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #e7eef5}
+.info-row:last-child{border-bottom:none}
+.info-label{font-weight:700;color:var(--muted)}
+.info-value{text-align:right;font-weight:600}
+.message{display:none;padding:12px;border-radius:9px;margin-top:12px;font-size:14px;line-height:1.45}
+.message.success{background:#e9f7ee;color:#12662e;border:1px solid #b9e1c5}
+.message.error{background:#fdecec;color:#a51f1f;border:1px solid #f0bcbc}
+.message.info{background:#eaf4ff;color:#07539c;border:1px solid #c5def6}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.warning{background:#fff8e7;border:1px solid #f2d58c;color:#795700;padding:12px;border-radius:9px;font-size:13px;line-height:1.5;margin-bottom:15px}
+.hidden{display:none!important}
+.logout{max-width:180px;margin:0 auto}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.card{padding:14px}.info-row{flex-direction:column;gap:3px}.info-value{text-align:left}header h1{font-size:19px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Student Account Setup</h1>
+<p>Government Primary School Pethgam Wagoora</p>
+</header>
+
+<div class="container">
+
+<section id="loginCard" class="card">
+<h2>Administrator Login</h2>
+<div class="warning">This page is for authorised school administration only. Student accounts are created using the Student ID / Admission Number and a password. Students do not need to enter an email address.</div>
+<label for="adminEmail">Administrator Email</label>
+<input id="adminEmail" type="email" autocomplete="username" placeholder="Enter administrator email">
+<label for="adminPassword">Administrator Password</label>
+<input id="adminPassword" type="password" autocomplete="current-password" placeholder="Enter administrator password">
+<button id="loginBtn">Sign In</button>
+<div id="loginMessage" class="message"></div>
+</section>
+
+<section id="setupArea" class="hidden">
+
+<div class="card">
+<h2>1. Select Student</h2>
+<label for="studentSearch">Search Student</label>
+<input id="studentSearch" type="search" placeholder="Search by name, Student ID or Admission No.">
+<label for="studentSelect">Student</label>
+<select id="studentSelect"><option value="">Loading students...</option></select>
+
+<div id="studentInfo" class="student-info">
+<div class="info-row"><span class="info-label">Student Name</span><span id="infoName" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Student ID</span><span id="infoStudentId" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Admission No.</span><span id="infoAdmissionNo" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Class</span><span id="infoClass" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Father's Name</span><span id="infoFather" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Mother's Name</span><span id="infoMother" class="info-value">—</span></div>
+</div>
+<div id="studentMessage" class="message"></div>
+</div>
+
+<div id="accountCard" class="card hidden">
+<h2>2. Create / Activate Student Account</h2>
+<div class="warning">The student will sign in using the Student ID or Admission Number shown below. Firebase uses an internal email address automatically; this internal address is not shown to the student.</div>
+
+<div class="grid">
+<div>
+<label>Student Login ID</label>
+<input id="loginIdPreview" readonly>
+</div>
+<div>
+<label>Internal Firebase Email</label>
+<input id="firebaseEmailPreview" readonly>
+</div>
+</div>
+
+<label for="studentPassword">Student Password</label>
+<input id="studentPassword" type="password" autocomplete="new-password" placeholder="Enter password for student">
+<label for="studentPassword2">Confirm Student Password</label>
+<input id="studentPassword2" type="password" autocomplete="new-password" placeholder="Re-enter password">
+<div class="small">Password must contain at least 6 characters. Do not share administrator credentials with students.</div>
+<button id="createAccountBtn" class="green">Create / Activate Student Account</button>
+<div id="accountMessage" class="message"></div>
+</div>
+
+<div id="resultCard" class="card hidden">
+<h2>Account Status</h2>
+<div id="resultMessage" class="message"></div>
+<div id="resultDetails" class="student-info">
+<div class="info-row"><span class="info-label">Student</span><span id="resultName" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Student Login ID</span><span id="resultLoginId" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Firebase UID</span><span id="resultUid" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Student Master Record ID</span><span id="resultRecordId" class="info-value">—</span></div>
+<div class="info-row"><span class="info-label">Account Status</span><span id="resultStatus" class="info-value">Active</span></div>
+</div>
+</div>
+
+<div class="card">
+<button id="logoutBtn" class="red logout">Sign Out</button>
+</div>
+
+</section>
+</div>
+
+<footer>GPS Pethgam Wagoora · UDISE Code: 01022202207</footer>
+
+<script type="module">
+import {initializeApp,getApps,getApp} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import {getFirestore,collection,getDocs,doc,getDoc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+/* Replace these with the exact Firebase configuration used by your Student Portal. */
+const firebaseConfig={
+apiKey:"YOUR_API_KEY",
+authDomain:"YOUR_PROJECT.firebaseapp.com",
+projectId:"YOUR_PROJECT_ID",
+storageBucket:"YOUR_PROJECT.firebasestorage.app",
+messagingSenderId:"YOUR_MESSAGING_SENDER_ID",
+appId:"YOUR_APP_ID"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+const secondaryAppName="StudentAccountCreationApp";
+const secondaryApp=getApps().some(a=>a.name===secondaryAppName)?getApp(secondaryAppName):initializeApp(firebaseConfig,secondaryAppName);
+const secondaryAuth=getAuth(secondaryApp);
+
+const SCHOOL_ADMIN_UID="hVqdwKh0aYP1Za9wEMoiNOPsucf1";
+
+const loginCard=document.getElementById("loginCard");
+const setupArea=document.getElementById("setupArea");
+const adminEmail=document.getElementById("adminEmail");
+const adminPassword=document.getElementById("adminPassword");
+const loginBtn=document.getElementById("loginBtn");
+const loginMessage=document.getElementById("loginMessage");
+const studentSearch=document.getElementById("studentSearch");
+const studentSelect=document.getElementById("studentSelect");
+const studentInfo=document.getElementById("studentInfo");
+const studentMessage=document.getElementById("studentMessage");
+const accountCard=document.getElementById("accountCard");
+const loginIdPreview=document.getElementById("loginIdPreview");
+const firebaseEmailPreview=document.getElementById("firebaseEmailPreview");
+const studentPassword=document.getElementById("studentPassword");
+const studentPassword2=document.getElementById("studentPassword2");
+const createAccountBtn=document.getElementById("createAccountBtn");
+const accountMessage=document.getElementById("accountMessage");
+const resultCard=document.getElementById("resultCard");
+const resultMessage=document.getElementById("resultMessage");
+const resultDetails=document.getElementById("resultDetails");
+const logoutBtn=document.getElementById("logoutBtn");
+
+let allStudents=[];
+let selectedStudent=null;
+
+function showMessage(element,text,type="info"){
+element.textContent=text;
+element.className="message "+type;
+element.style.display="block";
+}
+function hideMessage(element){element.style.display="none"}
+
+function valueOf(obj,...keys){
+for(const key of keys){
+if(obj&&obj[key]!==undefined&&obj[key]!==null&&String(obj[key]).trim()!=="")return String(obj[key]).trim();
+}
+return "";
+}
+
+function fullName(student){
+return valueOf(student,"studentName","name","fullName","Student Name");
+}
+function fatherName(student){
+return valueOf(student,"fatherName","father","father_name","Father Name","Father's Name");
+}
+function motherName(student){
+return valueOf(student,"motherName","mother","mother_name","Mother Name","Mother's Name");
+}
+
+function getStudentLoginId(student){
+return valueOf(student,"studentId","schoolStudentId","schoolStudentID","School STC ID","stcId","admissionNo","admissionNumber","admNo");
+}
+
+function getAdmissionNo(student){
+return valueOf(student,"admissionNo","admissionNumber","admNo","Admission No","Admission Number");
+}
+
+function emailFor(id){
+const k=String(id).trim().toLowerCase().replace(/[^a-z0-9._-]/g,"-");
+return `student-${k}@student.pethgam.local`;
+}
+
+async function verifyAdmin(user){
+if(!user)throw new Error("Administrator is not signed in.");
+if(user.uid!==SCHOOL_ADMIN_UID)throw new Error("Access denied. This Firebase account is not authorised as school administrator.");
+const adminSnap=await getDoc(doc(db,"admins",user.uid));
+if(!adminSnap.exists())throw new Error("Administrator profile was not found in Firestore.");
+const adminData=adminSnap.data();
+if(adminData.active===false)throw new Error("This administrator account is inactive.");
+return true;
+}
+
+loginBtn.addEventListener("click",async()=>{
+hideMessage(loginMessage);
+const email=adminEmail.value.trim();
+const password=adminPassword.value;
+if(!email||!password){
+showMessage(loginMessage,"Please enter administrator email and password.","error");
+return;
+}
+loginBtn.disabled=true;
+loginBtn.textContent="Signing In...";
+try{
+const credential=await signInWithEmailAndPassword(auth,email,password);
+await verifyAdmin(credential.user);
+loginCard.classList.add("hidden");
+setupArea.classList.remove("hidden");
+await loadStudents();
+}catch(error){
+console.error("Administrator login error:",error);
+let message="Unable to sign in.";
+if(error.code==="auth/invalid-credential")message="Invalid administrator email or password.";
+else if(error.code==="auth/user-not-found")message="Administrator account was not found.";
+else if(error.code==="auth/wrong-password")message="Incorrect administrator password.";
+else if(error.code==="permission-denied")message="Firebase permission denied while checking administrator profile.";
+else if(error.message)message=error.message;
+showMessage(loginMessage,message,"error");
+}finally{
+loginBtn.disabled=false;
+loginBtn.textContent="Sign In";
+}
+});
+
+async function loadStudents(){
+studentSelect.innerHTML=`<option value="">Loading students...</option>`;
+hideMessage(studentMessage);
+try{
+const snapshot=await getDocs(collection(db,"students"));
+allStudents=[];
+snapshot.forEach(snap=>{
+allStudents.push({id:snap.id,...snap.data()});
+});
+allStudents.sort((a,b)=>fullName(a).localeCompare(fullName(b)));
+renderStudentList(allStudents);
+if(!allStudents.length)showMessage(studentMessage,"No Student Master records were found in the students collection.","error");
+}catch(error){
+console.error("Student loading error:",error);
+let message="Unable to load Student Master records.";
+if(error.code==="permission-denied")message="Firebase permission denied while loading students. Please check the Firestore rules and administrator UID.";
+else if(error.message)message=error.message;
+showMessage(studentMessage,message,"error");
+}
+}
+
+function renderStudentList(list){
+studentSelect.innerHTML=`<option value="">Select a student</option>`;
+list.forEach(student=>{
+const option=document.createElement("option");
+option.value=student.id;
+const name=fullName(student)||"Unnamed Student";
+const loginId=getStudentLoginId(student);
+const admissionNo=getAdmissionNo(student);
+let label=name;
+if(loginId)label+=` — ${loginId}`;
+else if(admissionNo)label+=` — Adm. ${admissionNo}`;
+option.textContent=label;
+studentSelect.appendChild(option);
+});
+}
+
+studentSearch.addEventListener("input",()=>{
+const search=studentSearch.value.trim().toLowerCase();
+if(!search){renderStudentList(allStudents);return;}
+const filtered=allStudents.filter(student=>{
+const text=[fullName(student),getStudentLoginId(student),getAdmissionNo(student),valueOf(student,"fatherName","father")].join(" ").toLowerCase();
+return text.includes(search);
+});
+renderStudentList(filtered);
+});
+
+studentSelect.addEventListener("change",()=>{
+const id=studentSelect.value;
+selectedStudent=allStudents.find(student=>student.id===id)||null;
+if(!selectedStudent){
+studentInfo.style.display="none";
+accountCard.classList.add("hidden");
+return;
+}
+displayStudent(selectedStudent);
+});
+
+function displayStudent(student){
+const loginId=getStudentLoginId(student);
+const admissionNo=getAdmissionNo(student);
+
+document.getElementById("infoName").textContent=fullName(student)||"—";
+document.getElementById("infoStudentId").textContent=loginId||"—";
+document.getElementById("infoAdmissionNo").textContent=admissionNo||"—";
+document.getElementById("infoClass").textContent=valueOf(student,"classJoining","class","className","grade")||"—";
+document.getElementById("infoFather").textContent=fatherName(student)||"—";
+document.getElementById("infoMother").textContent=motherName(student)||"—";
+
+studentInfo.style.display="block";
+loginIdPreview.value=loginId||admissionNo||"";
+firebaseEmailPreview.value=loginId?emailFor(loginId):"";
+accountCard.classList.remove("hidden");
+hideMessage(accountMessage);
+resultCard.classList.add("hidden");
+
+if(!loginId){
+showMessage(accountMessage,"This student does not have a Student ID or Admission Number. Please add one in the Student Master before creating the account.","error");
+createAccountBtn.disabled=true;
+}else{
+createAccountBtn.disabled=false;
+}
+}
+
+createAccountBtn.addEventListener("click",async()=>{
+hideMessage(accountMessage);
+if(!selectedStudent){
+showMessage(accountMessage,"Please select a student first.","error");
+return;
+}
+
+const loginId=getStudentLoginId(selectedStudent);
+const admissionNo=getAdmissionNo(selectedStudent);
+
+if(!loginId){
+showMessage(accountMessage,"Student ID / Admission Number is missing.","error");
+return;
+}
+
+const password=studentPassword.value;
+const password2=studentPassword2.value;
+
+if(!password){
+showMessage(accountMessage,"Please enter a student password.","error");
+return;
+}
+if(password.length<6){
+showMessage(accountMessage,"Student password must contain at least 6 characters.","error");
+return;
+}
+if(password!==password2){
+showMessage(accountMessage,"The two passwords do not match.","error");
+return;
+}
+
+const studentEmail=emailFor(loginId);
+createAccountBtn.disabled=true;
+createAccountBtn.textContent="Creating Account...";
+
+try{
+const credential=await createUserWithEmailAndPassword(secondaryAuth,studentEmail,password);
+const studentUid=credential.user.uid;
+
+const profile={
+studentUid:studentUid,
+studentRecordId:selectedStudent.id,
+sourceAdmissionId:selectedStudent.id||"",
+studentId:valueOf(selectedStudent,"studentId","schoolStudentId","schoolStudentID","School STC ID","stcId"),
+admissionNo:admissionNo,
+loginId:loginId,
+name:fullName(selectedStudent),
+classJoining:valueOf(selectedStudent,"classJoining","class","className","grade"),
+dob:valueOf(selectedStudent,"dob","dateOfBirth","DOB"),
+gender:valueOf(selectedStudent,"gender","Gender"),
+fatherName:fatherName(selectedStudent),
+motherName:motherName(selectedStudent),
+fatherContact:valueOf(selectedStudent,"fatherContact","fatherPhone","fatherMobile"),
+motherContact:valueOf(selectedStudent,"motherContact","motherPhone","motherMobile"),
+residence:valueOf(selectedStudent,"residence","address","Address"),
+district:valueOf(selectedStudent,"district","District"),
+category:valueOf(selectedStudent,"category","Category"),
+bloodGroup:valueOf(selectedStudent,"bloodGroup","bloodgroup","Blood Group"),
+photo:valueOf(selectedStudent,"photo","photoUrl","photoURL","image","imageUrl"),
+active:true,
+accountType:"studentAccount",
+firebaseEmail:studentEmail,
+createdAt:serverTimestamp(),
+updatedAt:serverTimestamp()
+};
+
+await setDoc(doc(db,"studentAccounts",studentUid),profile);
+
+showMessage(accountMessage,"Student account created successfully. The student can now sign in using the Student ID / Admission Number and the password you set.","success");
+
+displayResult(selectedStudent,studentUid,loginId);
+studentPassword.value="";
+studentPassword2.value="";
+
+}catch(error){
+console.error("Student account creation error:",error);
+let message="Unable to create the student account.";
+if(error.code==="auth/email-already-in-use")message="A Firebase Authentication account already exists for this Student ID / Admission Number. If you want to reset its password, use the password-reset procedure rather than creating another account.";
+else if(error.code==="auth/invalid-email")message="The generated internal Firebase email is invalid. Check the Student ID / Admission Number.";
+else if(error.code==="auth/weak-password")message="The password is too weak. Please use at least 6 characters.";
+else if(error.code==="permission-denied")message="Firebase permission denied while saving the student account. Check your Firestore rules and administrator UID.";
+else if(error.code==="auth/network-request-failed")message="Network error. Please check the internet connection and try again.";
+else if(error.message)message=error.message;
+showMessage(accountMessage,message,"error");
+}finally{
+createAccountBtn.disabled=!selectedStudent||!getStudentLoginId(selectedStudent);
+createAccountBtn.textContent="Create / Activate Student Account";
+}
+});
+
+function displayResult(student,uid,loginId){
+resultCard.classList.remove("hidden");
+resultMessage.textContent="Student account is active and linked to the Student Master record.";
+resultMessage.className="message success";
+resultMessage.style.display="block";
+resultDetails.style.display="block";
+document.getElementById("resultName").textContent=fullName(student)||"—";
+document.getElementById("resultLoginId").textContent=loginId||"—";
+document.getElementById("resultUid").textContent=uid||"—";
+document.getElementById("resultRecordId").textContent=student.id||"—";
+document.getElementById("resultStatus").textContent="Active";
+}
+
+logoutBtn.addEventListener("click",async()=>{
+try{
+await signOut(auth);
+await signOut(secondaryAuth);
+}catch(error){console.error("Logout error:",error);}
+setupArea.classList.add("hidden");
+loginCard.classList.remove("hidden");
+adminPassword.value="";
+studentSearch.value="";
+studentSelect.innerHTML=`<option value="">Select a student</option>`;
+studentInfo.style.display="none";
+accountCard.classList.add("hidden");
+resultCard.classList.add("hidden");
+selectedStudent=null;
+});
+
+onAuthStateChanged(auth,async user=>{
+if(!user){
+loginCard.classList.remove("hidden");
+setupArea.classList.add("hidden");
+return;
+}
+try{
+await verifyAdmin(user);
+loginCard.classList.add("hidden");
+setupArea.classList.remove("hidden");
+await loadStudents();
+}catch(error){
+console.error("Existing authentication is not authorised:",error);
+await signOut(auth);
+loginCard.classList.remove("hidden");
+setupArea.classList.add("hidden");
+showMessage(loginMessage,error.message||"This account is not authorised.","error");
+}
+});
+</script>
+</body>
+</html>
