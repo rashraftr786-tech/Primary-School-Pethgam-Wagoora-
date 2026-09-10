@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Government Primary School Pethgam Wagoora — Editable Letterhead</title>
+<style>
+:root{
+  --navy:#12324a;
+  --teal:#164b52;
+  --gold:#c79a3b;
+  --light:#f5f7f8;
+  --line:#b9c3c8;
+  --text:#17242c;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:#dfe4e7;color:var(--text);
+  font-family:"Segoe UI",Arial,sans-serif;
+}
+.page{
+  width:210mm;min-height:297mm;margin:0 auto;background:#fff;
+  position:relative;box-shadow:0 3px 18px #0002;overflow:hidden;
+}
+.top-accent{height:7px;background:linear-gradient(90deg,var(--navy) 0 47%,var(--gold) 47% 53%,var(--teal) 53% 100%)}
+.header{padding:8mm 15mm 4mm;position:relative}
+.header-grid{display:grid;grid-template-columns:1fr 38mm 1fr;gap:6mm;align-items:center}
+.english{text-align:left}
+.urdu{text-align:right;direction:rtl}
+.school-name{font-weight:800;font-size:19px;letter-spacing:.35px;color:var(--navy);line-height:1.15;text-transform:uppercase}
+.school-sub{font-weight:700;font-size:16px;color:var(--teal);margin-top:3px}
+.address{font-size:10.5px;line-height:1.45;color:#4b5961;margin-top:5px}
+.urdu .school-name{font-family:"Noto Nastaliq Urdu","Noto Sans Arabic","Urdu Typesetting",serif;font-size:20px}
+.urdu .school-sub{font-family:"Noto Nastaliq Urdu","Noto Sans Arabic","Urdu Typesetting",serif;font-size:19px}
+.logo{
+  width:35mm;height:35mm;border:2px solid var(--gold);border-radius:50%;
+  margin:auto;background:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px #0002;overflow:hidden;
+}
+.logo img{width:91%;height:91%;object-fit:contain}
+.logo-fallback{font-size:9px;text-align:center;color:#68757c;font-weight:700}
+.rule{height:2px;background:var(--gold);margin:4mm 0 0}
+.contact{
+  margin:0 15mm;padding:2.7mm 4mm;border-radius:3px;background:var(--navy);
+  color:white;display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;gap:8px;flex-wrap:wrap;
+}
+.contact b{font-weight:700}
+.udise{border:1px solid #ffffff88;padding:1px 6px;border-radius:3px}
+.document{padding:7mm 15mm 0}
+.meta-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:7mm;margin-bottom:6mm;
+}
+.field{display:flex;align-items:flex-end;gap:5px;font-size:11.5px}
+.field label{font-weight:800;color:var(--navy);white-space:nowrap}
+input,textarea{
+  font:inherit;color:var(--text);border:0;border-bottom:1px solid #6c7880;
+  outline:none;background:#fff;padding:2px 3px;border-radius:0;
+}
+input:focus,textarea:focus{border-bottom:2px solid var(--gold);background:#fffdf6}
+.line-input{flex:1;min-width:0}
+.full-field{margin:5mm 0}
+.subject{font-size:12px}
+.subject input{font-weight:700;flex:1}
+.body-area{
+  min-height:165mm;margin-top:7mm;padding:2mm 1mm;
+  font-family:Georgia,"Times New Roman",serif;font-size:13.5px;line-height:1.75;
+}
+.body-area[contenteditable="true"]:focus{outline:1px dashed #c79a3b;outline-offset:5px}
+.signature{
+  display:grid;grid-template-columns:1fr 1fr;gap:20mm;margin-top:8mm;font-size:11px
+}
+.signature .sig{text-align:center;border-top:1px solid transparent;padding-top:14mm}
+.sig strong{color:var(--navy)}
+.footer{
+  position:absolute;left:15mm;right:15mm;bottom:0;height:21mm;
+  border-top:3px solid var(--gold);background:linear-gradient(135deg,#f7f8f9 0 72%,#e8eef0 72%);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:9.5px;color:#516069;padding:4mm 14mm;
+}
+.footer strong{color:var(--navy)}
+.address-field{width:100%;min-height:23mm;border:1px solid #aab5bb;border-radius:3px;padding:3mm 3mm;resize:vertical;line-height:1.55;background:#fff}
+.address-field:focus{outline:none;border:1.5px solid var(--gold);background:#fffdf6}
+.download-bar{position:fixed;right:18px;bottom:18px;z-index:100}
+.download-btn{border:0;border-radius:7px;background:var(--navy);color:#fff;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px #0003}
+.download-btn:hover{background:var(--teal)}
+@media print{.download-bar{display:none}}
+.watermark-logo{
+  position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);
+  width:105mm;height:105mm;opacity:.055;pointer-events:none;z-index:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.watermark-logo img{
+  width:100%;height:100%;object-fit:contain;
+}
+.document,.footer,.contact,.header{z-index:1}
+@media print{
+  @page{size:A4;margin:0}
+  body{background:#fff}
+  .page{margin:0;box-shadow:none;width:210mm;height:297mm;min-height:297mm}
+  input,textarea{background:transparent}
+}
+@media(max-width:900px){
+ .page{transform-origin:top left;margin:0;width:210mm}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top-accent"></div>
+
+  <header class="header">
+    <div class="header-grid">
+      <div class="english">
+        <div class="school-name">Government Primary School</div>
+        <div class="school-sub">Pethgam Wagoora</div>
+        <div class="address">Zone: Wagoora, District: Baramulla<br>Jammu &amp; Kashmir, India - 193109</div>
+      </div>
+
+      <div class="logo">
+        <img src="new-logo.png" alt="School Logo"
+             onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block';">
+        <div id="logoFallback" class="logo-fallback" style="display:none">SCHOOL<br>LOGO</div>
+      </div>
+
+      <div class="urdu">
+        <div class="school-name">گورنمنٹ پرائمری سکول</div>
+        <div class="school-sub">پیٹھگام واگورہ</div>
+        <div class="address">زون: واگورہ، ضلع: بارہمولہ<br>جموں و کشمیر - ۱۹۳۱۰۹</div>
+      </div>
+    </div>
+    <div class="rule"></div>
+  </header>
+
+  <div class="contact">
+    <span>☎ <b>+91 9596449881</b></span>
+    <span>✉ <b>pspethgam@gmail.com</b></span>
+    <span>UDISE Code: <span class="udise"><b>01022202207</b></span></span>
+  </div>
+
+  <main class="document">
+    <div class="meta-grid">
+      <div class="field"><label>No.:</label><input class="line-input" type="text" placeholder="Enter reference / letter number"></div>
+      <div class="field"><label>Date:</label><input class="line-input" type="text" placeholder="DD/MM/YYYY"></div>
+    </div>
+
+    <div class="full-field">
+      <label style="display:block;font-size:11.5px;font-weight:800;color:var(--navy);margin-bottom:3px;">Address:</label>
+      <textarea class="address-field" rows="3" placeholder="Enter recipient name, designation and complete address"></textarea>
+    </div>
+
+    <div class="full-field field subject">
+      <label>Subject:</label>
+      <input class="line-input" type="text" placeholder="Enter subject of the letter">
+    </div>
+
+    <div class="body-area" contenteditable="true">
+      <p><b>Sir/Madam,</b></p>
+      <p>Type the main contents of the official communication here. This area is editable and can be expanded as required.</p>
+      <p>Yours faithfully,</p>
+    </div>
+
+    <div class="signature">
+      <div class="sig"></div>
+      <div class="sig"><strong>Head of Institution</strong><br>Government Primary School Pethgam Wagoora</div>
+    </div>
+  </main>
+
+  <div class="watermark-logo" aria-hidden="true">
+    <img src="new-logo.png" alt="">
+  </div>
+
+  <footer class="footer">
+    <span><strong>Government Primary School Pethgam Wagoora</strong> &nbsp;•&nbsp; Wagoora Babareshi Road, Near Zonal Education Office Wagoora &nbsp;•&nbsp; District Baramulla, J&amp;K - 193109</span>
+  </footer>
+</div>
+
+<div class="download-bar">
+  <button class="download-btn" type="button" onclick="downloadLetterhead()">⬇ Download Letter</button>
+</div>
+
+<script>
+function downloadLetterhead(){
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelectorAll('.download-bar').forEach(el => el.remove());
+  clone.querySelectorAll('input, textarea').forEach(el => {
+    if (el.tagName === 'TEXTAREA') {
+      el.textContent = el.value;
+    } else {
+      el.setAttribute('value', el.value);
+    }
+  });
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'GPS_Pethgam_Wagoora_Letter.html';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+</script>
+</body>
+</html>
