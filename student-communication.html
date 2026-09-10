@@ -23,7 +23,20 @@
 const $=id=>document.getElementById(id); let auth,db,students=[];
 function show(el,text,ok){el.textContent=text;el.style.display='block';el.className='msg '+(ok?'ok':'err')}
 async function init(){try{if(!firebase.apps.length)firebase.initializeApp(window.GPS_FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(async u=>{if(!u){$('gate').style.display='block';$('app').style.display='none';return}try{await verifyAdmin(u);$('gate').style.display='none';$('app').style.display='block';await loadStudents();await loadMessages()}catch(e){await auth.signOut();show($('loginMsg'),e.message||'Admin authorization failed.',false)}})}catch(e){show($('loginMsg'),'Firebase initialization failed: '+e.message,false)}}
-async function verifyAdmin(u){const s=await db.collection('admins').doc(u.uid).get();if(!s.exists||s.data().role!=='admin'||s.data().active!==true)throw new Error('This account is not an active school administrator.')}
+async function verifyAdmin(u){
+ if(!u)throw new Error('Administrator is not signed in.');
+ const ref=db.collection('admins').doc(u.uid);
+ let s=await ref.get();
+ const email=String(u.email||'').trim().toLowerCase();
+ const allowed=(window.GPS_ADMIN_EMAILS||[]).map(x=>String(x).trim().toLowerCase());
+ if(allowed.includes(email)){
+  await ref.set({name:u.displayName||'School Administrator',email:u.email||'',role:'admin',active:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+  s=await ref.get();
+ }
+ const d=s.exists?(s.data()||{}):{};
+ if(!s.exists||String(d.role||'').toLowerCase()!=='admin'||d.active!==true)throw new Error('This account is not an active school administrator.');
+ return true;
+}
 async function loadStudents(){const snap=await db.collection('students').get();students=snap.docs.map(d=>({id:d.id,...d.data()}));students.sort((a,b)=>nameOf(a).localeCompare(nameOf(b)));$('studentSelect').innerHTML=students.map(s=>'<option value="'+esc(s.id)+'">'+esc(nameOf(s))+' — '+esc(s.admissionNo||s.studentId||'')+'</option>').join('');const classes=[...new Set(students.map(s=>String(s.classJoining||s.class||s.presentClass||'').trim()).filter(Boolean))].sort();$('classSelect').innerHTML=classes.map(c=>'<option>'+esc(c)+'</option>').join('')}
 function nameOf(s){return s.name||s.studentName||[s.studentFirst,s.studentMiddle,s.studentLast].filter(Boolean).join(' ')||'Student'}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}

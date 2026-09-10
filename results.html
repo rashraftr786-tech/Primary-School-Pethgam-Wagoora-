@@ -648,7 +648,13 @@
             if (!user) throw new Error('Administrator is not signed in.');
             var ref = firebase.firestore().collection('admins').doc(user.uid);
             var snap = await ref.get();
-            if (!snap.exists) throw new Error('This Firebase account is not registered as an active school administrator. Open Student Account Setup once to bootstrap the administrator account.');
+            var email = String(user.email || '').trim().toLowerCase();
+            var allowedEmails = (window.GPS_ADMIN_EMAILS || []).map(function(x){ return String(x).trim().toLowerCase(); });
+            if (allowedEmails.indexOf(email) !== -1) {
+                await ref.set({name:user.displayName || 'School Administrator',email:user.email || '',role:'admin',active:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+                snap = await ref.get();
+            }
+            if (!snap.exists) throw new Error('This Firebase account is not registered as an active school administrator.');
             var data = snap.data() || {};
             if (String(data.role || '').toLowerCase() !== 'admin' || data.active !== true) throw new Error('This Firebase account is not an active school administrator.');
             return true;

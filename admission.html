@@ -1051,9 +1051,18 @@ body {
   async function verify(user){
     if(!user){deny();return;}
     try{
-      const snap=await firebase.firestore().collection('admins').doc(user.uid).get();
-      const role=snap.exists ? String(snap.data().role||'').toLowerCase() : '';
-      if(role!=='admin'){
+      const ref=firebase.firestore().collection('admins').doc(user.uid);
+      let snap=await ref.get();
+      const email=String(user.email||'').trim().toLowerCase();
+      const allowedEmails=(window.GPS_ADMIN_EMAILS||[]).map(x=>String(x).trim().toLowerCase());
+      // The configured bootstrap administrator may create OR repair their own admin record.
+      if(allowedEmails.includes(email)){
+        await ref.set({name:user.displayName||'School Administrator',email:user.email||'',role:'admin',active:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+        snap=await ref.get();
+      }
+      const data=snap.exists ? (snap.data()||{}) : {};
+      const role=String(data.role||'').toLowerCase();
+      if(role!=='admin' || data.active!==true){
         await firebase.auth().signOut();
         showMsg('Access denied. This account is not authorized as Admin/HOI.');
         deny(); return;

@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isBootstrapAdmin() {
+      return signedIn() && request.auth.token.email == "rashraftr786@gmail.com";
+    }
+    function isSchoolAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "admin"
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+    function account() { return get(/databases/$(database)/documents/studentAccounts/$(request.auth.uid)).data; }
+    function linkedStudent(studentId) {
+      return signedIn() && exists(/databases/$(database)/documents/studentAccounts/$(request.auth.uid))
+        && (account().studentRecordId == studentId || account().sourceAdmissionId == studentId);
+    }
+
+    match /admins/{id} {
+      allow read: if signedIn() && (id == request.auth.uid || isSchoolAdmin());
+      allow create: if id == request.auth.uid && isBootstrapAdmin()
+        && request.resource.data.role == "admin" && request.resource.data.active == true
+        && request.resource.data.email == request.auth.token.email;
+      // The configured bootstrap administrator may also repair an existing malformed/inactive
+      // self document. This is limited to that exact Auth email and own UID.
+      allow update: if (isSchoolAdmin() || (id == request.auth.uid && isBootstrapAdmin()))
+        && request.resource.data.role == "admin" && request.resource.data.active == true
+        && request.resource.data.email == request.auth.token.email;
+      allow delete: if isSchoolAdmin();
+    }
+
+    match /studentAccounts/{id} {
+      allow read: if isSchoolAdmin() || (signedIn() && request.auth.uid == id);
+      allow create, update: if isSchoolAdmin();
+      allow delete: if isSchoolAdmin();
+    }
+
+    // Minimal alias map: admission number -> canonical login ID. No student profile data is stored here.
+    match /studentLoginIndex/{admissionNo} {
+      allow read: if true;
+      allow write: if isSchoolAdmin();
+    }
+
+    match /students/{id} {
+      allow read: if isSchoolAdmin() || linkedStudent(id);
+      allow write: if isSchoolAdmin();
+    }
+    match /students/{id}/{sub=**} {
+      allow read: if isSchoolAdmin() || linkedStudent(id);
+      allow write: if isSchoolAdmin();
+    }
+
+    match /marksheets/{admissionNo} {
+      allow read: if isSchoolAdmin() || (signedIn() && resource.data.studentRecordId != null && linkedStudent(resource.data.studentRecordId));
+      allow write: if isSchoolAdmin();
+    }
+
+    match /notices/{id} { allow read: if signedIn(); allow write: if isSchoolAdmin(); }
+    match /calendar/{id} { allow read: if signedIn(); allow write: if isSchoolAdmin(); }
+    match /timetables/{id} { allow read: if signedIn(); allow write: if isSchoolAdmin(); }
+    match /libraryBooks/{id} { allow read, write: if isSchoolAdmin(); }
+    match /libraryTransactions/{id} { allow read, write: if isSchoolAdmin(); }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}
