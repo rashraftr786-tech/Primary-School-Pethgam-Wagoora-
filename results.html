@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Pethgam Wagoora – Professional Marksheet System</title>
+    <title>GPS Pethgam Wagoora – Results & Marksheet Management</title>
     <script src="https://cdn.tailwindcss.com">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
@@ -12,16 +12,16 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
     </script>
-
-    <!-- GPS Firebase configuration (new school project) -->
-    <script src="firebase-config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- Firebase SDKs (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js">
     </script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js">
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js">
     </script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js">
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js">
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js">
+    <script src="firebase-config.js"></script>
     </script>
 
     <style>
@@ -71,7 +71,7 @@
             transform: translate(-50%, -50%) rotate(-30deg);
             width: 400px;
             height: 400px;
-            background-image: url('new-new-logo.png');
+            background-image: url('new-logo.png');
             background-repeat: no-repeat;
             background-position: center;
             background-size: contain;
@@ -312,6 +312,16 @@
         </style>
 </head>
 <body class="bg-gray-100 p-4">
+    <div id="gpsAdminGate" class="fixed inset-0 z-[9999] bg-slate-900/95 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold text-slate-900">🔐 Results & Marksheet — Admin Sign In</h2>
+        <p class="text-sm text-slate-600 mt-2">Sign in with the school administrator account. Results and marksheet data cannot be edited by students.</p>
+        <input id="resultAdminEmail" type="email" class="w-full border rounded-lg p-3 mt-4" placeholder="Administrator email" autocomplete="username">
+        <input id="resultAdminPassword" type="password" class="w-full border rounded-lg p-3 mt-3" placeholder="Password" autocomplete="current-password">
+        <button id="resultAdminLogin" class="w-full bg-indigo-600 text-white rounded-lg p-3 mt-4 font-bold">Sign In</button>
+        <div id="resultAdminMsg" class="text-sm text-red-600 mt-3"></div>
+      </div>
+    </div>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
@@ -326,8 +336,11 @@
                 <button onclick="previewSelectedMarksheet()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 transition">
                     👁 Preview Selected
                 </button>
-                <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 transition">
-                    🖨️ Print All (PDF)
+                <button onclick="downloadSelectedPDF()" class="bg-purple-600 text-white px-6 py-2 rounded font-bold hover:bg-purple-700 transition">
+                    📄 Download Selected PDF
+                </button>
+                <button onclick="printAllMarksheets()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 transition">
+                    🖨️ Print All Marksheets
                 </button>
                 <button onclick="saveAllToFirestore()" class="bg-emerald-600 text-white px-6 py-2 rounded font-bold hover:bg-emerald-700 transition" id="saveAllBtn">
                     ☁️ Save All to Firestore
@@ -335,27 +348,13 @@
             </div>
         </div>
 
-        <!-- Firestore Config -->
+        <!-- Firebase status -->
         <div class="config-card">
             <div class="flex justify-between items-center mb-2">
-                <span class="font-bold text-indigo-800">🔥 Firestore Configuration</span>
-                <button onclick="toggleFirestoreConfig()" class="text-sm text-indigo-600 underline">Toggle</button>
+                <span class="font-bold text-indigo-800">🔥 Cloud Result Database</span>
+                <span id="firebaseStatus" class="text-sm font-semibold text-slate-500">Checking…</span>
             </div>
-            <div id="firestoreConfigArea">
-                <div class="config-row">
-                    <div>
-                        <label>Project ID</label>
-                        <input id="fbProjectId" placeholder="your-project-id" value="pry-school-pethgam-wagoora" />
-                    </div>
-                    <div>
-                        <label>Collection Name</label>
-                        <input id="fbCollection" placeholder="marksheets" value="marksheets" />
-                    </div>
-                </div>
-                <div class="text-xs text-slate-500 mt-2">
-                    ⚠️ Make sure Firestore security rules allow writes. For production, use environment variables.
-                </div>
-            </div>
+            <div class="text-xs text-slate-500">Results are stored in the school Firebase project under the fixed <b>marksheets</b> collection. The project ID and collection are no longer editable from this page.</div>
         </div>
 
         <!-- Upload Excel -->
@@ -649,11 +648,46 @@
         // ============================================================
         // 3. FIRESTORE INIT
         // ============================================================
-        function getFirestoreConfig() {
-            var cfg = window.GPS_FIREBASE_CONFIG || {};
-            var projectId = document.getElementById('fbProjectId').value.trim() || cfg.projectId || 'gps-pethgam-wagoora-portal';
-            var collection = document.getElementById('fbCollection').value.trim() || 'marksheets';
-            return { projectId: projectId, collection: collection };
+        async function ensureResultsAdmin(user) {
+            if (!user) throw new Error('Administrator is not signed in.');
+            var ref = firebase.firestore().collection('admins').doc(user.uid);
+            var snap = await ref.get();
+            if (!snap.exists) throw new Error('This Firebase account is not registered as an active school administrator. Open Student Account Setup once to bootstrap the administrator account.');
+            var data = snap.data() || {};
+            if (String(data.role || '').toLowerCase() !== 'admin' || data.active !== true) throw new Error('This Firebase account is not an active school administrator.');
+            return true;
+        }
+
+        function showResultsGate(message) {
+            var gate=document.getElementById('gpsAdminGate');
+            if(gate) gate.style.display='flex';
+            var m=document.getElementById('resultAdminMsg');
+            if(m) m.textContent=message||'';
+        }
+
+        function hideResultsGate() {
+            var gate=document.getElementById('gpsAdminGate');
+            if(gate) gate.style.display='none';
+        }
+
+        async function printAllMarksheets(){
+            if(!firebaseInitialized) { showToast('Please wait for Firebase/admin authentication.','error'); return; }
+            document.querySelectorAll('.marksheet-container').forEach(function(el){el.classList.remove('active-preview');el.classList.add('active-print');});
+            window.print();
+            setTimeout(function(){document.querySelectorAll('.marksheet-container').forEach(function(el){el.classList.remove('active-print');});},1200);
+        }
+
+        async function downloadSelectedPDF(){
+            if(selectedEvaluationIndex < 0){showToast('Search and select a student first.','error');return;}
+            generateAllMarksheets();
+            var row=allStudentsData[selectedEvaluationIndex];
+            var adm=String(row[0]||'');
+            setTimeout(function(){
+                var target=document.querySelector('.marksheet-container[data-adm="'+CSS.escape(adm)+'"]');
+                if(!target){showToast('Marksheet preview could not be generated.','error');return;}
+                if(typeof html2pdf==='undefined'){showToast('PDF library could not be loaded. Use Print instead.','error');return;}
+                html2pdf().set({margin:0,filename:'GPS-Pethgam-Marksheet-'+adm+'.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(target).save().then(function(){showToast('PDF downloaded for Adm. No. '+adm+'.','success');}).catch(function(e){console.error(e);showToast('PDF generation failed: '+e.message,'error');});
+            },350);
         }
 
         function initFirebase() {
@@ -1534,9 +1568,24 @@
                     row._dataObj = dataObj;
                 }
 
-                var collection = document.getElementById('fbCollection').value.trim() || 'marksheets';
-                var docRef = db.collection(collection).doc(admNo);
-                docRef.set(dataObj, { merge: true })
+                var collection = 'marksheets';
+                db.collection('students').where('admissionNo','==',String(admNo)).limit(1).get().then(function(masterSnap){
+                    if(masterSnap.empty) return db.collection('students').where('admissionNumber','==',String(admNo)).limit(1).get();
+                    return masterSnap;
+                }).then(function(masterSnap){
+                    dataObj.admissionNo=String(admNo);
+                    dataObj.updatedAt=new Date().toISOString();
+                    dataObj.published=true;
+                    var docRef = db.collection(collection).doc(admNo);
+                    var writes=[docRef.set(dataObj, { merge: true })];
+                    if(!masterSnap.empty){
+                        var masterId=masterSnap.docs[0].id;
+                        dataObj.studentRecordId=masterId;
+                        dataObj.studentId=masterSnap.docs[0].data().studentId||dataObj.studentId||'';
+                        writes.push(db.collection('students').doc(masterId).collection('results').doc(admNo).set(dataObj,{merge:true}));
+                    }
+                    return Promise.all(writes);
+                })
                     .then(function() {
                         showToast('✅ Saved ' + dataObj.name + ' (Adm: ' + admNo + ') to Firestore.', 'success');
                         if (btn) { btn.disabled = false;
@@ -1577,7 +1626,7 @@
                     return;
                 }
 
-                var collection = document.getElementById('fbCollection').value.trim() || 'marksheets';
+                var collection = 'marksheets';
                 var successCount = 0;
                 var failCount = 0;
 
@@ -1589,9 +1638,9 @@
                 var schoolSorted = studentsWithTotals.slice().sort(function(a, b) { return b.total - a.total; });
 
                 var promises = [];
-                for (var i = 0; i < allStudentsData.length; i++) {
-                    var row = allStudentsData[i];
-                    var admNo = (row[0] || '000').toString();
+                for (let i = 0; i < allStudentsData.length; i++) {
+                    const row = allStudentsData[i];
+                    const admNo = (row[0] || '000').toString();
                     var dataObj = buildStudentData(row);
 
                     var sRank = 1;
@@ -1616,8 +1665,17 @@
                             return masterSnap;
                         })
                         .then(function(masterSnap){
-                            if(!masterSnap.empty) dataObj.studentRecordId = masterSnap.docs[0].id;
-                            return docRef.set(dataObj,{merge:true});
+                            dataObj.published=true;
+                            var writes=[];
+                            if(!masterSnap.empty){
+                                dataObj.studentRecordId = masterSnap.docs[0].id;
+                                dataObj.studentId = masterSnap.docs[0].data().studentId || dataObj.studentId || '';
+                            }
+                            writes.push(docRef.set(dataObj,{merge:true}));
+                            if(dataObj.studentRecordId){
+                                writes.push(db.collection('students').doc(dataObj.studentRecordId).collection('results').doc(admNo).set(dataObj,{merge:true}));
+                            }
+                            return Promise.all(writes);
                         })
 
                         .then(function() { successCount++; })
@@ -1654,13 +1712,6 @@
             }
         }
 
-        // ============================================================
-        // 11. TOGGLE FIRESTORE CONFIG (unchanged)
-        // ============================================================
-        function toggleFirestoreConfig() {
-            var area = document.getElementById('firestoreConfigArea');
-            area.style.display = (area.style.display === 'none') ? '' : 'none';
-        }
 
         // ============================================================
         // 12. INIT (unchanged)
@@ -1668,18 +1719,36 @@
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 initFirebase();
+                if(!firebaseInitialized) throw new Error('Firebase could not be initialized.');
+                var status=document.getElementById('firebaseStatus'); if(status) status.textContent='Connected';
+                firebase.auth().onAuthStateChanged(async function(user){
+                    if(!user){ showResultsGate('Please sign in as the school administrator.'); return; }
+                    try{ await ensureResultsAdmin(user); hideResultsGate(); restoreAppState(false); }
+                    catch(e){ console.error(e); showResultsGate(e.message||'Administrator authorization failed.'); try{await firebase.auth().signOut();}catch(_){} }
+                });
             } catch (e) {
                 console.warn('Firebase init on load skipped:', e);
+                showResultsGate(e.message||'Firebase initialization failed.');
             }
-            document.getElementById('firestoreConfigArea').style.display = '';
-            restoreAppState(false);
+            var login=document.getElementById('resultAdminLogin');
+            if(login) login.addEventListener('click',async function(){
+                var email=document.getElementById('resultAdminEmail').value.trim(), pw=document.getElementById('resultAdminPassword').value;
+                var msg=document.getElementById('resultAdminMsg');
+                msg.textContent='';
+                if(!email||!pw){msg.textContent='Enter administrator email and password.';return;}
+                login.disabled=true; login.textContent='Signing in…';
+                try{await firebase.auth().signInWithEmailAndPassword(email,pw); await ensureResultsAdmin(firebase.auth().currentUser);}
+                catch(e){msg.textContent=e.code==='auth/invalid-credential'?'Incorrect administrator email or password.':(e.message||'Sign-in failed.');try{await firebase.auth().signOut();}catch(_){} }
+                finally{login.disabled=false;login.textContent='Sign In';}
+            });
         });
 
         // Expose functions globally
         window.downloadIndividual = downloadIndividual;
+        window.downloadSelectedPDF = downloadSelectedPDF;
+        window.printAllMarksheets = printAllMarksheets;
         window.saveSingleToFirestore = saveSingleToFirestore;
         window.saveAllToFirestore = saveAllToFirestore;
-        window.toggleFirestoreConfig = toggleFirestoreConfig;
         window.uploadPhoto = uploadPhoto;
         window.updateStudentAdmNo = updateStudentAdmNo;
         window.updateHolisticField = updateHolisticField;
