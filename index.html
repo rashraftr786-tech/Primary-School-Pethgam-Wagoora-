@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>GPS Pethgam Wagoora — School ERP</title>
+<link rel="icon" href="new-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{--blue:#0759a8;--blue2:#0b74d1;--ink:#17324d;--muted:#68798b;--bg:#f3f7fb;--card:#fff;--line:#dce7f1;--green:#16834b;--orange:#d87812;--red:#b52b2b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:14px}
+.top{background:linear-gradient(135deg,#0759a8,#0b74d1);color:#fff;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px #0759a82b}.brand{display:flex;align-items:center;gap:13px}.brand img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:14px;padding:5px}.brand h1{font-size:22px;margin:0}.brand p{margin:3px 0 0;opacity:.92;font-size:13px}.toprow{display:flex;justify-content:space-between;gap:12px;align-items:center}.auth{font-size:12px;text-align:right}.auth button{background:#fff;color:var(--blue);border:0;border-radius:9px;padding:8px 11px;font-weight:700;margin-top:6px}.login{background:#fff;color:var(--ink);border-radius:14px;padding:14px;margin-top:15px;display:none}.login input{padding:11px;border:1px solid var(--line);border-radius:8px;width:100%;margin:5px 0 9px;font-size:15px}.login button{padding:11px 14px;border:0;border-radius:8px;background:var(--blue);color:#fff;font-weight:700}.message{margin-top:8px;padding:9px;border-radius:8px;font-size:13px;display:none}.err{background:#fff0f0;color:var(--red)}.ok{background:#eaf8ef;color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;box-shadow:0 2px 8px #1235  .06}.stat b{font-size:22px;display:block;color:var(--blue)}.stat span{font-size:11px;color:var(--muted);font-weight:700}
+.section{margin:20px 0}.section h2{font-size:17px;margin:0 0 10px;color:var(--blue);display:flex;align-items:center;gap:8px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;min-height:112px;padding:15px 10px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 2px 8px #1235 .06;transition:.16s}.card:hover{transform:translateY(-2px);box-shadow:0 7px 18px #1235 .11}.card i{font-size:28px;color:var(--blue2);margin-bottom:9px}.card strong{font-size:12px;line-height:1.25}.card small{font-size:10px;color:var(--muted);margin-top:4px}.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.tool{background:#eef5fb;border:1px solid #d5e5f2;border-radius:12px;padding:12px;text-decoration:none;color:var(--ink);font-weight:700;font-size:12px;text-align:center}.tool i{margin-right:6px;color:var(--blue)}footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 8px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.wrap{padding:9px}.toprow{align-items:flex-start}.brand img{width:52px;height:52px}.brand h1{font-size:18px}.grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.tools{grid-template-columns:repeat(2,1fr)}.auth{font-size:10px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="top"><div class="toprow"><div class="brand"><img src="new-logo.png" alt="School logo"><div><h1>Government Primary School Pethgam Wagoora</h1><p>School Administration ERP • Zone Wagoora • District Baramulla</p></div></div><div class="auth"><div id="userState">Checking administrator access…</div><button id="logout" style="display:none">Sign Out</button></div></div>
+<div id="loginBox" class="login"><b>Administrator Login</b><input id="email" type="email" autocomplete="username" placeholder="Administrator email"><input id="password" type="password" autocomplete="current-password" placeholder="Password"><button id="signIn">Sign In</button><button id="bootstrap" style="display:none;background:#16834b;margin-left:6px">Initialize Administrator</button><div id="loginMsg" class="message"></div></div></header>
+<div id="erp" style="display:none">
+<section class="stats"><div class="stat"><b id="studentCount">0</b><span>STUDENT RECORDS</span></div><div class="stat"><b id="activeCount">0</b><span>ACTIVE STUDENTS</span></div><div class="stat"><b id="staffCount">0</b><span>STAFF RECORDS</span></div><div class="stat"><b id="noticeCount">0</b><span>SAVED NOTICES</span></div><div class="stat"><b id="cloudState">—</b><span>FIREBASE STATUS</span></div></section>
+<section class="section"><h2><i class="fa-solid fa-graduation-cap"></i> Students & Records</h2><div class="grid">
+<a class="card" href="general_admission_register.html"><i class="fa-solid fa-users"></i><strong>Student Database</strong><small>Master admission register</small></a>
+<a class="card" href="admission.html"><i class="fa-solid fa-user-plus"></i><strong>Admission Form</strong><small>New admission</small></a>
+<a class="card" href="student-profile.html"><i class="fa-solid fa-id-card"></i><strong>Student Profile</strong><small>View master profile</small></a>
+<a class="card" href="promotion.html"><i class="fa-solid fa-arrow-up-right-dots"></i><strong>Promotion</strong><small>Class promotion/history</small></a>
+<a class="card" href="student-documents.html"><i class="fa-solid fa-folder-open"></i><strong>Student Documents</strong><small>Certificates & documents</small></a>
+</div></section>
+<section class="section"><h2><i class="fa-solid fa-clipboard-check"></i> Attendance, Meals & Welfare</h2><div class="grid">
+<a class="card" href="attendance.html"><i class="fa-solid fa-user-check"></i><strong>Student Attendance</strong><small>Daily & monthly</small></a>
+<a class="card" href="Staff-Attendence.html"><i class="fa-solid fa-user-clock"></i><strong>Staff Attendance & Leave</strong><small>Register & applications</small></a>
+<a class="card" href="MDM.html"><i class="fa-solid fa-utensils"></i><strong>PM-POSHAN / MDM</strong><small>Monthly data capture</small></a>
+<a class="card" href="work-behaviour.html"><i class="fa-solid fa-award"></i><strong>Work & Behaviour</strong><small>Certificate generator</small></a>
+</div></section>
+<section class="section"><h2><i class="fa-solid fa-book-open-reader"></i> Academic & Assessment</h2><div class="grid">
+<a class="card" href="results.html"><i class="fa-solid fa-square-poll-vertical"></i><strong>Results & Marksheet</strong><small>Single academic module</small></a>
+<a class="card" href="timetable.html"><i class="fa-solid fa-table-cells"></i><strong>Timetable</strong><small>Class schedule</small></a>
+<a class="card" href="school-calendar.html"><i class="fa-solid fa-calendar-days"></i><strong>School Calendar</strong><small>Events & holidays</small></a>
+<a class="card" href="notices.html"><i class="fa-solid fa-bullhorn"></i><strong>Notices & Circulars</strong><small>School announcements</small></a>
+<a class="card" href="student-communication.html"><i class="fa-solid fa-comments"></i><strong>Student Communication</strong><small>Messages to students</small></a>
+</div></section>
+<section class="section"><h2><i class="fa-solid fa-school"></i> Staff & School Administration</h2><div class="grid">
+<a class="card" href="Staff-Management.html"><i class="fa-solid fa-chalkboard-user"></i><strong>Staff & Teachers</strong><small>Staff master register</small></a>
+<a class="card" href="Staff-Personal-Dashboard.html"><i class="fa-solid fa-user-tie"></i><strong>Staff Dashboard</strong><small>Personal workspace</small></a>
+<a class="card" href="inventory.html"><i class="fa-solid fa-boxes-stacked"></i><strong>Inventory / Stock</strong><small>Items & stock</small></a>
+<a class="card" href="library.html"><i class="fa-solid fa-book"></i><strong>Library</strong><small>Books & transactions</small></a>
+<a class="card" href="salary-inc.html"><i class="fa-solid fa-file-invoice-dollar"></i><strong>Salary Increment</strong><small>Official application</small></a>
+</div></section>
+<section class="section"><h2><i class="fa-solid fa-file-signature"></i> Official Documents</h2><div class="grid">
+<a class="card" href="bonafide-certificate.html"><i class="fa-solid fa-certificate"></i><strong>Bonafide Certificate</strong><small>Generate certificate</small></a>
+<a class="card" href="dob-certificate.html"><i class="fa-solid fa-calendar-check"></i><strong>Date of Birth Certificate</strong><small>Generate certificate</small></a>
+<a class="card" href="duty-certificate.html"><i class="fa-solid fa-file-signature"></i><strong>Duty Certificate</strong><small>Generate certificate</small></a>
+<a class="card" href="school-letterhead.html"><i class="fa-solid fa-file-lines"></i><strong>School Letterhead</strong><small>Editable official format</small></a>
+</div></section>
+<section class="section"><h2><i class="fa-solid fa-screwdriver-wrench"></i> System Administration</h2><div class="tools">
+<a class="tool" href="Student-Account-Setup.html"><i class="fa-solid fa-user-lock"></i> Student Account Setup</a>
+<a class="tool" href="Firebase-Migration.html"><i class="fa-solid fa-cloud-arrow-up"></i> Data Migration</a>
+</div></section>
+</div><footer>Government Primary School Pethgam Wagoora • ERP dashboard</footer></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function(){
+ const $=id=>document.getElementById(id); let db=null,auth=null;
+ function msg(t,c){$('loginMsg').textContent=t;$('loginMsg').className='message '+c;$('loginMsg').style.display='block'}
+ function localCounts(){try{const a=JSON.parse(localStorage.getItem('GPSPETHGAM_MASTER_ADMISSION_V1')||'[]');$('studentCount').textContent=a.length;$('activeCount').textContent=a.filter(x=>String(x.status||'Active').toLowerCase()!=='inactive'&&String(x.status||'Active').toLowerCase()!=='left').length;const st=JSON.parse(localStorage.getItem('GPSPETHGAM_STAFF_V1')||'[]');$('staffCount').textContent=st.length;const n=JSON.parse(localStorage.getItem('GPSPETHGAM_SCHOOL_NOTICES_V1')||'[]');$('noticeCount').textContent=n.length}catch(e){}}
+ try{if(!firebase.apps.length)firebase.initializeApp(window.GPS_FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();$('cloudState').textContent='READY'}catch(e){$('cloudState').textContent='ERROR';$('userState').textContent='Firebase could not initialize.';return}
+ const bootstrap=(window.GPS_ADMIN_EMAILS||[]).map(x=>x.toLowerCase());$('email').value=bootstrap[0]||'';
+ auth.onAuthStateChanged(async user=>{if(!user){$('erp').style.display='none';$('loginBox').style.display='block';$('logout').style.display='none';$('userState').textContent='Administrator sign-in required';$('bootstrap').style.display='none';localCounts();return}
+   $('email').value=user.email||'';$('userState').textContent='Signed in: '+(user.email||'');$('logout').style.display='inline-block';$('loginBox').style.display='none';
+   try{const snap=await db.collection('admins').doc(user.uid).get();if(snap.exists&&snap.data().role==='admin'&&snap.data().active===true){$('erp').style.display='block';$('cloudState').textContent='OK';localCounts();return}
+     if(bootstrap.includes((user.email||'').toLowerCase())){ $('loginBox').style.display='block';$('bootstrap').style.display='inline-block';msg('Authentication succeeded. No active admin record exists for this account. You may initialize this account as the school administrator.','ok'); }
+     else {await auth.signOut();msg('This Firebase account is not authorized as a school administrator.','err');}
+   }catch(e){await auth.signOut();msg('Admin verification failed: '+(e.message||e),'err')}
+ });
+ $('signIn').onclick=async()=>{const email=$('email').value.trim(),pw=$('password').value;if(!email||!pw){msg('Enter email and password.','err');return} $('signIn').disabled=true;try{await auth.signInWithEmailAndPassword(email,pw);$('password').value='';}catch(e){msg((e.code||'auth/error')+': '+(e.message||e),'err')}finally{$('signIn').disabled=false}};
+ $('bootstrap').onclick=async()=>{const u=auth.currentUser;if(!u||!bootstrap.includes((u.email||'').toLowerCase())){msg('Sign in with the configured administrator email first.','err');return}try{await db.collection('admins').doc(u.uid).set({uid:u.uid,email:u.email,role:'admin',active:true,name:'Mohammad Ashraf Rather',school:'Government Primary School Pethgam Wagoora',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});msg('Administrator initialized successfully. Reloading dashboard…','ok');setTimeout(()=>location.reload(),600)}catch(e){msg('Could not initialize administrator: '+(e.message||e),'err')}};
+ $('logout').onclick=()=>auth.signOut();localCounts();
+})();
+</script></body></html>
