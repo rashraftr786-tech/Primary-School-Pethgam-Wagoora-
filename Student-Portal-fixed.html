@@ -1,0 +1,2674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Student Portal — GPS Pethgam Wagoora</title>
+
+<style>
+:root{
+  --blue:#0b5cab;
+  --ink:#153047;
+  --muted:#66788a;
+  --line:#dce6ef;
+  --bg:#f4f8fb;
+  --card:#fff;
+  --good:#137a45;
+  --bad:#a52019
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+  background:var(--bg);
+  color:var(--ink)
+}
+
+button,input{font:inherit}
+
+.hidden{display:none!important}
+
+.login{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px
+}
+
+.login-card,.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 8px 25px #1234 0.06;
+  padding:24px
+}
+
+.login-card{
+  width:min(430px,100%)
+}
+
+h1,h2,h3{margin-top:0}
+
+.muted{
+  color:var(--muted);
+  font-size:13px
+}
+
+.group{margin:14px 0}
+
+.group label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:6px
+}
+
+.group input{
+  width:100%;
+  padding:12px;
+  border:1px solid #c9d7e3;
+  border-radius:10px
+}
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  font-weight:700;
+  cursor:pointer
+}
+
+.primary{
+  background:var(--blue);
+  color:#fff
+}
+
+.light{
+  background:#edf4fa;
+  color:var(--blue)
+}
+
+.danger{
+  background:#fee8e7;
+  color:var(--bad)
+}
+
+.error{
+  margin-top:12px;
+  padding:10px;
+  border-radius:10px;
+  background:#fee8e7;
+  color:var(--bad);
+  font-size:13px
+}
+
+.app{min-height:100vh}
+
+.top{
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:14px 18px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:5
+}
+
+.brand{font-weight:900}
+
+.nav{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding:10px 18px;
+  background:#fff;
+  border-bottom:1px solid var(--line)
+}
+
+.nav button{
+  white-space:nowrap;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:9px;
+  padding:8px 11px;
+  cursor:pointer
+}
+
+.nav button.active{
+  background:#eaf3fc;
+  color:var(--blue);
+  border-color:#b8d1e8
+}
+
+.wrap{
+  max-width:1150px;
+  margin:auto;
+  padding:20px
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:14px
+}
+
+.hero{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:20px;
+  align-items:center
+}
+
+.photo{
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:18px;
+  border:1px solid var(--line)
+}
+
+.placeholder{
+  width:120px;
+  height:120px;
+  border-radius:18px;
+  background:#edf3f7;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:#789;
+  font-size:12px
+}
+
+.stat b{
+  display:block;
+  font-size:25px
+}
+
+.stat span{
+  font-size:12px;
+  color:var(--muted)
+}
+
+.table-wrap{overflow:auto}
+
+.table{
+  width:100%;
+  border-collapse:collapse
+}
+
+.table th,.table td{
+  padding:10px;
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  font-size:13px
+}
+
+.notice{
+  padding:12px 0;
+  border-bottom:1px solid var(--line)
+}
+
+.page{display:none}
+
+.page.active{display:block}
+
+.toast{
+  margin:10px 0;
+  padding:10px;
+  border-radius:10px;
+  background:#e8f7ee;
+  color:var(--good)
+}
+
+.loading{
+  text-align:center;
+  padding:20px;
+  color:var(--muted)
+}
+
+@media(max-width:650px){
+  .hero{grid-template-columns:1fr}
+  .top{align-items:flex-start}
+  .wrap{padding:14px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     LOGIN PAGE
+========================================================= -->
+
+<section id="loginPage" class="login">
+
+<div class="login-card">
+
+<div style="text-align:center">
+
+<img
+  src="new-logo.png"
+  alt="School"
+  style="width:86px;height:86px;object-fit:contain"
+>
+
+<h2>Student Portal</h2>
+
+<p class="muted">
+Government Primary School Pethgam Wagoora
+</p>
+
+</div>
+
+<form id="loginForm">
+
+<div class="group">
+
+<label>
+Admission Number / Student ID
+</label>
+
+<input
+  id="loginId"
+  required
+  autocomplete="username"
+  placeholder="e.g. GPSPGW-2021-0004"
+>
+
+</div>
+
+<div class="group">
+
+<label>Password</label>
+
+<input
+  id="loginPassword"
+  type="password"
+  required
+  autocomplete="current-password"
+>
+
+</div>
+
+<button
+  id="loginButton"
+  class="btn primary"
+  style="width:100%"
+  type="submit"
+>
+Sign in
+</button>
+
+<div
+  id="loginError"
+  class="error hidden"
+></div>
+
+</form>
+
+<p
+  class="muted"
+  style="margin-top:18px"
+>
+Your account is created by the school administration.
+For security, your password is never stored in the school database.
+</p>
+
+</div>
+</section>
+
+
+<!-- =========================================================
+     STUDENT APPLICATION
+========================================================= -->
+
+<section id="app" class="app hidden">
+
+<header class="top">
+
+<div>
+
+<div class="brand">
+GPS Pethgam Wagoora
+</div>
+
+<div
+  id="barStudent"
+  class="muted"
+></div>
+
+</div>
+
+<button
+  id="logoutBtn"
+  class="btn danger"
+>
+Logout
+</button>
+
+</header>
+
+
+<nav
+  class="nav"
+  id="nav"
+>
+
+<button
+  data-page="dashboard"
+  class="active"
+>
+🏠 Home
+</button>
+
+<button data-page="profile">
+👤 My Profile
+</button>
+
+<button data-page="attendance">
+📅 Attendance
+</button>
+
+<button data-page="results">
+📊 Results
+</button>
+
+<button data-page="marksheet">
+📄 Marksheet
+</button>
+
+<button data-page="timetable">
+🕐 Timetable
+</button>
+
+<button data-page="notices">
+📢 Notices
+</button>
+
+<button data-page="communications">
+💬 Messages
+</button>
+
+<button data-page="calendar">
+🗓 Calendar
+</button>
+
+<button data-page="documents">
+📁 My Documents
+</button>
+
+<button data-page="library">
+📚 Library
+</button>
+
+</nav>
+
+
+<main class="wrap">
+
+
+<!-- =========================================================
+     DASHBOARD
+========================================================= -->
+
+<section
+  id="dashboard"
+  class="page active"
+>
+
+<div class="card hero">
+
+<div>
+
+<h1 id="welcome">
+Welcome
+</h1>
+
+<p
+  id="dashSummary"
+  class="muted"
+></p>
+
+</div>
+
+<div id="dashPhoto"></div>
+
+</div>
+
+
+<div
+  class="grid"
+  style="margin-top:14px"
+>
+
+<div class="card stat">
+
+<b id="statAttend">—</b>
+
+<span>
+Attendance
+</span>
+
+</div>
+
+
+<div class="card stat">
+
+<b id="statResult">—</b>
+
+<span>
+Overall Result
+</span>
+
+</div>
+
+
+<div class="card stat">
+
+<b id="statBooks">0</b>
+
+<span>
+Books Issued
+</span>
+
+</div>
+
+
+<div class="card stat">
+
+<b id="statNotices">0</b>
+
+<span>
+Notices
+</span>
+
+</div>
+
+<div class="card stat">
+<b id="statMessages">0</b><span>Messages</span>
+</div>
+
+</div>
+
+
+<div
+  class="card"
+  style="margin-top:14px"
+>
+
+<h3>
+Latest Notices
+</h3>
+
+<div id="dashNotices"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     PROFILE
+========================================================= -->
+
+<section
+  id="profile"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+My Profile
+</h2>
+
+<div id="profileData"></div>
+
+<hr>
+
+<h3>
+Change Password
+</h3>
+
+<div class="group">
+
+<label>
+New password
+</label>
+
+<input
+  id="newPassword"
+  type="password"
+  minlength="8"
+  placeholder="At least 8 characters"
+>
+
+</div>
+
+<button
+  id="changePassword"
+  class="btn primary"
+>
+Change Password
+</button>
+
+<div
+  id="pwMsg"
+  class="muted"
+></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     ATTENDANCE
+========================================================= -->
+
+<section
+  id="attendance"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+My Attendance
+</h2>
+
+<div class="grid">
+
+<div class="stat">
+
+<b id="aPct">—</b>
+
+<span>
+Attendance %
+</span>
+
+</div>
+
+<div class="stat">
+
+<b id="aPresent">0</b>
+
+<span>
+Present
+</span>
+
+</div>
+
+<div class="stat">
+
+<b id="aAbsent">0</b>
+
+<span>
+Absent
+</span>
+
+</div>
+
+<div class="stat">
+
+<b id="aLeave">0</b>
+
+<span>
+Leave
+</span>
+
+</div>
+
+</div>
+
+
+<div class="table-wrap">
+
+<table class="table">
+
+<thead>
+
+<tr>
+<th>Date</th>
+<th>Status</th>
+<th>Remarks</th>
+</tr>
+
+</thead>
+
+<tbody id="attendanceBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     RESULTS
+========================================================= -->
+
+<section
+  id="results"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+My Results
+</h2>
+
+<div id="resultsBody">
+No result published.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     MARKSHEET
+========================================================= -->
+
+<section
+  id="marksheet"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+My Marksheet
+</h2>
+
+<div id="marksheetBody">
+No marksheet published.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     TIMETABLE
+========================================================= -->
+
+<section
+  id="timetable"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+My Timetable
+</h2>
+
+<div class="table-wrap">
+
+<table class="table">
+
+<thead>
+
+<tr>
+<th>Day</th>
+<th>Period</th>
+<th>Time</th>
+<th>Subject</th>
+<th>Teacher</th>
+</tr>
+
+</thead>
+
+<tbody id="timetableBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     NOTICES
+========================================================= -->
+
+<section
+  id="notices"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+School Notices
+</h2>
+
+<div id="noticeBody"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     COMMUNICATIONS
+========================================================= -->
+<section id="communications" class="page">
+<div class="card"><h2>💬 My Messages</h2><div id="communicationsBody">No messages available.</div></div>
+</section>
+
+
+<!-- =========================================================
+     CALENDAR
+========================================================= -->
+
+<section
+  id="calendar"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+School Calendar
+</h2>
+
+<div class="table-wrap">
+
+<table class="table">
+
+<thead>
+
+<tr>
+<th>Date</th>
+<th>Event</th>
+<th>Type</th>
+</tr>
+
+</thead>
+
+<tbody id="calendarBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     DOCUMENTS
+========================================================= -->
+
+<section
+  id="documents"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+My Documents
+</h2>
+
+<div id="documentsBody">
+No documents available.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+     LIBRARY
+========================================================= -->
+
+<section
+  id="library"
+  class="page"
+>
+
+<div class="card">
+
+<h2>
+Library
+</h2>
+
+<div class="table-wrap">
+
+<table class="table">
+
+<thead>
+
+<tr>
+<th>Book</th>
+<th>Issue Date</th>
+<th>Due Date</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+<tbody id="libraryBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+</main>
+
+</section>
+
+
+<!-- =========================================================
+     FIREBASE CONFIG
+========================================================= -->
+
+<script src="firebase-config.js"></script>
+
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE IMPORTS
+========================================================= */
+
+import {
+  initializeApp,
+  getApps,
+  getApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  updatePassword
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+/* =========================================================
+   FIREBASE INITIALIZATION
+========================================================= */
+
+const cfg =
+  window.GPS_FIREBASE_CONFIG;
+
+
+if(!cfg){
+
+  throw new Error(
+    "firebase-config.js is missing."
+  );
+
+}
+
+
+if(
+  cfg.projectId !==
+  "gps-pethgam-wagoora-portal"
+){
+
+  throw new Error(
+    "Incorrect Firebase project: "
+    + cfg.projectId
+  );
+
+}
+
+
+/*
+   Use a dedicated app name.
+
+   This prevents accidental connection to
+   another Firebase application on the page.
+*/
+
+const APP_NAME =
+  "gps-student-portal";
+
+
+const app =
+  getApps().some(
+    a => a.name === APP_NAME
+  )
+  ?
+  getApp(APP_NAME)
+  :
+  initializeApp(
+    cfg,
+    APP_NAME
+  );
+
+
+const auth =
+  getAuth(app);
+
+
+const db =
+  getFirestore(app);
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ =
+  id =>
+  document.getElementById(id);
+
+
+const esc =
+  value =>
+  String(value ?? '')
+  .replace(
+    /[&<>'"]/g,
+    c =>
+      ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        "'":'&#39;',
+        '"':'&quot;'
+      }[c])
+  );
+
+
+let current = null;
+
+
+/* =========================================================
+   STUDENT LOGIN EMAIL
+========================================================= */
+
+const loginEmail = id => {
+
+  const k =
+    String(id)
+    .trim()
+    .toLowerCase()
+    .replace(
+      /[^a-z0-9._-]/g,
+      '-'
+    );
+
+  /*
+     This is the same format used by your
+     current Student Portal.
+  */
+
+  return `student-${k}@student.pethgam.local`;
+};
+
+
+/* =========================================================
+   STUDENT NAME
+========================================================= */
+
+function nameOf(s){
+
+  return (
+
+    s?.name ||
+
+    s?.studentName ||
+
+    [
+      s?.studentFirst,
+      s?.studentMiddle,
+      s?.studentLast
+    ]
+    .filter(Boolean)
+    .join(' ') ||
+
+    'Student'
+
+  );
+
+}
+
+
+/* =========================================================
+   ERROR DISPLAY
+========================================================= */
+
+function showErr(error){
+
+  console.error(
+    "Student Portal Error:",
+    error
+  );
+
+
+  let message =
+    error?.message ||
+    String(error);
+
+
+  if(
+    error?.code ===
+    'auth/invalid-credential'
+  ){
+
+    message =
+      'Invalid Student ID/Admission Number or password.';
+
+  }
+
+
+  if(
+    error?.code ===
+    'auth/network-request-failed'
+  ){
+
+    message =
+      'Network error. Please check your internet connection.';
+
+  }
+
+
+  if(
+    error?.code ===
+    'permission-denied' ||
+    error?.code ===
+    'firestore/permission-denied'
+  ){
+
+    message =
+      'Firebase permission denied while loading the linked student profile. Please check the student account linkage (studentRecordId).';
+
+  }
+
+  if(error?.code === 'student/link-missing'){
+    message = error.message;
+  }
+
+  if(error?.code === 'student/record-not-found'){
+    message = error.message;
+  }
+
+
+  $('loginError').textContent =
+    'Unable to sign in: ' + message;
+
+
+  $('loginError')
+    .classList
+    .remove('hidden');
+
+}
+
+
+/* =========================================================
+   LOAD STUDENT ACCOUNT
+========================================================= */
+
+async function loadStudentAccount(uid){
+
+  console.log(
+    "Reading studentAccounts:",
+    uid
+  );
+
+
+  const ref =
+    doc(
+      db,
+      'studentAccounts',
+      uid
+    );
+
+
+  const snap =
+    await getDoc(ref);
+
+
+  if(!snap.exists()){
+
+    throw new Error(
+      'Student account record was not found in Firebase.'
+    );
+
+  }
+
+
+  const account =
+    snap.data() || {};
+
+
+  console.log(
+    "Student Account:",
+    account
+  );
+
+
+  return account;
+
+}
+
+
+/* =========================================================
+   LOAD MASTER STUDENT PROFILE
+========================================================= */
+
+async function loadMasterStudent(uid, account){
+
+  /*
+     LINKED STUDENT MASTER
+
+     Student Account Setup stores the Student Master document ID in:
+       1. studentRecordId (new accounts)
+       2. sourceAdmissionId (legacy accounts)
+
+     Both fields contain the Student Master document ID. We therefore
+     use whichever is present and load the actual master document.
+  */
+
+  const recordId = String(
+    account?.studentRecordId ||
+    account?.sourceAdmissionId ||
+    ''
+  ).trim();
+
+  if(!recordId){
+    const error = new Error(
+      'Student account is active, but no Student Master record ID is stored. Please use Student Account Setup to relink this student account.'
+    );
+    error.code = 'student/link-missing';
+    throw error;
+  }
+
+  console.log('Loading Student Master record:', recordId);
+
+  const ref = doc(db, 'students', recordId);
+  const snap = await getDoc(ref);
+
+  if(!snap.exists()){
+    const error = new Error(
+      'The linked Student Master record was not found: ' + recordId
+    );
+    error.code = 'student/record-not-found';
+    throw error;
+  }
+
+  const student = snap.data() || {};
+
+  return {
+    uid,
+    studentRecordId: recordId,
+    account,
+    student
+  };
+}
+
+/* =========================================================
+   LOAD COMPLETE STUDENT
+========================================================= */
+
+async function load(){
+
+  if(!auth.currentUser){
+
+    return;
+
+  }
+
+
+  const uid =
+    auth.currentUser.uid;
+
+
+  console.log(
+    "Authenticated Student UID:",
+    uid
+  );
+
+
+  /*
+     AUTHORITATIVE PROFILE CHAIN
+     Firebase Auth UID
+       -> studentAccounts/{UID}
+       -> studentRecordId
+       -> students/{studentRecordId}
+  */
+
+  /*
+     1. Read studentAccounts/{UID}
+  */
+
+  const account =
+    await loadStudentAccount(uid);
+
+
+  /*
+     2. Read linked Student Master record
+  */
+
+  const result =
+    await loadMasterStudent(
+      uid,
+      account
+    );
+
+
+  /*
+     3. Combine everything
+  */
+
+  current = {
+
+    uid,
+
+    ...result.student,
+
+    studentRecordId:
+      result.studentRecordId,
+
+    studentAccount:
+      result.account
+
+  };
+
+
+  console.log(
+    "COMPLETE STUDENT PROFILE:",
+    current
+  );
+
+
+  /*
+     4. Show application
+  */
+
+  $('loginPage')
+    .classList
+    .add('hidden');
+
+
+  $('app')
+    .classList
+    .remove('hidden');
+
+
+  /*
+     5. Render portal
+  */
+
+  await renderAll();
+
+}
+
+
+/* =========================================================
+   RESULT/ADMISSION HELPERS
+========================================================= */
+
+function admissionVariants(value){
+  const raw=String(value ?? '').trim();
+  const out=[];
+  const add=v=>{ if(v && !out.includes(v)) out.push(v); };
+  add(raw);
+  const numeric=raw.replace(/\.0+$/,'');
+  add(numeric);
+  if(/^\d+$/.test(numeric)) add(String(parseInt(numeric,10)));
+  return out;
+}
+
+async function readMarksheetsFallback(admission){
+  for(const candidate of admissionVariants(admission)){
+    try{
+      const snap=await getDoc(doc(db,'marksheets',candidate));
+      if(snap.exists()) return {id:candidate,data:snap.data()};
+    }catch(e){ console.warn('Marksheet lookup failed for',candidate,e); }
+  }
+  return null;
+}
+
+/* =========================================================
+   SAFE SUBCOLLECTION READER
+========================================================= */
+
+async function sub(path){
+  try{
+    const snap=await getDocs(collection(db,...path));
+    return snap.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(error){
+    console.warn('Could not read:',path,error);
+    return [];
+  }
+}
+
+async function subAny(paths){
+  for(const path of paths){
+    const rows=await sub(path);
+    if(rows.length) return rows;
+  }
+  return [];
+}
+
+
+/* =========================================================
+   RENDER EVERYTHING
+========================================================= */
+
+async function renderAll(){
+
+  const s =
+    current;
+
+
+  const nm =
+    nameOf(s);
+
+
+  $('barStudent').textContent =
+    `${nm} • ${
+      s.classJoining ||
+      s.class ||
+      'Class'
+    } • Adm. ${
+      s.admissionNo ||
+      s.admissionNumber ||
+      ''
+    }`;
+
+
+  $('welcome').textContent =
+    `Welcome, ${nm}`;
+
+
+  $('dashSummary').textContent =
+    `Student ID: ${
+      s.studentId ||
+      s.studentID ||
+      '—'
+    } • Admission No.: ${
+      s.admissionNo ||
+      s.admissionNumber ||
+      '—'
+    }`;
+
+
+  /*
+     Student photo
+  */
+
+  if(s.photoUrl || s.photo){
+
+    $('dashPhoto').innerHTML =
+      `<img
+        class="photo"
+        src="${esc(s.photoUrl || s.photo)}"
+        alt="Student photograph"
+      >`;
+
+  }else{
+
+    $('dashPhoto').innerHTML =
+      `<div class="placeholder">
+        STUDENT<br>
+        PHOTOGRAPH
+      </div>`;
+
+  }
+
+
+  /*
+     Read portal data.
+  */
+
+  const [
+
+    attendance,
+    results,
+    library,
+    documents,
+    notices,
+    communications,
+    calendar,
+    timetable
+
+  ] =
+
+  await Promise.all([
+    subAny([
+      ['students',s.studentRecordId,'attendance']
+    ]),
+    (async()=>{
+      // Primary source: the result subcollection linked to the authenticated
+      // Student Master record. If it is empty, fall back to the marksheets
+      // collection so older/already-published results remain visible.
+      const linked=await subAny([['students',s.studentRecordId,'results']]);
+      if(linked.length) return linked;
+      const admission=s.admissionNo || s.admissionNumber || '';
+      const fallback=await readMarksheetsFallback(admission);
+      if(!fallback) return [];
+      const data=fallback.data || {};
+      const ownerIds=[s.studentRecordId,s.uid].map(String);
+      const dataAdm=String(data.admissionNo || data.admissionNumber || fallback.id || '').trim();
+      const ownerOk=!data.studentRecordId && !data.studentUid
+        ? admissionVariants(admission).includes(dataAdm)
+        : ownerIds.includes(String(data.studentRecordId||'')) || ownerIds.includes(String(data.studentUid||''));
+      return ownerOk ? [{id:fallback.id,...data}] : [];
+    })(),
+    subAny([
+      ['students',s.studentRecordId,'library']
+    ]),
+    subAny([
+      ['students',s.studentRecordId,'documents']
+    ]),
+    subAny([['notices']]),
+    subAny([['students',s.studentRecordId,'communications']]),
+    subAny([['calendar']]),
+    subAny([['timetables']])
+  ]);
+
+
+  /*
+     Marksheet
+  */
+
+  let mark = null;
+
+
+  try{
+
+    const admission =
+      String(
+        s.admissionNo ||
+        s.admissionNumber ||
+        ''
+      );
+
+
+    if(admission){
+      const found = await readMarksheetsFallback(admission);
+      if(found){
+        const data=found.data || {};
+        const ownerIds=[s.studentRecordId,s.uid].map(String);
+        const dataAdm=String(data.admissionNo || data.admissionNumber || found.id || '').trim();
+        const ownerOk=!data.studentRecordId && !data.studentUid
+          ? admissionVariants(admission).includes(dataAdm)
+          : ownerIds.includes(String(data.studentRecordId||'')) || ownerIds.includes(String(data.studentUid||''));
+        if(ownerOk) mark=data;
+      }
+    }
+
+  }catch(e){
+
+    console.warn(
+      "Marksheet unavailable:",
+      e
+    );
+
+  }
+
+
+  /* =======================================================
+     ATTENDANCE
+  ======================================================= */
+
+  const a =
+    attendance.filter(
+      x =>
+        x.status &&
+        x.status !== 'Not Marked'
+    );
+
+
+  let p = 0;
+  let ab = 0;
+  let l = 0;
+
+
+  a.forEach(x => {
+
+    if(
+      x.status === 'Present' ||
+      x.status === 'Late'
+    ){
+
+      p++;
+
+    }
+
+    else if(
+      x.status === 'Absent'
+    ){
+
+      ab++;
+
+    }
+
+    else if(
+      String(
+        x.status
+      )
+      .startsWith('Leave')
+    ){
+
+      l++;
+
+    }
+
+  });
+
+
+  const pct =
+    (
+      p + ab + l
+    )
+    ?
+    (
+      p /
+      (p + ab + l) *
+      100
+    ).toFixed(1) + '%'
+    :
+    '—';
+
+
+  $('statAttend').textContent =
+    pct;
+
+
+  $('aPct').textContent =
+    pct;
+
+
+  $('aPresent').textContent =
+    p;
+
+
+  $('aAbsent').textContent =
+    ab;
+
+
+  $('aLeave').textContent =
+    l;
+
+
+  $('statBooks').textContent =
+    library.length;
+
+
+  $('statNotices').textContent =
+    notices.length;
+
+  $('statMessages').textContent = communications.length;
+
+
+  $('attendanceBody').innerHTML =
+
+    a
+    .sort(
+      (x,y) =>
+        String(
+          y.date || ''
+        )
+        .localeCompare(
+          String(
+            x.date || ''
+          )
+        )
+    )
+    .map(
+      x =>
+      `<tr>
+        <td>${esc(x.date)}</td>
+        <td>${esc(x.status)}</td>
+        <td>${esc(x.remarks)}</td>
+      </tr>`
+    )
+    .join('')
+
+    ||
+
+    `<tr>
+      <td colspan="3">
+        No attendance records.
+      </td>
+    </tr>`;
+
+
+  /* =======================================================
+     RESULTS
+  ======================================================= */
+
+  const r =
+    results.sort(
+      (x,y) =>
+        String(
+          y.date || ''
+        )
+        .localeCompare(
+          String(
+            x.date || ''
+          )
+        )
+    );
+
+
+  $('statResult').textContent =
+
+    r.length
+    ?
+    (
+      r[0].percentage ||
+      r[0].grade ||
+      'Published'
+    )
+    :
+    (
+      mark
+      ?
+      (
+        mark.percentage ||
+        mark.grade ||
+        'Published'
+      )
+      :
+      '—'
+    );
+
+
+  $('resultsBody').innerHTML =
+
+    r.length
+
+    ?
+
+    `<div class="grid">
+
+      ${
+        r.map(
+          x =>
+          `<div class="card">
+
+            <b>
+              ${esc(
+                x.exam ||
+                x.term ||
+                'Result'
+              )}
+            </b>
+
+            <div class="muted">
+              ${esc(
+                x.date || ''
+              )}
+            </div>
+
+            <p>
+              ${esc(
+                x.summary ||
+                x.result ||
+                x.percentage ||
+                x.total ||
+                'Published'
+              )}
+            </p>
+
+          </div>`
+        )
+        .join('')
+      }
+
+    </div>`
+
+    :
+
+    'No result published.';
+
+
+  /* =======================================================
+     MARKSHEET
+  ======================================================= */
+
+  $('marksheetBody').innerHTML =
+
+    s.marksheetUrl
+
+    ?
+
+    `<a
+      class="btn primary"
+      href="${esc(s.marksheetUrl)}"
+      target="_blank"
+      rel="noopener"
+    >
+      Open My Marksheet
+    </a>`
+
+    :
+
+    (
+
+      mark
+
+      ?
+
+      (
+
+        mark.url
+
+        ?
+
+        `<a
+          class="btn primary"
+          href="${esc(mark.url)}"
+          target="_blank"
+          rel="noopener"
+        >
+          Open Published Marksheet
+        </a>`
+
+        :
+
+        `<p>
+          Your marksheet has been published
+          in the school system.
+        </p>`
+
+      )
+
+      :
+
+      (
+
+        r.length
+
+        ?
+
+        `<p>
+          Your result is available above.
+          A downloadable marksheet will appear
+          here when the school publishes it.
+        </p>`
+
+        :
+
+        'No marksheet published.'
+
+      )
+
+    );
+
+
+  /* =======================================================
+     NOTICES
+  ======================================================= */
+
+  const visibleNotices =
+
+    notices
+
+    .filter(
+      x =>
+        [
+          'Students',
+          'All',
+          'School'
+        ]
+        .includes(
+          x.audience ||
+          'All'
+        )
+    )
+
+    .sort(
+      (a,b) =>
+        String(
+          b.date ||
+          b.createdAt ||
+          ''
+        )
+        .localeCompare(
+          String(
+            a.date ||
+            a.createdAt ||
+            ''
+          )
+        )
+    );
+
+
+  const noticeHTML =
+
+    visibleNotices
+
+    .map(
+      n =>
+      `<div class="notice">
+
+        <b>
+          ${esc(
+            n.title ||
+            n.subject ||
+            n.heading ||
+            'School Notice'
+          )}
+        </b>
+
+        <p>
+          ${esc(
+            n.message ||
+            n.text ||
+            n.description ||
+            n.body ||
+            ''
+          )}
+        </p>
+
+        <small>
+          ${esc(
+            n.date || ''
+          )}
+        </small>
+
+      </div>`
+    )
+
+    .join('');
+
+
+  $('noticeBody').innerHTML =
+    noticeHTML ||
+    'No notices available.';
+
+
+  $('dashNotices').innerHTML =
+    visibleNotices
+    .slice(0,4)
+    .map(
+      n =>
+      `<div class="notice">
+
+        <b>
+          ${esc(
+            n.title ||
+            n.subject ||
+            n.heading ||
+            'School Notice'
+          )}
+        </b>
+
+        <p>
+          ${esc(
+            n.message ||
+            n.text ||
+            n.description ||
+            n.body ||
+            ''
+          )}
+        </p>
+
+      </div>`
+    )
+    .join('') ||
+    'No notices available.';
+
+
+  /* =======================================================
+     COMMUNICATIONS
+  ======================================================= */
+  const comms = communications.sort((a,b)=>String(b.sentAt||'').localeCompare(String(a.sentAt||'')));
+  $('communicationsBody').innerHTML = comms.length ? comms.map(m=>`<div class="notice"><b>${esc(m.subject||'School Message')}</b><span class="muted"> • ${esc(m.priority||'Normal')}</span><p>${esc(m.message||'')}</p><small>${esc(m.sentAt||'')}</small></div>`).join('') : 'No messages available.';
+
+
+  /* =======================================================
+     CALENDAR
+  ======================================================= */
+
+  $('calendarBody').innerHTML =
+
+    calendar
+
+    .sort(
+      (a,b) =>
+        String(
+          a.date || ''
+        )
+        .localeCompare(
+          String(
+            b.date || ''
+          )
+        )
+    )
+
+    .map(
+      x =>
+      `<tr>
+
+        <td>
+          ${esc(x.date)}
+        </td>
+
+        <td>
+          ${esc(
+            x.event ||
+            x.title ||
+            x.name
+          )}
+        </td>
+
+        <td>
+          ${esc(
+            x.type ||
+            x.category
+          )}
+        </td>
+
+      </tr>`
+    )
+
+    .join('')
+
+    ||
+
+    `<tr>
+      <td colspan="3">
+        No calendar entries.
+      </td>
+    </tr>`;
+
+
+  /* =======================================================
+     TIMETABLE
+  ======================================================= */
+
+  const studentClass =
+    String(
+      s.classJoining ||
+      s.class ||
+      ''
+    );
+
+
+  $('timetableBody').innerHTML =
+
+    timetable
+
+    .filter(
+      x =>
+        String(
+          x.class ||
+          x.classJoining ||
+          ''
+        ) === studentClass
+
+        ||
+
+        (
+          !x.class &&
+          !x.classJoining
+        )
+    )
+
+    .map(
+      x =>
+      `<tr>
+
+        <td>
+          ${esc(x.day)}
+        </td>
+
+        <td>
+          ${esc(
+            x.period ||
+            x.p
+          )}
+        </td>
+
+        <td>
+          ${esc(x.time)}
+        </td>
+
+        <td>
+          ${esc(x.subject)}
+        </td>
+
+        <td>
+          ${esc(x.teacher)}
+        </td>
+
+      </tr>`
+    )
+
+    .join('')
+
+    ||
+
+    `<tr>
+      <td colspan="5">
+        No timetable published.
+      </td>
+    </tr>`;
+
+
+  /* =======================================================
+     DOCUMENTS
+  ======================================================= */
+
+  $('documentsBody').innerHTML =
+
+    documents
+
+    .map(
+      d =>
+      `<div
+        class="card"
+        style="margin:8px 0"
+      >
+
+        <b>
+          ${esc(
+            d.title ||
+            d.name ||
+            'Document'
+          )}
+        </b>
+
+        <p class="muted">
+          ${esc(
+            d.type ||
+            'School document'
+          )}
+        </p>
+
+        ${
+          d.url
+
+          ?
+
+          `<a
+            class="btn light"
+            href="${esc(d.url)}"
+            target="_blank"
+            rel="noopener"
+          >
+            Open
+          </a>`
+
+          :
+
+          ''
+        }
+
+      </div>`
+    )
+
+    .join('')
+
+    ||
+
+    'No documents available.';
+
+
+  /* =======================================================
+     LIBRARY
+  ======================================================= */
+
+  $('libraryBody').innerHTML =
+
+    library
+
+    .map(
+      x =>
+      `<tr>
+
+        <td>
+          ${esc(
+            x.book ||
+            x.title ||
+            x.name
+          )}
+        </td>
+
+        <td>
+          ${esc(x.issueDate)}
+        </td>
+
+        <td>
+          ${esc(x.dueDate)}
+        </td>
+
+        <td>
+          ${esc(
+            x.status ||
+            'Issued'
+          )}
+        </td>
+
+      </tr>`
+    )
+
+    .join('')
+
+    ||
+
+    `<tr>
+      <td colspan="4">
+        No library records.
+      </td>
+    </tr>`;
+
+
+  /* =======================================================
+     PROFILE
+  ======================================================= */
+
+  const father =
+    s.fatherName ||
+
+    [
+      s.fatherFirst,
+      s.fatherMiddle,
+      s.fatherLast
+    ]
+    .filter(Boolean)
+    .join(' ');
+
+
+  const mother =
+    s.motherName ||
+
+    [
+      s.motherFirst,
+      s.motherMiddle,
+      s.motherLast
+    ]
+    .filter(Boolean)
+    .join(' ');
+
+
+  $('profileData').innerHTML =
+
+    `<div class="grid">
+
+      <div>
+        <b>Full Name</b>
+        <p>${esc(nm)}</p>
+      </div>
+
+      <div>
+        <b>Student ID</b>
+        <p>${esc(
+          s.studentId ||
+          s.studentID
+        )}</p>
+      </div>
+
+      <div>
+        <b>Admission No.</b>
+        <p>${esc(
+          s.admissionNo ||
+          s.admissionNumber
+        )}</p>
+      </div>
+
+      <div>
+        <b>Class</b>
+        <p>${esc(
+          s.classJoining ||
+          s.class
+        )}</p>
+      </div>
+
+      <div>
+        <b>Date of Birth</b>
+        <p>${esc(
+          s.dob ||
+          s.DOB
+        )}</p>
+      </div>
+
+      <div>
+        <b>Gender</b>
+        <p>${esc(
+          s.gender
+        )}</p>
+      </div>
+
+      <div>
+        <b>Father / Guardian</b>
+        <p>${esc(father)}</p>
+      </div>
+
+      <div>
+        <b>Mother</b>
+        <p>${esc(mother)}</p>
+      </div>
+
+      <div>
+        <b>Category</b>
+        <p>${esc(
+          s.category
+        )}</p>
+      </div>
+
+      <div>
+        <b>PEN</b>
+        <p>${esc(
+          s.PEN ||
+          s.pen
+        )}</p>
+      </div>
+
+      <div>
+        <b>APAAR ID</b>
+        <p>${esc(
+          s.APAAR ||
+          s.apaarId ||
+          s.APAARID
+        )}</p>
+      </div>
+
+    </div>`;
+
+}
+
+
+/* =========================================================
+   RESOLVE LOGIN ID
+   Admission number can be used as an alias for the canonical Student ID.
+========================================================= */
+async function resolveLoginEmail(loginId){
+  const raw=String(loginId||'').trim();
+  // First try the exact/canonical identifier.
+  const direct=loginEmail(raw);
+  try{
+    const idx=await getDoc(doc(db,'studentLoginIndex',raw));
+    if(idx.exists() && idx.data().active!==false){
+      const canonical=String(idx.data().loginId||'').trim();
+      if(canonical) return loginEmail(canonical);
+    }
+  }catch(e){
+    // If alias lookup is unavailable, the direct login still works.
+    console.warn('Login alias lookup unavailable:',e);
+  }
+  return direct;
+}
+
+/* =========================================================
+   LOGIN FORM
+========================================================= */
+
+$('loginForm')
+.addEventListener(
+  'submit',
+  async e => {
+
+    e.preventDefault();
+
+
+    $('loginError')
+      .classList
+      .add('hidden');
+
+
+    const loginId =
+      $('loginId')
+      .value
+      .trim();
+
+
+    const password =
+      $('loginPassword')
+      .value;
+
+
+    if(!loginId){
+
+      $('loginError').textContent =
+        'Please enter Admission Number / Student ID.';
+
+      $('loginError')
+        .classList
+        .remove('hidden');
+
+      return;
+
+    }
+
+
+    if(!password){
+
+      $('loginError').textContent =
+        'Please enter your password.';
+
+      $('loginError')
+        .classList
+        .remove('hidden');
+
+      return;
+
+    }
+
+
+    const button =
+      $('loginButton');
+
+
+    button.disabled = true;
+
+    button.textContent =
+      'Signing in...';
+
+
+    try{
+
+      const email =
+        await resolveLoginEmail(loginId);
+
+
+      console.log(
+        "Student login email:",
+        email
+      );
+
+
+      /*
+         Firebase Authentication
+      */
+
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+
+      /*
+         Load linked Student Account
+         and Student Master profile.
+      */
+
+      await load();
+
+
+    }catch(error){
+
+      console.error(
+        "LOGIN ERROR:",
+        error
+      );
+
+
+      showErr(error);
+
+
+    }finally{
+
+      button.disabled = false;
+
+      button.textContent =
+        'Sign in';
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+$('logoutBtn')
+.onclick =
+async () => {
+
+  try{
+
+    await signOut(auth);
+
+  }catch(error){
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+  }
+
+};
+
+
+/* =========================================================
+   CHANGE PASSWORD
+========================================================= */
+
+$('changePassword')
+.onclick =
+async () => {
+
+  const p =
+    $('newPassword')
+    .value
+    .trim();
+
+
+  if(p.length < 8){
+
+    $('pwMsg').textContent =
+      'Password must be at least 8 characters.';
+
+    return;
+
+  }
+
+
+  try{
+
+    await updatePassword(
+      auth.currentUser,
+      p
+    );
+
+
+    $('pwMsg').textContent =
+      'Password changed successfully.';
+
+
+    $('newPassword').value = '';
+
+
+  }catch(error){
+
+    console.error(
+      "Password change error:",
+      error
+    );
+
+
+    $('pwMsg').textContent =
+      'Please sign in again before changing the password.';
+
+  }
+
+};
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+document
+.querySelectorAll(
+  '#nav button'
+)
+.forEach(
+  button => {
+
+    button.onclick =
+    () => {
+
+      document
+      .querySelectorAll(
+        '.nav button'
+      )
+      .forEach(
+        x =>
+        x.classList
+        .remove('active')
+      );
+
+
+      button
+      .classList
+      .add('active');
+
+
+      document
+      .querySelectorAll(
+        '.page'
+      )
+      .forEach(
+        p =>
+        p.classList
+        .remove('active')
+      );
+
+
+      const page =
+        $(button.dataset.page);
+
+
+      if(page){
+
+        page
+        .classList
+        .add('active');
+
+      }
+
+    };
+
+  }
+);
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    if(!user){
+
+      $('loginPage')
+        .classList
+        .remove('hidden');
+
+      $('app')
+        .classList
+        .add('hidden');
+
+      return;
+
+    }
+
+
+    /*
+       User is already authenticated.
+
+       Load the linked profile.
+    */
+
+    try{
+
+      await load();
+
+    }catch(error){
+
+      console.error(
+        "Automatic profile loading failed:",
+        error
+      );
+
+
+      /*
+         Do NOT automatically sign out here.
+
+         This lets the user see the real error
+         instead of losing the authenticated state.
+      */
+
+      $('loginPage')
+        .classList
+        .remove('hidden');
+
+      $('app')
+        .classList
+        .add('hidden');
+
+      showErr(error);
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INITIALIZATION MESSAGE
+========================================================= */
+
+console.log(
+  "GPS Pethgam Wagoora Student Portal initialized."
+);
+
+console.log(
+  "Firebase Project:",
+  cfg.projectId
+);
+
+</script>
+
+</body>
+</html>
