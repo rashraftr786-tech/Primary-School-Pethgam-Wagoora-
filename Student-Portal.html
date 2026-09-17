@@ -1,6 +1,619 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Dashboard — Government Primary School Pethgam Wagoora</title>
+<style>
+:root{--blue:#0759a8;--navy:#12355b;--gold:#d39b16;--bg:#f4f7fb;--card:#fff;--muted:#64748b;--border:#dbe4ef;--ok:#16803c;--danger:#c0392b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;background:var(--bg);color:#172033}header{background:linear-gradient(135deg,#0759a8,#12355b);color:#fff;padding:16px}header .head{max-width:1250px;margin:auto;display:flex;gap:14px;align-items:center}header img{width:58px;height:58px;background:#fff;border-radius:11px;padding:4px;object-fit:contain}h1,h2,h3{margin-top:0}.wrap{max-width:1250px;margin:16px auto;padding:0 12px}.card{background:#fff;border:1px solid var(--border);border-radius:15px;padding:16px;margin-bottom:14px;box-shadow:0 4px 16px #12355b10}.login{max-width:540px;margin:50px auto}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:9px;font:inherit}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.hero{background:linear-gradient(135deg,#0759a8,#12355b);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px}.profile{display:grid;grid-template-columns:100px 1fr;gap:15px;align-items:center}.photo{width:100px;height:100px;border-radius:16px;object-fit:cover;border:3px solid #fff;background:#fff}.fallback{width:100px;height:100px;border-radius:16px;background:#fff;color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:rgba(255,255,255,.15);padding:6px 9px;border-radius:999px;font-size:11px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.stat{background:#eef5ff;border:1px solid #d6e7ff;border-radius:12px;padding:12px}.stat b{display:block;font-size:24px;color:var(--blue)}.stat small{color:#475569}.modules{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.module{border:1px solid var(--border);border-radius:13px;padding:14px;background:#fff;text-decoration:none;color:#12355b;box-shadow:0 2px 8px #12355b0b;min-height:100px;display:flex;flex-direction:column;justify-content:space-between}.module:hover{transform:translateY(-2px)}.module strong{font-size:15px}.module span{font-size:12px;color:var(--muted)}.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer;background:var(--blue);color:#fff}.btn.secondary{background:#64748b}.btn.ok{background:var(--ok)}.btn.gold{background:var(--gold)}.btn.danger{background:var(--danger)}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.muted{color:var(--muted);font-size:13px}.status{padding:10px;border-radius:9px;background:#f8fafc;border:1px solid var(--border);margin-top:9px}.empty{text-align:center;padding:20px;color:var(--muted)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--border);padding:8px;text-align:left;font-size:12px;vertical-align:top}th{background:#f1f5f9}.tag{display:inline-block;padding:4px 7px;border-radius:999px;background:#e8f1ff;color:#0757a6;font-size:10px;font-weight:800;margin:2px}.tag.mine{background:#e6f6ec;color:#16803c}.tag.other{background:#fdf3e2;color:#9a6a05}.panel{border:1px solid var(--border);border-radius:12px;padding:13px;background:#fbfdff}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hidden{display:none!important}.geo{border:2px solid #d6e7ff}.oktxt{color:var(--ok);font-weight:800}.errtxt{color:var(--danger);font-weight:800}.dangerbox{background:#fff1f0;border:1px solid #f3c4c0;padding:10px;border-radius:9px}.infobox{background:#eef5ff;border:1px solid #d6e7ff;padding:10px;border-radius:9px;font-size:13px}.reshead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--border);padding-bottom:9px;margin-bottom:9px}.resmeta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.resmeta div{background:#f8fbff;border:1px solid var(--border);border-radius:9px;padding:8px;font-size:12px}.resmeta b{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+@media(max-width:950px){.modules{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.resmeta{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.modules,.stats,.grid,.two{grid-template-columns:1fr}.profile{grid-template-columns:1fr;text-align:center}.chips{justify-content:center}header .head{align-items:flex-start}h1{font-size:19px}.resmeta{grid-template-columns:1fr}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<header><div class="head"><img src="new-logo.png" alt="School Logo"><div><h1>Teacher Personal Dashboard</h1><div>Government Primary School Pethgam Wagoora</div><div style="font-size:12px;opacity:.9">One cloud-connected workspace for teaching, attendance, homework, communication and school duties.</div></div><div style="margin-left:auto"><a href="index.html" style="color:#fff;font-weight:800;text-decoration:none">← Main Dashboard</a></div></div></header>
+<main class="wrap">
+<div id="login" class="card login"><h2>👨‍🏫 Teacher Sign In</h2><p class="muted">Use the Employee ID and personal PIN assigned by the HOI. Your profile, assignments and activity are loaded from Firebase.</p><div class="grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>Employee ID</label><input id="employeeId" autocomplete="username"></div><div class="field"><label>Personal PIN</label><input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"></div></div><div class="actions"><button class="btn ok" onclick="loginStaff()">Sign In</button><button class="btn secondary" onclick="location.href='index.html'">Main Dashboard</button></div><div id="msg" class="status">Connecting to Firebase…</div></div>
+<div id="dash" class="hidden">
+<section class="hero"><div class="profile"><div id="photoWrap"><div id="fallback" class="fallback">T</div></div><div><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><h2 id="welcome">Welcome</h2><div id="designation"></div><div id="speciality" style="margin-top:4px"></div></div><button class="btn secondary" onclick="logout()">Sign Out</button></div><div class="chips"><span class="chip" id="emp"></span><span class="chip" id="qual"></span><span class="chip" id="date"></span></div><div class="chips" id="classChips"></div></div></div></section>
+<section class="stats"><div class="stat"><b id="sToday">—</b><small>Today's Attendance</small></div><div class="stat"><b id="sIn">—</b><small>Check In</small></div><div class="stat"><b id="sOut">—</b><small>Check Out</small></div><div class="stat"><b id="sLeave">0</b><small>Pending Leave</small></div><div class="stat"><b id="sStudents">0</b><small>Assigned Students</small></div><div class="stat"><b id="sHomework">0</b><small>Active Homework</small></div></section>
+<section class="card"><div class="topbar"><div><h2>🎯 My Teacher Workspace</h2><p class="muted">Only tools enabled for this teacher are shown. All records use the same Firebase staff identity.</p></div><button class="btn secondary" onclick="refreshAll()">↻ Refresh</button></div><div id="modules" class="modules" style="margin-top:10px"></div></section>
+<section class="card"><h2>📚 My Teaching Assignment</h2><div class="two"><div class="panel"><b>Assigned Classes</b><div id="assignedClasses" style="margin-top:8px"></div></div><div class="panel"><b>Assigned Subjects</b><div id="assignedSubjects" style="margin-top:8px"></div></div></div><div class="panel" style="margin-top:10px"><b>Student Coverage</b><div id="classCounts" class="muted" style="margin-top:7px">Loading…</div></div></section>
+<section class="card"><div class="topbar"><h2>📝 Teacher Quick Actions</h2></div><div class="actions"><button class="btn" onclick="openModule('attendance')">📋 Mark Staff Attendance</button><button class="btn" onclick="openModule('studentAttendance')">👥 Student Attendance</button><button class="btn" onclick="openModule('homework')">📚 Home Work</button><button class="btn" onclick="openModule('communication')">💬 Student Communication</button><button class="btn" onclick="openModule('marks')">📊 Marks / Results</button><button class="btn" onclick="openModule('timetable')">🕒 My Timetable</button></div></section>
+
+<!-- ============================================================
+     HOMEWORK ASSIGNED TO MY STUDENTS
+     ============================================================ -->
+<section class="card">
+  <div class="topbar">
+    <div>
+      <h2>📚 Homework Assigned to My Students</h2>
+      <p class="muted">Every homework item that reaches the classes you teach — published by you <b>and</b> by other teachers of those classes. Each item shows exactly which students receive it.</p>
+    </div>
+    <button class="btn secondary" onclick="loadHomework()">↻ Refresh</button>
+  </div>
+
+  <div class="stats" style="grid-template-columns:repeat(3,1fr);margin:12px 0">
+    <div class="stat"><b id="hwTotal">0</b><small>Homework items</small></div>
+    <div class="stat"><b id="hwClasses">0</b><small>Classes covered</small></div>
+    <div class="stat"><b id="hwStudents">0</b><small>Students reached</small></div>
+  </div>
+
+  <div class="actions" style="margin-bottom:8px">
+    <button class="btn secondary" id="hwFilterAll" onclick="setHwFilter('all')">All homework</button>
+    <button class="btn secondary" id="hwFilterMine" onclick="setHwFilter('mine')">Only mine</button>
+    <button class="btn secondary" id="hwFilterOthers" onclick="setHwFilter('others')">By other teachers</button>
+  </div>
+
+  <div id="homeworkList"><div class="empty">Loading homework…</div></div>
+
+  <div class="actions">
+    <button class="btn" onclick="showHomeworkForm()">➕ Add Homework</button>
+    <button class="btn secondary" onclick="openModule('homework')">Open Homework Module</button>
+  </div>
+
+  <div id="homeworkForm" class="panel hidden" style="margin-top:10px">
+    <div class="grid">
+      <div class="field"><label>Class</label><select id="hwClass"></select></div>
+      <div class="field"><label>Subject</label><select id="hwSubject"></select></div>
+      <div class="field"><label>Due Date</label><input id="hwDue" type="date"></div>
+    </div>
+    <div class="field" style="margin-top:10px"><label>Homework</label><textarea id="hwText" placeholder="Write today's home work / assignment"></textarea></div>
+    <div class="actions"><button class="btn ok" onclick="saveHomework()">Publish to Firebase</button><button class="btn secondary" onclick="hideHomeworkForm()">Cancel</button></div>
+    <div id="hwMsg" class="status"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     STUDENT RESULTS / MARKSHEETS  (scoped — one student only)
+     ============================================================ -->
+<section class="card">
+  <div class="topbar">
+    <div>
+      <h2>📊 Student Results / Marksheets</h2>
+      <p class="muted">Pick one student from your assigned classes. Only that student's marksheet can be displayed — the lookup is verified against the student's record ID and admission number before anything is rendered.</p>
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="field"><label>Class</label><select id="resClass" onchange="fillResultStudents()"></select></div>
+    <div class="field"><label>Student</label><select id="resStudent"></select></div>
+    <div class="field"><label>Exam / Session (optional filter)</label><input id="resExam" placeholder="e.g. Final Term 2025"></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" onclick="loadStudentResult()">🔎 Show Result</button>
+    <button class="btn secondary" onclick="clearStudentResult()">Clear</button>
+    <button class="btn secondary" onclick="fillResultClasses()">↻ Reload student list</button>
+  </div>
+
+  <div id="resultBox" style="margin-top:12px">
+    <div class="empty">Select a class and a student to view the marksheet.</div>
+  </div>
+
+  <div class="dangerbox" style="margin-top:12px">
+    <b>Why this is safe:</b> the viewer never uses <code>docs[0]</code> or an unverified <code>.limit(1)</code> lookup.
+    A marksheet is only rendered after <code>marksheetBelongsTo()</code> confirms the document's
+    <code>studentRecordId</code> / <code>admissionNo</code> matches the selected student.
+  </div>
+</section>
+
+<section class="card"><h2>💬 Recent Student / Parent Communication</h2><div id="messageList"><div class="empty">Loading messages…</div></div><div class="actions"><button class="btn" onclick="showMessageForm()">✉️ Send Message</button><button class="btn secondary" onclick="openModule('communication')">Open Communication Module</button></div><div id="messageForm" class="panel hidden" style="margin-top:10px"><div class="grid"><div class="field"><label>Admission No. / Student ID</label><input id="msgStudent" placeholder="Student identifier"></div><div class="field"><label>Message Type</label><select id="msgType"><option>Academic</option><option>Homework</option><option>Attendance</option><option>General</option></select></div><div class="field"><label>Priority</label><select id="msgPriority"><option>Normal</option><option>Important</option><option>Urgent</option></select></div></div><div class="field" style="margin-top:10px"><label>Message</label><textarea id="msgText" placeholder="Write message to the student/parent"></textarea></div><div class="actions"><button class="btn ok" onclick="sendMessage()">Send to Firebase</button><button class="btn secondary" onclick="hideMessageForm()">Cancel</button></div><div id="sendMsg" class="status"></div></div></section>
+<section class="card"><h2>📢 Notices & School Information</h2><div id="noticeList"><div class="empty">Loading notices…</div></div></section>
+<section class="card"><h2>🕒 My Recent Timetable</h2><div id="timetableList"><div class="empty">Loading timetable…</div></div></section>
+<section class="card"><h2>📋 My Recent Staff Attendance</h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Check In</th><th>Check Out</th><th>Status</th><th>Approval</th></tr></thead><tbody id="attList"></tbody></table></div></section>
+<section class="card" id="hoiPanel" class="hidden"><div class="topbar"><h2>🏫 HOI Controls</h2><button class="btn secondary" onclick="location.href='Staff-Management.html'">Staff Management</button></div><div class="actions"><button class="btn" onclick="location.href='Staff-Attendence.html'">Staff Attendance & Leave</button><button class="btn" onclick="location.href='Staff-Management.html'">Teacher Management</button><button class="btn secondary" onclick="recordGeofence()">📍 Record School Location</button></div><div id="geoMsg" class="status"></div></section>
+<section class="card"><h3>☁️ Firebase connection</h3><div id="cloudStatus" class="status">Connected to <b>gps-pethgam-wagoora-portal</b>. Data is designed for cross-device use.</div><div class="dangerbox" style="margin-top:9px"><b>Security note:</b> Firestore Rules must give teachers access only to the records they are authorised to manage. This dashboard does not expose or store a Firebase service-account key.</div></section>
+</div></main>
+<script>
+const CONFIG={apiKey:"AIzaSyADB32wJq886NNqMuJk5n1zO45oSi-bdLs",authDomain:"gps-pethgam-wagoora-portal.firebaseapp.com",projectId:"gps-pethgam-wagoora-portal",storageBucket:"gps-pethgam-wagoora-portal.firebasestorage.app",messagingSenderId:"243117067000",appId:"1:243117067000:web:a5320441bcbaed71e4490d",measurementId:"G-WMXPK3229Y"};
+const STAFF='staff',ATT='staffAttendance',LEAVE='staffLeaves',SESSION='GPSPETHGAM_STAFF_SESSION_V2',GEOF='institution/geofence';
+let db,auth,me=null,unsub=null;
+
+/* ---- homework / student caches ---- */
+let hwCache=[],hwFilter='all';
+let studentCountsByClass={},studentsByClass={},allStudentsCache=[];
+let resultStudents=[];
+
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const today=()=>new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+async function hashPin(pin){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+function init(){try{if(!firebase.apps.length)firebase.initializeApp(CONFIG);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(u=>{if(u){$('msg').innerHTML='<span class="oktxt">Firebase connected.</span> Enter your staff credentials.'}else{$('msg').textContent='Firebase connected. Enter your staff credentials.'}})}catch(e){$('msg').textContent='Firebase initialization error: '+e.message}}
+function session(){try{return JSON.parse(sessionStorage.getItem(SESSION)||'null')}catch{return null}}
+async function findStaffIndex(eid){try{const d=await db.collection('staffLoginIndex').doc(eid).get();return d.exists?{id:d.id,...d.data()}:null}catch(e){if(e&&e.code==='permission-denied')throw new Error('LOGIN_INDEX_PERMISSION: Firebase Rules do not allow reading staffLoginIndex. Publish the supplied firestore.rules file, then try again.');throw e}}
+async function loginStaff(){const eid=$('employeeId').value.trim(),pin=$('pin').value.trim();if(!eid||!pin)return $('msg').textContent='Enter Employee ID and PIN.';if(!/^[0-9]{4,8}$/.test(pin))return $('msg').textContent='PIN must contain 4–8 digits.';$('msg').textContent='Checking staff login…';try{await auth.signOut().catch(()=>{});const idx=await findStaffIndex(eid);if(!idx)return $('msg').textContent='Staff login is not configured for this Employee ID. Ask the HOI to link the Firebase account.';const email=String(idx.authEmail||'').trim().toLowerCase();if(!email)return $('msg').textContent='Staff Firebase login email is missing.';await auth.signInWithEmailAndPassword(email,pin);const u=auth.currentUser;if(!u)return $('msg').textContent='Firebase authentication did not complete.';const staffId=String(idx.staffId||'');if(!staffId)return $('msg').textContent='Staff login mapping is incomplete.';const d=await db.collection(STAFF).doc(staffId).get();if(!d.exists||d.data().status==='Inactive'){await auth.signOut();return $('msg').textContent='Staff record not found or inactive.'}const s={id:d.id,...d.data()};if(s.authUid!==u.uid){await auth.signOut();return $('msg').textContent='Firebase account is not correctly linked to this staff record.'}start({...s,authUid:u.uid})}catch(e){$('msg').textContent='Sign in failed: '+esc(e.code?e.code+': '+e.message:e.message)}}
+function start(s){me={id:s.id,...s};sessionStorage.setItem(SESSION,JSON.stringify({staffId:s.id,name:s.name,employeeId:s.employeeId,role:s.accessRole||'Staff',loginAt:new Date().toISOString()}));show();refreshAll();listenProfile()}
+function show(){$('login').classList.add('hidden');$('dash').classList.remove('hidden')}
+function logout(){sessionStorage.removeItem(SESSION);if(unsub)unsub();if(auth)auth.signOut().finally(()=>location.reload());else location.reload()}
+function initials(n){return String(n||'Teacher').split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase()}
+function arrays(s,k1,k2){return s?.[k1]||s?.[k2]||[]}
+function permissions(){const p=me?.permissions||{};const defaults=['attendance','studentAttendance','homework','communication','marks','timetable','notices','calendar','library','profile','documents','workBehaviour'];return defaults.filter(x=>p[x]!==false)}
+const MODS={attendance:['📋','Staff Attendance & Leave','Check in/out, leave and attendance history','Staff-Attendence.html'],studentAttendance:['👥','Student Attendance','Mark and review attendance for assigned students','attendance.html'],homework:['📚','Home Work','Create and manage class homework',''],communication:['💬','Student Communication','Messages to students / parents','student-communication.html'],marks:['📊','Marks / Results','Enter or review academic records','results.html'],timetable:['🕒','My Timetable','View teaching periods and subjects','timetable.html'],notices:['📢','Notices / Circulars','School notices and circulars','notices.html'],calendar:['📅','School Calendar','Holidays, events and academic dates','calendar.html'],library:['📖','Library','Books, issue and return information','library.html'],profile:['🎓','Student Profiles','View student profiles','student-profile.html'],documents:['📁','Student Documents','Student documents and records','student-documents.html'],workBehaviour:['⭐','Work Behaviour','Teacher/student work behaviour records','work-behaviour.html']};
+function openModule(k){const m=MODS[k];if(!m)return;if(k==='homework'){showHomeworkForm();document.getElementById('homeworkForm').scrollIntoView({behavior:'smooth',block:'center'});return}if(k==='marks'){document.getElementById('resClass').scrollIntoView({behavior:'smooth',block:'center'});return}if(m[3])location.href=m[3]}
+function renderProfile(){const s=me;const classes=arrays(s,'assignedClasses','classes'),subs=arrays(s,'assignedSubjects','subjects');$('welcome').textContent='Welcome, '+(s.name||'Teacher');$('designation').textContent=(s.designation||s.role||'Teacher')+' • '+(s.accessRole==='HOI'?'HOI':'Teacher');$('speciality').textContent=s.speciality||'Teaching workspace';$('emp').textContent='Employee ID: '+(s.employeeId||'—');$('qual').textContent='Qualification: '+(s.qualification||'—');$('date').textContent='Joined: '+(s.joiningDate||'—');$('classChips').innerHTML=classes.map(x=>`<span class="chip">${esc(x)}</span>`).join('')||'<span class="chip">No classes assigned yet</span>';if(s.photo||s.photoUrl)$('photoWrap').innerHTML=`<img class="photo" src="${esc(s.photo||s.photoUrl)}" alt="Teacher photo">`;else $('fallback').textContent=initials(s.name);$('assignedClasses').innerHTML=classes.map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'No classes assigned';$('assignedSubjects').innerHTML=subs.map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'No subjects assigned';renderModules();if(s.accessRole==='HOI')$('hoiPanel').classList.remove('hidden')}
+function renderModules(){const allowed=permissions();$('modules').innerHTML=allowed.map(k=>{const m=MODS[k];return `<a class="module" href="${m[3]||'#'}" onclick="if('${k}'==='homework'||'${k}'==='marks'){openModule('${k}');return false}"><strong>${m[0]} ${m[1]}</strong><span>${m[2]}</span></a>`}).join('')}
+async function listenProfile(){if(unsub)unsub();unsub=db.collection(STAFF).doc(me.id).onSnapshot(d=>{if(!d.exists||d.data().status==='Inactive')return logout();me={id:d.id,...d.data()};renderProfile();})}
+async function safeGet(path,queryFn){try{return await queryFn(path)}catch(e){console.warn('Firebase read failed',path,e.message);return[]}}
+async function getAll(collectionName){try{const s=await db.collection(collectionName).get();return s.docs.map(d=>({id:d.id,...d.data()}))}catch{return[]}}
+
+/* ================================================================
+   REFRESH
+   ================================================================ */
+async function refreshAll(){
+  if(!me||!db)return;
+  renderProfile();
+  await loadStudents();                       // must run first — homework uses the class cache
+  await Promise.all([
+    loadStaffAttendance(),loadLeaves(),loadHomework(),
+    loadMessages(),loadNotices(),loadTimetable()
+  ]);
+  fillResultClasses();
+}
+
+async function loadStaffAttendance(){try{const s=await db.collection(ATT).where('staffId','==',me.id).get();const a=s.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(y.date||'').localeCompare(String(x.date||'')));const t=a.find(x=>x.date===today())||{};$('sToday').textContent=t.checkOut?'Completed':t.checkIn?'Present':'Not Marked';$('sIn').textContent=t.checkIn||'—';$('sOut').textContent=t.checkOut||'—';$('attList').innerHTML=a.slice(0,8).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.checkIn||'—')}</td><td>${esc(x.checkOut||'—')}</td><td>${esc(x.status||'—')}</td><td>${esc(x.approval||'—')}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No attendance records.</td></tr>'}catch(e){$('attList').innerHTML='<tr><td colspan="5">Attendance could not be loaded.</td></tr>'}}
+async function loadLeaves(){try{const s=await db.collection(LEAVE).where('staffId','==',me.id).get();$('sLeave').textContent=s.docs.filter(d=>(d.data().decision||'Pending')==='Pending').length}catch{$('sLeave').textContent='—'}}
+
+/* ================================================================
+   STUDENTS  — build per-class roster + counts
+   ================================================================ */
+function studentName(s){return s.name||[s.studentFirst,s.studentMiddle,s.studentLast].filter(Boolean).join(' ')||s.studentName||'Student'}
+function studentClassOf(s){return String(s.classJoining||s.class||s.className||s.currentClass||'').trim()}
+
+async function loadStudents(){
+  const classes=arrays(me,'assignedClasses','classes');
+  studentCountsByClass={};studentsByClass={};allStudentsCache=[];
+
+  if(!classes.length){
+    $('sStudents').textContent='0';
+    $('classCounts').textContent='Assign classes in Staff Management.';
+    fillResultClasses();
+    return;
+  }
+  classes.forEach(c=>{studentCountsByClass[c]=0;studentsByClass[c]=[];});
+
+  try{
+    const snap=await db.collection('students').get();
+    const students=snap.docs.map(d=>({id:d.id,...d.data()}));
+    allStudentsCache=students;
+    students.forEach(s=>{
+      const c=studentClassOf(s);
+      if(classes.includes(c)){studentCountsByClass[c]++;studentsByClass[c].push(s);}
+    });
+    Object.keys(studentsByClass).forEach(c=>{
+      studentsByClass[c].sort((a,b)=>studentName(a).localeCompare(studentName(b)));
+    });
+    $('sStudents').textContent=Object.values(studentCountsByClass).reduce((a,b)=>a+b,0);
+    $('classCounts').innerHTML=Object.entries(studentCountsByClass).map(([c,n])=>`<span class="tag">${esc(c)}: ${n}</span>`).join('')||'No matching student records.';
+  }catch(e){
+    $('sStudents').textContent='—';
+    $('classCounts').innerHTML='Student master could not be read (Firestore rules may restrict teachers from reading <code>students</code>). Homework is still listed by class.';
+  }
+  fillResultClasses();
+}
+
+/* ================================================================
+   HOMEWORK ASSIGNED TO MY STUDENTS
+   ================================================================ */
+function hwClassOf(x){return String(x.class||x.className||x.classJoining||x.targetClass||x.grade||'').trim()}
+function hwSubjectOf(x){return String(x.subject||x.subjectName||x.subjectId||'').trim()}
+function hwTextOf(x){return x.text||x.description||x.question||x.instructions||x.homework||x.details||x.body||''}
+function hwDueOf(x){return x.dueDate||x.due||x.submissionDate||x.lastDate||''}
+function hwTitleOf(x){return x.title||x.heading||hwSubjectOf(x)||'Homework'}
+function hwDateOf(x){
+  const c=x.createdAt||x.updatedAt||x.publishedAt;
+  if(c&&typeof c.toDate==='function')return c.toDate().toISOString();
+  return String(x.date||c||'');
+}
+function hwStatusOf(x){return String(x.status||x.state||'Published')}
+
+async function loadHomework(){
+  hwCache=[];
+  const classes=arrays(me,'assignedClasses','classes');
+  const seen=new Set();
+
+  /* 1. Homework created by this teacher */
+  for(const col of ['homework','assignments']){
+    try{
+      const s=await db.collection(col).where('teacherId','==',me.id).get();
+      s.docs.forEach(d=>{
+        if(seen.has(d.id))return;
+        seen.add(d.id);
+        hwCache.push({id:d.id,_mine:true,_col:col,...d.data()});
+      });
+    }catch(e){}
+  }
+
+  /* 2. Homework targeted at the classes this teacher covers (any teacher) */
+  for(let i=0;i<classes.length;i+=10){
+    const chunk=classes.slice(i,i+10);
+    for(const col of ['homework','assignments']){
+      try{
+        const s=await db.collection(col).where('class','in',chunk).get();
+        s.docs.forEach(d=>{
+          if(seen.has(d.id))return;
+          seen.add(d.id);
+          hwCache.push({id:d.id,_mine:false,_col:col,...d.data()});
+        });
+      }catch(e){/* teachers may not read other teachers' homework under current rules */}
+    }
+  }
+
+  hwCache.sort((a,b)=>String(hwDateOf(b)).localeCompare(String(hwDateOf(a))));
+  renderHomework();
+}
+
+function setHwFilter(f){
+  hwFilter=f;
+  ['all','mine','others'].forEach(k=>{
+    const b=$('hwFilter'+k.charAt(0).toUpperCase()+k.slice(1));
+    if(b)b.className='btn'+(k===f?'':' secondary');
+  });
+  renderHomework();
+}
+
+function renderHomework(){
+  const el=$('homeworkList');if(!el)return;
+
+  const visible=hwCache.filter(x=>hwFilter==='all'||(hwFilter==='mine'?x._mine:!x._mine));
+
+  /* summary (always based on the full cache) */
+  const classesCovered=new Set();
+  let studentsReached=0;
+  const counted=new Set();
+  hwCache.forEach(x=>{
+    const c=hwClassOf(x);
+    if(!c)return;
+    classesCovered.add(c);
+    if(!counted.has(c)&&typeof studentCountsByClass[c]==='number'){
+      counted.add(c);
+      studentsReached+=studentCountsByClass[c];
+    }
+  });
+  $('hwTotal').textContent=hwCache.length;
+  $('hwClasses').textContent=classesCovered.size;
+  $('hwStudents').textContent=studentsReached||'—';
+  $('sHomework').textContent=hwCache.length;
+
+  if(!visible.length){
+    el.innerHTML='<div class="empty">No homework is currently assigned to your students'
+      +(hwFilter==='all'?'':hwFilter==='mine'?' by you':' by other teachers')+'.</div>';
+    return;
+  }
+
+  el.innerHTML=visible.slice(0,30).map(x=>{
+    const cls=hwClassOf(x)||'—';
+    const sub=hwSubjectOf(x)||'General';
+    const n=studentCountsByClass[cls];
+    const roster=studentsByClass[cls]||[];
+    const kids=roster.slice(0,8).map(s=>studentName(s));
+    const reach=(typeof n==='number')
+      ? `<b>${n}</b> student${n===1?'':'s'} of <b>${esc(cls)}</b>`
+      : `Class <b>${esc(cls)}</b> (roster unavailable)`;
+    const byTag=x._mine
+      ? '<span class="tag mine">My homework</span>'
+      : `<span class="tag other">By ${esc(x.teacherName||x.teacher||'another teacher')}</span>`;
+    const st=hwStatusOf(x);
+    const stTag=/closed|expired|archived/i.test(st)
+      ? `<span class="tag other">${esc(st)}</span>`
+      : `<span class="tag mine">${esc(st)}</span>`;
+
+    return `<div class="panel" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+        <div>
+          <b>${esc(hwTitleOf(x))}</b>
+          <span class="tag">${esc(cls)}</span>
+          <span class="tag">${esc(sub)}</span>
+          ${byTag} ${stTag}
+        </div>
+        <div class="muted">Due: <b>${esc(hwDueOf(x)||'—')}</b></div>
+      </div>
+      <div style="margin-top:6px">${esc(hwTextOf(x))}</div>
+      <div class="muted" style="margin-top:6px">
+        👥 Assigned to ${reach}${kids.length?' — '+esc(kids.join(', '))+(roster.length>kids.length?' …':'') : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showHomeworkForm(){
+  $('homeworkForm').classList.remove('hidden');
+  const cls=arrays(me,'assignedClasses','classes'),sub=arrays(me,'assignedSubjects','subjects');
+  $('hwClass').innerHTML=cls.map(x=>`<option>${esc(x)}</option>`).join('');
+  $('hwSubject').innerHTML=sub.map(x=>`<option>${esc(x)}</option>`).join('');
+  if(!cls.length)$('hwClass').innerHTML='<option>No class assigned</option>';
+  if(!sub.length)$('hwSubject').innerHTML='<option>General</option>';
+}
+function hideHomeworkForm(){$('homeworkForm').classList.add('hidden')}
+
+async function saveHomework(){
+  const text=$('hwText').value.trim();
+  if(!text)return $('hwMsg').textContent='Write the homework first.';
+  if(!me||!auth?.currentUser)return $('hwMsg').innerHTML='<span class="errtxt">You are not authenticated. Please sign in again.</span>';
+  if(me.authUid&&me.authUid!==auth.currentUser.uid)return $('hwMsg').innerHTML='<span class="errtxt">Staff/Firebase account mismatch.</span>';
+  try{
+    await db.collection('homework').add({
+      teacherId:me.id,
+      teacherAuthUid:auth.currentUser.uid,
+      teacherName:me.name||'',
+      class:$('hwClass').value,
+      className:$('hwClass').value,
+      subject:$('hwSubject').value,
+      dueDate:$('hwDue').value||'',
+      text,
+      status:'Published',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('hwMsg').innerHTML='<span class="oktxt">Homework published. It now appears under “Homework Assigned to My Students”.</span>';
+    $('hwText').value='';
+    hideHomeworkForm();
+    await loadHomework();
+  }catch(e){
+    $('hwMsg').innerHTML='<span class="errtxt">Could not publish:</span> '+esc(e.code?e.code+': '+e.message:e.message);
+  }
+}
+
+/* ================================================================
+   STUDENT RESULTS / MARKSHEETS — STRICTLY SCOPED
+   ================================================================
+   ROOT CAUSE OF "WRONG STUDENT'S RESULT":
+   A result page that reads  db.collection('marksheets').get()  and then
+   renders  docs[0]  (or a .limit(1) query, or a doc id taken from the URL
+   without verification) will show whichever document happens to come back
+   first — which is another student's marksheet.
+
+   THE RULE FOLLOWED BELOW:
+   1. Resolve the student's real identity keys (record id + admission no).
+   2. Fetch by those keys only.
+   3. NEVER render a document until marksheetBelongsTo() confirms ownership.
+   ================================================================ */
+
+/** Collect every identifier a student record may be known by. */
+function studentKeys(s){
+  if(!s)return{ids:[],admissions:[]};
+  const ids=[s.id,s.studentRecordId,s.recordId,s.docId,s.studentDocId]
+    .filter(Boolean).map(v=>String(v).trim()).filter(Boolean);
+  const admissions=[s.admissionNo,s.admissionNumber,s.admissionId,s.sourceAdmissionId,s.admission,s.rollNo]
+    .filter(Boolean).map(v=>String(v).trim()).filter(Boolean);
+  return{ids:[...new Set(ids)],admissions:[...new Set(admissions)]};
+}
+
+/** True only when the marksheet document provably belongs to this student. */
+function marksheetBelongsTo(doc,s){
+  if(!doc||!s)return false;
+  const d=doc.data?doc.data():(doc||{});
+  const k=studentKeys(s);
+
+  const owner=[d.studentRecordId,d.studentId,d.studentDocId,d.recordId,d.student]
+    .filter(Boolean).map(v=>String(v).trim());
+  const adm=[d.admissionNo,d.admissionNumber,d.admissionId,d.sourceAdmissionId]
+    .filter(Boolean).map(v=>String(v).trim());
+
+  if(owner.length&&owner.some(v=>k.ids.includes(v)))return true;
+  if(adm.length&&adm.some(v=>k.admissions.includes(v)))return true;
+
+  const docId=String(doc.id||'').trim();
+  if(docId&&(k.ids.includes(docId)||k.admissions.includes(docId)))return true;
+
+  // Ambiguous document (no ownership fields at all) — refuse to display it.
+  return false;
+}
+
+/** Fetch the marksheet that belongs to exactly this student, or null. */
+async function fetchMarksheetFor(s){
+  const k=studentKeys(s);
+
+  /* 1. Direct document IDs: marksheets/{admissionNo} or marksheets/{recordId} */
+  for(const id of [...k.admissions,...k.ids]){
+    try{
+      const d=await db.collection('marksheets').doc(id).get();
+      if(d.exists&&marksheetBelongsTo(d,s))return{id:d.id,...d.data()};
+    }catch(e){}
+  }
+
+  /* 2. Query by student record id fields */
+  for(const field of ['studentRecordId','studentId','studentDocId','recordId']){
+    for(const id of k.ids){
+      try{
+        const q=await db.collection('marksheets').where(field,'==',id).limit(10).get();
+        const hit=q.docs.find(d=>marksheetBelongsTo(d,s));
+        if(hit)return{id:hit.id,...hit.data()};
+      }catch(e){}
+    }
+  }
+
+  /* 3. Query by admission number fields */
+  for(const field of ['admissionNo','admissionNumber','admissionId']){
+    for(const a of k.admissions){
+      try{
+        const q=await db.collection('marksheets').where(field,'==',a).limit(10).get();
+        const hit=q.docs.find(d=>marksheetBelongsTo(d,s));
+        if(hit)return{id:hit.id,...hit.data()};
+      }catch(e){}
+    }
+  }
+  return null;
+}
+
+function fillResultClasses(){
+  const classes=arrays(me,'assignedClasses','classes');
+  const sel=$('resClass');
+  if(!sel)return;
+  const prev=sel.value;
+  sel.innerHTML=classes.map(c=>`<option>${esc(c)}</option>`).join('')||'<option value="">No class assigned</option>';
+  if(prev&&classes.includes(prev))sel.value=prev;
+  fillResultStudents();
+}
+
+function fillResultStudents(){
+  const cls=$('resClass')?$('resClass').value:'';
+  resultStudents=studentsByClass[cls]||[];
+  const sel=$('resStudent');
+  if(!sel)return;
+  sel.innerHTML=resultStudents.map(s=>{
+    const adm=s.admissionNo||s.admissionNumber||s.admissionId||'';
+    return `<option value="${esc(s.id)}">${esc(studentName(s))}${adm?' — '+esc(adm):''}</option>`;
+  }).join('')||'<option value="">No students available</option>';
+}
+
+function clearStudentResult(){
+  $('resultBox').innerHTML='<div class="empty">Select a class and a student to view the marksheet.</div>';
+}
+
+function extractMarkRows(sheet){
+  const out=[];
+  const push=(name,marks,max,grade)=>{
+    out.push({
+      name:String(name==null||name===''?'—':name),
+      marks:(marks===0||marks)?marks:'—',
+      max:(max===0||max)?max:'—',
+      grade:grade==null||grade===''?'—':grade
+    });
+  };
+
+  let list=sheet.subjects||sheet.subjectMarks||sheet.marks||sheet.results||sheet.marksheet||sheet.marksObtained||null;
+
+  if(Array.isArray(list)){
+    list.forEach(x=>{
+      if(x==null)return;
+      if(typeof x==='string'){push(x,'—','—','—');return;}
+      if(typeof x!=='object'){push(String(x),'—','—','—');return;}
+      push(
+        x.subject||x.name||x.subjectName||x.title,
+        x.marks??x.obtained??x.score??x.marksObtained??x.obtainedMarks,
+        x.maxMarks??x.total??x.max??x.outOf??x.totalMarks,
+        x.grade??x.result??x.remarks
+      );
+    });
+  }else if(list&&typeof list==='object'){
+    Object.entries(list).forEach(([k,v])=>{
+      if(v&&typeof v==='object'){
+        push(k,v.marks??v.obtained??v.score,v.max??v.total??v.outOf,v.grade??v.result);
+      }else{
+        push(k,v,'—','—');
+      }
+    });
+  }
+  return out;
+}
+
+function renderMarksheet(sheet,s){
+  const box=$('resultBox');
+  const rows=extractMarkRows(sheet);
+
+  const numeric=rows.filter(r=>typeof r.marks==='number'&&typeof r.max==='number');
+  const obtained=numeric.reduce((a,r)=>a+r.marks,0);
+  const maxTotal=numeric.reduce((a,r)=>a+r.max,0);
+
+  const totalShown=sheet.totalMarks??sheet.total??sheet.obtainedMarks??(numeric.length?obtained:'—');
+  const maxShown=sheet.maxMarks??sheet.grandTotal??(numeric.length?maxTotal:'—');
+  const pct=(typeof totalShown==='number'&&typeof maxShown==='number'&&maxShown>0)
+    ? ((totalShown/maxShown)*100).toFixed(2)+'%'
+    : (sheet.percentage??sheet.percent??'—');
+  const grade=sheet.grade??sheet.overallGrade??sheet.result??'—';
+
+  const meta=[
+    ['Student',studentName(s)],
+    ['Admission No.',s.admissionNo||s.admissionNumber||s.admissionId||'—'],
+    ['Class',studentClassOf(s)||'—'],
+    ['Exam / Session',sheet.exam||sheet.examName||sheet.term||sheet.session||sheet.examination||'—']
+  ];
+
+  box.innerHTML=`
+    <div class="panel">
+      <div class="reshead">
+        <div>
+          <b style="font-size:15px">${esc(studentName(s))}</b>
+          <span class="tag mine">✔ Verified marksheet</span>
+        </div>
+        <div class="muted">Marksheet ID: ${esc(sheet.id||'—')}</div>
+      </div>
+
+      <div class="resmeta">
+        ${meta.map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join('')}
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Subject</th><th>Marks Obtained</th><th>Max Marks</th><th>Grade / Remark</th></tr></thead>
+          <tbody>
+            ${rows.length?rows.map((r,i)=>`<tr>
+                <td>${i+1}</td>
+                <td>${esc(r.name)}</td>
+                <td><b>${esc(r.marks)}</b></td>
+                <td>${esc(r.max)}</td>
+                <td>${esc(r.grade)}</td>
+              </tr>`).join('')
+            :'<tr><td colspan="5" class="empty">No subject-wise marks stored in this marksheet.</td></tr>'}
+          </tbody>
+          ${rows.length?`<tfoot><tr>
+              <th colspan="2">Total</th>
+              <th>${esc(totalShown)}</th>
+              <th>${esc(maxShown)}</th>
+              <th>${esc(grade)}</th>
+            </tr></tfoot>`:''}
+        </table>
+      </div>
+
+      <div class="chips" style="margin-top:10px">
+        <span class="chip" style="background:#eef5ff;color:#0757a6;font-weight:800">Percentage: ${esc(pct)}</span>
+        <span class="chip" style="background:#eef5ff;color:#0757a6;font-weight:800">Overall Grade: ${esc(grade)}</span>
+      </div>
+    </div>`;
+}
+
+async function loadStudentResult(){
+  const id=$('resStudent')?$('resStudent').value:'';
+  const s=resultStudents.find(x=>x.id===id);
+  if(!s){
+    $('resultBox').innerHTML='<div class="empty">Select a class and a student first.</div>';
+    return;
+  }
+  $('resultBox').innerHTML='<div class="empty">Looking up the marksheet for '+esc(studentName(s))+'…</div>';
+
+  let sheet=null;
+  try{ sheet=await fetchMarksheetFor(s); }catch(e){ console.warn('Marksheet lookup failed',e.message); }
+
+  if(!sheet){
+    $('resultBox').innerHTML=`<div class="empty">
+      No marksheet found for <b>${esc(studentName(s))}</b>.<br>
+      <span class="muted">Checked record IDs: ${esc(studentKeys(s).ids.join(', ')||'—')} ·
+      admission numbers: ${esc(studentKeys(s).admissions.join(', ')||'—')}</span>
+    </div>`;
+    return;
+  }
+
+  /* Final safety gate — never render a document that is not provably this student's. */
+  if(!marksheetBelongsTo({id:sheet.id,...sheet},s)){
+    $('resultBox').innerHTML='<div class="errtxt" style="padding:14px">Blocked: the fetched marksheet could not be verified as belonging to '+esc(studentName(s))+'.</div>';
+    return;
+  }
+
+  renderMarksheet(sheet,s);
+}
+
+/* ================================================================
+   MESSAGES / NOTICES / TIMETABLE
+   ================================================================ */
+function showMessageForm(){$('messageForm').classList.remove('hidden')}function hideMessageForm(){$('messageForm').classList.add('hidden')}
+async function loadMessages(){let rows=[];for(const col of ['teacherMessages','communications']){try{const s=await db.collection(col).where('teacherId','==',me.id).get();rows=rows.concat(s.docs.map(d=>({id:d.id,...d.data()})))}catch{}}rows.sort((a,b)=>String(b.createdAt||b.date||'').localeCompare(String(a.createdAt||a.date||'')));$('messageList').innerHTML=rows.slice(0,8).map(x=>`<div class="panel" style="margin-bottom:7px"><b>${esc(x.type||x.messageType||'Message')}</b> <span class="tag">${esc(x.priority||'Normal')}</span><div>${esc(x.message||x.text||x.body||'')}</div><div class="muted">To: ${esc(x.studentId||x.admissionNo||x.recipientId||'Student')} · ${esc(x.createdAt?.toDate?x.createdAt.toDate().toLocaleString():x.date||'')}</div></div>`).join('')||'<div class="empty">No recent messages.</div>'}
+async function sendMessage(){const student=$('msgStudent').value.trim(),text=$('msgText').value.trim();if(!student||!text)return $('sendMsg').textContent='Enter the student identifier and message.';if(!me||!auth?.currentUser)return $('sendMsg').innerHTML='<span class="errtxt">You are not authenticated. Please sign in again.</span>';try{await db.collection('teacherMessages').add({teacherId:me.id,teacherAuthUid:auth.currentUser.uid,teacherName:me.name||'',studentId:student,type:$('msgType').value,priority:$('msgPriority').value,message:text,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:'Sent'});$('sendMsg').innerHTML='<span class="oktxt">Message saved to Firebase.</span>';hideMessageForm();$('msgText').value='';await loadMessages()}catch(e){$('sendMsg').innerHTML='<span class="errtxt">Could not send:</span> '+esc(e.code?e.code+': '+e.message:e.message)}}
+async function loadNotices(){try{const rows=await getAll('notices');rows.sort((a,b)=>String(b.date||b.createdAt||'').localeCompare(String(a.date||a.createdAt||'')));$('noticeList').innerHTML=rows.slice(0,6).map(x=>`<div class="panel" style="margin-bottom:7px"><b>${esc(x.title||x.heading||'School Notice')}</b><div>${esc(x.message||x.body||x.text||'')}</div><div class="muted">${esc(x.date||'')}</div></div>`).join('')||'<div class="empty">No notices available.</div>'}catch{$('noticeList').innerHTML='<div class="empty">Notices unavailable.</div>'}}
+async function loadTimetable(){try{const rows=await getAll('timetables');const subs=arrays(me,'assignedSubjects','subjects'),classes=arrays(me,'assignedClasses','classes');const mine=rows.filter(x=>{const t=String(x.teacherId||x.teacher||x.staffId||x.teacherName||'');const c=String(x.class||x.className||x.classJoining||'');const sub=String(x.subject||x.subjectName||'');return t===me.id||t===me.employeeId||t.toLowerCase()===String(me.name||'').toLowerCase()||(classes.includes(c)&&(!subs.length||subs.includes(sub)))});$('timetableList').innerHTML=mine.slice(0,15).map(x=>`<div class="panel" style="margin-bottom:7px"><b>${esc(x.day||x.weekday||'Day')}</b> · ${esc(x.period||x.time||'Period')} · <span class="tag">${esc(x.subject||'Subject')}</span><div class="muted">Class: ${esc(x.class||x.className||'—')} · Teacher: ${esc(x.teacherName||x.teacher||me.name||'')}</div></div>`).join('')||'<div class="empty">No matching timetable entries. Use the Timetable module to assign teaching periods.</div>'}catch{$('timetableList').innerHTML='<div class="empty">Timetable unavailable.</div>'}}
+
+function recordGeofence(){if(me?.accessRole!=='HOI')return;const g=navigator.geolocation;if(!g)return $('geoMsg').textContent='GPS not available.';g.getCurrentPosition(p=>db.doc(GEOF).set({lat:p.coords.latitude,lon:p.coords.longitude,accuracy:p.coords.accuracy||0,radius:20,recordedAt:firebase.firestore.FieldValue.serverTimestamp(),recordedBy:me.name||me.employeeId},{merge:true}).then(()=>$('geoMsg').innerHTML='<span class="oktxt">School geofence recorded at 20 m radius.</span>').catch(e=>$('geoMsg').textContent=e.message),()=>{$('geoMsg').textContent='Could not obtain GPS. Enable location permission.'},{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
+
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')loginStaff()});
+init();
+const ss=session();
+if(ss?.staffId){setTimeout(()=>{if(db&&auth&&!me&&auth.currentUser){db.collection(STAFF).doc(ss.staffId).get().then(d=>{if(d.exists&&d.data().status!=='Inactive'&&d.data().authUid===auth.currentUser.uid){me={id:d.id,...d.data()};show();refreshAll();listenProfile()}}).catch(()=>{})}},700)}
+</script></body></html>
+   
+                                                                   <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
