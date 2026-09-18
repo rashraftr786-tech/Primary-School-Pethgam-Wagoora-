@@ -57,6 +57,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 <h2>⚡ Bulk Student Account Creation</h2>
 <div class="bulk-actions">
 <button id="generateAllBtn" class="purple">Generate Accounts for All Students</button>
+<button id="repairPhotosBtn" class="orange">Repair / Upload Missing Photos</button>
 <button id="downloadCsvBtn" class="green" disabled>Download Account List</button>
 </div>
 </div>
@@ -115,6 +116,30 @@ The password is generated only for account creation and is not stored in Firesto
 <div id="accountMessage" class="message"></div>
 </div>
 
+<!-- ============ FIX 3: Student Photograph card ============ -->
+<div id="photoCard" class="card hidden">
+<h2>3. Student Photograph</h2>
+<div class="warning">
+Photographs are uploaded to Cloudinary using the unsigned preset. Only the resulting HTTPS URL is stored in Firestore — never a base64 string.
+</div>
+<div class="grid">
+<div>
+<label for="photoFile">Choose Image (JPG / PNG / WEBP, max 8 MB)</label>
+<input id="photoFile" type="file" accept="image/*">
+</div>
+<div>
+<label>Current / Preview</label>
+<img id="photoPreview" alt="Student photo"
+style="max-width:150px;max-height:150px;border-radius:10px;border:1px solid var(--line);display:none;object-fit:cover">
+<div id="photoMeta" class="small" style="margin-top:6px">—</div>
+</div>
+</div>
+<button id="uploadPhotoBtn" class="orange">Upload &amp; Save Photograph</button>
+<button id="removePhotoBtn" class="red">Remove Photograph</button>
+<div id="photoMessage" class="message"></div>
+</div>
+<!-- ====================================================== -->
+
 <div id="resultCard" class="card hidden">
 <h2>Account Status</h2>
 <div id="resultMessage" class="message"></div>
@@ -136,6 +161,9 @@ The password is generated only for account creation and is not stored in Firesto
 <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js"></script>
+<!-- ============ FIX 1: Load Cloudinary helper ============ -->
+<script src="./cloudinary-upload.js"></script>
+<!-- ======================================================= -->
 
 <script>
 (function(){
@@ -153,6 +181,7 @@ const studentSearch=$("studentSearch"),studentSelect=$("studentSelect"),studentI
 const loginIdPreview=$("loginIdPreview"),firebaseEmailPreview=$("firebaseEmailPreview"),studentPassword=$("studentPassword"),studentPassword2=$("studentPassword2"),createAccountBtn=$("createAccountBtn"),accountMessage=$("accountMessage");
 const resultCard=$("resultCard"),resultMessage=$("resultMessage"),resultDetails=$("resultDetails"),logoutBtn=$("logoutBtn");
 const generateAllBtn=$("generateAllBtn"),downloadCsvBtn=$("downloadCsvBtn"),bulkMessage=$("bulkMessage"),bulkProgressBar=$("bulkProgressBar"),bulkTableWrap=$("bulkTableWrap"),bulkTableBody=$("bulkTableBody");
+const photoCard=$("photoCard"),photoFile=$("photoFile"),photoPreview=$("photoPreview"),photoMeta=$("photoMeta"),uploadPhotoBtn=$("uploadPhotoBtn"),removePhotoBtn=$("removePhotoBtn"),photoMessage=$("photoMessage");
 
 let allStudents=[],selectedStudent=null,bulkResults=[];
 
@@ -166,6 +195,30 @@ function motherOf(s){return val(s,"motherName","mother","mother_name","Mother Na
 function loginIdOf(s){return val(s,"studentId","schoolStudentId","schoolStudentID","School STC ID","stcId","admissionNo","admissionNumber","admNo")}
 function admissionOf(s){return val(s,"admissionNo","admissionNumber","admNo","Admission No","Admission Number")}
 function rollOf(s){return val(s,"rollNo","rollNumber","Roll No","Roll No.","Roll Number","RollNo","roll_no","roll","classRollNo","classRollNumber","classRoll","Class Roll No","Class Roll Number")}
+
+/* ============ FIX 2 (Part A): Photograph helpers ============ */
+const PHOTO_URL_KEYS=["photoUrl","photoURL","imageUrl","image","cloudinaryUrl","photoSecureUrl","secureUrl","url"];
+const PHOTO_RAW_KEYS=["photo","photoUrl","photoURL","image","imageUrl","photoBase64","imageBase64","photograph"];
+
+function isHttpUrl(v){return /^https?:\/\//i.test(String(v||"").trim())}
+function isDataUrl(v){return /^data:image\//i.test(String(v||"").trim())}
+
+// Returns whatever photo value the master record has — may be base64 or an HTTPS URL.
+function photoRawOf(s){
+ const direct=val(s,...PHOTO_RAW_KEYS);
+ if(direct)return direct;
+ for(const k of PHOTO_URL_KEYS){const v=val(s,k);if(v)return v}
+ return "";
+}
+// Returns ONLY a real HTTPS URL (or "" if none / if it is base64).
+function resolvedPhotoUrl(s){
+ const raw=photoRawOf(s);
+ if(isHttpUrl(raw))return raw;
+ for(const k of PHOTO_URL_KEYS){const v=val(s,k);if(isHttpUrl(v))return v}
+ return "";
+}
+/* ========================================================== */
+
 function classOf(s){return val(s,"classJoining","class","className","grade")}
 function emailFor(id){return "student-"+String(id).trim().toLowerCase().replace(/[^a-z0-9._-]/g,"-")+"@student.pethgam.local"}
 function autoPassword(s){
@@ -222,12 +275,17 @@ function render(list){
  list.forEach(s=>{const o=document.createElement("option");o.value=s.id;const lid=loginIdOf(s),adm=admissionOf(s);o.textContent=(nameOf(s)||"Unnamed Student")+(lid?" — "+lid:(adm?" — Adm. "+adm:""));studentSelect.appendChild(o)})
 }
 studentSearch.oninput=()=>{const q=studentSearch.value.trim().toLowerCase();render(!q?allStudents:allStudents.filter(s=>[nameOf(s),loginIdOf(s),admissionOf(s),fatherOf(s)].join(" ").toLowerCase().includes(q)))}
-studentSelect.onchange=()=>{selectedStudent=allStudents.find(s=>s.id===studentSelect.value)||null;if(!selectedStudent){studentInfo.style.display="none";accountCard.classList.add("hidden");return}displayStudent(selectedStudent)}
+studentSelect.onchange=()=>{selectedStudent=allStudents.find(s=>s.id===studentSelect.value)||null;if(!selectedStudent){studentInfo.style.display="none";accountCard.classList.add("hidden");photoCard.classList.add("hidden");return}displayStudent(selectedStudent)}
 function displayStudent(s){
  const lid=loginIdOf(s),adm=admissionOf(s);
  $("infoName").textContent=nameOf(s)||"—";$("infoStudentId").textContent=lid||"—";$("infoAdmissionNo").textContent=adm||"—";$("infoClass").textContent=classOf(s)||"—";$("infoRoll").textContent=rollOf(s)||"—";$("infoFather").textContent=fatherOf(s)||"—";$("infoMother").textContent=motherOf(s)||"—";
  studentInfo.style.display="block";loginIdPreview.value=lid||adm||"";firebaseEmailPreview.value=lid?emailFor(lid):"";accountCard.classList.remove("hidden");hide(accountMessage);resultCard.classList.add("hidden");
- createAccountBtn.disabled=!lid;if(!lid)msg(accountMessage,"This student does not have a Student ID or Admission Number. Please add one in the Student Master before creating the account.","error")
+ createAccountBtn.disabled=!lid;if(!lid)msg(accountMessage,"This student does not have a Student ID or Admission Number. Please add one in the Student Master before creating the account.","error");
+ /* ---- Photo card reveal ---- */
+ photoCard.classList.remove("hidden");
+ hide(photoMessage);
+ photoFile.value="";
+ refreshPhotoPreview(s);
 }
 $("useAutoPasswordBtn").onclick=()=>{if(!selectedStudent)return;const p=autoPassword(selectedStudent);if(!p){msg(accountMessage,"A Roll No. is required for automatic password generation.","error");return}studentPassword.value=p;studentPassword2.value=p;msg(accountMessage,"Automatic password applied: "+p,"info")}
 
@@ -249,7 +307,47 @@ async function createFirebaseStudentAccount(s,pw){
 }
 async function writeStudentAccount(s,uid,studentEmail){
  const adm=admissionOf(s),lid=loginIdOf(s);
- const profile={studentUid:uid,studentRecordId:s.id,sourceAdmissionId:s.id||"",studentId:val(s,"studentId","schoolStudentId","schoolStudentID","School STC ID","stcId"),admissionNo:adm,loginId:lid,name:nameOf(s),classJoining:classOf(s),rollNo:rollOf(s),dob:val(s,"dob","dateOfBirth","DOB"),gender:val(s,"gender","Gender"),fatherName:fatherOf(s),motherName:motherOf(s),fatherContact:val(s,"fatherContact","fatherPhone","fatherMobile"),motherContact:val(s,"motherContact","motherPhone","motherMobile"),residence:val(s,"residence","address","Address"),district:val(s,"district","District"),category:val(s,"category","Category"),bloodGroup:val(s,"bloodGroup","bloodgroup","Blood Group"),photo:val(s,"photo","photoUrl","photoURL","image","imageUrl"),photoUrl:val(s,"photoUrl","photoURL","imageUrl"),active:true,accountType:"studentAccount",firebaseEmail:studentEmail,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+
+ /* ============ FIX 2 (Part B): safe photo values ============ */
+ const photoHttps = resolvedPhotoUrl(s);
+ const photoRaw   = photoRawOf(s);
+ const safePhoto  = photoHttps || (isDataUrl(photoRaw) ? "" : photoRaw);
+ /* ======================================================== */
+
+ const profile={
+  studentUid:uid,
+  studentRecordId:s.id,
+  sourceAdmissionId:s.id||"",
+  studentId:val(s,"studentId","schoolStudentId","schoolStudentID","School STC ID","stcId"),
+  admissionNo:adm,
+  loginId:lid,
+  name:nameOf(s),
+  classJoining:classOf(s),
+  rollNo:rollOf(s),
+  dob:val(s,"dob","dateOfBirth","DOB"),
+  gender:val(s,"gender","Gender"),
+  fatherName:fatherOf(s),
+  motherName:motherOf(s),
+  fatherContact:val(s,"fatherContact","fatherPhone","fatherMobile"),
+  motherContact:val(s,"motherContact","motherPhone","motherMobile"),
+  residence:val(s,"residence","address","Address"),
+  district:val(s,"district","District"),
+  category:val(s,"category","Category"),
+  bloodGroup:val(s,"bloodGroup","bloodgroup","Blood Group"),
+
+  /* ----- FIX 2 (Part B): canonical photo fields ----- */
+  photo: safePhoto,
+  photoUrl: safePhoto,
+  photoPublicId: val(s,"photoPublicId","publicId") || "",
+  hasPhoto: !!safePhoto,
+  photoUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  /* -------------------------------------------------- */
+
+  active:true,
+  accountType:"studentAccount",
+  firebaseEmail:studentEmail,
+  updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+ };
  await db.collection("studentAccounts").doc(uid).set({...profile,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
  if(adm)await db.collection("studentLoginIndex").doc(adm).set({loginId:lid,studentRecordId:s.id,active:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
 }
@@ -310,8 +408,182 @@ downloadCsvBtn.onclick=()=>{
 }
 
 function displayResult(s,uid,lid){resultCard.classList.remove("hidden");resultMessage.textContent="Student account is active and linked to the Student Master record.";resultMessage.className="message success";resultMessage.style.display="block";resultDetails.style.display="block";$("resultName").textContent=nameOf(s)||"—";$("resultLoginId").textContent=lid||"—";$("resultUid").textContent=uid||"—";$("resultRecordId").textContent=s.id||"—";$("resultStatus").textContent="Active"}
-logoutBtn.onclick=async()=>{try{await auth.signOut()}catch(e){console.error(e)}setupArea.classList.add("hidden");loginCard.classList.remove("hidden");adminPassword.value="";studentSearch.value="";studentSelect.innerHTML='<option value="">Select a student</option>';studentInfo.style.display="none";accountCard.classList.add("hidden");resultCard.classList.add("hidden");selectedStudent=null}
+logoutBtn.onclick=async()=>{try{await auth.signOut()}catch(e){console.error(e)}setupArea.classList.add("hidden");loginCard.classList.remove("hidden");adminPassword.value="";studentSearch.value="";studentSelect.innerHTML='<option value="">Select a student</option>';studentInfo.style.display="none";accountCard.classList.add("hidden");photoCard.classList.add("hidden");resultCard.classList.add("hidden");selectedStudent=null}
 auth.onAuthStateChanged(async user=>{if(!user){loginCard.classList.remove("hidden");setupArea.classList.add("hidden");return}try{await verifyAdmin(user);loginCard.classList.add("hidden");setupArea.classList.remove("hidden");await loadStudents()}catch(e){console.error(e);try{await auth.signOut()}catch(x){}loginCard.classList.remove("hidden");setupArea.classList.add("hidden");msg(loginMessage,e.message||"This account is not authorised.","error")}})
+
+/* ================================================================
+   FIX 4 + FIX 5: Photograph upload / remove / bulk repair handlers
+   ================================================================ */
+
+function refreshPhotoPreview(s){
+ if(!s){photoPreview.style.display="none";photoMeta.textContent="—";return}
+ const url=resolvedPhotoUrl(s);
+ if(url){
+  photoPreview.src=url;
+  photoPreview.style.display="block";
+  photoMeta.textContent=url.slice(0,72)+(url.length>72?"…":"");
+ }else{
+  photoPreview.removeAttribute("src");
+  photoPreview.style.display="none";
+  photoMeta.textContent=isDataUrl(photoRawOf(s))
+   ? "Stored as base64 — click Repair or Upload to fix."
+   : "No photograph on record.";
+ }
+}
+
+photoFile.addEventListener("change",()=>{
+ const f=photoFile.files&&photoFile.files[0];
+ if(!f)return;
+ if(!f.type.startsWith("image/")){msg(photoMessage,"Please choose an image file.","error");photoFile.value="";return}
+ photoPreview.src=URL.createObjectURL(f);
+ photoPreview.style.display="block";
+ photoMeta.textContent=f.name+" · "+Math.round(f.size/1024)+" KB";
+ hide(photoMessage);
+});
+
+/* Mirror the HTTPS URL into every studentAccounts doc linked to this master record. */
+async function mirrorPhotoToStudentAccount(studentRecordId,url,publicId){
+ const refs=new Set();
+ try{
+  const a=await db.collection("studentAccounts").where("studentRecordId","==",studentRecordId).get();
+  a.forEach(d=>refs.add(d.ref));
+ }catch(e){console.warn("mirror by studentRecordId failed",e)}
+ try{
+  const b=await db.collection("studentAccounts").where("sourceAdmissionId","==",studentRecordId).get();
+  b.forEach(d=>refs.add(d.ref));
+ }catch(e){/* index not present — ignore */}
+ if(!refs.size)return 0;
+ const batch=db.batch();
+ refs.forEach(ref=>batch.set(ref,{
+  photo: url || firebase.firestore.FieldValue.delete(),
+  photoUrl: url || firebase.firestore.FieldValue.delete(),
+  photoPublicId: publicId || firebase.firestore.FieldValue.delete(),
+  hasPhoto: !!url,
+  photoUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+ },{merge:true}));
+ await batch.commit();
+ return refs.size;
+}
+
+uploadPhotoBtn.onclick=async()=>{
+ hide(photoMessage);
+ if(!selectedStudent){msg(photoMessage,"Select a student first.","error");return}
+ if(!window.GPSCloudinary){msg(photoMessage,"cloudinary-upload.js is not loaded. Add the <script> tag.","error");return}
+ const file=photoFile.files&&photoFile.files[0];
+ if(!file){msg(photoMessage,"Choose an image file first.","error");return}
+ uploadPhotoBtn.disabled=true;uploadPhotoBtn.textContent="Uploading…";
+ try{
+  const baseFolder=(window.GPS_CLOUDINARY&&window.GPS_CLOUDINARY.folder)||"gps-pethgam/students";
+  const res=await window.GPSCloudinary.uploadImage(file,{
+   folder:  baseFolder+"/"+selectedStudent.id,
+   publicId:"student-"+selectedStudent.id+"-"+Date.now(),
+   tags:    ["student",selectedStudent.id]
+  });
+  /* 1) Student Master */
+  await db.collection("students").doc(selectedStudent.id).set({
+   photoUrl: res.secureUrl,
+   photoPublicId: res.publicId || "",
+   photo: firebase.firestore.FieldValue.delete(),
+   hasPhoto: true,
+   photoUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+   updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  },{merge:true});
+  /* 2) Every linked studentAccounts doc */
+  const n=await mirrorPhotoToStudentAccount(selectedStudent.id,res.secureUrl,res.publicId);
+  /* 3) Local cache + UI */
+  const i=allStudents.findIndex(x=>x.id===selectedStudent.id);
+  if(i>=0){
+   delete allStudents[i].photo;
+   allStudents[i].photoUrl=res.secureUrl;
+   allStudents[i].photoPublicId=res.publicId||"";
+   allStudents[i].hasPhoto=true;
+   selectedStudent=allStudents[i];
+  }
+  photoFile.value="";
+  refreshPhotoPreview(selectedStudent);
+  msg(photoMessage,"Photograph saved. Mirrored to "+n+" student account(s). URL: "+res.secureUrl,"success");
+ }catch(e){
+  console.error(e);
+  msg(photoMessage,e.message||"Photo upload failed.","error");
+ }finally{
+  uploadPhotoBtn.disabled=false;uploadPhotoBtn.textContent="Upload & Save Photograph";
+ }
+};
+
+removePhotoBtn.onclick=async()=>{
+ if(!selectedStudent)return;
+ if(!confirm("Remove the photograph for "+(nameOf(selectedStudent)||"this student")+"?"))return;
+ try{
+  await db.collection("students").doc(selectedStudent.id).set({
+   photo: firebase.firestore.FieldValue.delete(),
+   photoUrl: firebase.firestore.FieldValue.delete(),
+   photoPublicId: firebase.firestore.FieldValue.delete(),
+   hasPhoto: false,
+   photoUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+   updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  },{merge:true});
+  await mirrorPhotoToStudentAccount(selectedStudent.id,"","");
+  const i=allStudents.findIndex(x=>x.id===selectedStudent.id);
+  if(i>=0){delete allStudents[i].photo;delete allStudents[i].photoUrl;delete allStudents[i].photoPublicId;allStudents[i].hasPhoto=false;selectedStudent=allStudents[i]}
+  refreshPhotoPreview(selectedStudent);
+  msg(photoMessage,"Photograph removed.","info");
+ }catch(e){msg(photoMessage,e.message||"Could not remove photo.","error")}
+};
+
+/* ---------- FIX 5: one-click repair for legacy base64 photos ---------- */
+$("repairPhotosBtn").onclick=async()=>{
+ if(!allStudents.length){msg(bulkMessage,"No students loaded.","error");return}
+ if(!window.GPSCloudinary){msg(bulkMessage,"cloudinary-upload.js is not loaded.","error");return}
+ if(!confirm("Scan every Student Master record?\n\nAny photo stored as base64 will be uploaded to Cloudinary and replaced with its HTTPS URL. studentAccounts will be updated too."))return;
+ const btn=$("repairPhotosBtn");
+ btn.disabled=true;btn.textContent="Repairing…";
+ bulkTableBody.innerHTML="";bulkTableWrap.classList.remove("hidden");
+ bulkResults=[];
+ let fixed=0,skipped=0,failed=0;
+ for(let i=0;i<allStudents.length;i++){
+  const s=allStudents[i];
+  const r={no:i+1,name:nameOf(s)||"Unnamed",loginId:loginIdOf(s),roll:rollOf(s),password:"",status:"failed",detail:""};
+  try{
+   const raw=photoRawOf(s);
+   const url=resolvedPhotoUrl(s);
+   if(url&&!isDataUrl(raw)){
+    r.status="existing";r.detail="Already has HTTPS photo";skipped++;
+   }else if(isDataUrl(raw)){
+    const baseFolder=(window.GPS_CLOUDINARY&&window.GPS_CLOUDINARY.folder)||"gps-pethgam/students";
+    const res=await window.GPSCloudinary.uploadDataUrl(raw,{
+     folder: baseFolder+"/"+s.id,
+     publicId:"student-"+s.id+"-"+Date.now(),
+     tags:["student",s.id,"repaired"]
+    });
+    await db.collection("students").doc(s.id).set({
+     photoUrl: res.secureUrl,
+     photoPublicId: res.publicId || "",
+     photo: firebase.firestore.FieldValue.delete(),
+     hasPhoto: true,
+     photoUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+    await mirrorPhotoToStudentAccount(s.id,res.secureUrl,res.publicId);
+    r.status="created";r.detail="Uploaded → "+res.secureUrl;fixed++;
+   }else{
+    r.status="blocked";r.detail="No photo on record";skipped++;
+   }
+  }catch(e){
+   failed++;r.status="failed";r.detail=e.message||"Repair failed";
+  }
+  bulkResults.push(r);
+  const tr=document.createElement("tr");
+  tr.innerHTML="<td>"+r.no+"</td><td>"+escapeHtml(r.name)+"</td><td>"+escapeHtml(r.loginId||"—")+
+               "</td><td>"+escapeHtml(r.roll||"—")+"</td><td>—</td><td class='status-"+r.status+"'>"+
+               escapeHtml(r.status)+"</td><td>"+escapeHtml(r.detail)+"</td>";
+  bulkTableBody.appendChild(tr);
+  bulkProgressBar.style.width=((i+1)/allStudents.length*100)+"%";
+ }
+ btn.disabled=false;btn.textContent="Repair / Upload Missing Photos";
+ msg(bulkMessage,"Photo repair finished: "+fixed+" uploaded, "+skipped+" skipped, "+failed+" failed.","success");
+};
+
 })();
 </script>
 </body>
