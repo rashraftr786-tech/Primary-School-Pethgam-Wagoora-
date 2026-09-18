@@ -577,6 +577,8 @@ async function saveStaff(){
 
     /* ========== FIX: upload new photo (if any) to Cloudinary ========== */
     let finalPhotoUrl = staffPhotoUrl(old);              // keep existing HTTPS URL
+/* ========== FIX: upload new photo (if any) to Cloudinary ========== */
+    let finalPhotoUrl = staffPhotoUrl(old);              // keep existing HTTPS URL
     let finalPhotoPublicId = String(old.photoPublicId||'');
     let hadBase64 = isDataUrl(staffPhotoRaw(old));
 
@@ -761,7 +763,7 @@ function render(){
       : `<span class="tag warn">No login</span><br><button class="btn gold" style="margin-top:5px;padding:6px 9px;font-size:11px" onclick="provisionLogin('${s.id}')">🔗 Create Login</button>`;
 
     /* ========== FIX: prefer HTTPS URL, flag base64 ========== */
-const httpsUrl = staffPhotoUrl(s);
+    const httpsUrl = staffPhotoUrl(s);
     const raw      = staffPhotoRaw(s);
     let photoCell;
     if(httpsUrl){
@@ -928,3 +930,7 @@ init();
 if(session()?.role==='HOI'){ showApp(); loadStaff(); }
 </script>
 </body></html>
+
+
+
+  
