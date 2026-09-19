@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3f3f91">
+<title>GPS Pethgam Wagoora — School ERP</title>
+<link rel="icon" href="new-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+:root{
+  --primary:#3f3f91;
+  --primary-dark:#303073;
+  --primary-soft:#eeeef9;
+  --accent:#f2a33a;
+  --accent-2:#e8b64c;
+  --ink:#252a55;
+  --muted:#7b8197;
+  --bg:#eef3f7;
+  --surface:#ffffff;
+  --line:#e3e6ee;
+  --success:#299b55;
+  --danger:#c93636;
+  --shadow:0 5px 16px rgba(39,45,87,.10);
+  --shadow-soft:0 2px 8px rgba(39,45,87,.07);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  padding-bottom:82px;
+}
+button,input{font:inherit}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer}
+
+.wrap{
+  width:min(1180px,100%);
+  margin:auto;
+  padding:12px 14px 22px;
+}
+
+/* ---------- HERO / HEADER ---------- */
+.top{
+  position:relative;
+  overflow:hidden;
+  min-height:225px;
+  color:#fff;
+  background:linear-gradient(145deg,#383882 0%,#46479d 70%,#4a4b9f 100%);
+  border-radius:0 0 42% 42% / 0 0 13% 13%;
+  padding:22px 22px 76px;
+  box-shadow:0 10px 28px rgba(50,51,119,.18);
+}
+.top:after{
+  content:"";
+  position:absolute;
+  left:-5%;
+  right:-5%;
+  bottom:-58px;
+  height:112px;
+  background:var(--bg);
+  border-radius:50% 50% 0 0/100% 100% 0 0;
+}
+.toprow{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-width:0;
+}
+.brand img{
+  width:66px;
+  height:66px;
+  flex:0 0 66px;
+  object-fit:contain;
+  background:#fff;
+  border-radius:50%;
+  padding:7px;
+  border:3px solid rgba(255,255,255,.35);
+  box-shadow:0 4px 12px rgba(0,0,0,.14);
+}
+.brand h1{
+  margin:0;
+  font-size:21px;
+  line-height:1.2;
+  font-weight:800;
+  letter-spacing:-.2px;
+}
+.brand p{
+  margin:5px 0 0;
+  font-size:12px;
+  opacity:.9;
+  line-height:1.45;
+}
+.welcome{
+  margin-top:22px;
+  position:relative;
+  z-index:2;
+}
+.welcome small{
+  display:block;
+  font-size:13px;
+  opacity:.85;
+  margin-bottom:2px;
+}
+.welcome strong{
+  display:block;
+  font-size:23px;
+  line-height:1.15;
+}
+.welcome span{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-top:7px;
+  font-size:11px;
+  font-weight:700;
+  opacity:.92;
+}
+.auth{
+  position:relative;
+  z-index:3;
+  text-align:right;
+  font-size:11px;
+  white-space:nowrap;
+}
+.auth button{
+  border:0;
+  background:#fff;
+  color:var(--primary);
+  border-radius:12px;
+  padding:8px 12px;
+  font-weight:800;
+  margin-top:7px;
+  box-shadow:0 3px 10px rgba(0,0,0,.10);
+}
+.auth button:hover{transform:translateY(-1px)}
+
+.login{
+  position:relative;
+  z-index:5;
+  background:#fff;
+  color:var(--ink);
+  border-radius:18px;
+  padding:16px;
+  margin:0 auto;
+  max-width:520px;
+  box-shadow:var(--shadow);
+  display:none;
+}
+.login-title{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+.login-title i{color:var(--primary)}
+.login input{
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  width:100%;
+  margin:5px 0 8px;
+  font-size:14px;
+  outline:none;
+}
+.login input:focus{border-color:#898bd0;box-shadow:0 0 0 3px #eeeeff}
+.login-actions{display:flex;gap:8px;flex-wrap:wrap}
+.login button{
+  padding:11px 14px;
+  border:0;
+  border-radius:10px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:800;
+}
+.login button.secondary{background:var(--success)}
+.message{
+  margin-top:9px;
+  padding:9px 10px;
+  border-radius:9px;
+  font-size:12px;
+  display:none;
+}
+.err{background:#fff0f0;color:var(--danger)}
+.ok{background:#eaf8ef;color:var(--success)}
+
+/* ---------- DASHBOARD ---------- */
+#erp{display:none}
+.dashboard{
+  position:relative;
+  z-index:4;
+  margin-top:-42px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin:0 0 15px;
+}
+.stat{
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(227,230,238,.95);
+  border-radius:16px;
+  padding:12px;
+  box-shadow:var(--shadow-soft);
+}
+.stat-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.stat i{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:14px;
+}
+.stat b{
+  font-size:21px;
+  display:block;
+  color:var(--primary);
+  line-height:1.1;
+}
+.stat span{
+  display:block;
+  margin-top:7px;
+  font-size:10px;
+  color:var(--muted);
+  font-weight:800;
+  letter-spacing:.25px;
+}
+
+.quick-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:17px 3px 10px;
+}
+.quick-title h2{
+  font-size:17px;
+  margin:0;
+  color:var(--ink);
+}
+.quick-title h2 i{color:var(--accent);margin-right:7px}
+.quick-title small{color:var(--muted);font-size:11px}
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:11px;
+}
+.quick-card,.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow-soft);
+  transition:transform .16s,box-shadow .16s,border-color .16s;
+}
+.quick-card:hover,.card:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow);
+  border-color:#d5d7ed;
+}
+.quick-card{
+  min-height:108px;
+  border-radius:17px;
+  padding:13px 9px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.tile-icon{
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  margin-bottom:8px;
+  color:var(--primary);
+  background:linear-gradient(145deg,#f0f0fc,#fff);
+  border:1px solid #e1e2f1;
+  font-size:21px;
+}
+.quick-card strong{
+  font-size:12px;
+  line-height:1.25;
+}
+.quick-card small{
+  margin-top:3px;
+  font-size:9px;
+  color:var(--muted);
+}
+
+.notice-strip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#fff;
+  border-radius:13px;
+  padding:12px 13px;
+  margin:15px 0 17px;
+  box-shadow:var(--shadow-soft);
+  border:1px solid var(--line);
+}
+.notice-strip .bell{
+  width:34px;height:34px;display:grid;place-items:center;
+  border-radius:10px;background:#f3f3fb;color:var(--primary);
+}
+.notice-strip strong{font-size:13px}
+.notice-strip small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.notice-strip .arrow{margin-left:auto;color:var(--muted)}
+
+.section{
+  margin:20px 0;
+  scroll-margin-top:15px;
+}
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:0 3px 10px;
+}
+.section-head h2{
+  font-size:16px;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--ink);
+}
+.section-head h2 i{color:var(--primary)}
+.section-head span{
+  font-size:10px;
+  color:var(--muted);
+  font-weight:700;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.card{
+  min-height:108px;
+  border-radius:16px;
+  padding:13px 9px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.card i{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:#f1f1fb;
+  color:var(--primary);
+  font-size:20px;
+  margin-bottom:8px;
+}
+.card strong{font-size:11.5px;line-height:1.25}
+.card small{font-size:9.5px;color:var(--muted);margin-top:4px;line-height:1.25}
+
+.tools{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.tool{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:13px 11px;
+  box-shadow:var(--shadow-soft);
+  color:var(--ink);
+  font-weight:800;
+  font-size:11px;
+  text-align:center;
+  transition:.16s;
+}
+.tool:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.tool i{color:var(--primary);margin-right:6px}
+
+.notice-preview{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:13px;
+  box-shadow:var(--shadow-soft);
+  display:none;
+  margin-bottom:15px;
+}
+.notice-preview .date{color:var(--accent);font-size:11px;font-weight:800}
+.notice-preview .text{margin-top:6px;font-size:12px;line-height:1.45}
+.notice-preview .detail{
+  margin-top:7px;color:var(--success);font-size:10px;font-weight:800;text-align:right
+}
+
+footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:10px;
+  padding:18px 0 5px;
+}
+
+/* ---------- MOBILE BOTTOM NAV ---------- */
+.bottom-nav{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:68px;
+  z-index:50;
+  display:none;
+  background:rgba(255,255,255,.97);
+  border-top:1px solid #e2e4eb;
+  box-shadow:0 -5px 18px rgba(35,40,70,.08);
+  padding:5px max(8px,env(safe-area-inset-left)) max(5px,env(safe-area-inset-bottom));
+}
+.bottom-nav-inner{
+  max-width:620px;margin:auto;height:100%;
+  display:grid;grid-template-columns:repeat(5,1fr);align-items:center;
+}
+.nav-btn{
+  border:0;background:transparent;color:#9699a9;
+  height:58px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  font-size:9px;font-weight:700;
+}
+.nav-btn i{font-size:19px}
+.nav-btn.active{color:var(--primary)}
+.nav-btn:active{transform:scale(.96)}
+
+.menu-panel{
+  position:fixed;
+  left:10px;right:10px;bottom:74px;
+  z-index:60;
+  max-width:600px;margin:auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 12px 35px rgba(25,30,65,.18);
+  padding:10px;
+  display:none;
+}
+.menu-panel.show{display:block}
+.menu-panel a{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 10px;border-radius:11px;font-size:12px;font-weight:700;
+}
+.menu-panel a:hover{background:#f4f4fb}
+.menu-panel a i{width:24px;text-align:center;color:var(--primary)}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:1000px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .tools{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  body{padding-bottom:76px}
+  .wrap{padding:0 9px 20px}
+  .top{
+    min-height:235px;
+    border-radius:0 0 42% 42% / 0 0 11% 11%;
+    padding:18px 16px 75px;
+  }
+  .top:after{bottom:-57px;height:108px}
+  .toprow{gap:8px}
+  .brand img{width:52px;height:52px;flex-basis:52px;padding:6px}
+  .brand h1{font-size:16px}
+  .brand p{font-size:9px}
+  .auth{font-size:9px}
+  .auth button{padding:7px 9px}
+  .welcome{margin-top:19px}
+  .welcome strong{font-size:20px}
+  .dashboard{margin-top:-43px}
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+  }
+  .stat{padding:10px;border-radius:14px}
+  .stat:nth-child(5){grid-column:1/-1}
+  .quick-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .quick-card{min-height:103px;border-radius:15px;padding:10px 5px}
+  .tile-icon{width:39px;height:39px;font-size:18px;border-radius:11px}
+  .quick-card strong{font-size:10px}
+  .quick-card small{font-size:8px}
+  .grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .card{min-height:101px;border-radius:14px;padding:10px 5px}
+  .card i{width:37px;height:37px;font-size:17px;border-radius:11px}
+  .card strong{font-size:9.5px}
+  .card small{font-size:8px}
+  .section{margin:18px 0}
+  .section-head h2{font-size:14px}
+  .section-head span{font-size:8px}
+  .bottom-nav{display:block}
+}
+@media(max-width:430px){
+  .brand h1{font-size:14px}
+  .brand p{font-size:8px}
+  .welcome small{font-size:11px}
+  .welcome strong{font-size:18px}
+  .quick-card strong{font-size:9.2px}
+  .card strong{font-size:9px}
+}
+@media(min-width:701px){
+  .bottom-nav{display:none!important}
+}
+
+/* Prevent horizontal overflow from long school text */
+.top,.dashboard,.section,.notice-strip{overflow-x:hidden}
+</style>
+</head>
+
+<body>
+<main class="wrap">
+
+<header class="top">
+  <div class="toprow">
+    <div class="brand">
+      <img src="new-logo.png" alt="Government Primary School Pethgam Wagoora logo">
+      <div>
+        <h1>Government Primary School Pethgam Wagoora</h1>
+        <p>School Administration ERP • Zone Wagoora • District Baramulla</p>
+      </div>
+    </div>
+
+    <div class="auth">
+      <div id="userState">Checking administrator access…</div>
+      <button id="logout" style="display:none"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+    </div>
+  </div>
+
+  <div class="welcome">
+    <small>Welcome</small>
+    <strong>School Administrator</strong>
+    <span><i class="fa-solid fa-shield-halved"></i> Secure school management workspace</span>
+  </div>
+
+  <div id="loginBox" class="login">
+    <div class="login-title"><i class="fa-solid fa-user-shield"></i> Administrator Login</div>
+    <input id="email" type="email" autocomplete="username" placeholder="Administrator email">
+    <input id="password" type="password" autocomplete="current-password" placeholder="Password">
+    <div class="login-actions">
+      <button id="signIn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+      <button id="bootstrap" class="secondary" style="display:none"><i class="fa-solid fa-shield-check"></i> Initialize Administrator</button>
+    </div>
+    <div id="loginMsg" class="message"></div>
+  </div>
+</header>
+
+<div id="erp" class="dashboard">
+
+  <section class="stats" aria-label="Dashboard statistics">
+    <div class="stat">
+      <div class="stat-top"><b id="studentCount">0</b><i class="fa-solid fa-users"></i></div>
+      <span>STUDENT RECORDS</span>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><b id="activeCount">0</b><i class="fa-solid fa-user-check"></i></div>
+      <span>ACTIVE STUDENTS</span>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><b id="staffCount">0</b><i class="fa-solid fa-chalkboard-user"></i></div>
+      <span>STAFF RECORDS</span>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><b id="noticeCount">0</b><i class="fa-solid fa-bell"></i></div>
+      <span>SAVED NOTICES</span>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><b id="cloudState">—</b><i class="fa-solid fa-cloud"></i></div>
+      <span>FIREBASE STATUS</span>
+    </div>
+  </section>
+
+  <!-- Quick-access area styled like the reference app -->
+  <div class="quick-title">
+    <h2><i class="fa-solid fa-grid-2"></i> Quick Access</h2>
+    <small>Frequently used modules</small>
+  </div>
+
+  <section class="quick-grid">
+    <a class="quick-card" href="general_admission_register.html">
+      <span class="tile-icon"><i class="fa-solid fa-school"></i></span>
+      <strong>Student Database</strong><small>Admission Register</small>
+    </a>
+    <a class="quick-card" href="attendance.html">
+      <span class="tile-icon"><i class="fa-solid fa-clipboard-user"></i></span>
+      <strong>Attendance</strong><small>Student attendance</small>
+    </a>
+    <a class="quick-card" href="notices.html">
+      <span class="tile-icon"><i class="fa-solid fa-bullhorn"></i></span>
+      <strong>Notices</strong><small>School circulars</small>
+    </a>
+    <a class="quick-card" href="results.html">
+      <span class="tile-icon"><i class="fa-solid fa-square-poll-vertical"></i></span>
+      <strong>Results</strong><small>Marks & marksheet</small>
+    </a>
+    <a class="quick-card" href="Staff-Attendence.html">
+      <span class="tile-icon"><i class="fa-solid fa-user-clock"></i></span>
+      <strong>Staff Attendance</strong><small>Attendance & leave</small>
+    </a>
+    <a class="quick-card" href="school-calendar.html">
+      <span class="tile-icon"><i class="fa-solid fa-calendar-days"></i></span>
+      <strong>Calendar</strong><small>Events & holidays</small>
+    </a>
+    <a class="quick-card" href="student-communication.html">
+      <span class="tile-icon"><i class="fa-solid fa-comments"></i></span>
+      <strong>Communication</strong><small>Student messages</small>
+    </a>
+    <a class="quick-card" href="Staff-Management.html">
+      <span class="tile-icon"><i class="fa-solid fa-user-tie"></i></span>
+      <strong>Staff</strong><small>Staff register</small>
+    </a>
+    <a class="quick-card" href="Student-Account-Setup.html">
+      <span class="tile-icon"><i class="fa-solid fa-user-lock"></i></span>
+      <strong>Accounts</strong><small>Student accounts</small>
+    </a>
+  </section>
+
+  <div class="notice-strip" id="noticeStrip">
+    <div class="bell"><i class="fa-regular fa-bell"></i></div>
+    <div>
+      <strong>Notifications & Notices</strong>
+      <small id="noticeSummary">Open Notices & Circulars to manage school announcements.</small>
+    </div>
+    <i class="fa-solid fa-chevron-right arrow"></i>
+  </div>
+
+  <div class="notice-preview" id="noticePreview">
+    <div class="date" id="noticePreviewDate"></div>
+    <div class="text" id="noticePreviewText"></div>
+    <div class="detail">View in Notices <i class="fa-solid fa-arrow-right"></i></div>
+  </div>
+
+  <!-- ALL ORIGINAL MODULES RETAINED -->
+  <section class="section" id="students">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-graduation-cap"></i> Students & Records</h2>
+      <span>5 modules</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="general_admission_register.html"><i class="fa-solid fa-users"></i><strong>Student Database</strong><small>Master admission register</small></a>
+      <a class="card" href="admission.html"><i class="fa-solid fa-user-plus"></i><strong>Admission Form</strong><small>New admission</small></a>
+      <a class="card" href="student-profile.html"><i class="fa-solid fa-id-card"></i><strong>Student Profile</strong><small>View master profile</small></a>
+      <a class="card" href="promotion.html"><i class="fa-solid fa-arrow-up-right-dots"></i><strong>Promotion</strong><small>Class promotion/history</small></a>
+      <a class="card" href="student-documents.html"><i class="fa-solid fa-folder-open"></i><strong>Student Documents</strong><small>Certificates & documents</small></a>
+    </div>
+  </section>
+
+  <section class="section" id="attendance">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-clipboard-check"></i> Attendance, Meals & Welfare</h2>
+      <span>4 modules</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="attendance.html"><i class="fa-solid fa-user-check"></i><strong>Student Attendance</strong><small>Daily & monthly</small></a>
+      <a class="card" href="Staff-Attendence.html"><i class="fa-solid fa-user-clock"></i><strong>Staff Attendance & Leave</strong><small>Register & applications</small></a>
+      <a class="card" href="MDM.html"><i class="fa-solid fa-utensils"></i><strong>PM-POSHAN / MDM</strong><small>Monthly data capture</small></a>
+      <a class="card" href="work-behaviour.html"><i class="fa-solid fa-award"></i><strong>Work & Behaviour</strong><small>Certificate generator</small></a>
+    </div>
+  </section>
+
+  <section class="section" id="academic">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-book-open-reader"></i> Academic & Assessment</h2>
+      <span>5 modules</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="results.html"><i class="fa-solid fa-square-poll-vertical"></i><strong>Results & Marksheet</strong><small>Single academic module</small></a>
+      <a class="card" href="timetable.html"><i class="fa-solid fa-table-cells"></i><strong>Timetable</strong><small>Class schedule</small></a>
+      <a class="card" href="school-calendar.html"><i class="fa-solid fa-calendar-days"></i><strong>School Calendar</strong><small>Events & holidays</small></a>
+      <a class="card" href="notices.html"><i class="fa-solid fa-bullhorn"></i><strong>Notices & Circulars</strong><small>School announcements</small></a>
+      <a class="card" href="student-communication.html"><i class="fa-solid fa-comments"></i><strong>Student Communication</strong><small>Messages to students</small></a>
+    </div>
+  </section>
+
+  <section class="section" id="staff">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-school"></i> Staff & School Administration</h2>
+      <span>6 modules</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="Staff-Management.html"><i class="fa-solid fa-chalkboard-user"></i><strong>Staff & Teachers</strong><small>Staff master register</small></a>
+      <a class="card" href="Staff-Personal-Dashboard.html"><i class="fa-solid fa-user-tie"></i><strong>Staff Dashboard</strong><small>Personal workspace</small></a>
+      <a class="card" href="inventory.html"><i class="fa-solid fa-boxes-stacked"></i><strong>Inventory / Stock</strong><small>Items & stock</small></a>
+      <a class="card" href="library.html"><i class="fa-solid fa-book"></i><strong>Library</strong><small>Books & transactions</small></a>
+      <a class="card" href="salary-inc.html"><i class="fa-solid fa-file-invoice-dollar"></i><strong>Salary Increment</strong><small>Official application</small></a>
+      <a class="card" href="Staff-Attendence-Settings-Admin.html"><i class="fa-solid fa-sliders"></i><strong>Staff Attendance Settings</strong><small>Admin configuration</small></a>
+    </div>
+  </section>
+
+  <section class="section" id="documents">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-file-signature"></i> Official Documents</h2>
+      <span>4 modules</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="bonafide-certificate.html"><i class="fa-solid fa-certificate"></i><strong>Bonafide Certificate</strong><small>Generate certificate</small></a>
+      <a class="card" href="dob-certificate.html"><i class="fa-solid fa-calendar-check"></i><strong>Date of Birth Certificate</strong><small>Generate certificate</small></a>
+      <a class="card" href="duty-certificate.html"><i class="fa-solid fa-file-signature"></i><strong>Duty Certificate</strong><small>Generate certificate</small></a>
+      <a class="card" href="school-letterhead.html"><i class="fa-solid fa-file-lines"></i><strong>School Letterhead</strong><small>Editable official format</small></a>
+    </div>
+  </section>
+
+  <section class="section" id="system">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-screwdriver-wrench"></i> System Administration</h2>
+      <span>2 modules</span>
+    </div>
+    <div class="tools">
+      <a class="tool" href="Student-Account-Setup.html"><i class="fa-solid fa-user-lock"></i> Student Account Setup</a>
+      <a class="tool" href="Firebase-Migration.html"><i class="fa-solid fa-cloud-arrow-up"></i> Data Migration</a>
+    </div>
+  </section>
+
+  <footer>
+    Government Primary School Pethgam Wagoora • Learn to Lead • School ERP
+  </footer>
+</div>
+
+<!-- Mobile navigation, inspired by the reference app -->
+<nav class="bottom-nav" aria-label="Dashboard navigation">
+  <div class="bottom-nav-inner">
+    <button class="nav-btn active" data-target="home"><i class="fa-solid fa-house"></i><span>HOME</span></button>
+    <button class="nav-btn" data-target="notices"><i class="fa-regular fa-bell"></i><span>NOTICES</span></button>
+    <button class="nav-btn" data-target="staff"><i class="fa-solid fa-users"></i><span>STAFF</span></button>
+    <button class="nav-btn" data-target="system"><i class="fa-solid fa-gear"></i><span>SETTINGS</span></button>
+    <button class="nav-btn" id="menuBtn"><i class="fa-solid fa-bars"></i><span>MENU</span></button>
+  </div>
+</nav>
+
+<div class="menu-panel" id="menuPanel">
+  <a href="#students"><i class="fa-solid fa-graduation-cap"></i> Students & Records</a>
+  <a href="#attendance"><i class="fa-solid fa-clipboard-check"></i> Attendance, Meals & Welfare</a>
+  <a href="#academic"><i class="fa-solid fa-book-open-reader"></i> Academic & Assessment</a>
+  <a href="#staff"><i class="fa-solid fa-school"></i> Staff & School Administration</a>
+  <a href="#documents"><i class="fa-solid fa-file-signature"></i> Official Documents</a>
+  <a href="#system"><i class="fa-solid fa-screwdriver-wrench"></i> System Administration</a>
+</div>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="./cloudinary-upload.js"></script>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  let db = null, auth = null;
+
+  function msg(t,c){
+    $('loginMsg').textContent = t;
+    $('loginMsg').className = 'message ' + c;
+    $('loginMsg').style.display = 'block';
+  }
+
+  function safeArray(key){
+    try{
+      const value = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(value) ? value : [];
+    }catch(e){ return []; }
+  }
+
+  function localCounts(){
+    try{
+      const a = safeArray('GPSPETHGAM_MASTER_ADMISSION_V1');
+      $('studentCount').textContent = a.length;
+      $('activeCount').textContent = a.filter(x=>{
+        const s = String(x.status || 'Active').toLowerCase();
+        return s !== 'inactive' && s !== 'left';
+      }).length;
+
+      const st = safeArray('GPSPETHGAM_STAFF_V1');
+      $('staffCount').textContent = st.length;
+
+      const n = safeArray('GPSPETHGAM_SCHOOL_NOTICES_V1');
+      $('noticeCount').textContent = n.length;
+
+      if(n.length){
+        const latest = n[0] || {};
+        $('noticePreviewDate').textContent =
+          latest.date ? 'Date: ' + latest.date : 'Latest School Notice';
+        $('noticePreviewText').textContent =
+          latest.title || latest.subject || latest.notice || latest.message ||
+          'A school notice is available. Open Notices & Circulars for details.';
+        $('noticePreview').style.display = 'block';
+        $('noticeSummary').textContent =
+          n.length === 1 ? '1 saved school notice' : n.length + ' saved school notices';
+      }else{
+        $('noticePreview').style.display = 'none';
+        $('noticeSummary').textContent =
+          'No saved notice found. Open Notices & Circulars to publish one.';
+      }
+    }catch(e){}
+  }
+
+  /* Firebase initialization is unchanged in function */
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(window.GPS_FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    $('cloudState').textContent = 'READY';
+  }catch(e){
+    $('cloudState').textContent = 'ERROR';
+    $('userState').textContent = 'Firebase could not initialize.';
+    return;
+  }
+
+  /* School administrator bootstrap identity */
+  const bootstrap = Array.from(new Set([
+    ...(window.GPS_ADMIN_EMAILS || []),
+    'pspathgam@gmail.com'
+  ].map(x=>String(x||'').trim().toLowerCase()).filter(Boolean)));
+
+  $('email').value = bootstrap[0] || '';
+
+  auth.onAuthStateChanged(async user=>{
+    if(!user){
+      $('erp').style.display = 'none';
+      $('loginBox').style.display = 'block';
+      $('logout').style.display = 'none';
+      $('userState').textContent = 'Administrator sign-in required';
+      $('bootstrap').style.display = 'none';
+      localCounts();
+      return;
+    }
+
+    $('email').value = user.email || '';
+    $('userState').textContent = 'Signed in: ' + (user.email || '');
+    $('logout').style.display = 'inline-block';
+    $('loginBox').style.display = 'none';
+
+    try{
+      const snap = await db.collection('admins').doc(user.uid).get();
+
+      if(
+        snap.exists &&
+        String(snap.data().role || '').trim().toLowerCase() === 'admin' &&
+        snap.data().active === true
+      ){
+        $('erp').style.display = 'block';
+        $('cloudState').textContent = 'OK';
+        localCounts();
+        return;
+      }
+
+      if(bootstrap.includes(String(user.email || '').trim().toLowerCase())){
+        $('loginBox').style.display = 'block';
+        $('bootstrap').style.display = 'inline-block';
+        msg(
+          'Authentication succeeded. No active admin record exists for this account. You may initialize this account as the school administrator.',
+          'ok'
+        );
+      }else{
+        await auth.signOut();
+        msg('This Firebase account is not authorized as a school administrator.','err');
+      }
+    }catch(e){
+      await auth.signOut();
+      msg('Admin verification failed: ' + (e.message || e),'err');
+    }
+  });
+
+  $('signIn').onclick = async()=>{
+    const email = $('email').value.trim();
+    const pw = $('password').value;
+
+    if(!email || !pw){
+      msg('Enter email and password.','err');
+      return;
+    }
+
+    $('signIn').disabled = true;
+    try{
+      await auth.signInWithEmailAndPassword(email,pw);
+      $('password').value = '';
+    }catch(e){
+      msg((e.code || 'auth/error') + ': ' + (e.message || e),'err');
+    }finally{
+      $('signIn').disabled = false;
+    }
+  };
+
+  $('bootstrap').onclick = async()=>{
+    const u = auth.currentUser;
+
+    if(
+      !u ||
+      !bootstrap.includes(String(u.email || '').trim().toLowerCase())
+    ){
+      msg('Sign in with the configured administrator email first.','err');
+      return;
+    }
+
+    try{
+      await db.collection('admins').doc(u.uid).set({
+        uid:u.uid,
+        email:u.email,
+        role:'admin',
+        active:true,
+        name:'Mohammad Ashraf Rather',
+        school:'Government Primary School Pethgam Wagoora',
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+
+      msg('Administrator initialized successfully. Reloading dashboard…','ok');
+      setTimeout(()=>location.reload(),600);
+    }catch(e){
+      msg('Could not initialize administrator: ' + (e.message || e),'err');
+    }
+  };
+
+  $('logout').onclick = ()=>auth.signOut();
+
+  /* Mobile navigation */
+  const menuBtn = $('menuBtn');
+  const menuPanel = $('menuPanel');
+
+  menuBtn.addEventListener('click',()=>{
+    menuPanel.classList.toggle('show');
+    menuBtn.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.menu-panel a').forEach(a=>{
+    a.addEventListener('click',()=>menuPanel.classList.remove('show'));
+  });
+
+  document.querySelectorAll('.nav-btn[data-target]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const target = btn.dataset.target;
+      document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+
+      if(target === 'home'){
+        window.scrollTo({top:0,behavior:'smooth'});
+      }else if(target === 'notices'){
+        const el = document.querySelector('#academic');
+        if(el) el.scrollIntoView({behavior:'smooth'});
+        setTimeout(()=>{
+          const n = document.querySelector('.notice-strip');
+          if(n) n.scrollIntoView({behavior:'smooth',block:'center'});
+        },120);
+      }else{
+        const el = document.getElementById(target);
+        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+      menuPanel.classList.remove('show');
+    });
+  });
+
+  $('noticeStrip').addEventListener('click',()=>{
+    const el = document.querySelector('a[href="notices.html"]');
+    if(el) el.click();
+  });
+
+  localCounts();
+})();
+</script>
+</body>
+</html>
