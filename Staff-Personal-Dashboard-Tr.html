@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Dashboard — Government Primary School Pethgam Wagoora</title>
+
+<style>
+:root{
+  --blue:#315ee8;
+  --blue2:#4d46df;
+  --purple:#7b3fe4;
+  --ink:#26364d;
+  --muted:#7b8798;
+  --bg:#eef3f7;
+  --card:#ffffff;
+  --line:#e3e8f0;
+  --green:#16b77a;
+  --orange:#f59e0b;
+  --red:#ef476f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:linear-gradient(180deg,#eef3f7 0%,#f8fafc 45%,#eef4f8 100%);
+  color:var(--ink);
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* ---------- LOGIN ---------- */
+.login-page{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:22px;
+  background:linear-gradient(145deg,#3947d8 0%,#315ee8 48%,#7a3fe1 100%);
+}
+.login-card{
+  width:min(430px,100%);
+  background:rgba(255,255,255,.98);
+  border:0;
+  border-radius:28px;
+  padding:28px 24px;
+  box-shadow:0 25px 65px rgba(21,34,74,.28);
+}
+.login-logo{
+  width:82px;height:82px;object-fit:contain;
+  display:block;margin:0 auto 12px;
+}
+.login-title{
+  text-align:center;
+  color:#3156dc;
+  font-size:28px;
+  font-weight:900;
+  margin:0 0 5px;
+}
+.login-subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+  margin:0 0 22px;
+}
+.field{margin:12px 0}
+.field label{
+  display:block;
+  font-size:12px;
+  font-weight:800;
+  color:#44546a;
+  margin:0 0 6px;
+}
+.field input,.field select,.field textarea{
+  width:100%;
+  border:1px solid #d5ddea;
+  background:#f9fbfd;
+  border-radius:13px;
+  padding:12px 13px;
+  outline:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:#6c83ec;
+  box-shadow:0 0 0 3px rgba(49,94,232,.10);
+}
+.login-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}
+.btn{
+  border:0;
+  border-radius:13px;
+  padding:12px 15px;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(135deg,#315ee8,#4b45dd);
+  box-shadow:0 6px 14px rgba(49,94,232,.20);
+}
+.btn.secondary{background:#edf1f7;color:#45536a;box-shadow:none}
+.btn.ok{background:linear-gradient(135deg,#11b879,#0aa66d)}
+.btn.gold{background:linear-gradient(135deg,#f59e0b,#ed7d0b)}
+.btn.danger{background:#fee9ee;color:#c52f55;box-shadow:none}
+.status{
+  margin-top:12px;
+  padding:11px 12px;
+  border-radius:12px;
+  background:#f4f7fb;
+  border:1px solid #e1e7ef;
+  color:#64748b;
+  font-size:12px;
+  line-height:1.45;
+}
+.oktxt{color:#12865d;font-weight:800}
+.errtxt{color:#c92d50;font-weight:800}
+
+/* ---------- APP HEADER ---------- */
+.app-shell{min-height:100vh;padding-bottom:92px}
+.app-top{
+  position:relative;
+  overflow:hidden;
+  color:#fff;
+  background:linear-gradient(135deg,#3948db 0%,#315ee8 52%,#5c45dc 100%);
+  border-radius:0 0 30px 30px;
+  box-shadow:0 8px 24px rgba(49,94,232,.20);
+  padding:17px 18px 28px;
+}
+.app-top:after{
+  content:"";
+  position:absolute;
+  width:150px;height:150px;
+  border-radius:50%;
+  right:-42px;top:-55px;
+  background:rgba(255,255,255,.09);
+}
+.app-top-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;position:relative;z-index:1;
+}
+.menu-btn,.bell-btn{
+  width:46px;height:46px;border-radius:15px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.12);
+  color:#fff;font-size:23px;
+  display:grid;place-items:center;
+}
+.app-heading{text-align:center;flex:1}
+.app-heading .small{font-size:12px;letter-spacing:.7px;opacity:.9}
+.app-heading strong{display:block;font-size:20px;line-height:1.2}
+.top-link{
+  color:#fff;text-decoration:none;
+  font-size:11px;font-weight:800;
+}
+
+/* ---------- CONTENT ---------- */
+.wrap{
+  width:min(1050px,100%);
+  margin:-12px auto 0;
+  padding:0 15px 25px;
+  position:relative;
+  z-index:2;
+}
+.profile-card{
+  position:relative;
+  margin:0 auto 15px;
+  padding:18px 17px 16px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#315ee8,#4d46df);
+  color:#fff;
+  box-shadow:0 12px 26px rgba(49,94,232,.22);
+  overflow:hidden;
+}
+.profile-card:after{
+  content:"";position:absolute;
+  width:125px;height:125px;border-radius:50%;
+  right:-25px;top:-38px;background:rgba(255,255,255,.09);
+}
+.profile-layout{
+  display:grid;
+  grid-template-columns:86px 1fr;
+  gap:15px;
+  align-items:center;
+  position:relative;z-index:1;
+}
+.photo{
+  width:86px;height:86px;border-radius:50%;
+  object-fit:cover;border:4px solid rgba(255,255,255,.9);
+  background:#fff;
+}
+.fallback{
+  width:86px;height:86px;border-radius:50%;
+  background:#fff;color:#315ee8;
+  display:grid;place-items:center;
+  font-size:30px;font-weight:900;
+  border:4px solid rgba(255,255,255,.9);
+}
+.profile-name{
+  margin:0;
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:.1px;
+}
+.profile-role{font-size:13px;margin-top:3px;opacity:.94}
+.profile-speciality{font-size:12px;margin-top:3px;opacity:.82}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{
+  display:inline-flex;align-items:center;
+  padding:5px 9px;border-radius:999px;
+  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.10);
+  font-size:10px;font-weight:700;
+}
+.class-chips{margin-top:7px}
+
+/* ---------- STATS ---------- */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+.stat{
+  min-height:92px;
+  background:#fff;
+  border:1px solid #e4e9f0;
+  border-radius:18px;
+  padding:13px 12px;
+  box-shadow:0 7px 20px rgba(41,57,82,.07);
+  position:relative;
+  overflow:hidden;
+}
+.stat:before{
+  content:"";position:absolute;left:0;top:0;right:0;height:4px;
+  background:#315ee8;
+}
+.stat:nth-child(2):before{background:#7b3fe4}
+.stat:nth-child(3):before{background:#16b77a}
+.stat:nth-child(4):before{background:#f59e0b}
+.stat:nth-child(5):before{background:#0ea5e9}
+.stat:nth-child(6):before{background:#ef476f}
+.stat b{display:block;font-size:21px;color:#3156d8;margin-top:2px}
+.stat small{display:block;color:#7c8798;font-size:10px;margin-top:4px;font-weight:700}
+
+/* ---------- QUICK SERVICES ---------- */
+.card{
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:21px;
+  padding:16px;
+  margin-bottom:15px;
+  box-shadow:0 8px 24px rgba(41,57,82,.065);
+}
+.section-title{
+  margin:0 0 4px;
+  font-size:18px;
+  font-weight:900;
+  color:#26364d;
+}
+.section-subtitle{
+  margin:0;
+  color:#8993a2;
+  font-size:11px;
+  line-height:1.45;
+}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;
+}
+.topbar .btn{padding:9px 11px;font-size:11px}
+.modules{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:11px;
+  margin-top:13px;
+}
+.module{
+  min-height:116px;
+  border:1px solid #e8ecf2;
+  border-radius:18px;
+  padding:13px 10px 12px;
+  background:linear-gradient(145deg,#fff,#f9fbfd);
+  text-decoration:none;
+  color:#273957;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  box-shadow:0 5px 15px rgba(42,57,82,.055);
+  transition:.16s ease;
+}
+.module:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(42,57,82,.10)}
+.module strong{
+  display:block;
+  font-size:12px;
+  line-height:1.25;
+  margin-top:8px;
+}
+.module span{
+  display:block;
+  color:#8a95a5;
+  font-size:9px;
+  line-height:1.3;
+  margin-top:5px;
+}
+.module strong:first-letter{font-size:24px}
+
+/* ---------- ASSIGNMENT ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.panel{
+  border:1px solid #e4e9f0;
+  border-radius:15px;
+  padding:13px;
+  background:linear-gradient(145deg,#fff,#f8fafc);
+}
+.panel>b{font-size:12px;color:#46566d}
+.tag{
+  display:inline-block;
+  padding:5px 8px;
+  margin:3px;
+  border-radius:999px;
+  background:#edf3ff;
+  color:#315ee8;
+  font-size:10px;
+  font-weight:800;
+}
+.tag:nth-child(3n){background:#f3edff;color:#7640cf}
+.tag:nth-child(3n+2){background:#eafaf4;color:#13855e}
+
+/* ---------- ACTIONS ---------- */
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.actions .btn{font-size:11px}
+
+/* ---------- DATA LISTS ---------- */
+.empty{text-align:center;padding:18px 8px;color:#929cab;font-size:12px}
+.table-wrap{overflow:auto;border-radius:13px}
+table{width:100%;border-collapse:collapse}
+th,td{
+  border-bottom:1px solid #edf0f4;
+  padding:9px 8px;
+  text-align:left;
+  font-size:11px;
+  vertical-align:top;
+  white-space:nowrap;
+}
+th{background:#f5f7fa;color:#59687c;font-weight:800}
+textarea{min-height:90px;resize:vertical}
+
+/* ---------- MOBILE BOTTOM NAV ---------- */
+.bottom-nav{
+  position:fixed;
+  z-index:20;
+  left:50%;bottom:10px;
+  transform:translateX(-50%);
+  width:min(720px,calc(100% - 20px));
+  height:68px;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px);
+  border:1px solid #e4e9ef;
+  border-radius:25px;
+  box-shadow:0 14px 35px rgba(36,52,78,.16);
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  align-items:center;
+}
+.bottom-nav button{
+  border:0;background:transparent;color:#8a94a2;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;font-size:9px;font-weight:800;
+}
+.bottom-nav button .ico{font-size:21px;line-height:1}
+.bottom-nav button.active{color:#315ee8}
+.bottom-nav .center{
+  width:58px;height:58px;border-radius:50%;
+  margin:-22px auto 0;
+  background:linear-gradient(135deg,#315ee8,#7b3fe4);
+  color:#fff;
+  box-shadow:0 12px 25px rgba(49,94,232,.30);
+  border:5px solid #fff;
+}
+
+.btn:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
+
+/* ---------- PRINT ---------- */
+@media print{
+  .bottom-nav,.app-top,.no-print{display:none!important}
+  body{background:#fff}
+  .wrap{margin:0;max-width:none}
+  .card,.profile-card,.stat{box-shadow:none}
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media(min-width:800px){
+  .stats{grid-template-columns:repeat(6,1fr)}
+  .modules{grid-template-columns:repeat(4,1fr)}
+  .app-top{padding-left:28px;padding-right:28px}
+  .profile-card{padding:22px}
+}
+@media(max-width:560px){
+  .wrap{padding-left:12px;padding-right:12px}
+  .profile-layout{grid-template-columns:72px 1fr;gap:12px}
+  .photo,.fallback{width:72px;height:72px}
+  .fallback{font-size:25px}
+  .profile-name{font-size:18px}
+  .stats{gap:8px}
+  .stat{min-height:82px;padding:11px 9px}
+  .stat b{font-size:18px}
+  .stat small{font-size:9px}
+  .modules{gap:9px}
+  .module{min-height:105px;padding:10px 7px}
+  .module strong{font-size:11px}
+  .module span{font-size:8px}
+  .two{grid-template-columns:1fr}
+  .app-top{border-radius:0 0 26px 26px}
+  .app-heading strong{font-size:17px}
+  .login-card{padding:24px 19px}
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<section id="login" class="login-page">
+  <div class="login-card">
+    <img src="new-logo.png" alt="Government Primary School Pethgam Wagoora" class="login-logo">
+    <h1 class="login-title">Teacher Portal</h1>
+    <p class="login-subtitle">
+      Government Primary School Pethgam Wagoora<br>
+      Sign in with your Employee ID and personal PIN.
+    </p>
+
+    <div class="field">
+      <label>Employee ID</label>
+      <input id="employeeId" autocomplete="username" placeholder="Enter Employee ID">
+    </div>
+
+    <div class="field">
+      <label>Personal PIN</label>
+      <input id="pin" type="password" inputmode="numeric" maxlength="8"
+             autocomplete="current-password" placeholder="Enter PIN">
+    </div>
+
+    <div class="login-actions">
+      <button class="btn ok" onclick="loginStaff()">Sign In</button>
+      <button class="btn secondary" onclick="logout()">Sign Out</button>
+    </div>
+
+    <div id="msg" class="status">Connecting to Firebase…</div>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="dash" class="app-shell hidden">
+
+  <!-- APP HEADER -->
+  <header class="app-top">
+    <div class="app-top-row">
+      <button class="menu-btn" onclick="document.getElementById('modulesCard').scrollIntoView({behavior:'smooth'})" aria-label="Open services">☰</button>
+      <div class="app-heading">
+        <span class="small">TEACHER PERSONAL DASHBOARD</span>
+        <strong>GPS Pethgam Wagoora</strong>
+      </div>
+      <button class="bell-btn" onclick="document.getElementById('noticeCard').scrollIntoView({behavior:'smooth'})" aria-label="Notifications">♧</button>
+    </div>
+    <div style="text-align:center;margin-top:5px">
+      <span class="top-link">Personal Staff Workspace</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- PROFILE -->
+    <section class="profile-card">
+      <div class="profile-layout">
+        <div id="photoWrap">
+          <div id="fallback" class="fallback">T</div>
+        </div>
+        <div>
+          <h2 id="welcome" class="profile-name">Welcome</h2>
+          <div id="designation" class="profile-role"></div>
+          <div id="speciality" class="profile-speciality"></div>
+
+          <div class="chips">
+            <span class="chip" id="emp"></span>
+            <span class="chip" id="qual"></span>
+            <span class="chip" id="date"></span>
+          </div>
+          <div class="chips class-chips" id="classChips"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MY ATTENDANCE -->
+    <section class="card" id="myAttendanceCard">
+      <div class="topbar">
+        <div>
+          <h2 class="section-title">🕘 My Attendance</h2>
+          <p class="section-subtitle">Check in once at the start of the day and check out once at the end.</p>
+        </div>
+        <span id="attendanceState" class="tag">Not Checked In</span>
+      </div>
+      <div class="two" style="margin-top:12px">
+        <div class="panel">
+          <b>Today's Check In</b>
+          <div id="todayCheckIn" style="font-size:20px;font-weight:900;margin-top:5px">—</div>
+          <div id="lateInfo" class="muted" style="margin-top:4px">Expected: 09:30 AM</div>
+        </div>
+        <div class="panel">
+          <b>Today's Check Out</b>
+          <div id="todayCheckOut" style="font-size:20px;font-weight:900;margin-top:5px">—</div>
+          <div id="earlyInfo" class="muted" style="margin-top:4px">Expected: 03:30 PM</div>
+        </div>
+      </div>
+      <div id="attendanceRange" class="status" style="margin-top:10px">
+        <b>Attendance window:</b> Check-in from 09:30 AM · Check-out by 03:30 PM
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <button id="checkInBtn" class="btn ok" onclick="performCheckIn()">🟢 Check In</button>
+        <button id="checkOutBtn" class="btn gold" onclick="performCheckOut()" disabled>🔵 Check Out</button>
+        <button class="btn secondary" onclick="document.getElementById('attList').parentElement.scrollIntoView({behavior:'smooth'})">View History</button>
+      </div>
+      <div id="attendanceMsg" class="status">You have not checked in today.</div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section class="stats">
+      <div class="stat"><b id="sToday">—</b><small>Today's Attendance</small></div>
+      <div class="stat"><b id="sIn">—</b><small>Check In</small></div>
+      <div class="stat"><b id="sOut">—</b><small>Check Out</small></div>
+      <div class="stat"><b id="sLeave">0</b><small>Pending Leave</small></div>
+      <div class="stat"><b id="sStudents">0</b><small>Assigned Students</small></div>
+      <div class="stat"><b id="sHomework">0</b><small>Active Homework</small></div>
+    </section>
+
+    <!-- QUICK SERVICES -->
+    <section class="card" id="modulesCard">
+      <div class="topbar">
+        <div>
+          <h2 class="section-title">Quick Services</h2>
+          <p class="section-subtitle">Only the tools enabled for this staff account are shown.</p>
+        </div>
+        <button class="btn secondary" onclick="refreshAll()">↻</button>
+      </div>
+      <div id="modules" class="modules"></div>
+    </section>
+
+    <!-- ASSIGNMENT -->
+    <section class="card">
+      <h2 class="section-title">🎓 My Teaching Assignment</h2>
+      <p class="section-subtitle">Classes, subjects and student coverage assigned by the school.</p>
+
+      <div class="two" style="margin-top:12px">
+        <div class="panel">
+          <b>Assigned Classes</b>
+          <div id="assignedClasses" style="margin-top:7px"></div>
+        </div>
+        <div class="panel">
+          <b>Assigned Subjects</b>
+          <div id="assignedSubjects" style="margin-top:7px"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:10px">
+        <b>Student Coverage</b>
+        <div id="classCounts" class="muted" style="margin-top:7px">Loading…</div>
+      </div>
+    </section>
+
+    <!-- QUICK ACTIONS -->
+    <section class="card">
+      <h2 class="section-title">⚡ Quick Actions</h2>
+      <p class="section-subtitle">Common teaching and staff tasks.</p>
+      <div class="actions">
+        <button class="btn" onclick="openModule('attendance')">📋 Staff Attendance</button>
+        <button class="btn" onclick="openModule('studentAttendance')">👥 Student Attendance</button>
+        <button class="btn" onclick="openModule('homework')">📚 Homework</button>
+        <button class="btn" onclick="openModule('communication')">💬 Communication</button>
+        <button class="btn" onclick="openModule('marks')">📊 Marks / Results</button>
+        <button class="btn" onclick="openModule('timetable')">🕒 Timetable</button>
+      </div>
+    </section>
+
+    <!-- HOMEWORK -->
+    <section class="card">
+      <h2 class="section-title">📚 Recent Homework</h2>
+      <p class="section-subtitle">Homework published by this teacher.</p>
+      <div id="homeworkList" class="table-wrap" style="margin-top:9px">
+        <div class="empty">Loading homework…</div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="showHomeworkForm()">➕ Add Homework</button>
+        <button class="btn secondary" onclick="openModule('homework')">Open Homework Module</button>
+      </div>
+
+      <div id="homeworkForm" class="panel hidden" style="margin-top:10px">
+        <div class="grid">
+          <div class="field"><label>Class</label><select id="hwClass"></select></div>
+          <div class="field"><label>Subject</label><select id="hwSubject"></select></div>
+          <div class="field"><label>Due Date</label><input id="hwDue" type="date"></div>
+        </div>
+        <div class="field">
+          <label>Homework</label>
+          <textarea id="hwText" placeholder="Write today's home work / assignment"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn ok" onclick="saveHomework()">Publish to Firebase</button>
+          <button class="btn secondary" onclick="hideHomeworkForm()">Cancel</button>
+        </div>
+        <div id="hwMsg" class="status"></div>
+      </div>
+    </section>
+
+    <!-- COMMUNICATION -->
+    <section class="card">
+      <h2 class="section-title">💬 Recent Communication</h2>
+      <p class="section-subtitle">Recent messages sent to students / parents.</p>
+      <div id="messageList" style="margin-top:9px">
+        <div class="empty">Loading messages…</div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="showMessageForm()">✉️ Send Message</button>
+        <button class="btn secondary" onclick="openModule('communication')">Open Communication Module</button>
+      </div>
+
+      <div id="messageForm" class="panel hidden" style="margin-top:10px">
+        <div class="grid">
+          <div class="field"><label>Admission No. / Student ID</label><input id="msgStudent" placeholder="Student identifier"></div>
+          <div class="field"><label>Message Type</label><select id="msgType"><option>Academic</option><option>Homework</option><option>Attendance</option><option>General</option></select></div>
+          <div class="field"><label>Priority</label><select id="msgPriority"><option>Normal</option><option>Important</option><option>Urgent</option></select></div>
+        </div>
+        <div class="field">
+          <label>Message</label>
+          <textarea id="msgText" placeholder="Write message to the student/parent"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn ok" onclick="sendMessage()">Send to Firebase</button>
+          <button class="btn secondary" onclick="hideMessageForm()">Cancel</button>
+        </div>
+        <div id="sendMsg" class="status"></div>
+      </div>
+    </section>
+
+    <!-- NOTICES -->
+    <section class="card" id="noticeCard">
+      <h2 class="section-title">📢 Notices & School Information</h2>
+      <p class="section-subtitle">Latest school notices and circulars.</p>
+      <div id="noticeList" style="margin-top:9px">
+        <div class="empty">Loading notices…</div>
+      </div>
+    </section>
+
+    <!-- TIMETABLE -->
+    <section class="card">
+      <h2 class="section-title">🕒 My Recent Timetable</h2>
+      <p class="section-subtitle">View-only timetable assigned by the school administration. Teachers cannot edit the timetable.</p>
+      <div id="timetableList" style="margin-top:9px">
+        <div class="empty">Loading timetable…</div>
+      </div>
+    </section>
+
+    <!-- STAFF ATTENDANCE -->
+    <section class="card">
+      <h2 class="section-title">📋 My Recent Staff Attendance</h2>
+      <div class="table-wrap" style="margin-top:9px">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Check In</th><th>Check Out</th><th>Status</th><th>Approval</th></tr>
+          </thead>
+          <tbody id="attList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONNECTION -->
+    <section class="card">
+      <h2 class="section-title">☁️ Firebase Connection</h2>
+      <div id="cloudStatus" class="status">
+        Connected to <b>gps-pethgam-wagoora-portal</b>. Data is designed for cross-device use.
+      </div>
+      <div class="status" style="background:#fff6f7;border-color:#f5d7df;color:#7b5963">
+        <b>Security note:</b> Firestore Rules must give teachers access only to the records they are authorised to manage.
+        This dashboard does not expose or store a Firebase service-account key.
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" aria-label="Dashboard navigation">
+    <button class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <span class="ico">⌂</span><span>Home</span>
+    </button>
+    <button onclick="document.getElementById('noticeCard').scrollIntoView({behavior:'smooth'})">
+      <span class="ico">♧</span><span>Alerts</span>
+    </button>
+    <button class="center" onclick="document.getElementById('modulesCard').scrollIntoView({behavior:'smooth'})">
+      <span class="ico">▦</span><span>Services</span>
+    </button>
+    <button onclick="document.getElementById('modulesCard').scrollIntoView({behavior:'smooth'})">
+      <span class="ico">☷</span><span>Modules</span>
+    </button>
+    <button onclick="logout()">
+      <span class="ico">⇥</span><span>Sign Out</span>
+    </button>
+  </nav>
+</section>
+
+<script>
+const CONFIG={apiKey:"AIzaSyADB32wJq886NNqMuJk5n1zO45oSi-bdLs",authDomain:"gps-pethgam-wagoora-portal.firebaseapp.com",projectId:"gps-pethgam-wagoora-portal",storageBucket:"gps-pethgam-wagoora-portal.firebasestorage.app",messagingSenderId:"243117067000",appId:"1:243117067000:web:a5320441bcbaed71e4490d",measurementId:"G-WMXPK3229Y"};
+const STAFF='staff',ATT='staffAttendance',LEAVE='staffLeaves',SESSION='GPSPETHGAM_STAFF_SESSION_V2',GEOF='institution/geofence';let db,auth,me=null,unsub=null;
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const today=()=>new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+async function hashPin(pin){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+function init(){try{if(!firebase.apps.length)firebase.initializeApp(CONFIG);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(u=>{if(u){$('msg').innerHTML='<span class="oktxt">Firebase connected.</span> Enter your staff credentials.'}else{$('msg').textContent='Firebase connected. Enter your staff credentials.'}})}catch(e){$('msg').textContent='Firebase initialization error: '+e.message}}
+function session(){try{return JSON.parse(sessionStorage.getItem(SESSION)||'null')}catch{return null}}
+async function findStaffIndex(eid){try{const d=await db.collection('staffLoginIndex').doc(eid).get();return d.exists?{id:d.id,...d.data()}:null}catch(e){if(e&&e.code==='permission-denied')throw new Error('LOGIN_INDEX_PERMISSION: Firebase Rules do not allow reading staffLoginIndex. Publish the supplied firestore.rules file, then try again.');throw e}}
+async function loginStaff(){const eid=$('employeeId').value.trim(),pin=$('pin').value.trim();if(!eid||!pin)return $('msg').textContent='Enter Employee ID and PIN.';if(!/^[0-9]{4,8}$/.test(pin))return $('msg').textContent='PIN must contain 4–8 digits.';$('msg').textContent='Checking staff login…';try{await auth.signOut().catch(()=>{});const idx=await findStaffIndex(eid);if(!idx)return $('msg').textContent='Staff login is not configured for this Employee ID. Ask the HOI to link the Firebase account.';const email=String(idx.authEmail||'').trim().toLowerCase();if(!email)return $('msg').textContent='Staff Firebase login email is missing.';await auth.signInWithEmailAndPassword(email,pin);const u=auth.currentUser;if(!u)return $('msg').textContent='Firebase authentication did not complete.';const staffId=String(idx.staffId||'');if(!staffId)return $('msg').textContent='Staff login mapping is incomplete.';const d=await db.collection(STAFF).doc(staffId).get();if(!d.exists||d.data().status==='Inactive'){await auth.signOut();return $('msg').textContent='Staff record not found or inactive.'}const s={id:d.id,...d.data()};if(s.authUid!==u.uid){await auth.signOut();return $('msg').textContent='Firebase account is not correctly linked to this staff record.'}start({...s,authUid:u.uid})}catch(e){$('msg').textContent='Sign in failed: '+esc(e.code?e.code+': '+e.message:e.message)}}
+function start(s){me={id:s.id,...s};sessionStorage.setItem(SESSION,JSON.stringify({staffId:s.id,name:s.name,employeeId:s.employeeId,role:s.accessRole||'Staff',loginAt:new Date().toISOString()}));show();refreshAll();listenProfile()}
+function show(){$('login').classList.add('hidden');$('dash').classList.remove('hidden')}
+function logout(){sessionStorage.removeItem(SESSION);if(unsub)unsub();if(auth)auth.signOut().finally(()=>location.reload());else location.reload()}
+function initials(n){return String(n||'Teacher').split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase()}
+function arrays(s,k1,k2){return s?.[k1]||s?.[k2]||[]}
+function permissions(){const p=me?.permissions||{};const defaults=['attendance','studentAttendance','homework','communication','marks','timetable','notices','calendar','library','profile','documents','workBehaviour'];return defaults.filter(x=>p[x]!==false)}
+const MODS={attendance:['📋','Staff Attendance & Leave','Check in/out, leave and attendance history','Staff-Attendence.html'],studentAttendance:['👥','Student Attendance','Mark and review attendance for assigned students','attendance.html'],homework:['📚','Home Work','Create and manage class homework',''],communication:['💬','Student Communication','Messages to students / parents','student-communication.html'],marks:['📊','Marks / Results','Enter or review academic records','results.html'],timetable:['🕒','My Timetable','View your assigned teaching periods only',''],notices:['📢','Notices / Circulars','School notices and circulars','notices.html'],calendar:['📅','School Calendar','Holidays, events and academic dates','calendar.html'],library:['📖','Library','Books, issue and return information','library.html'],profile:['🎓','Student Profiles','View student profiles','student-profile.html'],documents:['📁','Student Documents','Student documents and records','student-documents.html'],workBehaviour:['⭐','Work Behaviour','Teacher/student work behaviour records','work-behaviour.html']};
+function openModule(k){const m=MODS[k];if(!m)return;if(k==='homework'){showHomeworkForm();document.getElementById('homeworkForm').scrollIntoView({behavior:'smooth',block:'center'});return}if(k==='attendance'){document.getElementById('myAttendanceCard').scrollIntoView({behavior:'smooth',block:'center'});return}if(k==='timetable'){document.getElementById('timetableList').scrollIntoView({behavior:'smooth',block:'center'});return}if(m[3])location.href=m[3]}
+function renderProfile(){const s=me;const classes=arrays(s,'assignedClasses','classes'),subs=arrays(s,'assignedSubjects','subjects');$('welcome').textContent='Welcome, '+(s.name||'Teacher');$('designation').textContent=(s.designation||s.role||'Teacher');$('speciality').textContent=s.speciality||'Teaching workspace';$('emp').textContent='Employee ID: '+(s.employeeId||'—');$('qual').textContent='Qualification: '+(s.qualification||'—');$('date').textContent='Joined: '+(s.joiningDate||'—');$('classChips').innerHTML=classes.map(x=>`<span class="chip">${esc(x)}</span>`).join('')||'<span class="chip">No classes assigned yet</span>';if(s.photo||s.photoUrl)$('photoWrap').innerHTML=`<img class="photo" src="${esc(s.photo||s.photoUrl)}" alt="Teacher photo">`;else $('fallback').textContent=initials(s.name);$('assignedClasses').innerHTML=classes.map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'No classes assigned';$('assignedSubjects').innerHTML=subs.map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'No subjects assigned';renderModules()}
+function renderModules(){const allowed=permissions();$('modules').innerHTML=allowed.map(k=>{const m=MODS[k];return `<a class="module" href="${m[3]||'#'}" onclick="if('${k}'==='homework'){openModule('homework');return false}"><strong>${m[0]} ${m[1]}</strong><span>${m[2]}</span></a>`}).join('')}
+async function listenProfile(){if(unsub)unsub();unsub=db.collection(STAFF).doc(me.id).onSnapshot(d=>{if(!d.exists||d.data().status==='Inactive')return logout();me={id:d.id,...d.data()};renderProfile();})}
+async function safeGet(path,queryFn){try{return await queryFn(path)}catch(e){console.warn('Firebase read failed',path,e.message);return[]}}
+async function getAll(collectionName){try{const s=await db.collection(collectionName).get();return s.docs.map(d=>({id:d.id,...d.data()}))}catch{return[]}}
+async function refreshAll(){if(!me||!db)return;renderProfile();await Promise.all([loadStaffAttendance(),loadLeaves(),loadStudents(),loadHomework(),loadMessages(),loadNotices(),loadTimetable()])}
+const ATT_DEFAULTS={checkInStart:'09:00',checkInCutoff:'09:35',checkOutExpected:'15:00',checkOutEnd:'17:00'};
+let ATT_SETTINGS={...ATT_DEFAULTS};
+
+function toMinutes(v){const m=String(v||'').match(/(\d{1,2}):(\d{2})/);return m?Number(m[1])*60+Number(m[2]):null}
+function pad2(n){return String(n).padStart(2,'0')}
+function nowTime(){const d=new Date();return pad2(d.getHours())+':'+pad2(d.getMinutes())}
+function displayTime(v){if(!v)return'—';const m=String(v).match(/(\d{1,2}):(\d{2})/);if(!m)return String(v);let h=Number(m[1]),min=m[2],ap=h>=12?'PM':'AM';h=h%12||12;return pad2(h)+':'+min+' '+ap}
+function signedMinutes(actual,expected){const a=toMinutes(actual),e=toMinutes(expected);return a===null||e===null?null:a-e}
+function expectedInFor(t){return String(t.expectedCheckIn||t.expectedStart||t.configuredStart||ATT_SETTINGS.checkInStart).slice(0,5)}
+function expectedOutFor(t){return String(t.expectedCheckOut||t.expectedEnd||t.configuredEnd||ATT_SETTINGS.checkOutExpected).slice(0,5)}
+function attendanceId(){return me.id+'_'+today()}
+
+async function loadAttendanceSettings(){
+ try{
+  const d=await db.collection('institution').doc('attendanceSettings').get();
+  if(d.exists) ATT_SETTINGS={...ATT_DEFAULTS,...d.data()};
+ }catch(e){console.warn('Attendance settings read failed; using defaults.',e.message)}
+}
+
+function attendanceWindowMessage(){
+ const n=toMinutes(nowTime()),a=toMinutes(ATT_SETTINGS.checkInStart),b=toMinutes(ATT_SETTINGS.checkInCutoff),c=toMinutes(ATT_SETTINGS.checkOutExpected),d=toMinutes(ATT_SETTINGS.checkOutEnd);
+ if(n<a)return 'Check In opens at '+displayTime(ATT_SETTINGS.checkInStart)+'.';
+ if(n<=b)return 'Check In is open until '+displayTime(ATT_SETTINGS.checkInCutoff)+'.';
+ if(n<c)return 'Check In is still available and will be registered as late. Check Out is not yet due; expected time is '+displayTime(ATT_SETTINGS.checkOutExpected)+'.';
+ if(n<=d)return 'Check Out is open until '+displayTime(ATT_SETTINGS.checkOutEnd)+'.';
+ return 'Today’s attendance window is closed.';
+}
+
+function renderTodayAttendance(t){
+ t=t||{};const cin=String(t.checkIn||'').trim(),cout=String(t.checkOut||'').trim();
+ const expIn=expectedInFor(t),expOut=expectedOutFor(t),late=signedMinutes(cin,expIn),early=signedMinutes(cout,expOut);
+ const n=toMinutes(nowTime()),inStart=toMinutes(ATT_SETTINGS.checkInStart),inCut=toMinutes(ATT_SETTINGS.checkInCutoff),outEnd=toMinutes(ATT_SETTINGS.checkOutEnd);
+ const inOpen=n!==null&&n>=inStart; // once open, late check-in remains available until the configured end of attendance day
+ const outOpen=n!==null&&n<=outEnd;
+ $('todayCheckIn').textContent=cin?displayTime(cin):'—';$('todayCheckOut').textContent=cout?displayTime(cout):'—';
+ $('lateInfo').textContent=cin?(late>0?'Late check in: '+late+' minute'+(late===1?'':'s'):late===0?'On-time check in':'Early check in: '+Math.abs(late)+' minute'+(Math.abs(late)===1?'':'s')):'On-time window: '+displayTime(ATT_SETTINGS.checkInStart)+'–'+displayTime(ATT_SETTINGS.checkInCutoff);
+ $('earlyInfo').textContent=cout?(early<0?'Early check out: '+Math.abs(early)+' minute'+(Math.abs(early)===1?'':'s'):early===0?'On-time check out':'Check out after expected time by '+early+' minute'+(early===1?'':'s')):'Expected check-out: '+displayTime(ATT_SETTINGS.checkOutExpected);
+ $('attendanceRange').innerHTML='<b>Admin attendance timings:</b> Check-in '+displayTime(ATT_SETTINGS.checkInStart)+'–'+displayTime(ATT_SETTINGS.checkInCutoff)+' · Late check-in after '+displayTime(ATT_SETTINGS.checkInCutoff)+' · Expected check-out '+displayTime(ATT_SETTINGS.checkOutExpected)+' · Check-out closes '+displayTime(ATT_SETTINGS.checkOutEnd);
+ const inBtn=$('checkInBtn'),outBtn=$('checkOutBtn'),state=$('attendanceState'),msg=$('attendanceMsg');
+ if(!cin){
+  state.textContent='Not Checked In';state.className='tag warn';
+  inBtn.disabled=!inOpen;outBtn.disabled=true;
+  msg.textContent=inOpen?attendanceWindowMessage():'Check In is not open yet. '+attendanceWindowMessage();
+ } else if(!cout){
+  state.textContent='Checked In';state.className='tag ok';
+  inBtn.disabled=true;outBtn.disabled=!outOpen;
+  let text='Check in recorded at <b>'+esc(displayTime(cin))+'</b>. ';
+  if(late>0)text+='Late check in: <b>'+late+' minute'+(late===1?'':'s')+'</b>. ';
+  text+=n<toMinutes(ATT_SETTINGS.checkOutExpected)?'Check Out will be available; if you leave before '+displayTime(ATT_SETTINGS.checkOutExpected)+', it will be recorded as early.': 'Check Out is available until '+displayTime(ATT_SETTINGS.checkOutEnd)+'.';
+  msg.innerHTML=text;
+ } else {
+  state.textContent='Attendance Completed';state.className='tag ok';inBtn.disabled=true;outBtn.disabled=true;
+  let detail='Attendance completed. Check in: <b>'+esc(displayTime(cin))+'</b> · Check out: <b>'+esc(displayTime(cout))+'</b>.';
+  if(late>0)detail+=' Late check in: <b>'+late+' min</b>.';
+  if(early<0)detail+=' Early check out: <b>'+Math.abs(early)+' min</b>.';
+  msg.innerHTML=detail;
+ }
+ $('sToday').textContent=cout?'Completed':cin?'Present':'Not Marked';$('sIn').textContent=cin?displayTime(cin):'—';$('sOut').textContent=cout?displayTime(cout):'—';
+}
+
+async function loadStaffAttendance(){
+ try{
+  await loadAttendanceSettings();
+  const snap=await db.collection(ATT).where('staffId','==',me.id).get();
+  const a=snap.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(y.date||'').localeCompare(String(x.date||'')));
+  const t=a.find(x=>String(x.date||'')===today())||{};renderTodayAttendance(t);
+  $('attList').innerHTML=a.slice(0,8).map(x=>{
+   const late=signedMinutes(x.checkIn,expectedInFor(x)),early=signedMinutes(x.checkOut,expectedOutFor(x));
+   const note=[late>0?'Late '+late+' min':'',early<0?'Early out '+Math.abs(early)+' min':''].filter(Boolean).join(' · ');
+   const status=x.checkOut?'Attendance Completed':x.checkIn?'Checked In':'Not Marked';
+   return `<tr><td>${esc(x.date)}</td><td>${esc(displayTime(x.checkIn))}</td><td>${esc(displayTime(x.checkOut))}</td><td>${esc(status)}${note?'<br><span class="muted">'+esc(note)+'</span>':''}</td><td>${esc(x.approval||'—')}</td></tr>`
+  }).join('')||'<tr><td colspan="5" class="empty">No attendance records.</td></tr>';
+ }catch(e){renderTodayAttendance({});$('attList').innerHTML='<tr><td colspan="5">Attendance could not be loaded.</td></tr>'}
+}
+
+async function saveAttendancePatch(patch){
+ if(!me||!auth?.currentUser)throw new Error('You are not authenticated. Please sign in again.');
+ if(me.authUid&&me.authUid!==auth.currentUser.uid)throw new Error('Staff/Firebase account mismatch.');
+ await db.collection(ATT).doc(attendanceId()).set({staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',employeeId:me.employeeId||'',date:today(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),...patch},{merge:true});
+ await loadStaffAttendance();
+}
+
+async function performCheckIn(){
+ const btn=$('checkInBtn');if(btn.disabled)return;btn.disabled=true;$('attendanceMsg').textContent='Recording your check in…';
+ try{
+  await loadAttendanceSettings();
+  const n=toMinutes(nowTime()),open=toMinutes(ATT_SETTINGS.checkInStart);
+  if(n<open){renderTodayAttendance({});return}
+  const ref=db.collection(ATT).doc(attendanceId()),snap=await ref.get(),existing=snap.exists?snap.data()||{}:{};
+  if(existing.checkIn){await loadStaffAttendance();return}
+  const t=nowTime(),expected=expectedInFor(existing),late=signedMinutes(t,expected);
+  await saveAttendancePatch({checkIn:t,checkInAt:firebase.firestore.FieldValue.serverTimestamp(),expectedCheckIn:expected,expectedCheckOut:expectedOutFor(existing),checkInWindowStart:ATT_SETTINGS.checkInStart,checkInWindowEnd:ATT_SETTINGS.checkInCutoff,checkOutWindowEnd:ATT_SETTINGS.checkOutEnd,lateCheckInMinutes:late>0?late:0,status:'Present'});
+  $('attendanceMsg').innerHTML='<span class="oktxt">✓ Check in recorded at '+esc(displayTime(t))+(late>0?' · Late check in: '+late+' minute'+(late===1?'':'s'):' · On time')+'</span>';
+ }catch(e){btn.disabled=false;$('attendanceMsg').innerHTML='<span class="errtxt">Check in failed:</span> '+esc(e.code?e.code+': '+e.message:e.message)}
+}
+
+async function performCheckOut(){
+ const btn=$('checkOutBtn');if(btn.disabled)return;btn.disabled=true;$('attendanceMsg').textContent='Recording your check out…';
+ try{
+  await loadAttendanceSettings();
+  const n=toMinutes(nowTime()),end=toMinutes(ATT_SETTINGS.checkOutEnd);
+  if(n>end){renderTodayAttendance({});$('attendanceMsg').innerHTML='<span class="errtxt">Check Out is closed for today.</span>';return}
+  const ref=db.collection(ATT).doc(attendanceId()),snap=await ref.get(),existing=snap.exists?snap.data()||{}:{};
+  if(!existing.checkIn){renderTodayAttendance(existing);$('attendanceMsg').innerHTML='<span class="errtxt">Check In is required before Check Out.</span>';return}
+  if(existing.checkOut){await loadStaffAttendance();return}
+  const t=nowTime(),expected=expectedOutFor(existing),delta=signedMinutes(t,expected);
+  await saveAttendancePatch({checkOut:t,checkOutAt:firebase.firestore.FieldValue.serverTimestamp(),expectedCheckIn:expectedInFor(existing),expectedCheckOut:expected,earlyCheckOutMinutes:delta<0?Math.abs(delta):0,lateCheckOutMinutes:delta>0?delta:0,status:'Present',attendanceCompleted:true});
+  $('attendanceMsg').innerHTML='<span class="oktxt">✓ Check out recorded at '+esc(displayTime(t))+(delta<0?' · Early check out: '+Math.abs(delta)+' minute'+(Math.abs(delta)===1?'':'s'):' · Attendance completed')+'</span>';
+ }catch(e){btn.disabled=false;$('attendanceMsg').innerHTML='<span class="errtxt">Check out failed:</span> '+esc(e.code?e.code+': '+e.message:e.message)}
+}
+
+async function loadLeaves(){try{const s=await db.collection(LEAVE).where('staffId','==',me.id).get();$('sLeave').textContent=s.docs.filter(d=>(d.data().decision||'Pending')==='Pending').length}catch{$('sLeave').textContent='—'}}
+function studentName(s){return s.name||[s.studentFirst,s.studentMiddle,s.studentLast].filter(Boolean).join(' ')||'Student'}
+async function loadStudents(){const classes=arrays(me,'assignedClasses','classes');if(!classes.length){$('sStudents').textContent='0';$('classCounts').textContent='No classes are currently assigned to your staff account.';return}try{const snap=await db.collection('students').get();const students=snap.docs.map(d=>({id:d.id,...d.data()}));const counts={};classes.forEach(c=>counts[c]=0);students.forEach(s=>{const c=String(s.classJoining||s.class||s.className||'').trim();if(classes.includes(c))counts[c]++});$('sStudents').textContent=Object.values(counts).reduce((a,b)=>a+b,0);$('classCounts').innerHTML=Object.entries(counts).map(([c,n])=>`<span class="tag">${esc(c)}: ${n}</span>`).join('')||'No matching student records.'}catch{$('sStudents').textContent='—';$('classCounts').textContent='Student master could not be read.'}}
+function showHomeworkForm(){$('homeworkForm').classList.remove('hidden');const cls=arrays(me,'assignedClasses','classes'),sub=arrays(me,'assignedSubjects','subjects');$('hwClass').innerHTML=cls.map(x=>`<option>${esc(x)}</option>`).join('');$('hwSubject').innerHTML=sub.map(x=>`<option>${esc(x)}</option>`).join('');if(!cls.length)$('hwClass').innerHTML='<option>No class assigned</option>';if(!sub.length)$('hwSubject').innerHTML='<option>General</option>'}
+function hideHomeworkForm(){$('homeworkForm').classList.add('hidden')}
+async function loadHomework(){let rows=[];try{let s=await db.collection('homework').where('teacherId','==',me.id).get();rows=s.docs.map(d=>({id:d.id,...d.data()}))}catch{}if(!rows.length)try{let s=await db.collection('assignments').where('teacherId','==',me.id).get();rows=s.docs.map(d=>({id:d.id,...d.data()}))}catch{}rows.sort((a,b)=>String(b.createdAt||b.date||'').localeCompare(String(a.createdAt||a.date||'')));$('sHomework').textContent=rows.length;$('homeworkList').innerHTML=rows.slice(0,8).map(x=>`<div class="panel" style="margin-bottom:7px"><b>${esc(x.title||x.subject||'Homework')}</b> <span class="tag">${esc(x.class||x.className||'Class')}</span><div class="muted">${esc(x.text||x.description||x.question||x.instructions||'')}</div><div class="muted">Due: ${esc(x.dueDate||x.due||'—')}</div></div>`).join('')||'<div class="empty">No homework found. Use Add Homework to publish one.</div>'}
+async function saveHomework(){const text=$('hwText').value.trim();if(!text)return $('hwMsg').textContent='Write the homework first.';if(!me||!auth?.currentUser)return $('hwMsg').innerHTML='<span class="errtxt">You are not authenticated. Please sign in again.</span>';if(me.authUid&&me.authUid!==auth.currentUser.uid)return $('hwMsg').innerHTML='<span class="errtxt">Staff/Firebase account mismatch.</span>';try{await db.collection('homework').add({teacherId:me.id,teacherAuthUid:auth.currentUser.uid,teacherName:me.name||'',class:$('hwClass').value,subject:$('hwSubject').value,dueDate:$('hwDue').value||'',text,status:'Published',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});$('hwMsg').innerHTML='<span class="oktxt">Homework published to Firebase.</span>';$('hwText').value='';hideHomeworkForm();await loadHomework()}catch(e){$('hwMsg').innerHTML='<span class="errtxt">Could not publish:</span> '+esc(e.code?e.code+': '+e.message:e.message)}}
+function showMessageForm(){$('messageForm').classList.remove('hidden')};function hideMessageForm(){$('messageForm').classList.add('hidden')}
+async function loadMessages(){let rows=[];for(const col of ['teacherMessages','communications']){try{const s=await db.collection(col).where('teacherId','==',me.id).get();rows=rows.concat(s.docs.map(d=>({id:d.id,...d.data()})))}catch{}}rows.sort((a,b)=>String(b.createdAt||b.date||'').localeCompare(String(a.createdAt||a.date||'')));$('messageList').innerHTML=rows.slice(0,8).map(x=>`<div class="panel" style="margin-bottom:7px"><b>${esc(x.type||x.messageType||'Message')}</b> <span class="tag">${esc(x.priority||'Normal')}</span><div>${esc(x.message||x.text||x.body||'')}</div><div class="muted">To: ${esc(x.studentId||x.admissionNo||x.recipientId||'Student')} · ${esc(x.createdAt?.toDate?x.createdAt.toDate().toLocaleString():x.date||'')}</div></div>`).join('')||'<div class="empty">No recent messages.</div>'}
+async function sendMessage(){const student=$('msgStudent').value.trim(),text=$('msgText').value.trim();if(!student||!text)return $('sendMsg').textContent='Enter the student identifier and message.';if(!me||!auth?.currentUser)return $('sendMsg').innerHTML='<span class="errtxt">You are not authenticated. Please sign in again.</span>';try{await db.collection('teacherMessages').add({teacherId:me.id,teacherAuthUid:auth.currentUser.uid,teacherName:me.name||'',studentId:student,type:$('msgType').value,priority:$('msgPriority').value,message:text,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:'Sent'});$('sendMsg').innerHTML='<span class="oktxt">Message saved to Firebase.</span>';hideMessageForm();$('msgText').value='';await loadMessages()}catch(e){$('sendMsg').innerHTML='<span class="errtxt">Could not send:</span> '+esc(e.code?e.code+': '+e.message:e.message)}}
+async function loadNotices(){try{const rows=await getAll('notices');rows.sort((a,b)=>String(b.date||b.createdAt||'').localeCompare(String(a.date||a.createdAt||'')));$('noticeList').innerHTML=rows.slice(0,6).map(x=>`<div class="panel" style="margin-bottom:7px"><b>${esc(x.title||x.heading||'School Notice')}</b><div>${esc(x.message||x.body||x.text||'')}</div><div class="muted">${esc(x.date||'')}</div></div>`).join('')||'<div class="empty">No notices available.</div>'}catch{$('noticeList').innerHTML='<div class="empty">Notices unavailable.</div>'}}
+async function loadTimetable(){try{const rows=await getAll('timetables');const subs=arrays(me,'assignedSubjects','subjects'),classes=arrays(me,'assignedClasses','classes');const mine=rows.filter(x=>{const t=String(x.teacherId||x.teacher||x.staffId||x.teacherName||'');const c=String(x.class||x.className||x.classJoining||'');const sub=String(x.subject||x.subjectName||'');return t===me.id||t===me.employeeId||t.toLowerCase()===String(me.name||'').toLowerCase()||(classes.includes(c)&&(!subs.length||subs.includes(sub)))});$('timetableList').innerHTML=mine.slice(0,15).map(x=>`<div class="panel" style="margin-bottom:7px"><b>${esc(x.day||x.weekday||'Day')}</b> · ${esc(x.period||x.time||'Period')} · <span class="tag">${esc(x.subject||'Subject')}</span><div class="muted">Class: ${esc(x.class||x.className||'—')} · Teacher: ${esc(x.teacherName||x.teacher||me.name||'')}</div></div>`).join('')||'<div class="empty">No matching timetable entries. The timetable is managed by the school administration.</div>'}catch{$('timetableList').innerHTML='<div class="empty">Timetable unavailable.</div>'}}
+function recordGeofence(){if(me?.accessRole!=='HOI')return;const g=navigator.geolocation;if(!g)return $('geoMsg').textContent='GPS not available.';g.getCurrentPosition(p=>db.doc(GEOF).set({lat:p.coords.latitude,lon:p.coords.longitude,accuracy:p.coords.accuracy||0,radius:20,recordedAt:firebase.firestore.FieldValue.serverTimestamp(),recordedBy:me.name||me.employeeId},{merge:true}).then(()=>$('geoMsg').innerHTML='<span class="oktxt">School geofence recorded at 20 m radius.</span>').catch(e=>$('geoMsg').textContent=e.message),()=>{$('geoMsg').textContent='Could not obtain GPS. Enable location permission.'},{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')loginStaff()});init();
+const commonRoleSession=(()=>{try{return JSON.parse(sessionStorage.getItem('GPSPETHGAM_ROLE_SESSION_V1')||'null')}catch{return null}})();
+const ss=session();
+if(commonRoleSession?.role==='TEACHER'&&commonRoleSession.staffId){setTimeout(async()=>{try{if(!auth||!db||!auth.currentUser)return;const d=await db.collection(STAFF).doc(commonRoleSession.staffId).get();if(d.exists&&d.data().status!=='Inactive'&&d.data().authUid===auth.currentUser.uid){me={id:d.id,...d.data()};show();refreshAll();listenProfile()}}catch(e){console.warn('Common role session restore failed',e)}},250)}
+else if(ss?.staffId){setTimeout(()=>{if(db&&auth&&!me&&auth.currentUser){db.collection(STAFF).doc(ss.staffId).get().then(d=>{if(d.exists&&d.data().status!=='Inactive'&&d.data().authUid===auth.currentUser.uid){me={id:d.id,...d.data()};show();refreshAll();listenProfile()}}).catch(()=>{})}},700)}
+</script></body></html>

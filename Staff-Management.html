@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Staff & Teacher Management — Government Primary School Pethgam Wagoora</title>
+<style>
+:root{--blue:#0759a8;--navy:#12355b;--gold:#d39b16;--bg:#f4f7fb;--card:#fff;--muted:#64748b;--border:#dbe4ef;--ok:#16803c;--danger:#c0392b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;background:var(--bg);color:#172033}header{background:linear-gradient(135deg,#0759a8,#12355b);color:#fff;padding:18px}header .head{max-width:1250px;margin:auto;display:flex;gap:14px;align-items:center}header img{width:64px;height:64px;background:#fff;border-radius:12px;padding:4px;object-fit:contain}h1,h2,h3{margin-top:0}.wrap{max-width:1250px;margin:18px auto;padding:0 12px}.card{background:#fff;border:1px solid var(--border);border-radius:15px;padding:18px;margin-bottom:15px;box-shadow:0 4px 16px #12355b10}.login{max-width:540px;margin:50px auto}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:5px;color:#334155}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;font:inherit}.field textarea{min-height:78px;resize:vertical}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:800;cursor:pointer;background:var(--blue);color:#fff}.btn.secondary{background:#64748b}.btn.ok{background:var(--ok)}.btn.gold{background:var(--gold)}.btn.danger{background:var(--danger)}.btn:disabled{opacity:.55;cursor:not-allowed}.muted{color:var(--muted);font-size:13px}.status{padding:10px;border-radius:9px;background:#f8fafc;border:1px solid var(--border);margin-top:10px}.oktxt{color:var(--ok);font-weight:800}.errtxt{color:var(--danger);font-weight:800}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}a.back{color:#fff;text-decoration:none;font-weight:800}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:12px 0}.stat{background:#eef5ff;border:1px solid #d6e7ff;border-radius:12px;padding:13px}.stat b{display:block;font-size:25px;color:var(--blue)}.checkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.check{border:1px solid var(--border);border-radius:9px;padding:9px;background:#fafcff}.check input{width:auto;margin-right:7px}.photo-preview{width:90px;height:90px;border-radius:12px;object-fit:cover;border:1px solid var(--border);display:block;margin-top:8px;background:#e2e8f0}.photo-meta{font-size:11px;color:var(--muted);margin-top:6px;word-break:break-all;line-height:1.4}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--border);padding:9px;text-align:left;font-size:12px;vertical-align:top}th{background:#f1f5f9}.tag{display:inline-block;padding:4px 8px;border-radius:999px;background:#e8f1ff;color:#0757a6;font-size:11px;font-weight:800;margin:2px}.tag.ok{background:#e6f6ec;color:var(--ok)}.tag.warn{background:#fdf3e2;color:#9a6a05}.tag.err{background:#fee2e2;color:#991b1b}.dangerbox{background:#fff1f0;border:1px solid #f3c4c0;padding:10px;border-radius:9px}.infobox{background:#eef5ff;border:1px solid #d6e7ff;padding:10px;border-radius:9px;font-size:13px}.hidden{display:none!important}.assignment-list{display:flex;flex-direction:column;gap:8px}.assignment-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;background:#fff;border:1px solid var(--border);border-radius:10px;padding:9px}.assignment-row select{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font:inherit}.assignment-remove{background:#fee2e2;color:#991b1b;border:0;border-radius:8px;padding:9px 11px;font-weight:800;cursor:pointer}.assignment-pill{display:inline-flex;align-items:center;gap:5px;background:#eef2ff;color:#3f3f91;border-radius:999px;padding:5px 9px;margin:3px;font-size:11px;font-weight:800}.field-help{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.35}@media(max-width:600px){.assignment-row{grid-template-columns:1fr}.assignment-remove{width:100%}}
+
+@media(max-width:1100px){.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid,.stats,.checkgrid{grid-template-columns:1fr}header .head{align-items:flex-start}h1{font-size:20px}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js"></script>
+<!-- ========== FIX: load Cloudinary helper ========== -->
+<script src="./cloudinary-upload.js"></script>
+<!-- ================================================ -->
+</head>
+<body>
+<header><div class="head"><img src="new-logo.png" alt="School Logo"><div><h1>Staff &amp; Teacher Management</h1><div>Government Primary School Pethgam Wagoora</div><div class="muted" style="color:#e5eefb">Central staff master register + Firebase Authentication provisioning for teacher dashboard, attendance, leave, timetable, homework and communication.</div></div><div style="margin-left:auto"><a class="back" href="Staff-Personal-Dashboard-Tr.html">← Teacher Dashboard</a></div></div></header>
+<main class="wrap">
+
+<!-- ================= LOGIN ================= -->
+<div id="login" class="card login">
+  <h2>🔐 Admin / HOI Sign In</h2>
+  <p class="muted">Use the existing <b>Firebase Authentication Admin account</b> email and password. No separate Employee ID or staff PIN is required for Staff Management.</p>
+  <div class="field"><label>Admin Email</label><input id="loginEmail" type="email" autocomplete="username" placeholder="Admin Firebase email"></div>
+  <div class="field" style="margin-top:10px"><label>Admin Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Firebase Authentication password"></div>
+  <div class="actions"><button class="btn ok" onclick="login()">Sign In as Admin</button><button class="btn secondary" onclick="location.href='index.html'">Main Dashboard</button></div>
+  <div id="loginMsg" class="status">Connecting to Firebase…</div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hidden">
+
+  <div class="card">
+    <div class="topbar">
+      <div>
+        <h2>👨‍🏫 Teacher Master Profile</h2>
+        <p class="muted">Saving a staff member now also <b>creates the Firebase Authentication login</b>, writes the <b>staffLoginIndex</b> mapping and links <b>authUid</b> on the staff record — so the teacher can sign in from any device with Employee ID + PIN.</p>
+      </div>
+      <button class="btn secondary" onclick="logout()">Sign Out</button>
+    </div>
+
+    <input type="hidden" id="id">
+
+    <div class="grid" style="margin-top:12px">
+      <div class="field"><label>Full Name *</label><input id="name"></div>
+
+      <!-- ========== FIX: photo field with meta + remove ========== -->
+      <div class="field">
+        <label>Staff Photo</label>
+        <input id="staffPhoto" type="file" accept="image/*" onchange="previewPhoto(event)">
+        <img id="photoPreview" class="photo-preview" style="display:none" alt="Staff photo">
+        <div id="photoMeta" class="photo-meta">No photograph on record.</div>
+        <button type="button" class="btn danger" id="removePhotoBtn" style="display:none;margin-top:6px;padding:6px 10px;font-size:11px" onclick="removeStaffPhoto()">Remove Photo</button>
+      </div>
+      <!-- ======================================================= -->
+
+      <div class="field"><label>Employee ID *</label><input id="employeeId" placeholder="e.g. TR-0001 (used to sign in)"></div>
+
+      <div class="field"><label>Designation</label><input id="designation" placeholder="Teacher / Head Teacher / Aaya / Cook"></div>
+      <div class="field"><label>Qualification</label><select id="qualification"><option value="">Select Qualification</option><option>Middle Pass</option><option>Matric Pass</option><option>12th Pass</option><option>Graduate</option><option>Post Graduate</option><option>D.Ed</option><option>B.Ed</option><option>M.Ed</option></select></div>
+      <div class="field"><label>Stream</label><select id="stream"><option value="">Select Stream</option><option>Science</option><option>Arts</option></select></div>
+      <div class="field"><label>Subject in P.G.</label><input id="pgSubject" placeholder="e.g. English / Mathematics / History"><div class="field-help">Use this for Post Graduate / relevant higher qualification subject.</div></div>
+      <div class="field"><label>Mobile</label><input id="mobile"></div>
+
+      <div class="field"><label>Joining Date</label><input id="joiningDate" type="date"></div>
+      <div class="field"><label>Subject / Main Role</label><input id="role" placeholder="Class Teacher / Mathematics / EVS"></div>
+      <div class="field"><label>Speciality</label><input id="speciality" placeholder="e.g. Champion of teaching Mathematics"></div>
+
+      <div class="field"><label>Access Role</label><select id="accessRole"><option value="TEACHER">Teacher</option><option value="AAYA">Aaya</option><option value="COOK">Cook</option><option value="HOI">Admin / HOI</option></select></div>
+      <div class="field"><label>Login PIN (6–8 digits) *</label><input id="accessPin" type="password" inputmode="numeric" maxlength="8" placeholder="Used as the Firebase password"><div class="muted" style="font-size:11px;margin-top:4px">Firebase requires ≥ 6 characters, so 4–5 digit PINs cannot be used for cloud login.</div></div>
+      <div class="field" id="currentPinWrap" style="display:none"><label>Current PIN (only to change PIN / email)</label><input id="currentPin" type="password" inputmode="numeric" maxlength="8" placeholder="Existing PIN of this staff member"></div>
+
+      <div class="field"><label>Firebase Login Email (optional)</label><input id="loginEmailField" type="email" placeholder="Leave blank to auto-generate"><div class="muted" style="font-size:11px;margin-top:4px">Auto-generated as <code>employee.id@staff.gpspethgamwagoora.school</code> when blank.</div></div>
+      <div class="field"><label>Status</label><select id="status"><option>Active</option><option>On Leave</option><option>Inactive</option></select></div>
+    </div>
+
+    <div class="card" style="background:#f8fbff;margin-top:15px">
+      <div class="topbar"><div><h3>📚 Teaching Assignments</h3><p class="muted">Assign subjects class-wise, for example <b>5th — English</b> and <b>4th — Mathematics</b>. These assignments are saved with the teacher and are used by the Timetable module.</p></div><button type="button" class="btn gold" onclick="addAssignmentRow()">＋ Add Assignment</button></div>
+      <div id="assignmentList" class="assignment-list" style="margin-top:10px"></div>
+      <div id="assignmentEmpty" class="infobox" style="margin-top:9px">No teaching assignments added yet. Add at least one class-subject pair for each teacher who teaches classes.</div>
+    </div>
+
+    <div class="card" style="background:#f8fbff">
+      <h3>🧩 Dashboard Permissions</h3>
+      <p class="muted">Choose which teacher tools are enabled for this account.</p>
+      <div id="permissionChecks" class="checkgrid"></div>
+    </div>
+
+    <div class="infobox">
+      <b>How cross-device login works:</b> saving this form → creates a Firebase Authentication user (login email + PIN) → stores <code>authUid</code> and <code>authEmail</code> on the <code>staff</code> document → writes <code>staffLoginIndex/{EmployeeID} = {authEmail, staffId}</code>.
+      The Teacher Dashboard then resolves Employee ID → email → Firebase sign-in → verifies <code>authUid</code>. No PIN is stored in Firestore.
+      <br><br>
+      <b>Photographs:</b> staff photos are uploaded to <b>Cloudinary</b> on Save and only the HTTPS URL is stored in Firestore. Legacy base64 photos can be migrated with the <b>Repair Staff Photos</b> button in the register.
+    </div>
+
+    <div class="actions">
+      <button class="btn ok" id="saveBtn" onclick="saveStaff()">💾 Save Staff + Create Firebase Login</button>
+      <button class="btn secondary" onclick="resetForm()">Clear Form</button>
+    </div>
+    <div id="saveMsg" class="status"></div>
+  </div>
+
+  <div class="card">
+    <div class="topbar">
+      <div><h2>Staff Register</h2><p class="muted">Real-time cloud register. Changes are visible on all connected devices.</p></div>
+      <input id="q" placeholder="Search name / ID / subject" style="padding:9px;border:1px solid #cbd5e1;border-radius:8px">
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b id="total">0</b>Total</div>
+      <div class="stat"><b id="teachers">0</b>Teachers</div>
+      <div class="stat"><b id="active">0</b>Active</div>
+      <div class="stat"><b id="hoiCount">0</b>HOI</div>
+      <div class="stat"><b id="assigned">0</b>Assigned</div>
+      <div class="stat"><b id="linkedCount">0</b>Firebase Logins</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn gold" onclick="migrateLegacy()">Import Legacy Local Staff</button>
+      <!-- ========== FIX: Repair photos button ========== -->
+      <button class="btn gold" id="repairPhotosBtn" onclick="repairStaffPhotos()">🖼️ Repair Staff Photos</button>
+      <!-- ==================================================== -->
+      <button class="btn secondary" onclick="loadStaff()">↻ Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Photo</th><th>Name / ID</th><th>Designation / Qualification</th><th>Classes</th><th>Subjects</th><th>Access</th><th>Status</th><th>Firebase Login</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>☁️ Cloud architecture</h3>
+    <div class="muted">
+      Staff records: <b>staff</b> · Staff login lookup: <b>staffLoginIndex</b> · Staff attendance: <b>staffAttendance</b> · Staff leave: <b>staffLeaves</b> ·
+      School geofence: <b>institution/geofence</b> · Teacher homework: <b>homework</b> (dashboard also reads legacy <b>assignments</b>) ·
+      Teacher communication: <b>teacherMessages</b> · Staff photos: <b>Cloudinary</b> (only the HTTPS URL is stored in Firestore).
+    </div>
+    <div class="dangerbox" style="margin-top:10px">
+      <b>Important:</b> this page uses the same Firebase project as the teacher dashboard.
+      Firestore Rules must permit the intended HOI/teacher reads and writes; the HTML cannot safely replace Firestore security rules.
+      A staff member can only sign in after the HOI saves them here (or uses <b>Create Login</b> in the register).
+    </div>
+  </div>
+</div>
+</main>
+
+<script>
+/* ================================================================
+   FIREBASE CONFIG
+   ================================================================ */
+const CONFIG={apiKey:"AIzaSyADB32wJq886NNqMuJk5n1zO45oSi-bdLs",authDomain:"gps-pethgam-wagoora-portal.firebaseapp.com",projectId:"gps-pethgam-wagoora-portal",storageBucket:"gps-pethgam-wagoora-portal.firebasestorage.app",messagingSenderId:"243117067000",appId:"1:243117067000:web:a5320441bcbaed71e4490d",measurementId:"G-WMXPK3229Y"};
+
+const STAFF='staff';
+const STAFF_LOGIN_INDEX='staffLoginIndex';
+const LEGACY='GPSPETHGAM_STAFF_V1';
+const SESSION='GPSPETHGAM_STAFF_SESSION_V2';
+const SECONDARY_APP='staffAuthProvisioner';   // separate Firebase App used to create/update staff logins
+const LOGIN_EMAIL_DOMAIN='staff.gpspethgamwagoora.school';
+
+const CLASSES=['Nursery','LKG','UKG','Pre Primary 3','Pre Primary 2','Balvatika','1st','2nd','3rd','4th','5th'];
+const SUBJECTS=['English','Mathematics','Maths','EVS','Urdu','Kashmiri','Art & Craft','General Knowledge','Physical Education'];
+const PERMS=[['attendance','Attendance & Leave'],['studentAttendance','Student Attendance'],['homework','Homework / Home Work'],['communication','Student Communication'],['marks','Marks / Results'],['timetable','My Timetable'],['notices','Notices & Circulars'],['calendar','School Calendar'],['library','Library'],['profile','Student Profiles'],['documents','Student Documents'],['workBehaviour','Work Behaviour / Records']];
+
+let db,auth,staffRows=[];
+/* ========== FIX: pending photo state ========== */
+let pendingStaffPhotoFile = null;        // File object selected this session (not yet uploaded)
+let pendingStaffPhotoObjectUrl = null;   // For preview + cleanup
+let teachingAssignments=[];
+/* =============================================== */
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+/* ================================================================
+   HELPERS
+   ================================================================ */
+async function hashPin(pin){
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')
+}
+function sanitizeLocal(v){
+  return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.+|\.+$/g,'').slice(0,40)||'staff';
+}
+function autoLoginEmail(employeeId){
+  return sanitizeLocal(employeeId)+'@'+LOGIN_EMAIL_DOMAIN;
+}
+function authErr(e){
+  const c=e&&e.code?e.code:'';
+  switch(c){
+    case 'auth/email-already-in-use': return 'This login email is already used by another Firebase account.';
+    case 'auth/invalid-email':        return 'Firebase rejected the login email format.';
+    case 'auth/weak-password':        return 'Firebase rejected the PIN — it must be at least 6 characters.';
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':   return 'The current PIN is incorrect.';
+    case 'auth/network-request-failed': return 'Network problem while contacting Firebase Authentication.';
+    case 'auth/operation-not-allowed':  return 'Email/Password sign-in is not enabled in Firebase Console → Authentication → Sign-in method.';
+    case 'auth/requires-recent-login':  return 'Firebase requires a fresh sign-in before this change. Try again.';
+    case 'auth/too-many-requests':      return 'Too many attempts. Wait a moment and try again.';
+    default: return (e&&e.message)?e.message:String(e);
+  }
+}
+
+/* ========== FIX: photo helpers for staff records ========== */
+const STAFF_PHOTO_URL_KEYS = ['photoUrl','photoURL','imageUrl','image','cloudinaryUrl','photoSecureUrl','secureUrl','url'];
+const STAFF_PHOTO_RAW_KEYS = ['photo','photoUrl','photoURL','image','imageUrl','photoBase64','imageBase64','photograph'];
+
+function isHttpUrl(v){ return /^https?:\/\//i.test(String(v||'').trim()); }
+function isDataUrl(v){ return /^data:image\//i.test(String(v||'').trim()); }
+
+function staffPhotoRaw(s){
+  if(!s) return '';
+  for(const k of STAFF_PHOTO_RAW_KEYS){ const v=s[k]; if(v!=null && String(v).trim()!=='') return String(v).trim(); }
+  for(const k of STAFF_PHOTO_URL_KEYS){ const v=s[k]; if(v!=null && String(v).trim()!=='') return String(v).trim(); }
+  return '';
+}
+function staffPhotoUrl(s){
+  const raw=staffPhotoRaw(s);
+  if(isHttpUrl(raw)) return raw;
+  for(const k of STAFF_PHOTO_URL_KEYS){ const v=String((s&&s[k])||'').trim(); if(isHttpUrl(v)) return v; }
+  return '';
+}
+/* ==================================================== */
+
+/* ================================================================
+   SECONDARY APP  (lets the admin create staff accounts WITHOUT
+   being signed out of their own admin session)
+   ================================================================ */
+async function provisionAuth(){
+  let app=firebase.apps.find(a=>a.name===SECONDARY_APP);
+  if(!app) app=firebase.initializeApp(CONFIG,SECONDARY_APP);
+  const a=app.auth();
+  try{ await a.setPersistence(firebase.auth.Auth.Persistence.NONE); }catch(e){}
+  return a;
+}
+
+async function createAuthAccount(email,pin){
+  const sAuth=await provisionAuth();
+  try{
+    const cred=await sAuth.createUserWithEmailAndPassword(email,pin);
+    const uid=cred.user.uid;
+    await sAuth.signOut().catch(()=>{});
+    return uid;
+  }catch(e){
+    if(e.code==='auth/email-already-in-use'){
+      try{
+        const cred=await sAuth.signInWithEmailAndPassword(email,pin);
+        const uid=cred.user.uid;
+        await sAuth.signOut().catch(()=>{});
+        return uid;
+      }catch(e2){
+        await sAuth.signOut().catch(()=>{});
+        throw new Error('The login email '+email+' already belongs to an existing Firebase account and the PIN you entered does not match it. Use the correct PIN, or choose a different login email.');
+      }
+    }
+    await sAuth.signOut().catch(()=>{});
+    throw new Error(authErr(e));
+  }
+}
+
+async function updateAuthAccount(currentEmail,currentPin,newEmail,newPin){
+  const sAuth=await provisionAuth();
+  try{
+    await sAuth.signInWithEmailAndPassword(currentEmail,currentPin);
+    const u=sAuth.currentUser;
+    if(newEmail && newEmail.toLowerCase()!==currentEmail.toLowerCase()){
+      await u.updateEmail(newEmail.toLowerCase());
+    }
+    if(newPin) await u.updatePassword(newPin);
+    await sAuth.signOut().catch(()=>{});
+  }catch(e){
+    await sAuth.signOut().catch(()=>{});
+    throw new Error(authErr(e));
+  }
+}
+
+/* ================================================================
+   INIT / SESSION
+   ================================================================ */
+function init(){
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(CONFIG);
+    auth=firebase.auth();
+    db=firebase.firestore();
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+      const u=auth.currentUser;
+      if(u){ checkAdmin(u).catch(()=>{}); }
+      $('loginMsg').innerHTML='<span class="oktxt">Firebase connected.</span> Sign in with the existing Admin email and password.';
+    }).catch(e=>$('loginMsg').textContent='Firebase Auth setup error: '+e.message);
+  }catch(e){
+    $('loginMsg').textContent='Firebase initialization error: '+e.message;
+  }
+}
+function session(){ try{return JSON.parse(sessionStorage.getItem(SESSION)||'null')}catch{return null} }
+function ensure(){ const s=session(); return !!s && s.role==='HOI'; }
+
+async function checkAdmin(user){
+  if(!user||!user.email) return false;
+
+  /* Admin authorization is determined by the Firestore admins/{uid} record.
+     Do not reject a valid Firestore admin merely because an optional
+     GPS_ADMIN_EMAILS allow-list is missing, stale, or contains an old email. */
+  const adminSnap=await db.collection('admins').doc(user.uid).get();
+  if(!adminSnap.exists){
+    await auth.signOut();
+    $('loginMsg').textContent='Admin Authentication account found, but admins/'+user.uid+' was not found in Firestore. Create/restore the admin document with active: true and role: admin.';
+    return false;
+  }
+
+  const a=adminSnap.data()||{};
+  const firestoreEmail=String(a.email||'').trim().toLowerCase();
+  const authEmail=String(user.email||'').trim().toLowerCase();
+
+  if(a.active!==true || String(a.role||'').toLowerCase()!=='admin'){
+    await auth.signOut();
+    $('loginMsg').textContent='Admin account is not active or does not have role: admin.';
+    return false;
+  }
+
+  /* If the Firestore admin record has an email, require it to match the
+     authenticated Firebase account. This avoids accepting a different
+     Firebase account while avoiding the stale global allow-list problem. */
+  if(firestoreEmail && firestoreEmail!==authEmail){
+    await auth.signOut();
+    $('loginMsg').textContent='The signed-in Firebase account does not match the email recorded for this school administrator.';
+    return false;
+  }
+
+  sessionStorage.setItem(SESSION,JSON.stringify({
+    uid:user.uid,email:user.email,
+    name:a.name||user.displayName||'Administrator',
+    employeeId:a.employeeId||'',role:'HOI',loginAt:new Date().toISOString()
+  }));
+  showApp();
+  await loadStaff();
+  return true;
+}
+
+async function login(){
+  const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;
+  if(!email||!password){ $('loginMsg').textContent='Enter the existing Firebase Admin email and password.'; return; }
+  $('loginMsg').textContent='Signing in…';
+  try{
+    const cred=await auth.signInWithEmailAndPassword(email,password);
+    await checkAdmin(cred.user);
+  }catch(e){
+    let msg='Sign in failed: '+e.message;
+    if(e.code==='auth/user-not-found') msg='No Firebase Authentication account exists for this email.';
+    else if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential') msg='Admin email or password is incorrect.';
+    else if(e.code==='auth/operation-not-allowed') msg='Firebase Email/Password Authentication is not enabled. Enable it in Firebase Console → Authentication → Sign-in method.';
+    $('loginMsg').textContent=msg;
+  }
+}
+function showApp(){ $('login').classList.add('hidden'); $('app').classList.remove('hidden'); }
+async function logout(){
+  sessionStorage.removeItem(SESSION);
+  try{ if(auth) await auth.signOut(); }catch(e){}
+  location.reload();
+}
+
+/* ================================================================
+   FORM BUILDING
+   ================================================================ */
+function assignmentSubjects(){return ['English','Mathematics','EVS','Urdu','Kashmiri','Art & Craft','General Knowledge','Physical Education'];}
+function assignmentClasses(){return ['Nursery','LKG','UKG','Balvatika','1st','2nd','3rd','4th','5th'];}
+function renderAssignments(){
+  const box=$('assignmentList');if(!box)return;
+  $('assignmentEmpty').style.display=teachingAssignments.length?'none':'block';
+  box.innerHTML=teachingAssignments.map((a,i)=>`<div class="assignment-row">
+    <div class="field"><label>Class</label><select onchange="updateAssignment(${i},'className',this.value)"><option value="">Select Class</option>${assignmentClasses().map(x=>`<option ${x===a.className?'selected':''}>${esc(x)}</option>`).join('')}</select></div>
+    <div class="field"><label>Subject</label><select onchange="updateAssignment(${i},'subject',this.value)"><option value="">Select Subject</option>${assignmentSubjects().map(x=>`<option ${x===a.subject?'selected':''}>${esc(x)}</option>`).join('')}</select></div>
+    <button type="button" class="assignment-remove" onclick="removeAssignmentRow(${i})">Remove</button>
+  </div>`).join('');
+}
+function addAssignmentRow(className='',subject=''){teachingAssignments.push({className,subject});renderAssignments();}
+function updateAssignment(i,key,value){if(teachingAssignments[i])teachingAssignments[i][key]=value;}
+function removeAssignmentRow(i){teachingAssignments.splice(i,1);renderAssignments();}
+function normalizedAssignments(values){return (values||[]).map(a=>({className:String(a.className||a.class||'').trim(),subject:String(a.subject||a.subjectName||'').trim()})).filter(a=>a.className&&a.subject);}
+
+function updatePgSubjectVisibility(){const q=$('qualification'),f=$('pgSubject');if(!q||!f)return;const isPG=['Post Graduate','M.Ed'].includes(q.value);f.closest('.field').style.opacity=isPG?'1':'.7';f.placeholder=isPG?'Enter P.G. subject':'Optional — e.g. English / Mathematics';}
+function buildChecks(){
+  $('classChecks').innerHTML=CLASSES.map(x=>`<label class="check"><input type="checkbox" name="classes" value="${esc(x)}">${esc(x)}</label>`).join('');
+  $('subjectChecks').innerHTML=SUBJECTS.map(x=>`<label class="check"><input type="checkbox" name="subjects" value="${esc(x)}">${esc(x)}</label>`).join('');
+  $('permissionChecks').innerHTML=PERMS.map(([k,n])=>`<label class="check"><input type="checkbox" name="perms" value="${k}">${esc(n)}</label>`).join('');
+}
+function checked(name){ return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value); }
+function setChecked(name,values){
+  const set=new Set((values||[]).map(String));
+  document.querySelectorAll(`input[name="${name}"]`).forEach(x=>x.checked=set.has(x.value));
+}
+
+/* ========== FIX: revoke stale object URLs ========== */
+function clearPendingPhoto(){
+  pendingStaffPhotoFile = null;
+  if(pendingStaffPhotoObjectUrl){
+    try{ URL.revokeObjectURL(pendingStaffPhotoObjectUrl); }catch(e){}
+    pendingStaffPhotoObjectUrl = null;
+  }
+}
+/* ================================================= */
+
+function resetForm(){
+  clearPendingPhoto();
+  $('id').value='';
+  ['name','employeeId','designation','mobile','joiningDate','role','speciality','accessPin','currentPin','loginEmailField','staffPhoto']
+    .forEach(k=>{ const el=$(k); if(el) el.value=''; });
+  $('qualification').value='';$('stream').value='';$('pgSubject').value='';
+  $('accessRole').value='TEACHER';
+  $('status').value='Active';
+  $('photoPreview').style.display='none';
+  $('photoPreview').removeAttribute('src');
+  $('photoMeta').textContent='No photograph on record.';
+  $('removePhotoBtn').style.display='none';
+  $('currentPinWrap').style.display='none';
+  setChecked('classes',[]);
+  setChecked('subjects',[]);
+  teachingAssignments=[];renderAssignments();
+  setChecked('perms',['attendance','studentAttendance','homework','communication','marks','timetable','notices','calendar','library','profile','documents','workBehaviour']);
+  $('saveMsg').textContent='';
+}
+
+function editStaff(id){
+  const s=staffRows.find(x=>x.id===id); if(!s) return;
+  clearPendingPhoto();
+
+  $('id').value=s.id;
+  $('name').value=s.name||'';
+  $('employeeId').value=s.employeeId||'';
+  $('designation').value=s.designation||'';
+  $('qualification').value=s.qualification||'';
+  $('stream').value=s.stream||'';
+  $('pgSubject').value=s.pgSubject||s.postGraduateSubject||'';
+  $('mobile').value=s.mobile||'';
+  $('joiningDate').value=s.joiningDate||'';
+  $('role').value=s.role||'';
+  $('speciality').value=s.speciality||'';
+  $('accessRole').value=s.accessRole||'Staff';
+  $('status').value=s.status||'Active';
+  $('accessPin').value='';
+  $('currentPin').value='';
+  $('loginEmailField').value=s.authEmail||'';
+
+  /* ========== FIX: preview logic ========== */
+  const httpsUrl = staffPhotoUrl(s);
+  const raw      = staffPhotoRaw(s);
+  if(httpsUrl){
+    $('photoPreview').src = httpsUrl;
+    $('photoPreview').style.display = 'block';
+    $('photoMeta').textContent = 'Current HTTPS photo: ' + httpsUrl.slice(0,72) + (httpsUrl.length>72?'…':'');
+    $('removePhotoBtn').style.display = 'inline-block';
+  } else if(isDataUrl(raw)){
+    // Legacy base64 — show preview but flag it for repair
+    $('photoPreview').src = raw;
+    $('photoPreview').style.display = 'block';
+    $('photoMeta').innerHTML = '<span class="tag err">base64 in Firestore</span> — re-pick a file below, or use <b>🖼️ Repair Staff Photos</b> in the register to migrate all base64 photos at once.';
+    $('removePhotoBtn').style.display = 'inline-block';
+  } else {
+    $('photoPreview').style.display = 'none';
+    $('photoPreview').removeAttribute('src');
+    $('photoMeta').textContent = 'No photograph on record.';
+    $('removePhotoBtn').style.display = 'none';
+  }
+  /* ====================================== */
+
+  setChecked('classes',s.assignedClasses||s.classes||[]);
+  setChecked('subjects',s.assignedSubjects||s.subjects||[]);
+  teachingAssignments=normalizedAssignments(s.teachingAssignments||s.classSubjectAssignments||[]);
+  if(!teachingAssignments.length){ const cs=s.assignedClasses||s.classes||[], ss=s.assignedSubjects||s.subjects||[]; if(cs.length&&ss.length) teachingAssignments=[{className:cs[0],subject:ss[0]}]; }
+  renderAssignments();
+  setChecked('perms',Object.keys(s.permissions||{}).filter(k=>s.permissions[k]));
+
+  $('currentPinWrap').style.display=s.authUid?'block':'none';
+  $('saveMsg').innerHTML = s.authUid
+    ? 'Editing <b>'+esc(s.name)+'</b>. Firebase login is active ('+esc(s.authEmail||'—')+'). Leave the PIN blank to keep it unchanged.'
+    : 'Editing <b>'+esc(s.name)+'</b>. This staff member has <b>no Firebase login yet</b> — enter a 6–8 digit PIN to create it.';
+  scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ========== FIX: previewPhoto now stores a File, not base64 ========== */
+function previewPhoto(e){
+  const f = e.target.files ? e.target.files[0] : null;
+  if(!f){
+    clearPendingPhoto();
+    // fall back to whatever the current record had
+    const s = staffRows.find(x=>x.id===$('id').value);
+    if(s){
+      const httpsUrl = staffPhotoUrl(s);
+      const raw = staffPhotoRaw(s);
+      if(httpsUrl){ $('photoPreview').src=httpsUrl; $('photoPreview').style.display='block'; }
+      else if(isDataUrl(raw)){ $('photoPreview').src=raw; $('photoPreview').style.display='block'; }
+      else { $('photoPreview').style.display='none'; $('photoPreview').removeAttribute('src'); }
+    }
+    return;
+  }
+  if(!f.type.startsWith('image/')){ alert('Please choose an image file.'); e.target.value=''; return; }
+  if(f.size > 8 * 1024 * 1024){ alert('Image is too large. Please choose an image up to 8 MB.'); e.target.value=''; return; }
+
+  clearPendingPhoto();
+  pendingStaffPhotoFile = f;
+  pendingStaffPhotoObjectUrl = URL.createObjectURL(f);
+
+  $('photoPreview').src = pendingStaffPhotoObjectUrl;
+  $('photoPreview').style.display = 'block';
+  $('removePhotoBtn').style.display = 'inline-block';
+  $('photoMeta').innerHTML = '<b>'+esc(f.name)+'</b> · '+Math.round(f.size/1024)+' KB — will upload to Cloudinary when you click Save.';
+}
+/* ================================================================== */
+
+/* ========== FIX: explicit remove-photo handler ========== */
+async function removeStaffPhoto(){
+  if(!ensure()) return alert('HOI sign-in required.');
+  const id = $('id').value.trim();
+  const s = staffRows.find(x=>x.id===id);
+
+  // Case 1: unsaved new selection in the form → clear locally only
+  if(pendingStaffPhotoFile || !id || !s){
+    clearPendingPhoto();
+    $('staffPhoto').value='';
+    $('photoPreview').style.display='none';
+    $('photoPreview').removeAttribute('src');
+    $('photoMeta').textContent='No photograph on record.';
+    $('removePhotoBtn').style.display='none';
+    return;
+  }
+
+  // Case 2: existing record → clear in Firestore
+  if(!confirm('Remove the photograph for "'+(s.name||s.employeeId||id)+'"?')) return;
+  try{
+    await db.collection(STAFF).doc(id).set({
+      photo: firebase.firestore.FieldValue.delete(),
+      photoUrl: firebase.firestore.FieldValue.delete(),
+      photoPublicId: firebase.firestore.FieldValue.delete(),
+      hasPhoto: false,
+      photoUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+    clearPendingPhoto();
+    $('staffPhoto').value='';
+    $('photoPreview').style.display='none';
+    $('photoPreview').removeAttribute('src');
+    $('photoMeta').textContent='No photograph on record.';
+    $('removePhotoBtn').style.display='none';
+    await loadStaff();
+  }catch(e){
+    alert('Could not remove photo: '+e.message);
+  }
+}
+/* ===================================================== */
+
+/* ================================================================
+   SAVE  →  Cloudinary upload + Firebase Auth + Firestore
+   ================================================================ */
+async function saveStaff(){
+  if(!ensure()) return alert('HOI sign-in required.');
+
+  const name=$('name').value.trim();
+  const eid=$('employeeId').value.trim();
+  const pin=$('accessPin').value.trim();
+  const oldPin=$('currentPin').value.trim();
+  const typedEmail=$('loginEmailField').value.trim().toLowerCase();
+
+  if(!name||!eid) return alert('Name and Employee ID are required.');
+  if(pin && !/^\d{6,8}$/.test(pin))
+    return alert('The login PIN must be 6–8 digits.\n\nFirebase Authentication requires at least 6 characters, so 4–5 digit PINs cannot be used for cross-device login.');
+  if(typedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(typedEmail))
+    return alert('Enter a valid Firebase login email, or leave it blank to auto-generate one.');
+
+  const id = $('id').value.trim() || db.collection(STAFF).doc().id;
+  const old = staffRows.find(x=>x.id===id) || {};
+  const isNew = !old.id;
+
+  let authUid  = String(old.authUid||'').trim();
+  let authEmail= String(old.authEmail||'').trim().toLowerCase();
+
+  const btn=$('saveBtn'); btn.disabled=true;
+  try{
+    $('saveMsg').innerHTML='<span class="muted">Saving…</span>';
+
+    /* ---- 0) Guard against a duplicate Employee ID mapping ---- */
+    const idxRef = db.collection(STAFF_LOGIN_INDEX).doc(eid);
+    const idxSnap= await idxRef.get();
+    if(idxSnap.exists){
+      const owner=String((idxSnap.data()||{}).staffId||'');
+      if(owner && owner!==id){
+        throw new Error('Employee ID "'+eid+'" is already linked to another staff login. Use a unique Employee ID.');
+      }
+    }
+
+    /* ---- 1) Firebase Authentication provisioning ---- */
+    if(!authUid){
+      if(!pin) throw new Error('Enter a 6–8 digit login PIN to create the Firebase login for this staff member.');
+      authEmail = typedEmail || autoLoginEmail(eid);
+      $('saveMsg').innerHTML='<span class="muted">Creating Firebase Authentication account…</span>';
+      authUid = await createAuthAccount(authEmail, pin);
+    }else{
+      if(!authEmail) throw new Error('This staff record has a Firebase login but no stored login email. Re-create the login from the register.');
+      const wantEmail = typedEmail || authEmail;
+      if(pin || wantEmail!==authEmail){
+        if(!oldPin) throw new Error('Enter the CURRENT PIN to change this staff member\'s login email or PIN.');
+        $('saveMsg').innerHTML='<span class="muted">Updating Firebase Authentication account…</span>';
+        await updateAuthAccount(authEmail, oldPin, wantEmail, pin);
+        authEmail = wantEmail;
+      }
+    }
+
+    /* ========== FIX: upload new photo (if any) to Cloudinary ========== */
+    let finalPhotoUrl = staffPhotoUrl(old);              // keep existing HTTPS URL
+    let finalPhotoPublicId = String(old.photoPublicId||'');
+    let hadBase64 = isDataUrl(staffPhotoRaw(old));
+
+    if(pendingStaffPhotoFile){
+      if(!window.GPSCloudinary){
+        throw new Error('cloudinary-upload.js is not loaded. Add <script src="./cloudinary-upload.js"><\/script> to this page.');
+      }
+      $('saveMsg').innerHTML='<span class="muted">Uploading staff photo to Cloudinary…</span>';
+      const baseFolder=(window.GPS_CLOUDINARY && window.GPS_CLOUDINARY.folder) || 'gps-pethgam/staff';
+      const res = await window.GPSCloudinary.uploadImage(pendingStaffPhotoFile,{
+        folder:  baseFolder + '/' + id,
+        publicId:'staff-' + id + '-' + Date.now(),
+        tags:    ['staff', id]
+      });
+      finalPhotoUrl = res.secureUrl;
+      finalPhotoPublicId = res.publicId || '';
+    }
+    /* ================================================================== */
+
+    /* ---- 2) Staff master document ---- */
+    const assignedClasses=checked('classes');
+    const assignedSubjects=checked('subjects');
+    teachingAssignments=normalizedAssignments(teachingAssignments);
+    const assignmentClasses=[...new Set(teachingAssignments.map(a=>a.className))];
+    const assignmentSubjects=[...new Set(teachingAssignments.map(a=>a.subject))];
+    const permissions={};
+    PERMS.forEach(([k])=>permissions[k]=checked('perms').includes(k));
+
+    const obj={
+      name,
+      employeeId:eid,
+      designation:$('designation').value.trim(),
+      qualification:$('qualification').value,
+      stream:$('stream').value,
+      pgSubject:$('pgSubject').value.trim(),
+      mobile:$('mobile').value.trim(),
+      joiningDate:$('joiningDate').value,
+      role:$('role').value.trim(),
+      speciality:$('speciality').value.trim(),
+      accessRole:$('accessRole').value,
+      status:$('status').value,
+      assignedClasses:assignmentClasses.length?assignmentClasses:assignedClasses, assignedSubjects:assignmentSubjects.length?assignmentSubjects:assignedSubjects,
+      classes:assignmentClasses.length?assignmentClasses:assignedClasses, subjects:assignmentSubjects.length?assignmentSubjects:assignedSubjects,
+      teachingAssignments, classSubjectAssignments:teachingAssignments,
+      permissions,
+      authUid,
+      authEmail,
+      loginEnabled:true,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy:(session()||{}).name||'HOI'
+    };
+
+    /* ========== FIX: canonical photo fields ========== */
+    if(finalPhotoUrl){
+      obj.photo          = finalPhotoUrl;                // backward compat
+      obj.photoUrl       = finalPhotoUrl;                // canonical
+      obj.photoPublicId  = finalPhotoPublicId;
+      obj.hasPhoto       = true;
+      obj.photoUpdatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    } else {
+      // Remove any old base64/legacy photo value when there is no HTTPS URL
+      obj.photo          = firebase.firestore.FieldValue.delete();
+      obj.photoUrl       = firebase.firestore.FieldValue.delete();
+      obj.photoPublicId  = firebase.firestore.FieldValue.delete();
+      obj.hasPhoto       = false;
+      obj.photoUpdatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    }
+    /* ================================================ */
+
+    if(isNew) obj.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+
+    if(pin) obj.pinHash=await hashPin(pin);
+    else if(old.pinHash) obj.pinHash=old.pinHash;
+
+    await db.collection(STAFF).doc(id).set(obj,{merge:true});
+    await db.collection('teachingAssignments').doc(id).set({staffId:id,employeeId:eid,teacherName:name,assignments:teachingAssignments,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:(session()||{}).name||'HOI'},{merge:true});
+
+    /* ---- 3) Employee ID → Firebase email lookup document ---- */
+    await idxRef.set({authEmail, staffId:id});
+
+    /* ---- 4) Remove a stale index if the Employee ID was changed ---- */
+    if(old.employeeId && String(old.employeeId)!==eid){
+      try{ await db.collection(STAFF_LOGIN_INDEX).doc(String(old.employeeId)).delete(); }catch(e){}
+    }
+
+    const uploadedNow = !!pendingStaffPhotoFile;
+    clearPendingPhoto();
+
+    resetForm();
+    $('saveMsg').innerHTML =
+      '<span class="oktxt">✅ Saved to Firebase.</span> Login active for <b>'+esc(name)+'</b> — '+
+      'Employee ID <b>'+esc(eid)+'</b>, login email <b>'+esc(authEmail)+'</b>. '+
+      (uploadedNow ? 'Photograph uploaded to Cloudinary. ' : '') +
+      (hadBase64 && finalPhotoUrl ? 'Legacy base64 photo was replaced with its HTTPS URL. ' : '') +
+      'The staff member can now sign in from the Common Role Login using Employee ID + PIN.';
+    await loadStaff();
+
+  }catch(e){
+    $('saveMsg').innerHTML='<span class="errtxt">Save failed:</span> '+esc(e.message||String(e));
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+/* ================================================================
+   DELETE
+   ================================================================ */
+async function delStaff(id){
+  if(!ensure()) return;
+  const s=staffRows.find(x=>x.id===id)||{};
+  if(!confirm('Delete the staff master record for "'+(s.name||id)+'"?\n\nAttendance / leave history is not deleted. The Firebase Authentication account itself cannot be removed from the browser and must be deleted in the Firebase Console if required.')) return;
+  try{
+    await db.collection(STAFF).doc(id).delete();
+    if(s.employeeId){
+      try{ await db.collection(STAFF_LOGIN_INDEX).doc(String(s.employeeId)).delete(); }catch(e){}
+    }
+    await loadStaff();
+  }catch(e){
+    alert('Delete failed: '+e.message);
+  }
+}
+
+/* ================================================================
+   ONE-CLICK LOGIN PROVISIONING FOR EXISTING STAFF
+   ================================================================ */
+async function provisionLogin(id){
+  if(!ensure()) return alert('HOI sign-in required.');
+  const s=staffRows.find(x=>x.id===id); if(!s) return;
+  if(s.authUid) return alert('This staff member already has a Firebase login.');
+  if(!s.employeeId) return alert('Add an Employee ID for this staff member first.');
+
+  const pin=prompt('Set a 6–8 digit login PIN for '+(s.name||s.employeeId)+':','');
+  if(pin===null) return;
+  if(!/^\d{6,8}$/.test(pin.trim())) return alert('PIN must be 6–8 digits.');
+
+  const suggested=autoLoginEmail(s.employeeId);
+  const typed=prompt('Firebase login email (keep the suggestion or enter your own):',suggested);
+  if(typed===null) return;
+  const email=(typed.trim().toLowerCase())||suggested;
+
+  try{
+    const uid=await createAuthAccount(email,pin.trim());
+    await db.collection(STAFF).doc(id).set({
+      authUid:uid,
+      authEmail:email,
+      loginEnabled:true,
+      pinHash:await hashPin(pin.trim()),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy:(session()||{}).name||'HOI'
+    },{merge:true});
+    await db.collection(STAFF_LOGIN_INDEX).doc(String(s.employeeId)).set({authEmail:email,staffId:id});
+    await loadStaff();
+    alert('✅ Firebase login created.\n\nEmployee ID: '+s.employeeId+'\nLogin email: '+email+'\nPIN: '+pin.trim()+'\n\nThe staff member can now sign in from any device.');
+  }catch(e){
+    alert('Could not create login: '+e.message);
+  }
+}
+
+/* ================================================================
+   LOAD + RENDER REGISTER
+   ================================================================ */
+async function loadStaff(){
+  if(!db) return;
+  try{
+    const snap=await db.collection(STAFF).get();
+    staffRows=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+    render();
+  }catch(e){
+    $('rows').innerHTML=`<tr><td colspan="9">Could not load staff: ${esc(e.message)}</td></tr>`;
+  }
+}
+
+function render(){
+  const q=$('q').value.toLowerCase();
+  const rows=staffRows.filter(s=>JSON.stringify(s).toLowerCase().includes(q));
+
+  $('total').textContent=staffRows.length;
+  $('teachers').textContent=staffRows.filter(s=>/teacher/i.test((s.designation||'')+' '+(s.role||''))).length;
+  $('active').textContent=staffRows.filter(s=>s.status==='Active').length;
+  $('hoiCount').textContent=staffRows.filter(s=>s.accessRole==='HOI').length;
+  $('assigned').textContent=staffRows.filter(s=>(s.assignedClasses||s.classes||[]).length).length;
+  $('linkedCount').textContent=staffRows.filter(s=>s.authUid).length;
+
+  $('rows').innerHTML=rows.map(s=>{
+    const linked = !!s.authUid;
+    const loginCell = linked
+      ? `<span class="tag ok">Linked</span><br><span class="muted">${esc(s.authEmail||'—')}</span>`
+      : `<span class="tag warn">No login</span><br><button class="btn gold" style="margin-top:5px;padding:6px 9px;font-size:11px" onclick="provisionLogin('${s.id}')">🔗 Create Login</button>`;
+
+    /* ========== FIX: prefer HTTPS URL, flag base64 ========== */
+    const httpsUrl = staffPhotoUrl(s);
+    const raw      = staffPhotoRaw(s);
+    let photoCell;
+    if(httpsUrl){
+      photoCell = `<img src="${esc(httpsUrl)}" style="width:50px;height:50px;object-fit:cover;border-radius:9px">`;
+    } else if(isDataUrl(raw)){
+      photoCell = `<img src="${esc(raw)}" style="width:50px;height:50px;object-fit:cover;border-radius:9px"><br><span class="tag err">base64</span>`;
+    } else {
+      photoCell = '—';
+    }
+    /* ======================================================== */
+
+    return `<tr>
+      <td>${photoCell}</td>
+      <td><b>${esc(s.name)}</b><br><span class="tag">${esc(s.employeeId||'')}</span></td>
+      <td>${esc(s.designation||'')}<br><span class="muted">${esc(s.qualification||'')}</span></td>
+      <td>${(s.assignedClasses||s.classes||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'—'}</td>
+      <td>${normalizedAssignments(s.teachingAssignments||s.classSubjectAssignments||[]).map(a=>`<span class="assignment-pill">${esc(a.className)} — ${esc(a.subject)}</span>`).join('')||((s.assignedSubjects||s.subjects||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'—')}</td>
+      <td><span class="tag">${esc(s.accessRole||'Staff')}</span></td>
+      <td><span class="tag">${esc(s.status||'Active')}</span></td>
+      <td>${loginCell}</td>
+      <td>
+        <button class="btn secondary" onclick="editStaff('${s.id}')">Edit</button>
+        <button class="btn danger" onclick="delStaff('${s.id}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="9" style="text-align:center">No staff records.</td></tr>';
+}
+
+/* ================================================================
+   FIX: ONE-CLICK BULK REPAIR FOR LEGACY BASE64 STAFF PHOTOS
+   ================================================================ */
+async function repairStaffPhotos(){
+  if(!ensure()) return alert('HOI sign-in required.');
+  if(!window.GPSCloudinary) return alert('cloudinary-upload.js is not loaded. Add <script src="./cloudinary-upload.js"><\/script> to this page.');
+  if(!staffRows.length) return alert('No staff records loaded.');
+
+  const targets = staffRows.filter(s=>!staffPhotoUrl(s) && isDataUrl(staffPhotoRaw(s)));
+  if(!targets.length){
+    const already = staffRows.filter(s=>staffPhotoUrl(s)).length;
+    return alert('No base64 photos found.\n\nStaff with HTTPS photos: '+already+'\nTotal staff: '+staffRows.length);
+  }
+
+  if(!confirm('Found '+targets.length+' staff with base64 photos in Firestore.\n\nUpload each to Cloudinary and replace with an HTTPS URL?')) return;
+
+  const btn=$('repairPhotosBtn');
+  btn.disabled=true; btn.textContent='Repairing…';
+
+  let fixed=0, failed=0;
+  const baseFolder=(window.GPS_CLOUDINARY && window.GPS_CLOUDINARY.folder) || 'gps-pethgam/staff';
+
+  for(const s of targets){
+    try{
+      const raw = staffPhotoRaw(s);
+      const res = await window.GPSCloudinary.uploadDataUrl(raw,{
+        folder:  baseFolder + '/' + s.id,
+        publicId:'staff-' + s.id + '-' + Date.now(),
+        tags:    ['staff', s.id, 'repaired']
+      });
+      await db.collection(STAFF).doc(s.id).set({
+        photo:         res.secureUrl,       // backward compat
+        photoUrl:      res.secureUrl,       // canonical
+        photoPublicId: res.publicId || '',
+        hasPhoto:      true,
+        photoUpdatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt:     firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+      fixed++;
+    }catch(e){
+      console.warn('Repair failed for', s.id, e);
+      failed++;
+    }
+  }
+
+  btn.disabled=false; btn.textContent='🖼️ Repair Staff Photos';
+  await loadStaff();
+  alert('Staff photo repair finished.\n\nUploaded: '+fixed+'\nFailed: '+failed+'\nTotal scanned: '+staffRows.length);
+}
+/* =================================================================== */
+
+/* ================================================================
+   LEGACY IMPORT (localStorage → Firebase, including logins)
+   ================================================================ */
+function localLegacy(){ try{ return JSON.parse(localStorage.getItem(LEGACY)||'[]'); }catch(e){ return []; } }
+
+async function migrateLegacy(){
+  if(!ensure()) return alert('HOI sign-in required.');
+  const list=localLegacy();
+  if(!list.length) return alert('No legacy staff records found on this device.');
+  if(!confirm('Import '+list.length+' legacy staff record(s) into Firebase?\n\nFirebase logins will be created where an Employee ID exists and no login is present yet.\n\nBase64 photos (if any) will be flagged for the “🖼️ Repair Staff Photos” step afterwards.')) return;
+
+  let created=0, failed=0;
+  for(const s of list){
+    if(!s.employeeId){ failed++; continue; }
+    try{
+      const eid=String(s.employeeId).trim();
+      const q=await db.collection(STAFF).where('employeeId','==',eid).limit(1).get();
+      const ref=q.empty?db.collection(STAFF).doc():q.docs[0].ref;
+      const existing=q.empty?{}:(q.docs[0].data()||{});
+      const id=ref.id;
+
+      let authUid=existing.authUid||'';
+      let authEmail=existing.authEmail||'';
+
+      if(!authUid){
+        const pin=String(s.accessPin||'').trim();
+        if(/^\d{6,8}$/.test(pin)){
+          authEmail=autoLoginEmail(eid);
+          authUid=await createAuthAccount(authEmail,pin);
+          created++;
+        }
+      }
+
+      const classes=s.assignedClasses||s.classes||[];
+      const subjects=s.assignedSubjects||s.subjects||[];
+
+      const obj={
+        name:s.name||'',employeeId:eid,
+        designation:s.designation||'',qualification:s.qualification||'',
+        mobile:s.mobile||'',joiningDate:s.joiningDate||'',
+        role:s.role||'',speciality:s.speciality||'',
+        accessRole:s.accessRole||'Staff',status:s.status||'Active',
+        assignedClasses:classes,assignedSubjects:subjects,classes,subjects,
+        permissions:s.permissions||{},
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      /* ========== FIX: only carry the photo forward if it is an HTTPS URL ========== */
+      const legacyPhoto = String(s.photo||s.photoUrl||'').trim();
+      if(isHttpUrl(legacyPhoto)){
+        obj.photo = legacyPhoto;
+        obj.photoUrl = legacyPhoto;
+        obj.hasPhoto = true;
+      } else if(isDataUrl(legacyPhoto)){
+        // Keep the base64 in place for now — Repair button will migrate it.
+        obj.photo = legacyPhoto;
+        obj.hasPhoto = true;
+      }
+      /* ============================================================================= */
+
+      if(authUid){ obj.authUid=authUid; obj.authEmail=authEmail; obj.loginEnabled=true; }
+      if(s.accessPin && /^\d{4,8}$/.test(String(s.accessPin))) obj.pinHash=await hashPin(String(s.accessPin));
+
+      await ref.set(obj,{merge:true});
+      if(authUid) await db.collection(STAFF_LOGIN_INDEX).doc(eid).set({authEmail,staffId:id});
+    }catch(e){
+      console.warn('Legacy import failed for',s.employeeId,e.message);
+      failed++;
+    }
+  }
+  await loadStaff();
+  alert('Legacy import finished.\nLogins created: '+created+'\nSkipped / failed: '+failed+'\n\nStaff without a 6–8 digit PIN can be given a login from the register using “🔗 Create Login”.\n\nIf any imported photos were base64, click “🖼️ Repair Staff Photos” to migrate them to Cloudinary.');
+}
+
+/* ================================================================
+   EVENTS + BOOT
+   ================================================================ */
+$('qualification').addEventListener('change',updatePgSubjectVisibility);
+updatePgSubjectVisibility();
+$('q').addEventListener('input',render);
+$('loginPassword').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+$('loginEmail').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+
+buildChecks();
+resetForm();
+init();
+if(session()?.role==='HOI'){ showApp(); buildChecks(); renderAssignments(); loadStaff(); } else { buildChecks(); renderAssignments(); }
+</script>
+</body></html>
+
+
+
+  
