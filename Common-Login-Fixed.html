@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Common Role Login — Government Primary School Pethgam Wagoora</title>
+<style>
+:root{--blue:#0759a8;--navy:#12355b;--bg:#f4f7fb;--card:#fff;--muted:#64748b;--border:#dbe4ef;--ok:#16803c;--danger:#c0392b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,Arial;background:linear-gradient(135deg,#eef5ff,#f8fafc);color:#172033;display:flex;align-items:center;justify-content:center;padding:16px}.card{width:min(460px,100%);background:#fff;border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:0 12px 40px #12355b18}.brand{text-align:center}.brand img{width:86px;height:86px;object-fit:contain;background:#fff;border-radius:16px;padding:4px}.brand h1{font-size:22px;margin:10px 0 4px}.brand p{margin:0;color:var(--muted);font-size:12px}.field{margin-top:15px}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:#334155}.field input,.field select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;font:inherit;outline:none}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #0759a81a}.help{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}.actions{margin-top:18px}.btn{width:100%;border:0;border-radius:10px;padding:12px 14px;font-weight:800;cursor:pointer;background:var(--blue);color:#fff}.btn:disabled{opacity:.55;cursor:not-allowed}.secondary{margin-top:9px;background:#64748b}.forgot{border:0;background:transparent;color:var(--blue);font-weight:800;cursor:pointer;width:100%;padding:12px;margin-top:5px}.status{margin-top:14px;padding:11px;border-radius:9px;border:1px solid var(--border);background:#f8fafc;font-size:12px;line-height:1.45;display:none}.status.show{display:block}.status.ok{color:var(--ok);background:#ecfdf5;border-color:#a7f3d0}.status.err{color:var(--danger);background:#fff1f0;border-color:#f3c4c0}.status.info{color:#0759a8;background:#eef5ff;border-color:#d6e7ff}.note{margin-top:14px;padding:11px;border:1px solid #d6e7ff;background:#eef5ff;border-radius:9px;font-size:11px;color:#334155;line-height:1.45}.footer{text-align:center;color:#94a3b8;font-size:10px;margin-top:16px}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <img src="new-logo.png" alt="School Logo" onerror="this.style.display='none'">
+    <h1>Common Role Login</h1>
+    <p>Government Primary School Pethgam Wagoora</p>
+  </div>
+
+  <div class="field">
+    <label for="roleSelect">Select Role</label>
+    <select id="roleSelect">
+      <option value="ADMIN">HOI / Admin</option>
+      <option value="TEACHER">Teacher</option>
+      <option value="AAYA">Aaya</option>
+      <option value="COOK">Cook</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label id="identifierLabel" for="identifier">Admin Email</label>
+    <input id="identifier" type="email" autocomplete="username" placeholder="Admin Firebase email">
+  </div>
+
+  <div class="field">
+    <label id="passwordLabel" for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="Firebase Authentication password">
+  </div>
+
+  <div id="help" class="help">HOI / Admin uses the Firebase Authentication email and password.</div>
+
+  <div class="actions">
+    <button id="loginBtn" class="btn" type="button">Login</button>
+    <button id="forgotBtn" class="forgot" type="button">Forgot PIN / Password?</button>
+  </div>
+
+  <div id="status" class="status"></div>
+
+  <div class="note">
+    Staff login uses <b>staffLoginIndex</b> to locate the Firebase email, then verifies the linked <b>staff</b> document and its <b>accessRole</b>. The <b>staff.role</b> field is not used as the access role because it stores the subject / main responsibility.
+  </div>
+
+  <div class="footer">Secure School ERP Login</div>
+</div>
+
+<script>
+const CONFIG={apiKey:"AIzaSyADB32wJq886NNqMuJk5n1zO45oSi-bdLs",authDomain:"gps-pethgam-wagoora-portal.firebaseapp.com",projectId:"gps-pethgam-wagoora-portal",storageBucket:"gps-pethgam-wagoora-portal.firebasestorage.app",messagingSenderId:"243117067000",appId:"1:243117067000:web:a5320441bcbaed71e4490d",measurementId:"G-WMXPK3229Y"};
+const STAFF='staff';
+const INDEX='staffLoginIndex';
+const SESSION='GPSPETHGAM_COMMON_LOGIN_SESSION_V1';
+let auth=null,db=null;
+const $=id=>document.getElementById(id);
+function selectedRole(){return $('roleSelect').value;}
+function setStatus(text,type='err'){const e=$('status');e.textContent=text;e.className='status show '+type;}
+function clearStatus(){const e=$('status');e.textContent='';e.className='status';}
+function roleLabel(r){return ({ADMIN:'HOI / Admin',TEACHER:'Teacher',AAYA:'Aaya',COOK:'Cook',STAFF:'Other Staff'})[r]||'Unknown';}
+function classify(s){
+  const ar=String(s&&s.accessRole||'').trim().toUpperCase();
+  if(ar==='HOI'||ar==='ADMIN')return 'ADMIN';
+  if(ar==='TEACHER')return 'TEACHER';
+  if(ar==='AAYA')return 'AAYA';
+  if(ar==='COOK')return 'COOK';
+  if(ar==='STAFF')return 'STAFF';
+  const d=String(s&& (s.designation||s.roleDesignation)||'').trim();
+  if(/head\s*of\s*institution|\bhoi\b/i.test(d))return 'ADMIN';
+  if(/teacher/i.test(d))return 'TEACHER';
+  if(/aaya|ayah|helper/i.test(d))return 'AAYA';
+  if(/cook/i.test(d))return 'COOK';
+  return '';
+}
+function normalizeId(v){return String(v||'').trim().toUpperCase();}
+async function init(){
+  try{
+    if(!window.firebase)throw new Error('Firebase SDK did not load.');
+    if(!firebase.apps.length)firebase.initializeApp(CONFIG);
+    auth=firebase.auth();db=firebase.firestore();
+    try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
+    setStatus('Firebase connected.','info');
+  }catch(e){console.error(e);setStatus(e.message||'Firebase initialization failed.');}
+}
+function updateUI(){
+  clearStatus();
+  const r=selectedRole();
+  if(r==='ADMIN'){
+    $('identifierLabel').textContent='Admin Email';
+    $('identifier').type='email';
+    $('identifier').placeholder='Admin Firebase email';
+    $('passwordLabel').textContent='Password';
+    $('password').placeholder='Firebase Authentication password';
+    $('help').textContent='HOI / Admin uses the Firebase Authentication email and password.';
+  }else{
+    $('identifierLabel').textContent='Employee ID';
+    $('identifier').type='text';
+    $('identifier').placeholder='e.g. CK-0001';
+    $('passwordLabel').textContent='PIN';
+    $('password').placeholder='Enter 6–8 digit PIN';
+    $('help').textContent='Use the Employee ID and PIN created in Staff Management.';
+  }
+}
+async function findIndex(employeeId){
+  const eid=normalizeId(employeeId);
+  if(!eid)return null;
+  const direct=await db.collection(INDEX).doc(eid).get();
+  if(direct.exists)return {id:direct.id,...direct.data()};
+  const snap=await db.collection(INDEX).where('employeeId','==',eid).limit(1).get();
+  if(!snap.empty)return {id:snap.docs[0].id,...snap.docs[0].data()};
+  return null;
+}
+async function findStaffByEmployeeId(employeeId){
+  const eid=normalizeId(employeeId);
+  const q=await db.collection(STAFF).where('employeeId','==',eid).limit(2).get();
+  if(!q.empty)return q.docs[0];
+  const q2=await db.collection(STAFF).where('employeeId','==',String(employeeId||'').trim()).limit(2).get();
+  return q2.empty?null:q2.docs[0];
+}
+async function repairIndex(eid,email,staffId){
+  await db.collection(INDEX).doc(normalizeId(eid)).set({authEmail:String(email||'').trim().toLowerCase(),staffId}, {merge:true});
+}
+async function loginAdmin(email,password){
+  const cred=await auth.signInWithEmailAndPassword(email,password);
+  const u=cred.user;
+  const snap=await db.collection('admins').doc(u.uid).get();
+  if(!snap.exists){await auth.signOut();throw new Error('Firebase account found, but admins/'+u.uid+' does not exist.');}
+  const a=snap.data()||{};
+  const ar=String(a.role||a.accessRole||'').trim().toLowerCase();
+  if(!['admin','hoi','head of institution'].includes(ar)){await auth.signOut();throw new Error('This account does not have HOI / Admin access.');}
+  if(a.active===false){await auth.signOut();throw new Error('This administrator account is inactive.');}
+  sessionStorage.setItem(SESSION,JSON.stringify({uid:u.uid,email:u.email||email,name:a.name||u.displayName||'Administrator',role:'ADMIN',loginAt:new Date().toISOString()}));
+  sessionStorage.setItem('loginRole','ADMIN');
+  sessionStorage.setItem('schoolLoginRole','ADMIN');
+  location.href='index.html';
+}
+async function loginStaff(employeeId,pin,expectedRole){
+  const index=await findIndex(employeeId);
+  const eid=normalizeId(employeeId);
+  let staffId=String(index&&index.staffId||'').trim();
+  let email=String(index&&index.authEmail||'').trim().toLowerCase();
+
+  // IMPORTANT FALLBACK: repair old/broken indexes where staffId is empty.
+  let staffDoc=null;
+  if(staffId){
+    const snap=await db.collection(STAFF).doc(staffId).get();
+    if(snap.exists)staffDoc=snap;
+  }
+  if(!staffDoc){
+    staffDoc=await findStaffByEmployeeId(employeeId);
+    if(staffDoc){
+      staffId=staffDoc.id;
+      const s=staffDoc.data()||{};
+      if(!email)email=String(s.authEmail||'').trim().toLowerCase();
+    }
+  }
+  if(!staffDoc)throw new Error('Employee ID '+eid+' was not found in the staff register.');
+  const staff=staffDoc.data()||{};
+  if(!email)throw new Error('No Firebase login email is configured for '+eid+'. Use Staff Management → Create Login or save the staff member again.');
+
+  // Repair the index before authentication so future logins use the correct staff document.
+  try{await repairIndex(eid,email,staffDoc.id);}catch(e){console.warn('Could not repair staffLoginIndex:',e);}
+
+  const cred=await auth.signInWithEmailAndPassword(email,pin);
+  const user=cred.user;
+  if(staff.active===false){await auth.signOut();throw new Error('This staff account is inactive.');}
+  if(staff.loginEnabled===false){await auth.signOut();throw new Error('Login is disabled for this staff account.');}
+  if(staff.authUid && String(staff.authUid)!==String(user.uid)){await auth.signOut();throw new Error('This Firebase login is not linked to the selected staff record.');}
+  const actual=classify(staff);
+  if(!actual){await auth.signOut();throw new Error('This staff record has no valid access role. Edit the staff member in Staff Management and save the correct Role / Designation.');}
+  if(actual!==expectedRole){await auth.signOut();throw new Error('The selected role does not match the staff record. This staff record is configured as '+roleLabel(actual)+'.');}
+  if(actual==='STAFF'){await auth.signOut();throw new Error('This account is configured as Other Staff, which does not have a Common Login dashboard yet.');}
+
+  const session={uid:user.uid,staffId:staffDoc.id,employeeId:staff.employeeId||eid,name:staff.name||'',designation:staff.designation||staff.roleDesignation||'',accessRole:staff.accessRole||'',role:actual,authEmail:email,loginAt:new Date().toISOString()};
+  sessionStorage.setItem(SESSION,JSON.stringify(session));
+  sessionStorage.setItem('loginRole',actual);
+  sessionStorage.setItem('schoolLoginRole',actual);
+  sessionStorage.setItem('staffId',staffDoc.id);
+  sessionStorage.setItem('employeeId',String(staff.employeeId||eid));
+  sessionStorage.setItem('staffAuthUid',user.uid);
+  sessionStorage.setItem('staffSession',JSON.stringify({...staff,id:staffDoc.id}));
+  if(actual==='TEACHER')location.href='Teacher-Dashboard.html';
+  else if(actual==='AAYA')location.href='Aaya-Dashboard.html';
+  else if(actual==='COOK')location.href='Cook-Dashboard.html';
+  else throw new Error('No dashboard is configured for this role.');
+}
+async function handleLogin(){
+  clearStatus();
+  if(!auth||!db){await init();if(!auth||!db)return;}
+  const r=selectedRole(),identifier=String($('identifier').value||'').trim(),password=String($('password').value||'');
+  if(!identifier)return setStatus(r==='ADMIN'?'Enter the Admin email.':'Enter the Employee ID.');
+  if(!password)return setStatus(r==='ADMIN'?'Enter the Admin password.':'Enter the PIN.');
+  const b=$('loginBtn');b.disabled=true;b.textContent='Signing in...';setStatus('Signing in…','info');
+  try{if(r==='ADMIN')await loginAdmin(identifier,password);else await loginStaff(identifier,password,r);}
+  catch(e){console.error(e);let m=e&&e.message||'Login failed.';if(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password')m=r==='ADMIN'?'Admin email or password is incorrect.':'Employee ID or PIN is incorrect.';if(e.code==='auth/user-not-found')m='No Firebase login account was found for this account.';if(e.code==='auth/network-request-failed')m='Network error. Check the internet connection and try again.';try{if(auth.currentUser)await auth.signOut();}catch(_){}setStatus(m,'err');}
+  finally{b.disabled=false;b.textContent='Login';}
+}
+async function forgot(){
+  clearStatus();
+  if(!auth||!db){await init();if(!auth||!db)return;}
+  const r=selectedRole(),id=String($('identifier').value||'').trim();
+  if(!id)return setStatus(r==='ADMIN'?'Enter the Admin email first.':'Enter the Employee ID first.');
+  try{
+    let email=id;
+    if(r!=='ADMIN'){
+      const index=await findIndex(id);
+      if(index&&index.authEmail)email=String(index.authEmail).trim().toLowerCase();
+      else{const doc=await findStaffByEmployeeId(id);if(!doc)throw new Error('Employee ID was not found.');email=String((doc.data()||{}).authEmail||'').trim().toLowerCase();}
+      if(!email)throw new Error('No Firebase login email is configured for this Employee ID.');
+    }
+    await auth.sendPasswordResetEmail(email);setStatus('A password/PIN reset email was sent to the registered Firebase login email.','ok');
+  }catch(e){setStatus(e.message||'Unable to send the reset email.');}
+}
+$('roleSelect').addEventListener('change',updateUI);
+$('loginBtn').addEventListener('click',handleLogin);
+$('forgotBtn').addEventListener('click',forgot);
+$('identifier').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
+document.addEventListener('DOMContentLoaded',()=>{updateUI();init();});
+</script>
+</body>
+</html>
