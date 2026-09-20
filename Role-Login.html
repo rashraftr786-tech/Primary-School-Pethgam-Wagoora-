@@ -1,99 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Common Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Common School Login</title>
 
   <style>
     * {
       box-sizing: border-box;
     }
 
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #dbe2ea;
+      --bg: #f1f5f9;
+      --danger: #b91c1c;
+      --success: #047857;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #eef4ff, #f7f9fc);
+      background:
+        radial-gradient(circle at top left, #dbeafe 0, transparent 35%),
+        radial-gradient(circle at bottom right, #e0e7ff 0, transparent 35%),
+        var(--bg);
+      color: var(--text);
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       padding: 20px;
-      color: #1f2937;
     }
 
     .login-card {
       width: 100%;
-      max-width: 430px;
-      background: #ffffff;
-      border-radius: 18px;
+      max-width: 440px;
+
+      background: #fff;
+
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 22px;
+
       padding: 32px;
-      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.10);
+
+      box-shadow:
+        0 25px 60px rgba(15, 23, 42, 0.12);
     }
+
+    /* =========================================================
+       SCHOOL LOGO
+       ========================================================= */
 
     .logo-wrap {
       text-align: center;
       margin-bottom: 22px;
     }
 
-    .logo {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 12px;
+    .school-logo {
+      width: 92px;
+      height: 92px;
+
+      object-fit: contain;
+
+      display: block;
+
+      margin: 0 auto 14px;
+
       border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #2563eb;
-      color: #fff;
-      font-size: 30px;
+    }
+
+    .school-name {
+      font-size: 17px;
       font-weight: 800;
+      color: #172033;
+
+      margin-bottom: 5px;
+    }
+
+    .school-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+
+      line-height: 1.5;
     }
 
     h1 {
-      margin: 0;
-      font-size: 26px;
       text-align: center;
+
+      font-size: 25px;
+
+      margin: 22px 0 7px;
+
       color: #111827;
     }
 
     .subtitle {
       text-align: center;
-      margin: 8px 0 25px;
-      color: #6b7280;
-      font-size: 14px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      line-height: 1.5;
+
+      margin-bottom: 26px;
     }
 
-    .login-field {
-      margin-bottom: 18px;
+    /* =========================================================
+       FORM
+       ========================================================= */
+
+    .field {
+      margin-bottom: 17px;
     }
 
     label {
       display: block;
+
       margin-bottom: 7px;
-      font-weight: 700;
-      font-size: 14px;
-      color: #374151;
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      color: #334155;
     }
 
     input,
     select {
       width: 100%;
-      height: 48px;
-      border: 1px solid #d1d5db;
+
+      height: 49px;
+
+      border: 1px solid var(--border);
+
       border-radius: 10px;
+
       padding: 0 14px;
-      font-size: 15px;
-      outline: none;
+
       background: #fff;
+
       color: #111827;
-      transition: border-color 0.2s, box-shadow 0.2s;
+
+      font-size: 15px;
+
+      outline: none;
+
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
     }
 
     input:focus,
     select:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      border-color: var(--primary);
+
+      box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
     select {
@@ -105,298 +175,667 @@
     }
 
     .password-wrap input {
-      padding-right: 48px;
+      padding-right: 52px;
     }
 
     .toggle-password {
       position: absolute;
-      right: 10px;
+
+      right: 8px;
+
       top: 50%;
+
       transform: translateY(-50%);
+
+      width: 38px;
+      height: 38px;
+
       border: 0;
+
       background: transparent;
+
       cursor: pointer;
+
+      border-radius: 8px;
+
       font-size: 18px;
-      color: #6b7280;
-      padding: 6px;
+
+      color: #64748b;
     }
 
-    .mode-help {
-      margin-top: -8px;
+    .toggle-password:hover {
+      background: #f1f5f9;
+    }
+
+    .help {
+      margin-top: -7px;
+
       margin-bottom: 18px;
-      font-size: 12px;
-      color: #6b7280;
+
+      color: var(--muted);
+
+      font-size: 11px;
+
+      line-height: 1.5;
     }
 
-    .btn {
+    /* =========================================================
+       LOGIN BUTTON
+       ========================================================= */
+
+    .login-btn {
       width: 100%;
-      height: 48px;
+
+      height: 50px;
+
       border: 0;
-      border-radius: 10px;
-      background: #2563eb;
+
+      border-radius: 11px;
+
+      background: var(--primary);
+
       color: #fff;
+
       font-size: 15px;
-      font-weight: 700;
+
+      font-weight: 800;
+
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+
+      transition:
+        background 0.2s,
+        transform 0.1s,
+        opacity 0.2s;
     }
 
-    .btn:hover {
-      background: #1d4ed8;
+    .login-btn:hover {
+      background: var(--primary-dark);
     }
 
-    .btn:active {
+    .login-btn:active {
       transform: translateY(1px);
     }
 
-    .btn:disabled {
+    .login-btn:disabled {
       opacity: 0.65;
+
       cursor: not-allowed;
     }
 
-    .forgot {
+    /* =========================================================
+       FORGOT PASSWORD
+       ========================================================= */
+
+    .forgot-btn {
       display: block;
-      text-align: center;
-      margin-top: 17px;
-      color: #2563eb;
-      font-size: 14px;
-      font-weight: 600;
+
+      width: 100%;
+
+      margin-top: 15px;
+
+      padding: 5px;
+
+      border: 0;
+
+      background: transparent;
+
+      color: var(--primary);
+
+      font-size: 13px;
+
+      font-weight: 700;
+
       cursor: pointer;
-      text-decoration: none;
     }
 
-    .forgot:hover {
+    .forgot-btn:hover {
       text-decoration: underline;
     }
 
+    /* =========================================================
+       MESSAGE
+       ========================================================= */
+
     .message {
       display: none;
-      margin-top: 18px;
+
+      margin-top: 17px;
+
       padding: 12px 14px;
+
       border-radius: 10px;
-      font-size: 13px;
-      line-height: 1.45;
+
+      font-size: 12px;
+
+      line-height: 1.5;
+
+      word-break: break-word;
+    }
+
+    .message.show {
+      display: block;
     }
 
     .message.error {
-      display: block;
       background: #fef2f2;
-      color: #991b1b;
+
       border: 1px solid #fecaca;
+
+      color: var(--danger);
     }
 
     .message.success {
-      display: block;
       background: #ecfdf5;
-      color: #065f46;
+
       border: 1px solid #a7f3d0;
+
+      color: var(--success);
     }
 
-    .footer-note {
-      margin-top: 22px;
-      text-align: center;
+    .message.info {
+      background: #eff6ff;
+
+      border: 1px solid #bfdbfe;
+
+      color: #1d4ed8;
+    }
+
+    /* =========================================================
+       ROLE INFORMATION
+       ========================================================= */
+
+    .role-info {
+      margin-top: 18px;
+
+      padding: 12px 14px;
+
+      background: #f8fafc;
+
+      border: 1px solid #e2e8f0;
+
+      border-radius: 10px;
+
       font-size: 11px;
-      color: #9ca3af;
+
+      color: #64748b;
+
+      line-height: 1.55;
     }
 
-    .hidden {
-      display: none !important;
+    .role-info strong {
+      color: #334155;
     }
 
-    @media (max-width: 480px) {
+    .footer {
+      text-align: center;
+
+      margin-top: 20px;
+
+      color: #94a3b8;
+
+      font-size: 10px;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 12px;
+      }
+
       .login-card {
-        padding: 24px 20px;
+        padding: 25px 20px;
+
+        border-radius: 18px;
+      }
+
+      .school-logo {
+        width: 80px;
+        height: 80px;
       }
 
       h1 {
-        font-size: 23px;
+        font-size: 22px;
       }
     }
   </style>
+
+  <!-- =========================================================
+       FIREBASE COMPAT SDK
+       Same Firebase style used by Staff-Management-Fixed.html
+       ========================================================= -->
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 </head>
 
 <body>
 
   <div class="login-card">
 
+    <!-- =======================================================
+         SCHOOL LOGO
+         ======================================================= -->
+
     <div class="logo-wrap">
-      <div class="logo">S</div>
-      <h1>School Login</h1>
-      <div class="subtitle">Sign in to access your dashboard</div>
+
+      <img
+        src="new-logo.png"
+        alt="School Logo"
+        class="school-logo"
+        onerror="this.style.display='none';"
+      >
+
+      <div class="school-name">
+        Government Primary School Pethgam Wagoora
+      </div>
+
+      <div class="school-subtitle">
+        School ERP Portal
+      </div>
+
     </div>
 
-    <!-- ROLE -->
-    <div class="login-field">
-      <label for="roleSelect">Select Role</label>
+
+    <h1>Common Login</h1>
+
+    <div class="subtitle">
+      Select your role and sign in using your registered credentials.
+    </div>
+
+
+    <!-- =======================================================
+         ROLE SELECTOR
+         ======================================================= -->
+
+    <div class="field">
+
+      <label for="roleSelect">
+        Select Role
+      </label>
 
       <select id="roleSelect">
-        <option value="ADMIN">HOI / Admin</option>
-        <option value="TEACHER">Teacher</option>
-        <option value="AAYA">Aaya</option>
-        <option value="COOK">Cook</option>
+
+        <option value="ADMIN">
+          HOI / Admin
+        </option>
+
+        <option value="TEACHER">
+          Teacher
+        </option>
+
+        <option value="AAYA">
+          Aaya
+        </option>
+
+        <option value="COOK">
+          Cook
+        </option>
+
       </select>
+
     </div>
 
-    <!-- IDENTIFIER -->
-    <div class="login-field">
-      <label id="identifierLabel" for="identifier">
-        Employee ID
+
+    <!-- =======================================================
+         IDENTIFIER
+         ======================================================= -->
+
+    <div class="field">
+
+      <label
+        id="identifierLabel"
+        for="identifier"
+      >
+        Admin Email
       </label>
 
       <input
         id="identifier"
-        type="text"
+        type="email"
         autocomplete="username"
-        placeholder="Enter Employee ID"
-      />
+        placeholder="Enter admin email"
+      >
+
     </div>
 
-    <!-- PASSWORD / PIN -->
-    <div class="login-field">
-      <label id="passwordLabel" for="password">
-        PIN
+
+    <!-- =======================================================
+         PASSWORD / PIN
+         ======================================================= -->
+
+    <div class="field">
+
+      <label
+        id="passwordLabel"
+        for="password"
+      >
+        Password
       </label>
 
       <div class="password-wrap">
+
         <input
           id="password"
           type="password"
           autocomplete="current-password"
-          placeholder="Enter PIN"
-        />
+          placeholder="Enter password"
+        >
 
         <button
           type="button"
-          class="toggle-password"
           id="togglePassword"
+          class="toggle-password"
           aria-label="Show password"
         >
           👁
         </button>
+
       </div>
+
     </div>
 
-    <div class="mode-help" id="modeHelp">
-      Use your Employee ID and PIN.
+
+    <div
+      id="loginHelp"
+      class="help"
+    >
+      Use your HOI / Admin Firebase email and password.
     </div>
 
-    <!-- LOGIN -->
+
+    <!-- =======================================================
+         LOGIN BUTTON
+         IMPORTANT:
+         No inline onclick is used.
+         JavaScript attaches the click handler below.
+         ======================================================= -->
+
     <button
       type="button"
-      class="btn"
       id="loginBtn"
+      class="login-btn"
     >
       Login
     </button>
 
-    <!-- FORGOT PASSWORD -->
-    <a
-      href="#"
-      class="forgot"
-      id="forgotPassword"
+
+    <!-- =======================================================
+         FORGOT PASSWORD
+         ======================================================= -->
+
+    <button
+      type="button"
+      id="forgotBtn"
+      class="forgot-btn"
     >
       Forgot PIN / Password?
-    </a>
+    </button>
 
-    <!-- MESSAGE -->
-    <div id="message" class="message"></div>
 
-    <div class="footer-note">
-      School ERP • Secure Login
+    <!-- =======================================================
+         MESSAGE
+         ======================================================= -->
+
+    <div
+      id="message"
+      class="message"
+    ></div>
+
+
+    <div class="role-info">
+
+      <strong>Login information:</strong><br>
+
+      <span id="roleInfoText">
+        HOI / Admin uses the Firebase Authentication email and password.
+      </span>
+
+    </div>
+
+
+    <div class="footer">
+      Secure School ERP Login
     </div>
 
   </div>
 
-  <!-- Firebase -->
-  <script type="module">
 
-    import {
-      initializeApp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  <!-- =========================================================
+       APPLICATION SCRIPT
+       ========================================================= -->
 
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      sendPasswordResetEmail,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-      query,
-      collection,
-      where,
-      getDocs
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+  <script>
 
     /* =========================================================
        FIREBASE CONFIG
+       Same Firebase project as Staff-Management-Fixed.html
        ========================================================= */
 
-    const firebaseConfig = {
-      /*
-       * KEEP YOUR EXISTING FIREBASE CONFIG HERE.
-       *
-       * Example:
-       *
-       * apiKey: "YOUR_API_KEY",
-       * authDomain: "YOUR_PROJECT.firebaseapp.com",
-       * projectId: "YOUR_PROJECT_ID",
-       * storageBucket: "YOUR_PROJECT.firebasestorage.app",
-       * messagingSenderId: "YOUR_SENDER_ID",
-       * appId: "YOUR_APP_ID"
-       */
+    const CONFIG = {
+      apiKey: "AIzaSyADB32wJq886NNqMuJk5n1zO45oSi-bdLs",
+      authDomain: "gps-pethgam-wagoora-portal.firebaseapp.com",
+      projectId: "gps-pethgam-wagoora-portal",
+      storageBucket: "gps-pethgam-wagoora-portal.firebasestorage.app",
+      messagingSenderId: "243117067000",
+      appId: "1:243117067000:web:a5320441bcbaed71e4490d",
+      measurementId: "G-WMXPK3229Y"
     };
 
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    /* =========================================================
+       COLLECTIONS / SESSION
+       ========================================================= */
+
+    const STAFF =
+      "staff";
+
+    const STAFF_LOGIN_INDEX =
+      "staffLoginIndex";
+
+    const SESSION_KEY =
+      "GPSPETHGAM_COMMON_LOGIN_SESSION_V1";
 
 
     /* =========================================================
-       HELPERS
+       FIREBASE
        ========================================================= */
 
-    const $ = id => document.getElementById(id);
+    let auth = null;
+
+    let db = null;
+
+    let firebaseReady = false;
 
 
-    function showMessage(text, type = "error") {
-      const el = $("message");
+    /* =========================================================
+       DOM HELPER
+       ========================================================= */
 
-      el.textContent = text;
-      el.className = "message " + type;
+    const $ = id =>
+      document.getElementById(id);
+
+
+    /* =========================================================
+       MESSAGE
+       ========================================================= */
+
+    function showMessage(
+      text,
+      type = "error"
+    ) {
+
+      const el =
+        $("message");
+
+      el.textContent =
+        String(text || "");
+
+      el.className =
+        "message show " + type;
+
     }
 
 
     function clearMessage() {
-      const el = $("message");
 
-      el.textContent = "";
-      el.className = "message";
+      const el =
+        $("message");
+
+      el.textContent =
+        "";
+
+      el.className =
+        "message";
+
     }
 
 
-    function normalizeEmployeeId(value) {
-      return String(value || "")
+    /* =========================================================
+       ROLE
+       ========================================================= */
+
+    function role() {
+
+      return $("roleSelect").value;
+
+    }
+
+
+    function roleLabel(value) {
+
+      const labels = {
+
+        ADMIN:
+          "HOI / Admin",
+
+        TEACHER:
+          "Teacher",
+
+        AAYA:
+          "Aaya",
+
+        COOK:
+          "Cook",
+
+        STAFF:
+          "Other Staff"
+
+      };
+
+      return labels[value] ||
+        "Unknown";
+
+    }
+
+
+    /* =========================================================
+       FIREBASE INITIALIZATION
+       ========================================================= */
+
+    function initializeFirebase() {
+
+      try {
+
+        if (
+          !window.firebase
+        ) {
+
+          throw new Error(
+            "Firebase SDK did not load. Check your internet connection."
+          );
+
+        }
+
+
+        /*
+         * Do not initialize the default app twice.
+         */
+
+        if (
+          !firebase.apps.length
+        ) {
+
+          firebase.initializeApp(
+            CONFIG
+          );
+
+        }
+
+
+        auth =
+          firebase.auth();
+
+        db =
+          firebase.firestore();
+
+
+        if (
+          !auth ||
+          typeof auth.signInWithEmailAndPassword !==
+            "function"
+        ) {
+
+          throw new Error(
+            "Firebase Authentication is not available."
+          );
+
+        }
+
+
+        if (
+          !db
+        ) {
+
+          throw new Error(
+            "Firestore is not available."
+          );
+
+        }
+
+
+        firebaseReady =
+          true;
+
+
+        return true;
+
+      } catch (error) {
+
+        firebaseReady =
+          false;
+
+        console.error(
+          "Firebase initialization failed:",
+          error
+        );
+
+        showMessage(
+          error.message ||
+          "Firebase could not be initialized.",
+          "error"
+        );
+
+        return false;
+      }
+
+    }
+
+
+    /* =========================================================
+       NORMALIZE EMPLOYEE ID
+       ========================================================= */
+
+    function normalizeEmployeeId(
+      value
+    ) {
+
+      return String(
+        value || ""
+      )
         .trim()
         .toUpperCase();
-    }
 
-
-    /*
-     * The login role comes ONLY from the dropdown.
-     *
-     * ADMIN    = HOI / Admin
-     * TEACHER  = Teacher
-     * AAYA     = Aaya
-     * COOK     = Cook
-     */
-    function role() {
-      return $("roleSelect").value;
     }
 
 
@@ -406,28 +845,41 @@
 
        IMPORTANT:
 
-       staff.role is NOT used here.
+       staff.accessRole = login/access role
 
-       In Staff Management:
-         designation     = human-readable designation
-         roleDesignation = human-readable designation
-         accessRole      = canonical login/access role
+       staff.designation =
+       human-readable designation
 
-       staff.role is used for:
-         Subject / Main Responsibility
+       staff.role =
+       Subject / Main Responsibility
 
-       Therefore it must NOT be used to determine login role.
-    */
+       Therefore staff.role is NEVER used here.
+       ========================================================= */
 
-    function classify(staff) {
+    function classify(
+      staff
+    ) {
 
-      const accessRole = String(
-        staff?.accessRole || ""
-      ).trim().toUpperCase();
+      if (
+        !staff
+      ) {
+
+        return "";
+
+      }
+
+
+      const accessRole =
+        String(
+          staff.accessRole ||
+          ""
+        )
+          .trim()
+          .toUpperCase();
 
 
       /*
-       * Canonical accessRole values written by
+       * Canonical roles created by
        * Staff Management.
        */
 
@@ -435,241 +887,119 @@
         accessRole === "HOI" ||
         accessRole === "ADMIN"
       ) {
+
         return "ADMIN";
+
       }
 
 
-      if (accessRole === "TEACHER") {
+      if (
+        accessRole === "TEACHER"
+      ) {
+
         return "TEACHER";
+
       }
 
 
-      if (accessRole === "AAYA") {
+      if (
+        accessRole === "AAYA"
+      ) {
+
         return "AAYA";
+
       }
 
 
-      if (accessRole === "COOK") {
+      if (
+        accessRole === "COOK"
+      ) {
+
         return "COOK";
+
       }
 
 
       /*
-       * STAFF is intentionally kept separate.
-       *
-       * Do NOT silently convert STAFF into TEACHER.
+       * Other Staff is intentionally
+       * kept separate.
        */
-      if (accessRole === "STAFF") {
+
+      if (
+        accessRole === "STAFF"
+      ) {
+
         return "STAFF";
+
       }
 
 
       /*
-       * Legacy fallback.
-
-       * Prefer accessRole whenever available.
+       * Legacy fallback:
        *
-       * roleDesignation/designation are safe fallbacks
-       * because they represent the staff designation.
-       *
-       * staff.role is deliberately NOT included because
-       * it means Subject / Main Responsibility.
+       * Use designation, NOT staff.role.
        */
 
-      const designation = String(
-        staff?.designation ||
-        staff?.roleDesignation ||
-        ""
-      ).trim();
+      const designation =
+        String(
+          staff.designation ||
+          staff.roleDesignation ||
+          ""
+        )
+          .trim();
 
 
       if (
-        /head\s*of\s*institution/i.test(designation) ||
-        /\bhoi\b/i.test(designation)
+        /head\s*of\s*institution/i
+          .test(designation) ||
+        /\bhoi\b/i
+          .test(designation)
       ) {
+
         return "ADMIN";
-      }
 
-
-      if (/teacher/i.test(designation)) {
-        return "TEACHER";
       }
 
 
       if (
-        /aaya/i.test(designation) ||
-        /ayah/i.test(designation)
+        /teacher/i
+          .test(designation)
       ) {
+
+        return "TEACHER";
+
+      }
+
+
+      if (
+        /aaya/i
+          .test(designation) ||
+        /ayah/i
+          .test(designation)
+      ) {
+
         return "AAYA";
+
       }
 
 
-      if (/cook/i.test(designation)) {
+      if (
+        /cook/i
+          .test(designation)
+      ) {
+
         return "COOK";
+
       }
 
 
       /*
-       * Do not guess an unknown role as Teacher.
+       * Never guess an unknown
+       * role as Teacher.
        */
+
       return "";
-    }
 
-
-    function roleLabel(value) {
-
-      const labels = {
-        ADMIN: "HOI / Admin",
-        TEACHER: "Teacher",
-        AAYA: "Aaya",
-        COOK: "Cook",
-        STAFF: "Other Staff"
-      };
-
-      return labels[value] || "Unknown";
-    }
-
-
-    /* =========================================================
-       ROLE / FORM MODE
-       ========================================================= */
-
-    function mode() {
-
-      const selectedRole = role();
-
-      clearMessage();
-
-
-      if (selectedRole === "ADMIN") {
-
-        $("identifierLabel").textContent =
-          "Admin Email";
-
-        $("identifier").placeholder =
-          "Enter admin email";
-
-        $("identifier").type =
-          "email";
-
-        $("identifier").autocomplete =
-          "username";
-
-        $("passwordLabel").textContent =
-          "Password";
-
-        $("password").placeholder =
-          "Enter password";
-
-        $("password").autocomplete =
-          "current-password";
-
-        $("modeHelp").textContent =
-          "Use the HOI / Admin email address and password.";
-
-      } else {
-
-        $("identifierLabel").textContent =
-          "Employee ID";
-
-        $("identifier").placeholder =
-          "Enter Employee ID";
-
-        $("identifier").type =
-          "text";
-
-        $("identifier").autocomplete =
-          "username";
-
-        $("passwordLabel").textContent =
-          "PIN";
-
-        $("password").placeholder =
-          "Enter PIN";
-
-        $("password").autocomplete =
-          "current-password";
-
-        $("modeHelp").textContent =
-          "Use your Employee ID and PIN.";
-
-      }
-    }
-
-
-    /* =========================================================
-       SESSION HELPERS
-       ========================================================= */
-
-    function saveRoleSession(selectedRole) {
-
-      sessionStorage.setItem(
-        "schoolLoginRole",
-        selectedRole
-      );
-
-      sessionStorage.setItem(
-        "loginRole",
-        selectedRole
-      );
-    }
-
-
-    function saveStaffSession(staff, selectedRole) {
-
-      saveRoleSession(selectedRole);
-
-
-      /*
-       * Keep the complete staff record available for dashboards
-       * that already use sessionStorage.
-       */
-
-      sessionStorage.setItem(
-        "staffSession",
-        JSON.stringify(staff)
-      );
-
-
-      if (staff?.id) {
-
-        sessionStorage.setItem(
-          "staffId",
-          String(staff.id)
-        );
-
-      }
-
-
-      if (staff?.employeeId) {
-
-        sessionStorage.setItem(
-          "employeeId",
-          String(staff.employeeId)
-        );
-
-      }
-
-
-      if (staff?.authUid) {
-
-        sessionStorage.setItem(
-          "staffAuthUid",
-          String(staff.authUid)
-        );
-
-      }
-    }
-
-
-    function saveAdminSession(adminData) {
-
-      saveRoleSession("ADMIN");
-
-      sessionStorage.setItem(
-        "adminSession",
-        JSON.stringify(adminData)
-      );
     }
 
 
@@ -677,36 +1007,47 @@
        FIND STAFF LOGIN INDEX
        ========================================================= */
 
-    async function findStaffLoginIndex(employeeId) {
+    async function findStaffLoginIndex(
+      employeeId
+    ) {
 
-      const normalized =
-        normalizeEmployeeId(employeeId);
+      const eid =
+        normalizeEmployeeId(
+          employeeId
+        );
 
 
-      if (!normalized) {
+      if (!eid) {
+
         return null;
+
       }
 
 
       /*
-       * First try the canonical document ID.
+       * Primary lookup:
        *
-       * Staff Management writes:
+       * staffLoginIndex/{EMPLOYEE_ID}
        *
-       * staffLoginIndex/{employeeId}
+       * This is exactly how Staff Management
+       * writes the login index.
        */
 
-      const directRef = doc(
-        db,
-        "staffLoginIndex",
-        normalized
-      );
+      const directRef =
+        db
+          .collection(
+            STAFF_LOGIN_INDEX
+          )
+          .doc(eid);
+
 
       const directSnap =
-        await getDoc(directRef);
+        await directRef.get();
 
 
-      if (directSnap.exists()) {
+      if (
+        directSnap.exists
+      ) {
 
         return {
           id: directSnap.id,
@@ -717,88 +1058,133 @@
 
 
       /*
-       * Legacy / alternate employee ID casing.
+       * Legacy fallback:
+       * Search employeeId field.
        */
 
       const variants = [
-        String(employeeId).trim(),
-        normalized,
-        String(employeeId).trim().toLowerCase()
+
+        String(
+          employeeId || ""
+        ).trim(),
+
+        eid,
+
+        String(
+          employeeId || ""
+        ).trim().toLowerCase()
+
       ];
 
 
-      for (const value of variants) {
+      for (
+        const value
+        of variants
+      ) {
 
-        if (!value) continue;
+        if (!value) {
+          continue;
+        }
 
-        const q = query(
-          collection(db, "staffLoginIndex"),
-          where("employeeId", "==", value)
-        );
 
-        const snap = await getDocs(q);
+        const snapshot =
+          await db
+            .collection(
+              STAFF_LOGIN_INDEX
+            )
+            .where(
+              "employeeId",
+              "==",
+              value
+            )
+            .limit(1)
+            .get();
 
-        if (!snap.empty) {
 
-          const item = snap.docs[0];
+        if (
+          !snapshot.empty
+        ) {
+
+          const d =
+            snapshot.docs[0];
+
 
           return {
-            id: item.id,
-            ...item.data()
+            id: d.id,
+            ...d.data()
           };
 
         }
+
       }
 
 
       return null;
+
     }
 
 
     /* =========================================================
-       LOGIN AS ADMIN / HOI
+       ADMIN LOGIN
        ========================================================= */
 
-    async function loginAdmin(email, password) {
+    async function loginAdmin(
+      email,
+      password
+    ) {
 
       const credential =
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
+        await auth
+          .signInWithEmailAndPassword(
+            email,
+            password
+          );
 
 
       const user =
         credential.user;
 
 
+      if (
+        !user
+      ) {
+
+        throw new Error(
+          "Firebase did not return a valid user account."
+        );
+
+      }
+
+
       /*
-       * Admin information is stored in:
+       * Admin authorization comes from:
        *
        * admins/{uid}
        */
 
-      const adminRef =
-        doc(db, "admins", user.uid);
-
       const adminSnap =
-        await getDoc(adminRef);
+        await db
+          .collection("admins")
+          .doc(user.uid)
+          .get();
 
 
-      if (!adminSnap.exists()) {
+      if (
+        !adminSnap.exists
+      ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
-          "Admin account is not registered in the school system."
+          "Admin Firebase account found, but the admins record was not found for this account."
         );
 
       }
 
 
       const admin =
-        adminSnap.data();
+        adminSnap.data() ||
+        {};
 
 
       const adminRole =
@@ -811,54 +1197,150 @@
           .toLowerCase();
 
 
+      /*
+       * Staff Management's working admin
+       * check uses role: admin.
+       *
+       * HOI is accepted as a legacy equivalent.
+       */
+
       if (
         adminRole !== "admin" &&
         adminRole !== "hoi" &&
         adminRole !== "head of institution"
       ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
-          "This account does not have HOI / Admin access."
+          "This Firebase account does not have HOI / Admin access."
         );
 
       }
 
 
       /*
-       * Respect an explicit active=false.
+       * Active must not explicitly be false.
        */
 
-      if (admin.active === false) {
+      if (
+        admin.active === false
+      ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
-          "This admin account is inactive."
+          "This administrator account is inactive."
         );
 
       }
 
 
-      saveAdminSession({
-        uid: user.uid,
-        email: user.email || email,
-        ...admin
-      });
+      /*
+       * If admins/{uid} has an email,
+       * make sure it matches Firebase Auth.
+       */
+
+      const firestoreEmail =
+        String(
+          admin.email ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      const authEmail =
+        String(
+          user.email ||
+          email ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        firestoreEmail &&
+        firestoreEmail !== authEmail
+      ) {
+
+        await auth.signOut();
+
+        throw new Error(
+          "The Firebase account does not match the email recorded in the school admin record."
+        );
+
+      }
 
 
       /*
-       * Existing Admin / HOI dashboard.
+       * Save Common Login session.
+       */
+
+      const sessionData = {
+
+        uid:
+          user.uid,
+
+        email:
+          user.email ||
+          email,
+
+        name:
+          admin.name ||
+          user.displayName ||
+          "Administrator",
+
+        employeeId:
+          admin.employeeId ||
+          "",
+
+        role:
+          "ADMIN",
+
+        loginAt:
+          new Date().toISOString()
+
+      };
+
+
+      sessionStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify(
+          sessionData
+        )
+      );
+
+
+      /*
+       * Keep compatibility with
+       * other dashboard pages.
+       */
+
+      sessionStorage.setItem(
+        "loginRole",
+        "ADMIN"
+      );
+
+      sessionStorage.setItem(
+        "schoolLoginRole",
+        "ADMIN"
+      );
+
+
+      /*
+       * Admin / HOI dashboard.
        */
 
       window.location.href =
         "index.html";
+
     }
 
 
     /* =========================================================
-       LOGIN AS STAFF
+       STAFF LOGIN
        ========================================================= */
 
     async function loginStaff(
@@ -868,54 +1350,83 @@
     ) {
 
       /*
-       * Step 1:
-       * Find staffLoginIndex using Employee ID.
+       * 1. Find staffLoginIndex.
        */
 
-      const loginIndex =
-        await findStaffLoginIndex(employeeId);
+      const index =
+        await findStaffLoginIndex(
+          employeeId
+        );
 
 
-      if (!loginIndex) {
+      if (
+        !index
+      ) {
 
         throw new Error(
-          "Employee ID was not found."
+          "Employee ID was not found. Please check the Employee ID saved by the school administrator."
         );
 
       }
 
 
       /*
-       * staffLoginIndex must contain the Firebase Auth email.
+       * Staff Management writes:
+       *
+       * authEmail
+       * staffId
        */
 
       const authEmail =
         String(
-          loginIndex.authEmail ||
+          index.authEmail ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      const staffId =
+        String(
+          index.staffId ||
+          index.staffDocId ||
           ""
         ).trim();
 
 
-      if (!authEmail) {
+      if (
+        !authEmail
+      ) {
 
         throw new Error(
-          "This staff account does not have a login email configured."
+          "This Employee ID does not have a Firebase login email configured."
+        );
+
+      }
+
+
+      if (
+        !staffId
+      ) {
+
+        throw new Error(
+          "The staff login index does not contain the linked staff record."
         );
 
       }
 
 
       /*
-       * Step 2:
-       * Sign in to Firebase Authentication.
+       * 2. Sign in using the Firebase
+       * Authentication email + PIN.
        */
 
       const credential =
-        await signInWithEmailAndPassword(
-          auth,
-          authEmail,
-          password
-        );
+        await auth
+          .signInWithEmailAndPassword(
+            authEmail,
+            password
+          );
 
 
       const user =
@@ -923,43 +1434,21 @@
 
 
       /*
-       * Step 3:
-       * Resolve the actual staff document.
-       *
-       * staffLoginIndex is expected to contain
-       * the staff document ID.
+       * 3. Read staff/{staffId}.
        */
 
-      const staffId =
-        String(
-          loginIndex.staffId ||
-          loginIndex.staffDocId ||
-          loginIndex.id ||
-          ""
-        ).trim();
-
-
-      if (!staffId) {
-
-        await signOut(auth);
-
-        throw new Error(
-          "The staff login index is missing the staff record reference."
-        );
-
-      }
-
-
-      const staffRef =
-        doc(db, "staff", staffId);
-
       const staffSnap =
-        await getDoc(staffRef);
+        await db
+          .collection(STAFF)
+          .doc(staffId)
+          .get();
 
 
-      if (!staffSnap.exists()) {
+      if (
+        !staffSnap.exists
+      ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
           "The staff record linked to this login could not be found."
@@ -969,19 +1458,24 @@
 
 
       const staff = {
-        id: staffSnap.id,
+
+        id:
+          staffSnap.id,
+
         ...staffSnap.data()
+
       };
 
 
       /*
-       * Step 4:
-       * Verify the staff account is active.
+       * 4. Active check.
        */
 
-      if (staff.active === false) {
+      if (
+        staff.active === false
+      ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
           "This staff account is inactive."
@@ -991,13 +1485,16 @@
 
 
       /*
-       * Some versions of Staff Management use loginEnabled.
-       * Respect it when explicitly set to false.
+       * Staff Management uses loginEnabled.
+       *
+       * Only explicitly false is rejected.
        */
 
-      if (staff.loginEnabled === false) {
+      if (
+        staff.loginEnabled === false
+      ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
           "Login is disabled for this staff account."
@@ -1007,38 +1504,34 @@
 
 
       /*
-       * Step 5:
-       * Verify Firebase Auth UID.
-       *
-       * Staff Management stores:
-       *
-       * authUid
+       * 5. Verify Firebase Auth UID
+       * when authUid exists.
        */
 
       if (
         staff.authUid &&
-        String(staff.authUid) !== String(user.uid)
+        String(
+          staff.authUid
+        ) !== String(
+          user.uid
+        )
       ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
-          "This login is not linked to the selected staff account."
+          "This Firebase login is not linked to the selected staff record."
         );
 
       }
 
 
       /*
-       * Step 6:
-       * Determine the ACTUAL role from accessRole.
+       * 6. Determine actual role.
        *
-       * IMPORTANT:
+       * CRITICAL:
        *
-       * staff.role is NOT used.
-       *
-       * staff.role means:
-       * Subject / Main Responsibility
+       * staff.role is NOT checked.
        *
        * Example:
        *
@@ -1046,36 +1539,36 @@
        * role = Mathematics
        * accessRole = TEACHER
        *
-       * The login role must therefore be TEACHER.
+       * Result = TEACHER
        */
 
       const actualRole =
         classify(staff);
 
 
-      /*
-       * Unknown role should never be guessed.
-       */
+      if (
+        !actualRole
+      ) {
 
-      if (!actualRole) {
-
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
-          "This staff record does not have a valid login access role configured."
+          "This staff record does not have a valid access role configured. Please edit the staff member in Staff Management and save the correct Role / Designation."
         );
 
       }
 
 
       /*
-       * The selected dropdown role must match
-       * the staff record's canonical role.
+       * The selected dropdown role must
+       * exactly match accessRole.
        */
 
-      if (actualRole !== selectedRole) {
+      if (
+        actualRole !== selectedRole
+      ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
           "The selected role does not match the staff record. " +
@@ -1088,88 +1581,195 @@
 
 
       /*
-       * STAFF is deliberately not included in the
-       * Common Login dropdown.
-       *
-       * Therefore it cannot accidentally enter
-       * the Teacher dashboard.
+       * Other Staff is deliberately not
+       * routed to Teacher.
        */
 
-      if (actualRole === "STAFF") {
+      if (
+        actualRole === "STAFF"
+      ) {
 
-        await signOut(auth);
+        await auth.signOut();
 
         throw new Error(
-          "This account is configured as Other Staff. " +
-          "No Common Login dashboard is configured for Other Staff."
+          "This account is configured as Other Staff. A separate Other Staff dashboard is not configured in Common Login."
         );
 
       }
 
 
       /*
-       * Step 7:
-       * Save session information.
+       * 7. Save staff session.
        */
 
-      saveStaffSession(
-        staff,
-        selectedRole
+      const sessionData = {
+
+        uid:
+          user.uid,
+
+        staffId:
+          staff.id,
+
+        employeeId:
+          staff.employeeId ||
+          employeeId,
+
+        name:
+          staff.name ||
+          "",
+
+        designation:
+          staff.designation ||
+          staff.roleDesignation ||
+          "",
+
+        accessRole:
+          staff.accessRole ||
+          "",
+
+        role:
+          selectedRole,
+
+        authEmail:
+          staff.authEmail ||
+          authEmail,
+
+        loginAt:
+          new Date().toISOString()
+
+      };
+
+
+      sessionStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify(
+          sessionData
+        )
       );
 
 
       /*
-       * Step 8:
-       * Redirect according to canonical role.
+       * Compatibility sessions for dashboards.
        */
 
-      if (selectedRole === "AAYA") {
+      sessionStorage.setItem(
+        "loginRole",
+        selectedRole
+      );
 
-        window.location.href =
-          "Aaya-Dashboard.html";
+      sessionStorage.setItem(
+        "schoolLoginRole",
+        selectedRole
+      );
 
-        return;
-      }
+      sessionStorage.setItem(
+        "staffId",
+        String(
+          staff.id
+        )
+      );
+
+      sessionStorage.setItem(
+        "employeeId",
+        String(
+          staff.employeeId ||
+          employeeId
+        )
+      );
+
+      sessionStorage.setItem(
+        "staffAuthUid",
+        String(
+          user.uid
+        )
+      );
+
+      sessionStorage.setItem(
+        "staffSession",
+        JSON.stringify(
+          staff
+        )
+      );
 
 
-      if (selectedRole === "COOK") {
+      /*
+       * 8. Redirect to correct dashboard.
+       */
 
-        window.location.href =
-          "Cook-Dashboard.html";
-
-        return;
-      }
-
-
-      if (selectedRole === "TEACHER") {
+      if (
+        selectedRole ===
+        "TEACHER"
+      ) {
 
         window.location.href =
           "Teacher-Dashboard.html";
 
         return;
+
       }
 
 
-      /*
-       * This should normally be unreachable because
-       * ADMIN is handled separately.
-       */
+      if (
+        selectedRole ===
+        "AAYA"
+      ) {
 
-      await signOut(auth);
+        window.location.href =
+          "Aaya-Dashboard.html";
+
+        return;
+
+      }
+
+
+      if (
+        selectedRole ===
+        "COOK"
+      ) {
+
+        window.location.href =
+          "Cook-Dashboard.html";
+
+        return;
+
+      }
+
+
+      await auth.signOut();
 
       throw new Error(
-        "No dashboard is configured for this login role."
+        "No dashboard is configured for this role."
       );
+
     }
 
 
     /* =========================================================
-       MAIN LOGIN
+       MAIN LOGIN HANDLER
        ========================================================= */
 
     async function handleLogin() {
 
       clearMessage();
+
+
+      /*
+       * Make sure Firebase is ready.
+       */
+
+      if (
+        !firebaseReady
+      ) {
+
+        if (
+          !initializeFirebase()
+        ) {
+
+          return;
+
+        }
+
+      }
 
 
       const selectedRole =
@@ -1178,31 +1778,38 @@
 
       const identifier =
         String(
-          $("identifier").value || ""
+          $("identifier").value ||
+          ""
         ).trim();
 
 
       const password =
         String(
-          $("password").value || ""
+          $("password").value ||
+          ""
         );
 
 
-      if (!identifier) {
+      if (
+        !identifier
+      ) {
 
         showMessage(
           selectedRole === "ADMIN"
-            ? "Please enter the admin email."
+            ? "Please enter the Admin email."
             : "Please enter the Employee ID."
         );
 
         $("identifier").focus();
 
         return;
+
       }
 
 
-      if (!password) {
+      if (
+        !password
+      ) {
 
         showMessage(
           selectedRole === "ADMIN"
@@ -1213,21 +1820,33 @@
         $("password").focus();
 
         return;
+
       }
 
 
-      const btn =
+      const button =
         $("loginBtn");
 
 
-      btn.disabled = true;
-      btn.textContent =
+      button.disabled =
+        true;
+
+      button.textContent =
         "Signing in...";
+
+
+      showMessage(
+        "Connecting to Firebase Authentication...",
+        "info"
+      );
 
 
       try {
 
-        if (selectedRole === "ADMIN") {
+        if (
+          selectedRole ===
+          "ADMIN"
+        ) {
 
           await loginAdmin(
             identifier,
@@ -1247,55 +1866,88 @@
       } catch (error) {
 
         console.error(
-          "Login error:",
+          "Common Login error:",
           error
         );
 
 
+        let message =
+          error &&
+          error.message
+            ? error.message
+            : "Login failed. Please try again.";
+
+
         /*
-         * Firebase's raw error messages can expose
-         * implementation details, so provide cleaner
-         * user-facing messages.
+         * Friendly Firebase errors.
          */
 
-        let message =
-          error?.message ||
-          "Login failed. Please check your details and try again.";
-
-
         if (
-          error?.code ===
+          error.code ===
           "auth/invalid-credential"
         ) {
 
           message =
             selectedRole === "ADMIN"
-              ? "Invalid admin email or password."
-              : "Invalid Employee ID or PIN.";
+              ? "Admin email or password is incorrect."
+              : "Employee ID or PIN is incorrect.";
 
-        } else if (
-          error?.code ===
-          "auth/invalid-email"
+        }
+
+
+        else if (
+          error.code ===
+          "auth/wrong-password"
         ) {
 
           message =
-            "Please enter a valid email address.";
+            selectedRole === "ADMIN"
+              ? "Admin password is incorrect."
+              : "Employee PIN is incorrect.";
 
-        } else if (
-          error?.code ===
+        }
+
+
+        else if (
+          error.code ===
+          "auth/user-not-found"
+        ) {
+
+          message =
+            "No Firebase login account was found for this account.";
+
+        }
+
+
+        else if (
+          error.code ===
           "auth/user-disabled"
         ) {
 
           message =
-            "This login account has been disabled.";
+            "This Firebase login account has been disabled.";
 
-        } else if (
-          error?.code ===
+        }
+
+
+        else if (
+          error.code ===
           "auth/too-many-requests"
         ) {
 
           message =
-            "Too many login attempts. Please wait and try again.";
+            "Too many login attempts. Please wait a while and try again.";
+
+        }
+
+
+        else if (
+          error.code ===
+          "auth/network-request-failed"
+        ) {
+
+          message =
+            "Network error while connecting to Firebase. Check your internet connection.";
 
         }
 
@@ -1307,28 +1959,43 @@
 
 
         /*
-         * Make sure Firebase is signed out after
-         * a failed staff-role validation.
+         * Always clean up a partially
+         * authenticated account after
+         * validation fails.
          */
 
         try {
-          if (auth.currentUser) {
-            await signOut(auth);
+
+          if (
+            auth &&
+            auth.currentUser
+          ) {
+
+            await auth.signOut();
+
           }
-        } catch (signOutError) {
+
+        } catch (
+          signOutError
+        ) {
+
           console.warn(
-            "Sign-out cleanup failed:",
+            "Sign-out cleanup:",
             signOutError
           );
+
         }
 
       } finally {
 
-        btn.disabled = false;
-        btn.textContent =
+        button.disabled =
+          false;
+
+        button.textContent =
           "Login";
 
       }
+
     }
 
 
@@ -1336,91 +2003,45 @@
        FORGOT PASSWORD / PIN
        ========================================================= */
 
-    async function handleForgotPassword(event) {
-
-      event.preventDefault();
+    async function handleForgotPassword() {
 
       clearMessage();
+
+
+      if (
+        !firebaseReady
+      ) {
+
+        if (
+          !initializeFirebase()
+        ) {
+
+          return;
+
+        }
+
+      }
 
 
       const selectedRole =
         role();
 
 
-      /*
-       * Admin:
-       * The identifier itself is the email.
-       */
-
-      if (selectedRole === "ADMIN") {
-
-        const email =
-          String(
-            $("identifier").value || ""
-          ).trim();
-
-
-        if (!email) {
-
-          showMessage(
-            "Enter your admin email first."
-          );
-
-          $("identifier").focus();
-
-          return;
-
-        }
-
-
-        try {
-
-          await sendPasswordResetEmail(
-            auth,
-            email
-          );
-
-
-          showMessage(
-            "If this email is registered, a password reset link has been sent.",
-            "success"
-          );
-
-        } catch (error) {
-
-          console.error(
-            "Admin password reset error:",
-            error
-          );
-
-
-          showMessage(
-            "Unable to send the password reset email. Please verify the email address."
-          );
-
-        }
-
-
-        return;
-      }
-
-
-      /*
-       * Staff:
-       * Employee ID must first be resolved through
-       * staffLoginIndex to obtain authEmail.
-       */
-
-      const employeeId =
+      const identifier =
         String(
-          $("identifier").value || ""
+          $("identifier").value ||
+          ""
         ).trim();
 
 
-      if (!employeeId) {
+      if (
+        !identifier
+      ) {
 
         showMessage(
-          "Enter your Employee ID first."
+          selectedRole === "ADMIN"
+            ? "Enter the Admin email first."
+            : "Enter the Employee ID first."
         );
 
         $("identifier").focus();
@@ -1432,63 +2053,226 @@
 
       try {
 
-        const loginIndex =
-          await findStaffLoginIndex(
-            employeeId
-          );
+        let email =
+          "";
 
 
-        if (!loginIndex) {
+        /*
+         * Admin:
+         * identifier is already the email.
+         */
 
-          showMessage(
-            "Employee ID was not found."
-          );
+        if (
+          selectedRole ===
+          "ADMIN"
+        ) {
 
-          return;
-
-        }
-
-
-        const authEmail =
-          String(
-            loginIndex.authEmail ||
-            ""
-          ).trim();
-
-
-        if (!authEmail) {
-
-          showMessage(
-            "This staff account does not have a login email configured."
-          );
-
-          return;
+          email =
+            identifier
+              .trim()
+              .toLowerCase();
 
         }
 
 
-        await sendPasswordResetEmail(
-          auth,
-          authEmail
-        );
+        /*
+         * Staff:
+         * Employee ID -> staffLoginIndex
+         * -> authEmail
+         */
+
+        else {
+
+          const index =
+            await findStaffLoginIndex(
+              identifier
+            );
+
+
+          if (
+            !index
+          ) {
+
+            throw new Error(
+              "Employee ID was not found."
+            );
+
+          }
+
+
+          email =
+            String(
+              index.authEmail ||
+              ""
+            )
+              .trim()
+              .toLowerCase();
+
+
+          if (
+            !email
+          ) {
+
+            throw new Error(
+              "No Firebase login email is configured for this Employee ID."
+            );
+
+          }
+
+        }
+
+
+        await auth
+          .sendPasswordResetEmail(
+            email
+          );
 
 
         showMessage(
-          "If this staff account is registered, a password reset link has been sent to the registered email.",
+          "A password/PIN reset email has been sent to the registered Firebase login email.",
           "success"
         );
+
 
       } catch (error) {
 
         console.error(
-          "Staff password reset error:",
+          "Password reset error:",
           error
         );
 
 
+        let message =
+          error.message ||
+          "Unable to send the reset email.";
+
+
+        if (
+          error.code ===
+          "auth/user-not-found"
+        ) {
+
+          message =
+            "No Firebase account was found for this login.";
+
+        }
+
+
+        else if (
+          error.code ===
+          "auth/invalid-email"
+        ) {
+
+          message =
+            "The registered login email is invalid.";
+
+        }
+
+
         showMessage(
-          "Unable to send the password reset email. Please try again."
+          message,
+          "error"
         );
+
+      }
+
+    }
+
+
+    /* =========================================================
+       ROLE UI
+       ========================================================= */
+
+    function updateRoleUI() {
+
+      const selectedRole =
+        role();
+
+
+      clearMessage();
+
+
+      if (
+        selectedRole ===
+        "ADMIN"
+      ) {
+
+        $("identifierLabel")
+          .textContent =
+          "Admin Email";
+
+        $("identifier")
+          .type =
+          "email";
+
+        $("identifier")
+          .placeholder =
+          "Enter Admin Firebase email";
+
+        $("identifier")
+          .autocomplete =
+          "username";
+
+        $("passwordLabel")
+          .textContent =
+          "Password";
+
+        $("password")
+          .placeholder =
+          "Enter Admin password";
+
+        $("password")
+          .autocomplete =
+          "current-password";
+
+        $("loginHelp")
+          .textContent =
+          "Use the Firebase Authentication email and password of the school HOI / Admin.";
+
+        $("roleInfoText")
+          .textContent =
+          "HOI / Admin login is verified against the admins/{uid} Firestore record.";
+
+      }
+
+
+      else {
+
+        $("identifierLabel")
+          .textContent =
+          "Employee ID";
+
+        $("identifier")
+          .type =
+          "text";
+
+        $("identifier")
+          .placeholder =
+          "Enter Employee ID";
+
+        $("identifier")
+          .autocomplete =
+          "username";
+
+        $("passwordLabel")
+          .textContent =
+          "PIN";
+
+        $("password")
+          .placeholder =
+          "Enter your 6–8 digit PIN";
+
+        $("password")
+          .autocomplete =
+          "current-password";
+
+        $("loginHelp")
+          .textContent =
+          "Use the Employee ID and PIN created by the school administrator.";
+
+        $("roleInfoText")
+          .textContent =
+          "Staff login is verified through staffLoginIndex and the staff record's accessRole.";
 
       }
 
@@ -1499,110 +2283,162 @@
        PASSWORD VISIBILITY
        ========================================================= */
 
-    $("togglePassword")
-      .addEventListener(
-        "click",
-        () => {
+    function togglePassword() {
 
-          const input =
-            $("password");
+      const input =
+        $("password");
 
-          const button =
-            $("togglePassword");
+      const button =
+        $("togglePassword");
 
 
-          if (
-            input.type === "password"
-          ) {
+      if (
+        input.type ===
+        "password"
+      ) {
 
-            input.type = "text";
+        input.type =
+          "text";
 
-            button.textContent =
-              "🙈";
+        button.textContent =
+          "🙈";
 
-            button.setAttribute(
-              "aria-label",
-              "Hide password"
-            );
+        button.setAttribute(
+          "aria-label",
+          "Hide password"
+        );
 
-          } else {
+      }
 
-            input.type = "password";
+      else {
 
-            button.textContent =
-              "👁";
+        input.type =
+          "password";
 
-            button.setAttribute(
-              "aria-label",
-              "Show password"
-            );
+        button.textContent =
+          "👁";
 
-          }
+        button.setAttribute(
+          "aria-label",
+          "Show password"
+        );
 
-        }
-      );
+      }
 
-
-    /* =========================================================
-       EVENTS
-       ========================================================= */
-
-    $("roleSelect")
-      .addEventListener(
-        "change",
-        mode
-      );
-
-
-    $("loginBtn")
-      .addEventListener(
-        "click",
-        handleLogin
-      );
-
-
-    $("forgotPassword")
-      .addEventListener(
-        "click",
-        handleForgotPassword
-      );
-
-
-    /*
-     * Allow Enter to submit the form.
-     */
-
-    $("identifier")
-      .addEventListener(
-        "keydown",
-        event => {
-
-          if (event.key === "Enter") {
-            handleLogin();
-          }
-
-        }
-      );
-
-
-    $("password")
-      .addEventListener(
-        "keydown",
-        event => {
-
-          if (event.key === "Enter") {
-            handleLogin();
-          }
-
-        }
-      );
+    }
 
 
     /* =========================================================
-       INITIALIZE
+       ENTER KEY
        ========================================================= */
 
-    mode();
+    function handleEnter(
+      event
+    ) {
+
+      if (
+        event.key ===
+        "Enter"
+      ) {
+
+        event.preventDefault();
+
+        handleLogin();
+
+      }
+
+    }
+
+
+    /* =========================================================
+       INITIALIZATION
+       ========================================================= */
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+
+        /*
+         * Attach events explicitly.
+         *
+         * This avoids the previous problem where
+         * the Login button could appear clickable
+         * but the JavaScript handler was not available.
+         */
+
+        $("loginBtn")
+          .addEventListener(
+            "click",
+            handleLogin
+          );
+
+
+        $("forgotBtn")
+          .addEventListener(
+            "click",
+            handleForgotPassword
+          );
+
+
+        $("roleSelect")
+          .addEventListener(
+            "change",
+            updateRoleUI
+          );
+
+
+        $("togglePassword")
+          .addEventListener(
+            "click",
+            togglePassword
+          );
+
+
+        $("identifier")
+          .addEventListener(
+            "keydown",
+            handleEnter
+          );
+
+
+        $("password")
+          .addEventListener(
+            "keydown",
+            handleEnter
+          );
+
+
+        /*
+         * Set initial role UI.
+         */
+
+        updateRoleUI();
+
+
+        /*
+         * Initialize Firebase immediately.
+         */
+
+        initializeFirebase();
+
+
+        /*
+         * Show a connection status only
+         * if Firebase initialization fails.
+         */
+
+        if (
+          firebaseReady
+        ) {
+
+          console.log(
+            "Common Login: Firebase initialized successfully."
+          );
+
+        }
+
+      }
+    );
 
   </script>
 
