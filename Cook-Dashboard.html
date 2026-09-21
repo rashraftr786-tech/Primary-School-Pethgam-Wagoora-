@@ -39,7 +39,7 @@
  function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
  function today(){return new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
  function initials(n){return String(n||ROLE).split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase()}
- function logout(){sessionStorage.removeItem('GPSPETHGAM_ROLE_SESSION_V1');if(auth)auth.signOut().finally(()=>location.href='Role-Login.html');else location.href='Role-Login.html'}
+ function logout(){sessionStorage.removeItem('GPSPETHGAM_COMMON_LOGIN_SESSION_V1');if(auth)auth.signOut().finally(()=>location.href='Role-Login.html');else location.href='Role-Login.html'}
  const attId=()=>me.id+'_'+today();
  async function loadAtt(){try{const d=await db.collection('staffAttendance').doc(attId()).get(),x=d.exists?d.data():{};$('attMsg').textContent=x.checkIn?'Check In: '+x.checkIn+(x.checkOut?' · Check Out: '+x.checkOut:' · Check Out pending'):'Not checked in today.';$('checkOut').disabled=!x.checkIn||!!x.checkOut;$('attStat').textContent=x.checkIn?(x.checkOut?'Complete':'Checked In'):'Not Marked'}catch(e){$('attMsg').textContent='Attendance unavailable: '+e.message;$('attStat').textContent='—'}}
  async function saveAtt(p){await db.collection('staffAttendance').doc(attId()).set({staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',employeeId:me.employeeId||'',date:today(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),...p},{merge:true});await loadAtt()}
