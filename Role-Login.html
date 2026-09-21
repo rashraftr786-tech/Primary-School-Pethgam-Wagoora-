@@ -447,7 +447,7 @@ async function loginStaff(employeeId,pin,expectedRole){
   sessionStorage.setItem('staffSession',JSON.stringify({...staff,id:staffDoc.id}));
 
   if(actual==='TEACHER'){
-    location.href='Staff-Persobal-Dashboard-Tr.html';
+    location.href='Staff-Personal-Dashboard-Tr.html';
     return;
   }
 
