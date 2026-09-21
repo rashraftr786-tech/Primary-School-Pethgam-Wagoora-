@@ -101,18 +101,43 @@ function roleLabel(r){
 }
 
 function classify(s){
-  const ar=String(s&&s.accessRole||'').trim().toUpperCase();
-  if(ar==='HOI'||ar==='ADMIN')return 'ADMIN';
-  if(ar==='TEACHER')return 'TEACHER';
-  if(ar==='AAYA')return 'AAYA';
-  if(ar==='COOK')return 'COOK';
-  if(ar==='STAFF')return 'STAFF';
+  const ar = String(s?.accessRole || '').trim().toUpperCase();
+  const role = String(s?.role || '').trim().toUpperCase();
+  const d = String(s?.designation || s?.roleDesignation || '').trim();
 
-  const d=String(s&&(s.designation||s.roleDesignation)||'').trim();
-  if(/head\s*of\s*institution|\bhoi\b/i.test(d))return 'ADMIN';
-  if(/teacher/i.test(d))return 'TEACHER';
-  if(/aaya|ayah|helper/i.test(d))return 'AAYA';
-  if(/cook/i.test(d))return 'COOK';
+  // Explicit access roles take priority.
+  if(ar === 'HOI' || ar === 'ADMIN') return 'ADMIN';
+  if(ar === 'TEACHER') return 'TEACHER';
+  if(ar === 'AAYA') return 'AAYA';
+  if(ar === 'COOK') return 'COOK';
+
+  // Generic "Staff" accounts use their actual staff role.
+  if(ar === 'STAFF'){
+    if(role === 'HOI' || role === 'ADMIN') return 'ADMIN';
+    if(role === 'TEACHER') return 'TEACHER';
+    if(role === 'AAYA' || role === 'AYAH') return 'AAYA';
+    if(role === 'COOK') return 'COOK';
+
+    // Final fallback for generic Staff records.
+    if(/head\s*of\s*institution|\bhoi\b/i.test(d)) return 'ADMIN';
+    if(/teacher/i.test(d)) return 'TEACHER';
+    if(/aaya|ayah|helper/i.test(d)) return 'AAYA';
+    if(/cook/i.test(d)) return 'COOK';
+
+    return 'STAFF';
+  }
+
+  // Fallback for records without a usable accessRole.
+  if(role === 'HOI' || role === 'ADMIN') return 'ADMIN';
+  if(role === 'TEACHER') return 'TEACHER';
+  if(role === 'AAYA' || role === 'AYAH') return 'AAYA';
+  if(role === 'COOK') return 'COOK';
+
+  if(/head\s*of\s*institution|\bhoi\b/i.test(d)) return 'ADMIN';
+  if(/teacher/i.test(d)) return 'TEACHER';
+  if(/aaya|ayah|helper/i.test(d)) return 'AAYA';
+  if(/cook/i.test(d)) return 'COOK';
+
   return '';
 }
 
