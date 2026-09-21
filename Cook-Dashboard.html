@@ -1,57 +1,1413 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="theme-color" content="#3f3f91"><title>Cook Dashboard — GPS Pethgam Wagoora</title>
-<link rel="icon" href="new-logo.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"><link rel="stylesheet" href="role-dashboard.css">
-</head><body><div id="app" class="hidden">
-<header class="hero"><div class="hero-row"><img class="logo" src="new-logo.png" alt="School logo"><div class="hero-title"><strong>Government Primary School Pethgam Wagoora</strong><small>Zone Wagoora • District Baramulla • Learn to Lead</small></div><button class="signout" id="logout"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button></div><div class="welcome"><small>Welcome</small><h1 id="welcomeName">Cook</h1><span class="role"><i class="fa-solid fa-utensils"></i> Cook • PM-POSHAN Workspace</span></div></header>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#3f3f91">
+<title>Cook Dashboard — GPS Pethgam Wagoora</title>
+
+<link rel="icon" href="new-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="role-dashboard.css">
+</head>
+
+<body>
+
+<div id="app" class="hidden">
+
+<header class="hero">
+  <div class="hero-row">
+    <img class="logo" src="new-logo.png" alt="School logo">
+
+    <div class="hero-title">
+      <strong>Government Primary School Pethgam Wagoora</strong>
+      <small>Zone Wagoora • District Baramulla • Learn to Lead</small>
+    </div>
+
+    <button class="signout" id="logout">
+      <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+    </button>
+  </div>
+
+  <div class="welcome">
+    <small>Welcome</small>
+    <h1 id="welcomeName">Cook</h1>
+    <span class="role">
+      <i class="fa-solid fa-utensils"></i>
+      Cook • PM-POSHAN Workspace
+    </span>
+  </div>
+</header>
+
+
 <main class="dashboard">
-<section class="profile"><div class="avatar" id="avatar">C</div><div><h2 id="profileName">Loading…</h2><p id="profileRole"></p><div class="chips"><span class="chip" id="empChip">Employee ID: —</span><span class="chip" id="mobileChip">Mobile: —</span></div></div></section>
-<section class="stats"><div class="stat"><b id="attStat">—</b><span>MY ATTENDANCE</span></div><div class="stat"><b id="mealStat">0</b><span>TODAY'S MEALS</span></div><div class="stat"><b id="riceStat">—</b><span>RICE STOCK</span></div><div class="stat"><b id="noticeStat">0</b><span>NOTICES</span></div></section>
-<section class="section"><div class="section-head"><h2><i class="fa-solid fa-grid-2"></i> Quick Access</h2><small>Every module is visual & touch-friendly</small></div><div class="grid">
-<a class="tile" href="#attendanceCard"><i class="fa-solid fa-user-check"></i><strong>My Attendance</strong><small>Check in / check out</small></a>
-<a class="tile" href="#mealCard"><i class="fa-solid fa-utensils"></i><strong>Today's Meals</strong><small>Record daily meals</small></a>
-<a class="tile" href="#riceCard"><i class="fa-solid fa-wheat-awn"></i><strong>Rice Stock</strong><small>Update only when required</small></a>
-<a class="tile tile-alert" href="#riceAlarmCard"><i class="fa-solid fa-triangle-exclamation"></i><strong>Stock Alarm</strong><small>Low-stock warning</small></a>
-<a class="tile" href="MDM.html"><i class="fa-solid fa-file-lines"></i><strong>Monthly PM-POSHAN</strong><small>Official monthly record</small></a>
-<a class="tile" href="#leaveCard"><i class="fa-solid fa-calendar-minus"></i><strong>Leave</strong><small>Apply & track</small></a>
-<a class="tile" href="notices.html"><i class="fa-solid fa-bullhorn"></i><strong>Notices</strong><small>School circulars</small></a>
-<a class="tile" href="school-calendar.html"><i class="fa-solid fa-calendar-days"></i><strong>School Calendar</strong><small>Events & holidays</small></a>
-<a class="tile" href="#profile"><i class="fa-solid fa-id-card"></i><strong>My Profile</strong><small>Staff information</small></a>
-</div></section>
 
-<section class="section" id="attendanceCard"><div class="section-head"><h2><i class="fa-solid fa-clock"></i> My Attendance</h2><small>Today</small></div><div class="panel"><div class="actions"><button class="btn ok" id="checkIn">Check In</button><button class="btn gold" id="checkOut" disabled>Check Out</button></div><div class="status" id="attMsg">Loading attendance…</div></div></section>
+<!-- PROFILE -->
+<section class="profile" id="profile">
+  <div class="avatar" id="avatar">C</div>
 
-<section class="section" id="mealCard"><div class="section-head"><h2><i class="fa-solid fa-utensils"></i> Today's Meal Record</h2><small>Daily activity</small></div><div class="panel"><div class="stats"><div class="stat"><b id="enrolment">—</b><span>ENROLMENT</span></div><div class="stat"><b id="meals">0</b><span>MEALS SERVED</span></div></div><div class="field"><label>Bal Vatika Meals</label><input id="mealBV" type="number" min="0"></div><div class="field"><label>Primary (Classes 1–5) Meals</label><input id="mealPR" type="number" min="0"></div><div class="field"><label>Remarks</label><textarea id="mealRemark"></textarea></div><button class="btn ok" id="saveMeals">Save Today's Meal Record</button><div class="status" id="mealMsg"></div></div></section>
+  <div>
+    <h2 id="profileName">Loading…</h2>
+    <p id="profileRole"></p>
 
-<section class="section" id="riceCard"><div class="section-head"><h2><i class="fa-solid fa-wheat-awn"></i> Rice Stock Register</h2><small>Occasional update — not a daily task</small></div><div class="panel"><div class="status"><b>Update this register only when rice is received, issued/consumed materially, or during the monthly stock review.</b><br>The dashboard will keep showing the last saved balance between updates.</div><div class="field"><label>Opening Balance (kg)</label><input id="riceOpen" type="number" min="0" step="0.001" readonly></div><div class="field"><label>Rice Received (kg)</label><input id="riceReceived" type="number" min="0" step="0.001" readonly></div><div class="field"><label>Rice Consumed / Issued (kg)</label><input id="riceConsumed" type="number" min="0" step="0.001" readonly></div><div class="field"><label>Closing Balance (kg)</label><input id="riceClosing" type="number" readonly></div><div class="actions"><a class="btn light" href="MDM.html">Open Monthly PM-POSHAN</a></div><div class="status" id="stockMsg"></div></div></section>
+    <div class="chips">
+      <span class="chip" id="empChip">Employee ID: —</span>
+      <span class="chip" id="mobileChip">Mobile: —</span>
+    </div>
+  </div>
+</section>
 
-<section class="section" id="riceAlarmCard"><div class="section-head"><h2><i class="fa-solid fa-triangle-exclamation"></i> Rice Stock Alarm</h2><small>Automatic warning</small></div><div class="panel"><div class="stock-alarm normal" id="riceAlarm"><i class="fa-solid fa-circle-check"></i><div><b>Stock status</b><span id="riceAlarmText">Loading…</span></div></div><p class="note">The alarm compares the last saved closing stock with the school-defined low-stock threshold. The threshold is managed by the HOI/Admin, not as a daily Cook task.</p></div></section>
 
-<section class="section" id="leaveCard"><div class="section-head"><h2><i class="fa-solid fa-calendar-minus"></i> Leave Application</h2></div><div class="panel"><div class="field"><label>From</label><input id="leaveFrom" type="date"></div><div class="field"><label>To</label><input id="leaveTo" type="date"></div><div class="field"><label>Reason</label><textarea id="leaveReason"></textarea></div><button class="btn" id="applyLeave">Submit Leave</button><div class="status" id="leaveMsg"></div><div class="table-wrap"><table class="table"><thead><tr><th>From</th><th>To</th><th>Decision</th></tr></thead><tbody id="leaveRows"></tbody></table></div></div></section>
-<section class="section" id="noticeCard"><div class="section-head"><h2><i class="fa-regular fa-bell"></i> School Notices</h2></div><div class="panel" id="noticeList"><div class="empty">Loading notices…</div></div></section>
-</main></div>
-<nav class="bottom"><div class="bottom-inner"><button class="active" id="homeBtn"><i class="fa-solid fa-house"></i>HOME</button><button id="attendanceBtn"><i class="fa-regular fa-calendar-check"></i>ATTENDANCE</button><button id="noticeBtn"><i class="fa-regular fa-bell"></i>NOTICES</button><button id="bottomLogout"><i class="fa-solid fa-right-from-bracket"></i>EXIT</button></div></nav>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script><script src="firebase-config.js"></script>
+<!-- STATS -->
+<section class="stats">
+
+  <div class="stat">
+    <b id="attStat">—</b>
+    <span>MY ATTENDANCE</span>
+  </div>
+
+  <div class="stat">
+    <b id="mealStat">0</b>
+    <span>TODAY'S MEALS</span>
+  </div>
+
+  <div class="stat">
+    <b id="riceStat">—</b>
+    <span>RICE STOCK</span>
+  </div>
+
+  <div class="stat">
+    <b id="noticeStat">0</b>
+    <span>NOTICES</span>
+  </div>
+
+</section>
+
+
+<!-- QUICK ACCESS -->
+<section class="section">
+
+  <div class="section-head">
+    <h2>
+      <i class="fa-solid fa-grid-2"></i>
+      Quick Access
+    </h2>
+    <small>Every module is visual & touch-friendly</small>
+  </div>
+
+  <div class="grid">
+
+    <a class="tile" href="#attendanceCard">
+      <i class="fa-solid fa-user-check"></i>
+      <strong>My Attendance</strong>
+      <small>Check in / check out</small>
+    </a>
+
+    <a class="tile" href="#mealCard">
+      <i class="fa-solid fa-utensils"></i>
+      <strong>Today's Meals</strong>
+      <small>Record daily meals</small>
+    </a>
+
+    <a class="tile" href="#riceCard">
+      <i class="fa-solid fa-wheat-awn"></i>
+      <strong>Rice Stock</strong>
+      <small>Update only when required</small>
+    </a>
+
+    <a class="tile tile-alert" href="#riceAlarmCard">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <strong>Stock Alarm</strong>
+      <small>Low-stock warning</small>
+    </a>
+
+    <a class="tile" href="MDM.html">
+      <i class="fa-solid fa-file-lines"></i>
+      <strong>Monthly PM-POSHAN</strong>
+      <small>Official monthly record</small>
+    </a>
+
+    <a class="tile" href="#leaveCard">
+      <i class="fa-solid fa-calendar-minus"></i>
+      <strong>Leave</strong>
+      <small>Apply & track</small>
+    </a>
+
+    <a class="tile" href="notices.html">
+      <i class="fa-solid fa-bullhorn"></i>
+      <strong>Notices</strong>
+      <small>School circulars</small>
+    </a>
+
+    <a class="tile" href="school-calendar.html">
+      <i class="fa-solid fa-calendar-days"></i>
+      <strong>School Calendar</strong>
+      <small>Events & holidays</small>
+    </a>
+
+    <a class="tile" href="#profile">
+      <i class="fa-solid fa-id-card"></i>
+      <strong>My Profile</strong>
+      <small>Staff information</small>
+    </a>
+
+  </div>
+</section>
+
+
+<!-- ATTENDANCE -->
+<section class="section" id="attendanceCard">
+
+  <div class="section-head">
+    <h2>
+      <i class="fa-solid fa-clock"></i>
+      My Attendance
+    </h2>
+    <small>Today</small>
+  </div>
+
+  <div class="panel">
+
+    <div class="actions">
+      <button class="btn ok" id="checkIn">Check In</button>
+      <button class="btn gold" id="checkOut" disabled>Check Out</button>
+    </div>
+
+    <div class="status" id="attMsg">
+      Loading attendance…
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- MEALS -->
+<section class="section" id="mealCard">
+
+  <div class="section-head">
+    <h2>
+      <i class="fa-solid fa-utensils"></i>
+      Today's Meal Record
+    </h2>
+    <small>Daily activity</small>
+  </div>
+
+  <div class="panel">
+
+    <div class="stats">
+
+      <div class="stat">
+        <b id="enrolment">—</b>
+        <span>ENROLMENT</span>
+      </div>
+
+      <div class="stat">
+        <b id="meals">0</b>
+        <span>MEALS SERVED</span>
+      </div>
+
+    </div>
+
+    <div class="field">
+      <label>Bal Vatika Meals</label>
+      <input id="mealBV" type="number" min="0">
+    </div>
+
+    <div class="field">
+      <label>Primary (Classes 1–5) Meals</label>
+      <input id="mealPR" type="number" min="0">
+    </div>
+
+    <div class="field">
+      <label>Remarks</label>
+      <textarea id="mealRemark"></textarea>
+    </div>
+
+    <button class="btn ok" id="saveMeals">
+      Save Today's Meal Record
+    </button>
+
+    <div class="status" id="mealMsg"></div>
+
+  </div>
+
+</section>
+
+
+<!-- RICE STOCK -->
+<section class="section" id="riceCard">
+
+  <div class="section-head">
+    <h2>
+      <i class="fa-solid fa-wheat-awn"></i>
+      Rice Stock Register
+    </h2>
+
+    <small>Occasional update — not a daily task</small>
+  </div>
+
+  <div class="panel">
+
+    <div class="status">
+      <b>
+        Update this register only when rice is received,
+        issued/consumed materially, or during the monthly stock review.
+      </b>
+      <br>
+      The dashboard will keep showing the last saved balance between updates.
+    </div>
+
+    <div class="field">
+      <label>Opening Balance (kg)</label>
+      <input id="riceOpen" type="number" min="0" step="0.001" readonly>
+    </div>
+
+    <div class="field">
+      <label>Rice Received (kg)</label>
+      <input id="riceReceived" type="number" min="0" step="0.001" readonly>
+    </div>
+
+    <div class="field">
+      <label>Rice Consumed / Issued (kg)</label>
+      <input id="riceConsumed" type="number" min="0" step="0.001" readonly>
+    </div>
+
+    <div class="field">
+      <label>Closing Balance (kg)</label>
+      <input id="riceClosing" type="number" readonly>
+    </div>
+
+    <div class="actions">
+      <a class="btn light" href="MDM.html">
+        Open Monthly PM-POSHAN
+      </a>
+    </div>
+
+    <div class="status" id="stockMsg"></div>
+
+  </div>
+
+</section>
+
+
+<!-- RICE ALARM -->
+<section class="section" id="riceAlarmCard">
+
+  <div class="section-head">
+    <h2>
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      Rice Stock Alarm
+    </h2>
+
+    <small>Automatic warning</small>
+  </div>
+
+  <div class="panel">
+
+    <div class="stock-alarm normal" id="riceAlarm">
+
+      <i class="fa-solid fa-circle-check"></i>
+
+      <div>
+        <b>Stock status</b>
+        <span id="riceAlarmText">Loading…</span>
+      </div>
+
+    </div>
+
+    <p class="note">
+      The alarm compares the last saved closing stock with the
+      school-defined low-stock threshold. The threshold is managed
+      by the HOI/Admin, not as a daily Cook task.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- LEAVE -->
+<section class="section" id="leaveCard">
+
+  <div class="section-head">
+    <h2>
+      <i class="fa-solid fa-calendar-minus"></i>
+      Leave Application
+    </h2>
+  </div>
+
+  <div class="panel">
+
+    <div class="field">
+      <label>From</label>
+      <input id="leaveFrom" type="date">
+    </div>
+
+    <div class="field">
+      <label>To</label>
+      <input id="leaveTo" type="date">
+    </div>
+
+    <div class="field">
+      <label>Reason</label>
+      <textarea id="leaveReason"></textarea>
+    </div>
+
+    <button class="btn" id="applyLeave">
+      Submit Leave
+    </button>
+
+    <div class="status" id="leaveMsg"></div>
+
+    <div class="table-wrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Decision</th>
+          </tr>
+        </thead>
+
+        <tbody id="leaveRows"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- NOTICES -->
+<section class="section" id="noticeCard">
+
+  <div class="section-head">
+    <h2>
+      <i class="fa-regular fa-bell"></i>
+      School Notices
+    </h2>
+  </div>
+
+  <div class="panel" id="noticeList">
+    <div class="empty">Loading notices…</div>
+  </div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+<nav class="bottom">
+
+  <div class="bottom-inner">
+
+    <button class="active" id="homeBtn">
+      <i class="fa-solid fa-house"></i>
+      HOME
+    </button>
+
+    <button id="attendanceBtn">
+      <i class="fa-regular fa-calendar-check"></i>
+      ATTENDANCE
+    </button>
+
+    <button id="noticeBtn">
+      <i class="fa-regular fa-bell"></i>
+      NOTICES
+    </button>
+
+    <button id="bottomLogout">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      EXIT
+    </button>
+
+  </div>
+
+</nav>
+
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+
 <script>
 (function(){
- const $=id=>document.getElementById(id),ROLE='COOK';let auth,db,me,session;
- function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
- function today(){return new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
- function initials(n){return String(n||ROLE).split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase()}
- function logout(){sessionStorage.removeItem('GPSPETHGAM_COMMON_LOGIN_SESSION_V1');if(auth)auth.signOut().finally(()=>location.href='Role-Login.html');else location.href='Role-Login.html'}
- const attId=()=>me.id+'_'+today();
- async function loadAtt(){try{const d=await db.collection('staffAttendance').doc(attId()).get(),x=d.exists?d.data():{};$('attMsg').textContent=x.checkIn?'Check In: '+x.checkIn+(x.checkOut?' · Check Out: '+x.checkOut:' · Check Out pending'):'Not checked in today.';$('checkOut').disabled=!x.checkIn||!!x.checkOut;$('attStat').textContent=x.checkIn?(x.checkOut?'Complete':'Checked In'):'Not Marked'}catch(e){$('attMsg').textContent='Attendance unavailable: '+e.message;$('attStat').textContent='—'}}
- async function saveAtt(p){await db.collection('staffAttendance').doc(attId()).set({staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',employeeId:me.employeeId||'',date:today(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),...p},{merge:true});await loadAtt()}
- $('checkIn').onclick=async()=>{try{await saveAtt({checkIn:new Date().toLocaleTimeString(),method:'Dashboard',status:'Present',approval:'Pending'});$('attMsg').className='status ok'}catch(e){$('attMsg').textContent=e.message}};
- $('checkOut').onclick=async()=>{try{await saveAtt({checkOut:new Date().toLocaleTimeString()});$('attMsg').className='status ok'}catch(e){$('attMsg').textContent=e.message}};
- async function loadRice(){try{const d=await db.collection('riceStock').doc('current').get();const x=d.exists?d.data():{};if(x.openingKg!==undefined)$('riceOpen').value=x.openingKg;if(x.receivedKg!==undefined)$('riceReceived').value=x.receivedKg;if(x.consumedKg!==undefined)$('riceConsumed').value=x.consumedKg;if(x.closingKg!==undefined)$('riceClosing').value=Number(x.closingKg).toFixed(3);const thresholdDoc=await db.collection('institution').doc('mdmSettings').get();const threshold=thresholdDoc.exists?Number(thresholdDoc.data().riceAlertThresholdKg):25;const closing=Number(x.closingKg);$('riceStat').textContent=Number.isFinite(closing)?closing.toFixed(1)+' kg':'—';const alarm=$('riceAlarm');if(!Number.isFinite(closing)){alarm.className='stock-alarm normal';$('riceAlarmText').textContent='No stock balance has been recorded yet.'}else if(closing<=threshold){alarm.className='stock-alarm danger';$('riceAlarmText').textContent='LOW STOCK: '+closing.toFixed(2)+' kg remaining. Threshold: '+threshold.toFixed(2)+' kg.'}else if(closing<=threshold*1.5){alarm.className='stock-alarm warn';$('riceAlarmText').textContent='Stock getting low: '+closing.toFixed(2)+' kg. Threshold: '+threshold.toFixed(2)+' kg.'}else{alarm.className='stock-alarm normal';$('riceAlarmText').textContent='Stock is above the low-stock threshold: '+closing.toFixed(2)+' kg.'}}catch(e){$('riceAlarmText').textContent='Stock alarm unavailable: '+e.message}}
- async function loadMeal(){try{const d=await db.collection('mdmDaily').doc(me.id+'_'+today()).get(),x=d.exists?d.data():{};$('mealBV').value=x.mealsBV??'';$('mealPR').value=x.mealsPR??'';$('mealRemark').value=x.remark||'';$('meals').textContent=(Number(x.mealsBV)||0)+(Number(x.mealsPR)||0);$('mealStat').textContent=$('meals').textContent;$('enrolment').textContent=x.enrolment??'—'}catch{}}
- $('saveMeals').onclick=async()=>{try{const bv=Number($('mealBV').value)||0,pr=Number($('mealPR').value)||0;await db.collection('mdmDaily').doc(me.id+'_'+today()).set({cookId:me.id,cookAuthUid:auth.currentUser.uid,cookName:me.name||'',date:today(),mealsBV:bv,mealsPR:pr,remark:$('mealRemark').value.trim(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});$('mealMsg').className='status ok';$('mealMsg').textContent='Today’s meal record saved.';$('meals').textContent=bv+pr;$('mealStat').textContent=bv+pr}catch(e){$('mealMsg').textContent=e.message}};
- $('applyLeave').onclick=async()=>{const f=$('leaveFrom').value,t=$('leaveTo').value,r=$('leaveReason').value.trim();if(!f||!t||!r)return $('leaveMsg').textContent='Complete all leave fields.';if(t<f)return $('leaveMsg').textContent='To date cannot be before From date.';try{await db.collection('staffLeaves').add({staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',employeeId:me.employeeId||'',from:f,to:t,reason:r,decision:'Pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()});$('leaveMsg').className='status ok';$('leaveMsg').textContent='Leave application submitted for HOI review.';loadLeaves()}catch(e){$('leaveMsg').textContent=e.message}};
- async function loadLeaves(){try{const s=await db.collection('staffLeaves').where('staffId','==',me.id).get();$('leaveRows').innerHTML=s.docs.map(d=>{const x=d.data();return '<tr><td>'+esc(x.from)+'</td><td>'+esc(x.to)+'</td><td>'+esc(x.decision||'Pending')+'</td></tr>'}).join('')||'<tr><td colspan="3">No leave applications.</td></tr>'}catch{$('leaveRows').innerHTML='<tr><td colspan="3">Leave data unavailable.</td></tr>'}}
- async function loadNotices(){try{const s=await db.collection('notices').get();$('noticeStat').textContent=s.size;$('noticeList').innerHTML=s.docs.map(d=>{const x=d.data();return '<div class="status"><b>'+esc(x.title||x.subject||'School Notice')+'</b><br>'+esc(x.message||x.notice||x.body||'')+'</div>'}).join('')||'<div class="empty">No notices.</div>'}catch{$('noticeStat').textContent='—'}}
- async function init(){try{if(!firebase.apps.length)firebase.initializeApp(window.GPS_FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore()}catch(e){location.href='Role-Login.html';return}try{session=JSON.parse(sessionStorage.getItem('GPSPETHGAM_ROLE_SESSION_V1')||'null')}catch{session=null}if(!session||session.role!==ROLE||!session.staffId||!auth.currentUser){location.href='Role-Login.html';return}try{const d=await db.collection('staff').doc(session.staffId).get();if(!d.exists||String(d.data().status||'Active').toLowerCase()==='inactive'||(d.data().authUid&&d.data().authUid!==auth.currentUser.uid)){await auth.signOut();location.href='Role-Login.html';return}me={id:d.id,...d.data()};$('profileName').textContent=me.name||'Cook';$('welcomeName').textContent=me.name||'Cook';$('profileRole').textContent=me.designation||'Cook';$('empChip').textContent='Employee ID: '+(me.employeeId||session.employeeId||'—');$('mobileChip').textContent='Mobile: '+(me.mobile||'—');$('avatar').textContent=initials(me.name);$('app').classList.remove('hidden');await loadAtt();await loadMeal();await loadRice();await loadLeaves();await loadNotices()}catch(e){document.body.innerHTML='<div style="padding:30px;font-family:system-ui">Dashboard could not load: '+esc(e.message)+'</div>'}}
- $('logout').onclick=logout;$('bottomLogout').onclick=logout;$('homeBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});$('attendanceBtn').onclick=()=>document.getElementById('attendanceCard').scrollIntoView({behavior:'smooth'});$('noticeBtn').onclick=()=>document.getElementById('noticeCard').scrollIntoView({behavior:'smooth'});init();
+
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+
+  const ROLE = 'COOK';
+
+  /*
+   * IMPORTANT:
+   * This MUST match Role-Login.html.
+   */
+  const SESSION_KEY = 'GPSPETHGAM_COMMON_LOGIN_SESSION_V1';
+
+  let auth = null;
+  let db = null;
+  let me = null;
+  let session = null;
+
+
+  /* -----------------------------
+     BASIC HELPERS
+  ----------------------------- */
+
+  function esc(s){
+    return String(s ?? '').replace(
+      /[&<>"']/g,
+      m => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      }[m])
+    );
+  }
+
+
+  function today(){
+    return new Intl.DateTimeFormat('en-CA',{
+      year:'numeric',
+      month:'2-digit',
+      day:'2-digit'
+    }).format(new Date());
+  }
+
+
+  function initials(n){
+    return String(n || ROLE)
+      .split(/\s+/)
+      .map(x => x[0])
+      .slice(0,2)
+      .join('')
+      .toUpperCase();
+  }
+
+
+  /* -----------------------------
+     LOGOUT
+  ----------------------------- */
+
+  function logout(){
+
+    sessionStorage.removeItem(SESSION_KEY);
+
+    /*
+     * Also remove the legacy key if an older
+     * dashboard/login session exists.
+     */
+    sessionStorage.removeItem('GPSPETHGAM_ROLE_SESSION_V1');
+
+    if(auth){
+      auth.signOut()
+        .finally(() => {
+          location.href = 'Role-Login.html';
+        });
+    }else{
+      location.href = 'Role-Login.html';
+    }
+  }
+
+
+  /* -----------------------------
+     AUTH STATE
+  ----------------------------- */
+
+  function waitForAuthUser(timeoutMs = 10000){
+
+    return new Promise(resolve => {
+
+      let finished = false;
+      let timer = null;
+      let unsubscribe = null;
+
+      function finish(user){
+
+        if(finished)return;
+
+        finished = true;
+
+        if(timer)clearTimeout(timer);
+
+        if(unsubscribe)unsubscribe();
+
+        resolve(user || null);
+      }
+
+      unsubscribe = auth.onAuthStateChanged(user => {
+
+        if(user){
+          finish(user);
+        }
+
+      });
+
+      timer = setTimeout(() => {
+
+        finish(auth.currentUser || null);
+
+      }, timeoutMs);
+
+    });
+
+  }
+
+
+  /* -----------------------------
+     ATTENDANCE
+  ----------------------------- */
+
+  const attId = () => me.id + '_' + today();
+
+
+  async function loadAtt(){
+
+    try{
+
+      const d = await db
+        .collection('staffAttendance')
+        .doc(attId())
+        .get();
+
+      const x = d.exists ? d.data() : {};
+
+      $('attMsg').textContent =
+        x.checkIn
+          ? 'Check In: ' + x.checkIn +
+            (
+              x.checkOut
+                ? ' · Check Out: ' + x.checkOut
+                : ' · Check Out pending'
+            )
+          : 'Not checked in today.';
+
+      $('checkOut').disabled =
+        !x.checkIn || !!x.checkOut;
+
+      $('attStat').textContent =
+        x.checkIn
+          ? (
+              x.checkOut
+                ? 'Complete'
+                : 'Checked In'
+            )
+          : 'Not Marked';
+
+    }catch(e){
+
+      $('attMsg').textContent =
+        'Attendance unavailable: ' + e.message;
+
+      $('attStat').textContent = '—';
+
+    }
+
+  }
+
+
+  async function saveAtt(p){
+
+    const user = auth.currentUser;
+
+    if(!user){
+      throw new Error('Your Firebase session has expired. Please login again.');
+    }
+
+    await db
+      .collection('staffAttendance')
+      .doc(attId())
+      .set({
+
+        staffId: me.id,
+        staffAuthUid: user.uid,
+        staffName: me.name || '',
+        employeeId: me.employeeId || '',
+        date: today(),
+
+        updatedAt:
+          firebase.firestore.FieldValue.serverTimestamp(),
+
+        ...p
+
+      },{merge:true});
+
+    await loadAtt();
+
+  }
+
+
+  $('checkIn').onclick = async () => {
+
+    try{
+
+      $('checkIn').disabled = true;
+
+      await saveAtt({
+
+        checkIn: new Date().toLocaleTimeString(),
+        method: 'Dashboard',
+        status: 'Present',
+        approval: 'Pending'
+
+      });
+
+      $('attMsg').className = 'status ok';
+      $('attMsg').textContent = 'Attendance check-in recorded.';
+
+    }catch(e){
+
+      $('attMsg').className = 'status';
+      $('attMsg').textContent = e.message;
+
+      $('checkIn').disabled = false;
+
+    }
+
+  };
+
+
+  $('checkOut').onclick = async () => {
+
+    try{
+
+      $('checkOut').disabled = true;
+
+      await saveAtt({
+        checkOut: new Date().toLocaleTimeString()
+      });
+
+      $('attMsg').className = 'status ok';
+      $('attMsg').textContent = 'Attendance check-out recorded.';
+
+    }catch(e){
+
+      $('attMsg').className = 'status';
+      $('attMsg').textContent = e.message;
+
+    }
+
+  };
+
+
+  /* -----------------------------
+     RICE STOCK
+  ----------------------------- */
+
+  async function loadRice(){
+
+    try{
+
+      const d = await db
+        .collection('riceStock')
+        .doc('current')
+        .get();
+
+      const x = d.exists ? d.data() : {};
+
+      if(x.openingKg !== undefined)
+        $('riceOpen').value = x.openingKg;
+
+      if(x.receivedKg !== undefined)
+        $('riceReceived').value = x.receivedKg;
+
+      if(x.consumedKg !== undefined)
+        $('riceConsumed').value = x.consumedKg;
+
+      if(x.closingKg !== undefined)
+        $('riceClosing').value =
+          Number(x.closingKg).toFixed(3);
+
+
+      const thresholdDoc = await db
+        .collection('institution')
+        .doc('mdmSettings')
+        .get();
+
+      const threshold =
+        thresholdDoc.exists
+          ? Number(
+              thresholdDoc.data().riceAlertThresholdKg
+            )
+          : 25;
+
+
+      const safeThreshold =
+        Number.isFinite(threshold)
+          ? threshold
+          : 25;
+
+
+      const closing = Number(x.closingKg);
+
+      $('riceStat').textContent =
+        Number.isFinite(closing)
+          ? closing.toFixed(1) + ' kg'
+          : '—';
+
+
+      const alarm = $('riceAlarm');
+
+
+      if(!Number.isFinite(closing)){
+
+        alarm.className = 'stock-alarm normal';
+
+        $('riceAlarmText').textContent =
+          'No stock balance has been recorded yet.';
+
+      }
+
+      else if(closing <= safeThreshold){
+
+        alarm.className = 'stock-alarm danger';
+
+        $('riceAlarmText').textContent =
+          'LOW STOCK: ' +
+          closing.toFixed(2) +
+          ' kg remaining. ' +
+          'Threshold: ' +
+          safeThreshold.toFixed(2) +
+          ' kg.';
+
+      }
+
+      else if(closing <= safeThreshold * 1.5){
+
+        alarm.className = 'stock-alarm warn';
+
+        $('riceAlarmText').textContent =
+          'Stock getting low: ' +
+          closing.toFixed(2) +
+          ' kg. Threshold: ' +
+          safeThreshold.toFixed(2) +
+          ' kg.';
+
+      }
+
+      else{
+
+        alarm.className = 'stock-alarm normal';
+
+        $('riceAlarmText').textContent =
+          'Stock is above the low-stock threshold: ' +
+          closing.toFixed(2) +
+          ' kg.';
+
+      }
+
+    }catch(e){
+
+      $('riceAlarmText').textContent =
+        'Stock alarm unavailable: ' + e.message;
+
+    }
+
+  }
+
+
+  /* -----------------------------
+     MEAL RECORD
+  ----------------------------- */
+
+  async function loadMeal(){
+
+    try{
+
+      const d = await db
+        .collection('mdmDaily')
+        .doc(me.id + '_' + today())
+        .get();
+
+      const x = d.exists ? d.data() : {};
+
+      $('mealBV').value = x.mealsBV ?? '';
+      $('mealPR').value = x.mealsPR ?? '';
+      $('mealRemark').value = x.remark || '';
+
+      const total =
+        (Number(x.mealsBV) || 0) +
+        (Number(x.mealsPR) || 0);
+
+      $('meals').textContent = total;
+      $('mealStat').textContent = total;
+
+      $('enrolment').textContent =
+        x.enrolment ?? '—';
+
+    }catch(e){
+
+      console.warn('Meal record could not be loaded:',e);
+
+    }
+
+  }
+
+
+  $('saveMeals').onclick = async () => {
+
+    try{
+
+      const user = auth.currentUser;
+
+      if(!user){
+        throw new Error(
+          'Your Firebase session has expired. Please login again.'
+        );
+      }
+
+      const bv =
+        Number($('mealBV').value) || 0;
+
+      const pr =
+        Number($('mealPR').value) || 0;
+
+      await db
+        .collection('mdmDaily')
+        .doc(me.id + '_' + today())
+        .set({
+
+          cookId: me.id,
+          cookAuthUid: user.uid,
+          cookName: me.name || '',
+          date: today(),
+
+          mealsBV: bv,
+          mealsPR: pr,
+
+          remark:
+            $('mealRemark').value.trim(),
+
+          updatedAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
+        },{merge:true});
+
+
+      $('mealMsg').className = 'status ok';
+
+      $('mealMsg').textContent =
+        'Today’s meal record saved.';
+
+      $('meals').textContent = bv + pr;
+      $('mealStat').textContent = bv + pr;
+
+    }catch(e){
+
+      $('mealMsg').className = 'status';
+      $('mealMsg').textContent = e.message;
+
+    }
+
+  };
+
+
+  /* -----------------------------
+     LEAVE
+  ----------------------------- */
+
+  $('applyLeave').onclick = async () => {
+
+    const f = $('leaveFrom').value;
+    const t = $('leaveTo').value;
+    const r = $('leaveReason').value.trim();
+
+
+    if(!f || !t || !r){
+
+      $('leaveMsg').className = 'status';
+      $('leaveMsg').textContent =
+        'Complete all leave fields.';
+
+      return;
+
+    }
+
+
+    if(t < f){
+
+      $('leaveMsg').className = 'status';
+      $('leaveMsg').textContent =
+        'To date cannot be before From date.';
+
+      return;
+
+    }
+
+
+    try{
+
+      const user = auth.currentUser;
+
+      if(!user){
+        throw new Error(
+          'Your Firebase session has expired. Please login again.'
+        );
+      }
+
+
+      await db
+        .collection('staffLeaves')
+        .add({
+
+          staffId: me.id,
+          staffAuthUid: user.uid,
+          staffName: me.name || '',
+          employeeId: me.employeeId || '',
+
+          from: f,
+          to: t,
+          reason: r,
+
+          decision: 'Pending',
+
+          createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+
+      $('leaveMsg').className = 'status ok';
+
+      $('leaveMsg').textContent =
+        'Leave application submitted for HOI review.';
+
+      $('leaveReason').value = '';
+
+      await loadLeaves();
+
+    }catch(e){
+
+      $('leaveMsg').className = 'status';
+      $('leaveMsg').textContent = e.message;
+
+    }
+
+  };
+
+
+  async function loadLeaves(){
+
+    try{
+
+      const s = await db
+        .collection('staffLeaves')
+        .where('staffId','==',me.id)
+        .get();
+
+
+      $('leaveRows').innerHTML =
+        s.docs.map(d => {
+
+          const x = d.data();
+
+          return `
+            <tr>
+              <td>${esc(x.from)}</td>
+              <td>${esc(x.to)}</td>
+              <td>${esc(x.decision || 'Pending')}</td>
+            </tr>
+          `;
+
+        }).join('') ||
+
+        '<tr><td colspan="3">No leave applications.</td></tr>';
+
+    }catch(e){
+
+      $('leaveRows').innerHTML =
+        '<tr><td colspan="3">Leave data unavailable.</td></tr>';
+
+    }
+
+  }
+
+
+  /* -----------------------------
+     NOTICES
+  ----------------------------- */
+
+  async function loadNotices(){
+
+    try{
+
+      const s = await db
+        .collection('notices')
+        .get();
+
+
+      $('noticeStat').textContent = s.size;
+
+
+      $('noticeList').innerHTML =
+        s.docs.map(d => {
+
+          const x = d.data();
+
+          return `
+            <div class="status">
+              <b>${esc(
+                x.title ||
+                x.subject ||
+                'School Notice'
+              )}</b>
+              <br>
+              ${esc(
+                x.message ||
+                x.notice ||
+                x.body ||
+                ''
+              )}
+            </div>
+          `;
+
+        }).join('') ||
+
+        '<div class="empty">No notices.</div>';
+
+    }catch(e){
+
+      $('noticeStat').textContent = '—';
+
+    }
+
+  }
+
+
+  /* -----------------------------
+     INITIALIZE DASHBOARD
+  ----------------------------- */
+
+  async function init(){
+
+    try{
+
+      /*
+       * Initialize Firebase.
+       */
+      if(!firebase.apps.length){
+
+        firebase.initializeApp(
+          window.GPS_FIREBASE_CONFIG
+        );
+
+      }
+
+      auth = firebase.auth();
+      db = firebase.firestore();
+
+    }catch(e){
+
+      console.error(
+        'Firebase initialization failed:',
+        e
+      );
+
+      location.href = 'Role-Login.html';
+      return;
+
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Wait for Firebase to restore the authenticated
+     * user before checking auth.currentUser.
+     *
+     * This prevents the dashboard from redirecting
+     * back to the login page during Firebase's
+     * authentication-state restoration.
+     */
+    const user = await waitForAuthUser();
+
+
+    if(!user){
+
+      location.href = 'Role-Login.html';
+      return;
+
+    }
+
+
+    /*
+     * Read the SAME session key created by
+     * Role-Login.html.
+     */
+    try{
+
+      session = JSON.parse(
+        sessionStorage.getItem(SESSION_KEY) || 'null'
+      );
+
+    }catch(e){
+
+      session = null;
+
+    }
+
+
+    /*
+     * Validate dashboard session.
+     */
+    if(
+      !session ||
+      String(session.role || '').toUpperCase() !== ROLE ||
+      !session.staffId
+    ){
+
+      location.href = 'Role-Login.html';
+      return;
+
+    }
+
+
+    try{
+
+      /*
+       * Load the authenticated Cook's staff record.
+       */
+      const d = await db
+        .collection('staff')
+        .doc(session.staffId)
+        .get();
+
+
+      if(!d.exists){
+
+        await auth.signOut();
+
+        sessionStorage.removeItem(SESSION_KEY);
+
+        location.href = 'Role-Login.html';
+        return;
+
+      }
+
+
+      const staffData = d.data() || {};
+
+
+      /*
+       * Do not allow inactive staff accounts.
+       */
+      if(
+        String(
+          staffData.status || 'Active'
+        ).toLowerCase() === 'inactive'
+      ){
+
+        await auth.signOut();
+
+        sessionStorage.removeItem(SESSION_KEY);
+
+        location.href = 'Role-Login.html';
+        return;
+
+      }
+
+
+      /*
+       * Verify the Firestore staff record belongs
+       * to the authenticated Firebase account.
+       */
+      if(
+        staffData.authUid &&
+        String(staffData.authUid) !==
+        String(user.uid)
+      ){
+
+        await auth.signOut();
+
+        sessionStorage.removeItem(SESSION_KEY);
+
+        location.href = 'Role-Login.html';
+        return;
+
+      }
+
+
+      /*
+       * Verify this dashboard is actually being
+       * opened for a Cook.
+       */
+      const accessRole =
+        String(
+          staffData.accessRole || ''
+        )
+        .trim()
+        .toUpperCase();
+
+
+      if(accessRole !== ROLE){
+
+        await auth.signOut();
+
+        sessionStorage.removeItem(SESSION_KEY);
+
+        location.href = 'Role-Login.html';
+        return;
+
+      }
+
+
+      /*
+       * Store the complete staff record locally
+       * for this dashboard session.
+       */
+      me = {
+        id: d.id,
+        ...staffData
+      };
+
+
+      /* -----------------------------
+         PROFILE DISPLAY
+      ----------------------------- */
+
+      $('profileName').textContent =
+        me.name || 'Cook';
+
+      $('welcomeName').textContent =
+        me.name || 'Cook';
+
+      $('profileRole').textContent =
+        me.designation ||
+        me.roleDesignation ||
+        'Cook';
+
+      $('empChip').textContent =
+        'Employee ID: ' +
+        (
+          me.employeeId ||
+          session.employeeId ||
+          '—'
+        );
+
+      $('mobileChip').textContent =
+        'Mobile: ' +
+        (
+          me.mobile ||
+          '—'
+        );
+
+      $('avatar').textContent =
+        initials(me.name);
+
+
+      /*
+       * Show dashboard only after authentication
+       * and staff verification have succeeded.
+       */
+      $('app').classList.remove('hidden');
+
+
+      /*
+       * Load dashboard modules.
+       *
+       * Each module handles its own Firestore
+       * errors so one unavailable collection does
+       * not prevent the dashboard itself from opening.
+       */
+      await loadAtt();
+      await loadMeal();
+      await loadRice();
+      await loadLeaves();
+      await loadNotices();
+
+
+    }catch(e){
+
+      console.error(
+        'Cook Dashboard error:',
+        e
+      );
+
+      document.body.innerHTML = `
+        <div style="
+          padding:30px;
+          font-family:system-ui;
+          line-height:1.6
+        ">
+          <h2>Dashboard could not load</h2>
+          <p>${esc(e.message)}</p>
+          <p>
+            Please return to the login page and sign in again.
+          </p>
+          <a href="Role-Login.html">
+            Return to Login
+          </a>
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  /* -----------------------------
+     NAVIGATION
+  ----------------------------- */
+
+  $('logout').onclick = logout;
+
+  $('bottomLogout').onclick = logout;
+
+
+  $('homeBtn').onclick = () => {
+
+    window.scrollTo({
+      top:0,
+      behavior:'smooth'
+    });
+
+  };
+
+
+  $('attendanceBtn').onclick = () => {
+
+    document
+      .getElementById('attendanceCard')
+      .scrollIntoView({
+        behavior:'smooth'
+      });
+
+  };
+
+
+  $('noticeBtn').onclick = () => {
+
+    document
+      .getElementById('noticeCard')
+      .scrollIntoView({
+        behavior:'smooth'
+      });
+
+  };
+
+
+  /* -----------------------------
+     START
+  ----------------------------- */
+
+  init();
+
 })();
-</script></body></html>
+</script>
+
+</body>
+</html>
