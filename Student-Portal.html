@@ -495,7 +495,7 @@ h3{font-size:18px}
         <h3>Change Password</h3>
         <div class="group">
           <label>New password</label>
-          <input id="newPassword" type="password" minlength="8" placeholder="At least 12 characters">
+          <input id="newPassword" type="password" minlength="8" placeholder="At least 8 characters">
         </div>
         <button id="changePassword" class="btn primary">Change Password</button>
         <div id="pwMsg" class="muted"></div>
@@ -728,10 +728,6 @@ async function load(){
       studentAccount:result.account
     };
     console.log("COMPLETE STUDENT PROFILE:", current);
-    if(result.account.mustChangePassword===true){
-      const box=$('pwMsg');
-      if(box) box.textContent='Security action required: change your temporary password before sharing or continuing to use this account.';
-    }
 
     $('loginPage').classList.add('hidden');
     $('app').classList.remove('hidden');
@@ -1835,14 +1831,12 @@ $('logoutBtn').onclick = async () => {
 
 $('changePassword').onclick = async () => {
   const p = $('newPassword').value.trim();
-  if(p.length < 12){
-    $('pwMsg').textContent = 'Password must be at least 12 characters.';
+  if(p.length < 8){
+    $('pwMsg').textContent = 'Password must be at least 8 characters.';
     return;
   }
   try{
     await updatePassword(auth.currentUser, p);
-    await updateDoc(doc(db,'studentAccounts',auth.currentUser.uid),{mustChangePassword:false,passwordChangedAt:new Date().toISOString()});
-    if(current?.studentAccount) current.studentAccount.mustChangePassword=false;
     $('pwMsg').textContent = 'Password changed successfully.';
     $('newPassword').value = '';
   }catch(error){
@@ -1913,7 +1907,7 @@ console.log("GPS Pethgam Wagoora Student Portal initialized.");
 console.log("Firebase Project:", cfg.projectId);
 </script>
 
-</body>
+<div style="position:fixed;right:16px;bottom:16px;z-index:999"><a href="Student-Applications.html" style="display:inline-block;background:#1769aa;color:#fff;padding:12px 15px;border-radius:999px;text-decoration:none;font-weight:800">📝 My Applications</a></div></body>
 </html>
 
 

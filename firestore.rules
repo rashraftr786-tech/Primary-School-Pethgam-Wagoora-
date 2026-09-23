@@ -3,50 +3,65 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /* ============================================================
-       AUTH / ROLE HELPERS
-       ============================================================ */
     function signedIn() {
       return request.auth != null;
     }
 
-    function isBootstrapAdmin() {
+    function bootstrapAdmin() {
       return signedIn()
         && request.auth.token.email != null
         && request.auth.token.email == "pspathgam@gmail.com";
     }
 
-    function isSchoolAdmin() {
+    function adminDoc() {
       return signedIn()
-        && (
-          isBootstrapAdmin()
-          || (
-            exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-            && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true
-            && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ["admin", "hoi"]
-          )
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isSystemAdmin() {
+      return bootstrapAdmin()
+        || (
+          adminDoc()
+          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true
+          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "admin"
         );
     }
 
-    function account() {
+    function isHOI() {
+      return bootstrapAdmin()
+        || (
+          adminDoc()
+          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true
+          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "hoi"
+        );
+    }
+
+    function isSchoolAdmin() {
+      return isSystemAdmin() || isHOI();
+    }
+
+    function studentAccountExists() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/studentAccounts/$(request.auth.uid));
+    }
+
+    function studentAccount() {
       return get(/databases/$(database)/documents/studentAccounts/$(request.auth.uid));
     }
 
     function linkedStudent(studentId) {
-      return signedIn()
-        && exists(/databases/$(database)/documents/studentAccounts/$(request.auth.uid))
+      return studentAccountExists()
         && (
-          account().data.studentRecordId == studentId
-          || account().data.sourceAdmissionId == studentId
+          studentAccount().data.studentRecordId == studentId
+          || studentAccount().data.sourceAdmissionId == studentId
         );
     }
 
     function linkedStudentByAdmission(admissionNo) {
-      return signedIn()
-        && exists(/databases/$(database)/documents/studentAccounts/$(request.auth.uid))
+      return studentAccountExists()
         && (
-          account().data.admissionNo == admissionNo
-          || account().data.loginId == admissionNo
+          studentAccount().data.admissionNo == admissionNo
+          || studentAccount().data.loginId == admissionNo
         );
     }
 
@@ -72,220 +87,186 @@ service cloud.firestore {
         && request.auth.uid in get(/databases/$(database)/documents/students/$(studentId)).data.assignedTeacherUids;
     }
 
-    function teacherOwnDocument(data) {
+    function teacherOwn(data) {
       return signedIn()
+        && data.teacherAuthUid == request.auth.uid
         && data.teacherId != null
-        && linkedStaff(data.teacherId)
-        && data.teacherAuthUid == request.auth.uid;
+        && linkedStaff(data.teacherId);
     }
 
-    function selfStaffDocument(data) {
+    function staffOwn(data) {
       return signedIn()
+        && data.staffAuthUid == request.auth.uid
         && data.staffId != null
         && linkedStaff(data.staffId);
     }
 
-    /* ============================================================
-       ADMINS
-       ============================================================ */
     match /admins/{id} {
       allow read: if signedIn() && (request.auth.uid == id || isSchoolAdmin());
-      allow create: if isBootstrapAdmin() || isSchoolAdmin();
-      allow update: if isBootstrapAdmin() || isSchoolAdmin();
-      allow delete: if isSchoolAdmin();
+      allow create, update: if isSystemAdmin();
+      allow delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       STAFF + STAFF LOGIN INDEX
-       ============================================================ */
     match /staff/{staffId} {
       allow read: if isSchoolAdmin() || linkedStaff(staffId);
-      allow create, update, delete: if isSchoolAdmin();
+      allow create, update, delete: if isSystemAdmin();
     }
 
     match /staffLoginIndex/{employeeId} {
-      /* Login must resolve the Firebase email before authentication. The
-         index contains only login routing data, never passwords or PINs. */
       allow read: if true;
-      allow create, update, delete: if isSchoolAdmin();
+      allow create, update, delete: if isSystemAdmin();
     }
 
     match /staffAuthIndex/{uid} {
-      allow read: if isSchoolAdmin() || (signedIn() && request.auth.uid == uid);
-      allow create, update, delete: if isSchoolAdmin();
+      allow read: if isSystemAdmin() || (signedIn() && request.auth.uid == uid);
+      allow create, update, delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       TEACHING ASSIGNMENTS
-       ============================================================ */
     match /teachingAssignments/{id} {
-      allow create, update, delete: if isSchoolAdmin();
       allow read: if isSchoolAdmin()
         || (resource.data.staffId != null && linkedStaff(resource.data.staffId));
+      allow create, update, delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       STAFF ATTENDANCE / LEAVE
-       ============================================================ */
-    match /staffAttendance/{attendanceId} {
-      allow read: if isSchoolAdmin() || selfStaffDocument(resource.data);
-      allow create: if isSchoolAdmin()
-        || selfStaffDocument(request.resource.data)
-          && request.resource.data.staffAuthUid == request.auth.uid;
+    match /staffAttendance/{id} {
+      allow read: if isSchoolAdmin() || staffOwn(resource.data);
+      allow create: if isSchoolAdmin() || staffOwn(request.resource.data);
       allow update: if isSchoolAdmin()
-        || selfStaffDocument(resource.data)
-          && resource.data.staffAuthUid == request.auth.uid
+        || (
+          staffOwn(resource.data)
           && request.resource.data.staffId == resource.data.staffId
-          && request.resource.data.staffAuthUid == request.auth.uid;
-      allow delete: if isSchoolAdmin();
+          && request.resource.data.staffAuthUid == request.auth.uid
+        );
+      allow delete: if isSystemAdmin();
     }
 
-    match /staffLeaves/{leaveId} {
-      allow read: if isSchoolAdmin() || selfStaffDocument(resource.data);
-      allow create: if isSchoolAdmin()
-        || selfStaffDocument(request.resource.data)
-          && request.resource.data.staffAuthUid == request.auth.uid;
-      allow update: if isSchoolAdmin()
-        || selfStaffDocument(resource.data)
-          && resource.data.staffAuthUid == request.auth.uid
-          && resource.data.decision == "Pending"
+    match /staffLeaves/{id} {
+      allow read: if isHOI() || isSystemAdmin() || staffOwn(resource.data);
+      allow create: if isHOI() || isSystemAdmin() || staffOwn(request.resource.data);
+      allow update: if isHOI() || isSystemAdmin()
+        || (
+          staffOwn(resource.data)
+          && resource.data.decision == "Modification Required"
           && request.resource.data.staffId == resource.data.staffId
-          && request.resource.data.staffAuthUid == request.auth.uid;
-      allow delete: if isSchoolAdmin();
+          && request.resource.data.staffAuthUid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["from","to","reason","updatedAt"])
+        );
+      allow delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       AAYA DUTIES
-       ============================================================ */
     match /aayaDuties/{id} {
       allow read: if isSchoolAdmin()
         || (resource.data.staffId != null && isStaffRole(resource.data.staffId, "AAYA"));
-      allow create: if isSchoolAdmin()
-        || (request.resource.data.staffId != null
-            && isStaffRole(request.resource.data.staffId, "AAYA")
-            && request.resource.data.staffAuthUid == request.auth.uid);
-      allow update: if isSchoolAdmin()
-        || (resource.data.staffId != null
-            && isStaffRole(resource.data.staffId, "AAYA")
-            && resource.data.staffAuthUid == request.auth.uid
-            && request.resource.data.staffId == resource.data.staffId
-            && request.resource.data.staffAuthUid == request.auth.uid);
-      allow delete: if isSchoolAdmin();
+      allow create, update: if isSchoolAdmin()
+        || (
+          request.resource.data.staffId != null
+          && isStaffRole(request.resource.data.staffId, "AAYA")
+          && request.resource.data.staffAuthUid == request.auth.uid
+        );
+      allow delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       MDM / COOK
-       ============================================================ */
     match /mdmDaily/{id} {
       allow read: if isSchoolAdmin()
         || (resource.data.cookId != null && isStaffRole(resource.data.cookId, "COOK"));
-      allow create: if isSchoolAdmin()
-        || (request.resource.data.cookId != null
-            && isStaffRole(request.resource.data.cookId, "COOK")
-            && request.resource.data.cookAuthUid == request.auth.uid);
-      allow update: if isSchoolAdmin()
-        || (resource.data.cookId != null
-            && isStaffRole(resource.data.cookId, "COOK")
-            && resource.data.cookAuthUid == request.auth.uid
-            && request.resource.data.cookId == resource.data.cookId
-            && request.resource.data.cookAuthUid == request.auth.uid);
-      allow delete: if isSchoolAdmin();
+      allow create, update: if isSchoolAdmin()
+        || (
+          request.resource.data.cookId != null
+          && isStaffRole(request.resource.data.cookId, "COOK")
+          && request.resource.data.cookAuthUid == request.auth.uid
+        );
+      allow delete: if isSystemAdmin();
     }
 
     match /riceStock/{id} {
       allow read: if signedIn();
-      allow create, update, delete: if isSchoolAdmin();
+      allow create, update, delete: if isSystemAdmin();
     }
 
     match /institution/{id} {
       allow read: if signedIn();
-      allow write: if isSchoolAdmin();
+      allow create, update, delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       STUDENT ACCOUNTS / LOGIN INDEX
-       ============================================================ */
     match /studentAccounts/{id} {
-      allow read: if isSchoolAdmin() || (signedIn() && request.auth.uid == id);
-      allow create, delete: if isSchoolAdmin();
-      allow update: if isSchoolAdmin()
-        || (signedIn()
-            && request.auth.uid == id
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["mustChangePassword", "passwordChangedAt"]));
+      allow read: if isSystemAdmin() || isHOI() || (signedIn() && request.auth.uid == id);
+      allow create, delete: if isSystemAdmin() || isHOI();
+      allow update: if isSystemAdmin() || isHOI()
+        || (
+          signedIn()
+          && request.auth.uid == id
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["mustChangePassword","passwordChangedAt"])
+        );
     }
 
     match /studentLoginIndex/{admissionNo} {
-      /* Public read is retained solely because Student Portal resolves the
-         login alias before Firebase Authentication. Keep this document
-         limited to non-secret routing fields: loginId + active. */
       allow read: if true;
-      allow create, update, delete: if isSchoolAdmin();
+      allow create, update, delete: if isSystemAdmin() || isHOI();
     }
 
-    /* ============================================================
-       STUDENTS + CONTROLLED SUBCOLLECTION ACCESS
-       ============================================================ */
     match /students/{id} {
       allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
-      allow create, update, delete: if isSchoolAdmin();
+      allow create, update, delete: if isSystemAdmin() || isHOI();
 
       match /attendance/{subId} {
         allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
         allow create, update: if isSchoolAdmin() || assignedTeacher(id);
-        allow delete: if isSchoolAdmin();
+        allow delete: if isSystemAdmin() || isHOI();
       }
 
       match /results/{subId} {
         allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
-        allow create, update, delete: if isSchoolAdmin();
+        allow create, update, delete: if isSystemAdmin() || isHOI();
       }
 
       match /communications/{subId} {
         allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
         allow create: if isSchoolAdmin()
-          || (assignedTeacher(id)
-              && request.resource.data.teacherAuthUid == request.auth.uid
-              && request.resource.data.teacherId != null);
+          || (
+            assignedTeacher(id)
+            && request.resource.data.teacherAuthUid == request.auth.uid
+          );
         allow update: if isSchoolAdmin()
-          || (assignedTeacher(id)
-              && resource.data.teacherAuthUid == request.auth.uid
-              && request.resource.data.teacherAuthUid == request.auth.uid
-              && request.resource.data.teacherId == resource.data.teacherId);
-        allow delete: if isSchoolAdmin();
+          || (
+            assignedTeacher(id)
+            && resource.data.teacherAuthUid == request.auth.uid
+            && request.resource.data.teacherAuthUid == request.auth.uid
+          );
+        allow delete: if isSystemAdmin() || isHOI();
       }
 
       match /library/{subId} {
         allow read: if isSchoolAdmin() || linkedStudent(id);
-        allow create, update, delete: if isSchoolAdmin();
+        allow create, update, delete: if isSystemAdmin() || isHOI();
       }
 
       match /{subcollection}/{subId} {
         allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
-        allow create, update, delete: if isSchoolAdmin();
+        allow create, update, delete: if isSystemAdmin() || isHOI();
       }
     }
 
-    /* ============================================================
-       RESULTS / MARKSHEETS
-       ============================================================ */
     match /marksheets/{admissionNo} {
       allow read: if isSchoolAdmin()
-        || (resource.data.studentRecordId != null && linkedStudent(resource.data.studentRecordId))
         || linkedStudentByAdmission(admissionNo)
-        || (resource.data.studentRecordId != null && assignedTeacher(resource.data.studentRecordId));
-      allow create, update, delete: if isSchoolAdmin();
+        || (
+          resource.data.studentRecordId != null
+          && (linkedStudent(resource.data.studentRecordId) || assignedTeacher(resource.data.studentRecordId))
+        );
+      allow create, update, delete: if isSystemAdmin() || isHOI();
     }
 
     match /results/{id} {
       allow read: if isSchoolAdmin()
-        || (resource.data.studentRecordId != null && linkedStudent(resource.data.studentRecordId))
-        || (resource.data.studentRecordId != null && assignedTeacher(resource.data.studentRecordId));
-      allow create, update, delete: if isSchoolAdmin();
+        || (
+          resource.data.studentRecordId != null
+          && (linkedStudent(resource.data.studentRecordId) || assignedTeacher(resource.data.studentRecordId))
+        );
+      allow create, update, delete: if isSystemAdmin() || isHOI();
     }
 
-    /* ============================================================
-       SCHOOL-WIDE READ-ONLY CONTENT
-       ============================================================ */
     match /notices/{id} {
       allow read: if signedIn();
       allow create, update, delete: if isSchoolAdmin();
@@ -301,153 +282,195 @@ service cloud.firestore {
       allow create, update, delete: if isSchoolAdmin();
     }
 
-    /* ============================================================
-       LIBRARY
-       ============================================================ */
     match /libraryBooks/{id} {
       allow read: if signedIn();
-      allow create, update, delete: if isSchoolAdmin();
+      allow create, update, delete: if isSystemAdmin() || isHOI();
     }
 
     match /libraryTransactions/{id} {
-      allow read: if isSchoolAdmin();
-      allow create, update, delete: if isSchoolAdmin();
+      allow read, create, update, delete: if isSystemAdmin() || isHOI();
     }
 
-    /* ============================================================
-       HOMEWORK / ASSIGNMENTS
-       ============================================================ */
     match /homework/{id} {
-      allow read: if isSchoolAdmin() || teacherOwnDocument(resource.data);
-      allow create: if isSchoolAdmin() || teacherOwnDocument(request.resource.data);
+      allow read: if isSchoolAdmin() || teacherOwn(resource.data);
+      allow create: if isSchoolAdmin() || teacherOwn(request.resource.data);
       allow update: if isSchoolAdmin()
-        || (teacherOwnDocument(resource.data)
-            && request.resource.data.teacherId == resource.data.teacherId
-            && request.resource.data.teacherAuthUid == request.auth.uid);
-      allow delete: if isSchoolAdmin();
+        || (
+          teacherOwn(resource.data)
+          && request.resource.data.teacherId == resource.data.teacherId
+          && request.resource.data.teacherAuthUid == request.auth.uid
+        );
+      allow delete: if isSystemAdmin() || isHOI();
     }
 
     match /assignments/{id} {
-      allow read: if isSchoolAdmin() || teacherOwnDocument(resource.data);
-      allow create: if isSchoolAdmin() || teacherOwnDocument(request.resource.data);
+      allow read: if isSchoolAdmin() || teacherOwn(resource.data);
+      allow create: if isSchoolAdmin() || teacherOwn(request.resource.data);
       allow update: if isSchoolAdmin()
-        || (teacherOwnDocument(resource.data)
-            && request.resource.data.teacherId == resource.data.teacherId
-            && request.resource.data.teacherAuthUid == request.auth.uid);
-      allow delete: if isSchoolAdmin();
+        || (
+          teacherOwn(resource.data)
+          && request.resource.data.teacherId == resource.data.teacherId
+          && request.resource.data.teacherAuthUid == request.auth.uid
+        );
+      allow delete: if isSystemAdmin() || isHOI();
     }
 
-    /* ============================================================
-       TEACHER MESSAGES
-       ============================================================ */
     match /teacherMessages/{id} {
-      allow read: if isSchoolAdmin() || teacherOwnDocument(resource.data);
-      allow create: if isSchoolAdmin() || teacherOwnDocument(request.resource.data);
+      allow read: if isSchoolAdmin() || teacherOwn(resource.data);
+      allow create: if isSchoolAdmin() || teacherOwn(request.resource.data);
       allow update: if isSchoolAdmin()
-        || (teacherOwnDocument(resource.data)
-            && request.resource.data.teacherId == resource.data.teacherId
-            && request.resource.data.teacherAuthUid == request.auth.uid);
-      allow delete: if isSchoolAdmin();
+        || (
+          teacherOwn(resource.data)
+          && request.resource.data.teacherId == resource.data.teacherId
+          && request.resource.data.teacherAuthUid == request.auth.uid
+        );
+      allow delete: if isSystemAdmin() || isHOI();
     }
 
-    /* ============================================================
-       STUDENT LEAVE
-       ============================================================ */
     match /studentLeaves/{id} {
-      allow read: if isSchoolAdmin()
-        || (resource.data.studentRecordId != null && linkedStudent(resource.data.studentRecordId));
-      allow create: if isSchoolAdmin()
-        || (request.resource.data.studentRecordId != null
-            && linkedStudent(request.resource.data.studentRecordId)
-            && request.resource.data.studentUid == request.auth.uid);
-      allow update: if isSchoolAdmin()
-        || (resource.data.studentRecordId != null
-            && linkedStudent(resource.data.studentRecordId)
-            && resource.data.studentUid == request.auth.uid
-            && resource.data.status == "Modification Required"
-            && request.resource.data.studentRecordId == resource.data.studentRecordId
-            && request.resource.data.studentUid == request.auth.uid);
-      allow delete: if isSchoolAdmin();
+      allow read: if isHOI()
+        || isSystemAdmin()
+        || (
+          resource.data.assignedTeacherUids != null
+          && request.auth.uid in resource.data.assignedTeacherUids
+        )
+        || (
+          resource.data.studentRecordId != null
+          && linkedStudent(resource.data.studentRecordId)
+        );
+
+      allow create: if isHOI()
+        || isSystemAdmin()
+        || (
+          studentAccountExists()
+          && request.resource.data.studentRecordId != null
+          && linkedStudent(request.resource.data.studentRecordId)
+          && request.resource.data.studentUid == request.auth.uid
+          && request.resource.data.status == "Pending"
+        );
+
+      allow update: if isHOI() || isSystemAdmin()
+        || (
+          request.resource.data.assignedTeacherUids != null
+          && request.auth.uid in request.resource.data.assignedTeacherUids
+          && request.resource.data.studentRecordId == resource.data.studentRecordId
+          && request.resource.data.studentUid == resource.data.studentUid
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["teacherStatus","teacherRemarks","teacherActedAt","updatedAt"])
+        )
+        || (
+          linkedStudent(resource.data.studentRecordId)
+          && resource.data.studentUid == request.auth.uid
+          && request.resource.data.studentRecordId == resource.data.studentRecordId
+          && request.resource.data.studentUid == resource.data.studentUid
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["from","to","reason","updatedAt"])
+        );
+
+      allow delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       AAYA / ECCE / FLN SUPPORT LOGS
-       ============================================================ */
-    match /aayaDailyLogs/{id} {
-      allow read: if isSchoolAdmin()
+    match /workBehaviourApplications/{id} {
+      allow read: if isHOI() || isSystemAdmin() || teacherOwn(resource.data);
+      allow create: if isHOI() || isSystemAdmin() || teacherOwn(request.resource.data);
+      allow update: if isHOI() || isSystemAdmin()
         || (
-          resource.data.staffId != null
-          && isStaffRole(resource.data.staffId, "AAYA")
-          && resource.data.staffAuthUid == request.auth.uid
-        );
-      allow create: if isSchoolAdmin()
-        || (
-          request.resource.data.staffId != null
-          && isStaffRole(request.resource.data.staffId, "AAYA")
-          && request.resource.data.staffAuthUid == request.auth.uid
-        );
-      allow update: if isSchoolAdmin()
-        || (
-          resource.data.staffId != null
-          && isStaffRole(resource.data.staffId, "AAYA")
-          && resource.data.staffAuthUid == request.auth.uid
+          teacherOwn(resource.data)
           && request.resource.data.staffId == resource.data.staffId
           && request.resource.data.staffAuthUid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["purpose","remarks","updatedAt"])
         );
-      allow delete: if isSchoolAdmin();
+      allow delete: if isSystemAdmin();
     }
 
-    match /aayaIncidentReports/{id} {
-      allow read: if isSchoolAdmin()
+    match /studentCertificateApplications/{id} {
+      allow read: if isHOI()
+        || isSystemAdmin()
         || (
-          resource.data.staffId != null
-          && isStaffRole(resource.data.staffId, "AAYA")
-          && resource.data.staffAuthUid == request.auth.uid
-        );
-      allow create: if isSchoolAdmin()
+          resource.data.assignedTeacherUids != null
+          && request.auth.uid in resource.data.assignedTeacherUids
+        )
         || (
-          request.resource.data.staffId != null
-          && isStaffRole(request.resource.data.staffId, "AAYA")
-          && request.resource.data.staffAuthUid == request.auth.uid
+          resource.data.studentUid == request.auth.uid
         );
-      allow update: if isSchoolAdmin()
+
+      allow create: if isHOI()
+        || isSystemAdmin()
         || (
-          resource.data.staffId != null
-          && isStaffRole(resource.data.staffId, "AAYA")
-          && resource.data.staffAuthUid == request.auth.uid
-          && request.resource.data.staffId == resource.data.staffId
-          && request.resource.data.staffAuthUid == request.auth.uid
+          studentAccountExists()
+          && request.resource.data.studentUid == request.auth.uid
+          && request.resource.data.studentRecordId != null
+          && linkedStudent(request.resource.data.studentRecordId)
+          && request.resource.data.status == "Pending"
+          && request.resource.data.hoiStatus == "Pending"
         );
-      allow delete: if isSchoolAdmin();
+
+      allow update: if isHOI() || isSystemAdmin()
+        || (
+          request.resource.data.assignedTeacherUids != null
+          && request.auth.uid in request.resource.data.assignedTeacherUids
+          && request.resource.data.studentUid == resource.data.studentUid
+          && request.resource.data.studentRecordId == resource.data.studentRecordId
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["teacherStatus","teacherRemarks","teacherActedAt","updatedAt"])
+        )
+        || (
+          resource.data.studentUid == request.auth.uid
+          && request.resource.data.studentUid == resource.data.studentUid
+          && request.resource.data.studentRecordId == resource.data.studentRecordId
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["purpose","remarks","updatedAt"])
+        );
+
+      allow delete: if isSystemAdmin();
     }
 
-    /* ============================================================
-       OFFICIAL APPLICATIONS / AUDIT HISTORY
-       ============================================================ */
+    match /notifications/{id} {
+      allow read: if isSystemAdmin()
+        || isHOI()
+        || (signedIn() && resource.data.recipientUid == request.auth.uid);
+
+      allow create: if isSystemAdmin() || isHOI()
+        || (
+          signedIn()
+          && request.resource.data.recipientUid == request.auth.uid
+          && request.resource.data.type in ["SELF"]
+        );
+
+      allow update: if isSystemAdmin() || isHOI()
+        || (
+          signedIn()
+          && resource.data.recipientUid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["read","readAt"])
+        );
+
+      allow delete: if isSystemAdmin() || isHOI();
+    }
+
     match /officialApplications/{id} {
-      allow read, create, update, delete: if isSchoolAdmin();
+      allow read, create, update, delete: if isHOI() || isSystemAdmin();
     }
 
     match /auditHistory/{id} {
-      allow read: if isSchoolAdmin();
-      allow create: if isSchoolAdmin();
+      allow read: if isSystemAdmin() || isHOI();
+      allow create: if isSystemAdmin() || isHOI()
+        || (
+          signedIn()
+          && request.resource.data.actingUid == request.auth.uid
+          && request.resource.data.module in ["studentLeaves","studentCertificateApplications","workBehaviourApplications","staffLeaves"]
+        );
       allow update, delete: if false;
     }
 
-    /* ============================================================
-       TOP-LEVEL LEGACY ATTENDANCE / COMMUNICATIONS
-       ============================================================ */
     match /attendance/{id} {
-      allow read, write: if isSchoolAdmin();
+      allow read, write: if isSystemAdmin() || isHOI();
     }
 
     match /communications/{id} {
-      allow read, write: if isSchoolAdmin();
+      allow read, write: if isSystemAdmin() || isHOI();
     }
 
-    /* ============================================================
-       DEFAULT DENY
-       ============================================================ */
     match /{document=**} {
       allow read, write: if false;
     }
