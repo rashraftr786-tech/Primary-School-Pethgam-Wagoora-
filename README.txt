@@ -1,14 +1,15 @@
-AAYA SCERT FLN FINAL PACKAGE
+Teacher Dashboard – Teacher Access Fix
 
-Base: SCERT J&K FLN Aaya Dashboard (corrected authentication/session version).
+The dashboard login check was aligned with the Common Login role detection.
 
-Changes requested:
-- Added staff photo/profile placeholder without removing FLN modules.
-- Preserved all FLN sections, daily checklist, incidents, history, attendance, leave and Aaya duties.
-- School Notices/Circulars and School Calendar are view-only for Aaya.
-- Added dedicated Aaya-Notices.html and Aaya-Calendar.html read-only pages.
-- Existing Common Login is not changed.
+It now accepts a staff record as Teacher when:
+- role == TEACHER, or
+- accessRole == TEACHER, or
+- accessRole == STAFF and role/designation identifies the staff member as Teacher.
 
-Upload these three HTML files together. Replace the existing Aaya-Dashboard.html with this package version and keep the existing working Common Login.
+This fixes the case where Common Login identifies the account as TEACHER but the dashboard rejects it because accessRole is stored as STAFF.
 
-The included firestore.rules is the FLN-compatible rules file from the earlier FLN package; review/deploy it only if your current rules do not already include the aayaDailyLogs/aayaIncidentReports permissions.
+No Firebase configuration or PIN/authentication flow was changed.
+JavaScript syntax was checked successfully.
+
+Replace the existing Teacher-Dashboard.html with the included file.
