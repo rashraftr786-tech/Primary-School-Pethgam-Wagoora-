@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#315ee8">
+<title>Aaya / Helper Dashboard — GPS Pethgam Wagoora</title>
+<link rel="icon" href="new-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --primary:#315ee8;--primary2:#4d46df;--bg:#eef3f8;--card:#fff;--line:#dfe6ee;
+  --text:#172033;--muted:#66758a;--ok:#087d56;--warn:#9a5a00;--danger:#c33354;
+  --purple:#7048c8;--shadow:0 8px 28px rgba(41,57,82,.08)
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#eef3ff 0,#eef3f8 35%,#f7f9fb 100%);
+font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text)}
+button,input,select,textarea{font:inherit}
+.top{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:17px 15px;box-shadow:0 4px 18px #233c881c}
+.toprow{max-width:1080px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:11px}.brand img{width:46px;height:46px;background:#fff;border-radius:12px;padding:3px;object-fit:contain}
+.brand b{display:block;font-size:17px}.brand small{display:block;opacity:.9;margin-top:3px}
+.logout{border:0;border-radius:11px;padding:10px 14px;background:#ffffff22;color:#fff;font-weight:850;cursor:pointer}
+.wrap{max-width:1080px;margin:auto;padding:15px}
+.banner{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.banner h1{margin:0 0 4px;font-size:24px}.banner p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.profile-grid{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:9px;margin-top:13px}
+.photo-wrap{display:flex;align-items:center;gap:12px;margin-top:10px}.photo{width:82px;height:82px;border-radius:50%;object-fit:cover;border:3px solid #ffffffaa;box-shadow:0 4px 16px #0002;background:#ffffff22}.photo-fallback{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#ffffff22;border:3px solid #ffffffaa;font-size:28px;font-weight:900}.photo-note{font-size:11px;opacity:.9}
+.stat{background:#f8fafc;border:1px solid var(--line);border-radius:13px;padding:11px}.stat small{display:block;color:var(--muted);font-size:10px}.stat b{display:block;margin-top:3px;font-size:15px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:13px;box-shadow:var(--shadow)}
+.card h2{font-size:18px;margin:0}.card h3{font-size:14px;margin:0}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:850;background:#eef2ff;color:#3f51a8}
+.pill.ok{background:#ecfdf5;color:var(--ok)}.pill.warn{background:#fff7df;color:var(--warn)}.pill.danger{background:#fff1f3;color:var(--danger)}
+.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:850;cursor:pointer}.primary{background:var(--primary);color:#fff}
+.secondary{background:#eef2f7;color:#475569}.okbtn{background:#087d56;color:#fff}.dangerbtn{background:#c33354;color:#fff}.purple{background:var(--purple);color:#fff}
+.status{display:none;margin-top:10px;padding:10px;border-radius:11px;font-size:11px;line-height:1.5}.status.show{display:block}
+.status.ok{background:#ecfdf5;color:var(--ok);border:1px solid #bce8d5}.status.err{background:#fff1f3;color:var(--danger);border:1px solid #f3c2ce}
+.tabs{display:flex;gap:7px;overflow:auto;padding:2px 0 10px;position:sticky;top:0;background:#eef3f8;z-index:5}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;color:#526173;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:850;cursor:pointer}
+.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.panel{display:none}.panel.active{display:block}
+.checklist{display:grid;gap:8px}
+.checkrow{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fbfdff}
+.checkrow input{width:19px;height:19px;accent-color:var(--primary);margin-top:1px}
+.checktext b{display:block;font-size:12px}.checktext small{display:block;color:var(--muted);font-size:10px;line-height:1.4;margin-top:2px}
+.taskstate{font-size:9px;color:var(--muted);font-weight:800}
+textarea,input,select{width:100%;padding:10px;border:1px solid #d4ddea;border-radius:10px;background:#fff;color:var(--text);outline:none}
+textarea{min-height:82px;resize:vertical}.field{margin-top:10px}.field label{display:block;font-size:11px;font-weight:850;color:#435166;margin-bottom:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions .btn{min-width:120px}
+.item{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;background:#fbfdff}
+.item b{display:block;font-size:12px}.item small{display:block;color:var(--muted);font-size:10px;margin-top:3px;line-height:1.45}
+.empty{padding:13px;text-align:center;color:var(--muted);font-size:11px;background:#f8fafc;border-radius:10px}
+.callout{padding:11px 12px;border-radius:12px;background:#eef5ff;color:#234d8d;font-size:11px;line-height:1.5;border:1px solid #d5e5fb}
+.warning{background:#fff8e6;color:#805100;border-color:#f0dfac}
+.incident-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.small{font-size:10px;color:var(--muted)}
+.quicklinks{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.quick{display:block;text-decoration:none;color:var(--text);border:1px solid var(--line);border-radius:13px;padding:12px;background:#fbfdff}
+.quick i{font-size:18px;color:var(--primary);display:block;margin-bottom:6px}.quick b{font-size:11px;display:block}.quick small{font-size:9px;color:var(--muted)}
+table{width:100%;border-collapse:collapse}.tablewrap{overflow:auto}th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;font-size:10px;white-space:nowrap}th{background:#f4f7fb}
+.notice{padding:10px;border:1px solid var(--line);border-radius:11px;margin-top:7px}.notice b{font-size:11px}.notice small{display:block;color:var(--muted);margin-top:3px}
+footer{text-align:center;color:#7a8798;font-size:9px;padding:10px 0 22px}
+/* Student Portal-style read-only school modules */
+.viewonly-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.viewonly-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
+.viewonly-card h2{font-size:18px;margin:0}
+.viewonly-note{font-size:10px;color:var(--muted);margin:-4px 0 10px}
+.viewonly-list{display:grid;gap:7px}
+.viewonly-row{padding:10px;border:1px solid var(--line);border-radius:11px;background:#fbfdff}
+.viewonly-row b{display:block;font-size:11px}
+.viewonly-row p{margin:4px 0 0;font-size:10px;line-height:1.45;color:#34445e}
+.viewonly-meta{display:block;color:var(--muted);font-size:9px;margin-top:4px}
+.viewonly-table{width:100%;border-collapse:collapse}
+.viewonly-table th,.viewonly-table td{border-bottom:1px solid var(--line);padding:8px;text-align:left;font-size:10px}
+.viewonly-table th{background:#f4f7fb;color:#526173}
+.viewonly-scroll{overflow:auto}
+.viewonly-badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:850;background:#eef2ff;color:#3f51a8}
+@media(max-width:620px){.viewonly-grid{grid-template-columns:1fr}}
+@media(max-width:850px){.profile-grid{grid-template-columns:repeat(2,1fr)}.quicklinks{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.grid2,.incident-grid{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.profile-grid{grid-template-columns:repeat(2,1fr)}.brand b{font-size:14px}.brand small{font-size:9px}.banner h1{font-size:21px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="toprow">
+    <div class="brand">
+      <img src="new-logo.png" alt="School logo">
+      <div><b>Government Primary School Pethgam Wagoora</b><small>Aaya / Helper — ECCE & FLN Support Dashboard</small></div>
+    </div>
+    <button class="logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="banner">
+    <h1 id="name">Loading…</h1>
+    <p id="designation">Checking account…</p>
+    <div class="photo-wrap"><div id="photoBox" class="photo-fallback">A</div><div><b id="photoName">Aaya</b><div class="photo-note">Staff photo / profile placeholder</div></div></div>
+    <div class="profile-grid">
+      <div class="stat"><small>Employee ID</small><b id="employee">—</b></div>
+      <div class="stat"><small>Access Role</small><b>Aaya</b></div>
+      <div class="stat"><small>Today</small><b id="today">—</b></div>
+      <div class="stat"><small>Attendance</small><b id="attendanceState">—</b></div>
+    </div>
+    <div id="bootStatus" class="status"></div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="home"><i class="fa-solid fa-house"></i> Overview</button>
+    <button class="tab" data-tab="care"><i class="fa-solid fa-heart"></i> Care & Wellbeing</button>
+    <button class="tab" data-tab="hygiene"><i class="fa-solid fa-hands-bubbles"></i> Hygiene</button>
+    <button class="tab" data-tab="meal"><i class="fa-solid fa-bowl-food"></i> PM-POSHAN</button>
+    <button class="tab" data-tab="learning"><i class="fa-solid fa-puzzle-piece"></i> Play & FLN</button>
+    <button class="tab" data-tab="routine"><i class="fa-solid fa-children"></i> Routines</button>
+    <button class="tab" data-tab="safety"><i class="fa-solid fa-shield-heart"></i> Safety</button>
+    <button class="tab" data-tab="inclusion"><i class="fa-solid fa-people-group"></i> Inclusion</button>
+    <button class="tab" data-tab="professional"><i class="fa-solid fa-user-check"></i> Conduct</button>
+  </div>
+
+  <section id="panel-home" class="panel active">
+    <div class="grid2">
+      <section class="card">
+        <div class="head"><h2><i class="fa-solid fa-user-clock"></i> My Attendance</h2><span class="pill" id="attPill">Today</span></div>
+        <div class="actions">
+          <button class="btn primary" onclick="markAttendance('in')">Check In</button>
+          <button class="btn secondary" onclick="markAttendance('out')">Check Out</button>
+        </div>
+        <div id="attendanceList"></div>
+        <div id="attendanceMsg" class="status"></div>
+      </section>
+      <section class="card">
+        <div class="head"><h2><i class="fa-solid fa-list-check"></i> Today's Progress</h2></div>
+        <div class="grid3">
+          <div class="stat"><small>Checklist Items</small><b id="progressTotal">0</b></div>
+          <div class="stat"><small>Completed</small><b id="progressDone">0</b></div>
+          <div class="stat"><small>Open</small><b id="progressOpen">0</b></div>
+        </div>
+        <div class="actions"><button class="btn primary" onclick="openTab('care')">Open Daily Duties</button></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-clipboard-check"></i> Assigned Aaya Duties</h2><span class="small">Instructions from HOI / Class Teacher</span></div>
+      <div id="duties">Loading duties…</div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-calendar-day"></i> School Updates</h2><span class="small">Read-only</span></div>
+      <div id="schoolUpdates">Loading notices and calendar…</div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-school"></i> School Information</h2><span class="viewonly-badge">Aaya · View Only</span></div>
+      <p class="viewonly-note">The same school notices, circulars and calendar published by the school administration are shown here. Aaya cannot create, edit or delete these records.</p>
+      <div class="viewonly-grid">
+        <section class="viewonly-card">
+          <div class="head"><h2><i class="fa-solid fa-bullhorn"></i> School Notices &amp; Circulars</h2><span class="viewonly-badge">View Only</span></div>
+          <div id="aayaNoticeBody" class="viewonly-list"><div class="empty">Loading notices…</div></div>
+        </section>
+        <section class="viewonly-card">
+          <div class="head"><h2><i class="fa-solid fa-calendar-days"></i> School Calendar</h2><span class="viewonly-badge">View Only</span></div>
+          <div class="viewonly-scroll">
+            <table class="viewonly-table">
+              <thead><tr><th>Date</th><th>Event</th><th>Type</th></tr></thead>
+              <tbody id="aayaCalendarBody"><tr><td colspan="3">Loading calendar…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-envelope-open-text"></i> Leave Application</h2></div>
+      <div class="grid2">
+        <div><div class="field"><label>From</label><input id="leaveFrom" type="date"></div><div class="field"><label>To</label><input id="leaveTo" type="date"></div></div>
+        <div><div class="field"><label>Reason</label><textarea id="leaveReason" placeholder="State the reason for leave"></textarea></div></div>
+      </div>
+      <div class="actions"><button class="btn primary" onclick="submitLeave()">Submit Leave</button></div>
+      <div id="leaveMsg" class="status"></div>
+      <div id="leaveList"></div>
+    </section>
+  </section>
+
+  <section id="panel-care" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-heart"></i> Caregiving & Emotional Support</h2><span class="pill ok">SCERT FLN aligned</span></div>
+      <div class="callout">Use the checklist during the school day. Record only the minimum necessary information. Any illness, distress, neglect concern, or safety issue should be reported to the teacher / Head Teacher immediately.</div>
+      <div id="check-care" class="checklist"></div>
+      <div class="field"><label>General care / wellbeing note for today</label><textarea id="note-care" placeholder="Optional — e.g. transition support, general wellbeing observation, assistance provided"></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('care')">Save Care Checklist</button></div>
+      <div id="msg-care" class="status"></div>
+    </section>
+  </section>
+
+  <section id="panel-hygiene" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-hands-bubbles"></i> Health, Hygiene & Sanitation</h2></div>
+      <div id="check-hygiene" class="checklist"></div>
+      <div class="field"><label>Hygiene / sanitation note</label><textarea id="note-hygiene" placeholder="Record a general issue requiring attention"></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('hygiene')">Save Hygiene Checklist</button></div>
+      <div id="msg-hygiene" class="status"></div>
+    </section>
+  </section>
+
+  <section id="panel-meal" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-bowl-food"></i> PM-POSHAN / Nutritional Care Support</h2><span class="pill warn">Support log — not official MDM register</span></div>
+      <div class="callout warning">The Cook / MDM module remains the official meal record. This Aaya section records your support duties only: hygiene, orderly meal arrangements, safe eating supervision, observation and cleaning.</div>
+      <div id="check-meal" class="checklist"></div>
+      <div class="field"><label>Meal support note</label><textarea id="note-meal" placeholder="Optional — general meal arrangement or child-support observation"></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('meal')">Save PM-POSHAN Support Checklist</button></div>
+      <div id="msg-meal" class="status"></div>
+    </section>
+  </section>
+
+  <section id="panel-learning" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-puzzle-piece"></i> Play-Based Learning & FLN Support</h2></div>
+      <div id="check-learning" class="checklist"></div>
+      <div class="field"><label>Play / FLN support note</label><textarea id="note-learning" placeholder="Materials arranged, learning corner supported, story session, peer interaction etc."></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('learning')">Save Play & FLN Checklist</button></div>
+      <div id="msg-learning" class="status"></div>
+    </section>
+  </section>
+
+  <section id="panel-routine" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-children"></i> Classroom Routines & Transitions</h2></div>
+      <div id="check-routine" class="checklist"></div>
+      <div class="field"><label>Routine / transition note</label><textarea id="note-routine" placeholder="Arrival, circle time, outdoor play, rest, departure or personal-care support"></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('routine')">Save Routine Checklist</button></div>
+      <div id="msg-routine" class="status"></div>
+    </section>
+  </section>
+
+  <section id="panel-safety" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-shield-heart"></i> Safety & Security</h2><span class="pill danger">Report hazards immediately</span></div>
+      <div id="check-safety" class="checklist"></div>
+      <div class="field"><label>Safety / drill note</label><textarea id="note-safety" placeholder="General safety inspection or drill participation note"></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('safety')">Save Safety Checklist</button></div>
+      <div id="msg-safety" class="status"></div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-triangle-exclamation"></i> Report a Concern / Hazard / Incident</h2><span class="small">Visible to HOI / Admin</span></div>
+      <div class="incident-grid">
+        <div class="field"><label>Category</label><select id="incidentType"><option>Illness / Distress</option><option>Safety Hazard</option><option>Food / Allergy Concern</option><option>Child Supervision Concern</option><option>Inclusion / CWSN Support</option><option>Bullying / Peer Concern</option><option>Other</option></select></div>
+        <div class="field"><label>Severity</label><select id="incidentSeverity"><option>Low</option><option>Moderate</option><option>Urgent</option></select></div>
+        <div class="field"><label>Location / Area</label><input id="incidentLocation" placeholder="Classroom / toilet / playground / meal area"></div>
+        <div class="field"><label>Immediate action taken</label><input id="incidentAction" placeholder="Reported to teacher, area secured, child comforted etc."></div>
+      </div>
+      <div class="field"><label>Minimum necessary description</label><textarea id="incidentDescription" placeholder="Describe the concern factually. Avoid unnecessary personal/medical details."></textarea></div>
+      <div class="actions"><button class="btn dangerbtn" onclick="submitIncident()">Submit Concern Report</button></div>
+      <div id="incidentMsg" class="status"></div>
+      <div id="incidentHistory"></div>
+    </section>
+  </section>
+
+  <section id="panel-inclusion" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-people-group"></i> Inclusive Education & Equity</h2></div>
+      <div id="check-inclusion" class="checklist"></div>
+      <div class="field"><label>Inclusion support note</label><textarea id="note-inclusion" placeholder="General support for participation, accessibility, shy/withdrawn learners, low-cost assistive materials"></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('inclusion')">Save Inclusion Checklist</button></div>
+      <div id="msg-inclusion" class="status"></div>
+    </section>
+  </section>
+
+  <section id="panel-professional" class="panel">
+    <section class="card">
+      <div class="head"><h2><i class="fa-solid fa-user-check"></i> Professional Conduct</h2></div>
+      <div id="check-professional" class="checklist"></div>
+      <div class="field"><label>Professional conduct note</label><textarea id="note-professional" placeholder="Optional daily note"></textarea></div>
+      <div class="actions"><button class="btn primary" onclick="saveChecklist('professional')">Save Conduct Checklist</button></div>
+      <div id="msg-professional" class="status"></div>
+    </section>
+  </section>
+
+  <section class="card">
+    <div class="head"><h2><i class="fa-solid fa-clock-rotate-left"></i> Recent Aaya Activity</h2><button class="btn secondary" onclick="loadHistory()">Refresh</button></div>
+    <div id="history">Loading…</div>
+  </section>
+
+  <footer>SCERT J&K FLN / ECCE aligned Aaya support workflow • Government Primary School Pethgam Wagoora</footer>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+'use strict';
+
+const CONFIG={
+  apiKey:"AIzaSyADB32wJq886NNqMuJk5n1zO45oSi-bdLs",
+  authDomain:"gps-pethgam-wagoora-portal.firebaseapp.com",
+  projectId:"gps-pethgam-wagoora-portal",
+  storageBucket:"gps-pethgam-wagoora-portal.firebasestorage.app",
+  messagingSenderId:"243117067000",
+  appId:"1:243117067000:web:a5320441bcbaed71e4490d",
+  measurementId:"G-WMXPK3229Y"
+};
+const ROLE='AAYA';
+const SESSION='GPSPETHGAM_COMMON_LOGIN_SESSION_V1';
+const ALT_SESSION='GPSPETHGAM_ROLE_SESSION_V1';
+let auth,db,me,session;
+
+const TASKS={
+ care:[
+  ['arrival_welcome','Welcome children warmly at arrival and support safe, calm settling.'],
+  ['departure_handover','Support safe departure and handover to the authorised guardian/teacher process.'],
+  ['emotional_support','Comfort children experiencing separation anxiety, distress or emotional discomfort.'],
+  ['observe_wellbeing','Observe mood, energy and behaviour; report concerning signs promptly.'],
+  ['supervision','Ensure no child is left unattended, isolated or ignored.'],
+  ['special_attention','Provide empathy and appropriate support to CWSN and vulnerable learners.']
+ ],
+ hygiene:[
+  ['handwash_meal','Support mandatory handwashing with soap before meals.'],
+  ['handwash_toilet','Support handwashing after toilet use.'],
+  ['handwash_play','Support handwashing after outdoor play.'],
+  ['toilet_hygiene','Support safe toilet use and personal hygiene routines.'],
+  ['class_clean','Help maintain clean classroom, learning corners and play areas.'],
+  ['illness_observation','Watch for fever, cough, lethargy, rashes or other concerning signs and report promptly.'],
+  ['water_food_hygiene','Help maintain clean drinking water and hygienic food-handling practices.']
+ ],
+ meal:[
+  ['meal_arrangement','Ensure orderly and hygienic meal arrangements.'],
+  ['safe_eating','Supervise children during meals and discourage unsafe eating/choking risks.'],
+  ['healthy_eating','Encourage healthy eating without force-feeding.'],
+  ['meal_observation','Observe repeated meal skipping, undernutrition signs, allergy or food-related concerns and report.'],
+  ['meal_cleaning','Assist with cleaning utensils, mats and eating areas after meals.']
+ ],
+ learning:[
+  ['materials_34','Help prepare age-appropriate play materials for ages 3–6: blocks, puppets, picture books and sorting toys.'],
+  ['materials_68','Help prepare age-appropriate materials for ages 6–8: puzzles, story cards, board games and creative materials.'],
+  ['learning_corners','Help set up Reading, Art, Pretend Play and Building corners.'],
+  ['guided_play','Assist teachers during guided and free play.'],
+  ['positive_peer','Encourage sharing, turn-taking, tidying and positive peer interaction.'],
+  ['storytelling','Support storytelling with simple props and local context.']
+ ],
+ routine:[
+  ['arrival','Support smooth arrival and settling.'],
+  ['circle_time','Assist with circle time and calm participation.'],
+  ['snack_outdoor','Support snack and outdoor-play transitions.'],
+  ['rest','Help children settle calmly during rest periods.'],
+  ['departure','Support orderly departure and safe handover.'],
+  ['gentle_cues','Use gentle verbal cues and gestures to support routines.'],
+  ['personal_care','Assist with buttoning clothes, tying shoelaces and organising bags/materials.']
+ ],
+ safety:[
+  ['entry_exit','Monitor entry and exit routines and safe handover.'],
+  ['playground','Supervise classroom/playground activities to reduce injury or bullying risk.'],
+  ['hazards','Check and report hazards such as sharp objects, broken furniture or wet floors.'],
+  ['emotional_safety','Comfort children affected by fear, distress or emotional trauma and report appropriately.'],
+  ['safety_drills','Participate in School Safety Week, safety drills and safety inspections.']
+ ],
+ inclusion:[
+  ['vulnerable','Support migrant, disadvantaged and vulnerable learners with dignity.'],
+  ['shy_participation','Encourage shy or withdrawn children to participate.'],
+  ['inclusive_play','Assist inclusive play strategies and equitable participation.'],
+  ['assistive_materials','Support low-cost assistive materials where required.'],
+  ['fairness','Promote fairness, dignity and equal participation for all children.']
+ ],
+ professional:[
+  ['respectful','Maintain respectful communication with teachers, children and parents.'],
+  ['instructions','Follow instructions of the Head Teacher and Class Teacher.'],
+  ['punctuality','Demonstrate punctuality, discipline and commitment.'],
+  ['confidentiality','Maintain confidentiality regarding children’s personal or health-related information.']
+ ]
+};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const today=()=>new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const nowISO=()=>new Date().toISOString();
+
+function showStatus(id,text,ok=false){
+  const e=$(id); if(!e)return;
+  e.textContent=text;e.className='status show '+(ok?'ok':'err');
+}
+function openTab(tab){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>openTab(b.dataset.tab)));
+
+function renderTasks(category){
+  const box=$('check-'+category); if(!box)return;
+  box.innerHTML=TASKS[category].map(([id,text])=>`
+    <label class="checkrow">
+      <input type="checkbox" data-cat="${category}" data-task="${esc(id)}">
+      <span class="checktext"><b>${esc(text)}</b><small>Mark when completed or addressed today.</small></span>
+      <span class="taskstate">TODAY</span>
+    </label>`).join('');
+}
+Object.keys(TASKS).forEach(renderTasks);
+
+function checklistDocId(category,taskId,date= today()){
+  return me.id+'_'+date+'_'+category+'_'+taskId;
+}
+
+async function loadTodayChecklist(){
+  const snap=await db.collection('aayaDailyLogs').where('staffId','==',me.id).limit(300).get();
+  const todayRows=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.date===today());
+  const map=new Map(todayRows.map(x=>[x.category+'_'+x.taskId,x]));
+  document.querySelectorAll('.checkrow input').forEach(ch=>{
+    const r=map.get(ch.dataset.cat+'_'+ch.dataset.task);
+    ch.checked=!!r && r.status==='Completed';
+  });
+  const notes={};
+  todayRows.forEach(x=>{if(x.notes && !notes[x.category])notes[x.category]=x.notes});
+  Object.keys(TASKS).forEach(c=>{const n=$('note-'+c);if(n&&notes[c])n.value=notes[c]});
+  updateProgress();
+}
+
+async function saveChecklist(category){
+  try{
+    const batch=db.batch(),date=today();
+    const note=String(($('note-'+category)||{}).value||'').trim();
+    const checks=[...document.querySelectorAll(`input[data-cat="${category}"]`)];
+    checks.forEach(ch=>{
+      const task=TASKS[category].find(x=>x[0]===ch.dataset.task);
+      if(!task)return;
+      const ref=db.collection('aayaDailyLogs').doc(checklistDocId(category,task[0],date));
+      batch.set(ref,{
+        staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',
+        date,category,taskId:task[0],task:task[1],
+        status:ch.checked?'Completed':'Open',
+        notes:note,
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+    });
+    await batch.commit();
+    showStatus('msg-'+category,'Checklist saved for '+date+'.',true);
+    await loadTodayChecklist();await loadHistory();
+  }catch(e){showStatus('msg-'+category,'Could not save checklist: '+(e.message||e),false)}
+}
+
+function updateProgress(){
+  const all=[...document.querySelectorAll('.checkrow input')];
+  const done=all.filter(x=>x.checked).length;
+  $('progressTotal').textContent=all.length;
+  $('progressDone').textContent=done;
+  $('progressOpen').textContent=all.length-done;
+}
+document.addEventListener('change',e=>{if(e.target.matches('.checkrow input'))updateProgress()});
+
+async function waitForAuthUser(){
+  if(auth.currentUser)return auth.currentUser;
+  return await new Promise((resolve,reject)=>{
+    let done=false;
+    const timer=setTimeout(()=>{if(!done){done=true;unsub();reject(new Error('Firebase Authentication session could not be restored. Please sign in again.'));}},9000);
+    const unsub=auth.onAuthStateChanged(u=>{
+      if(u&&!done){done=true;clearTimeout(timer);unsub();resolve(u);}
+    });
+  });
+}
+
+async function boot(){
+  try{
+    if(!firebase.apps.length)firebase.initializeApp(CONFIG);
+    auth=firebase.auth();
+    db=firebase.firestore();
+
+    try{
+      session=JSON.parse(
+        sessionStorage.getItem(SESSION) ||
+        localStorage.getItem(SESSION) ||
+        sessionStorage.getItem(ALT_SESSION) ||
+        localStorage.getItem(ALT_SESSION) ||
+        'null'
+      );
+    }catch(e){ session=null; }
+
+    if(!session?.staffId || String(session.role||'').toUpperCase()!==ROLE){
+      throw new Error('No valid Aaya session. Please sign in from the existing Common Login page.');
+    }
+
+    const u=await waitForAuthUser();
+    const d=await db.collection('staff').doc(session.staffId).get();
+    if(!d.exists)throw new Error('Aaya staff record was not found.');
+
+    me={id:d.id,...d.data()};
+    if(me.authUid && String(me.authUid)!==String(u.uid)){
+      throw new Error('Firebase account is not linked to this Aaya staff record.');
+    }
+    if(String(me.status||'Active').toLowerCase()==='inactive' || me.active===false){
+      throw new Error('Aaya account is inactive.');
+    }
+    if(String(me.accessRole||'').toUpperCase()!==ROLE){
+      throw new Error('Staff Access Role is not Aaya. Correct it in Staff Management.');
+    }
+
+    $('name').textContent=me.name||'Aaya';
+    $('designation').textContent=me.designation||me.roleDesignation||'Aaya / Helper';
+    $('employee').textContent=me.employeeId||session.employeeId||'—';
+    $('today').textContent=today();
+    renderPhoto();
+
+    await Promise.all([
+      loadAttendance(),loadDuties(),loadLeaveList(),loadSchoolUpdates(),
+      loadHistory(),loadIncidents(),loadTodayChecklist()
+    ]);
+    showStatus('bootStatus','Account verified. Dashboard is ready.',true);
+  }catch(e){
+    showStatus('bootStatus',e.message||'Dashboard failed to load.',false);
+    // Do not redirect automatically. This keeps the real dashboard error visible
+    // and prevents an authentication problem from becoming an apparent login loop.
+  }
+}
+
+function initials(name){
+  return String(name||'Aaya').trim().split(/\s+/).filter(Boolean).map(x=>x[0]).slice(0,2).join('').toUpperCase()||'A';
+}
+function renderPhoto(){
+  const box=$('photoBox');
+  const label=$('photoName');
+  if(!box)return;
+  label.textContent=me?.name||'Aaya';
+  const url=String(me?.photoUrl||me?.photoURL||me?.photo||me?.profilePhotoUrl||'').trim();
+  if(/^https?:\/\//i.test(url)){
+    box.outerHTML='<img id="photoBox" class="photo" src="'+esc(url)+'" alt="Staff photo">';
+  }else{
+    box.textContent=initials(me?.name);
+    box.className='photo-fallback';
+  }
+}
+
+async function loadAttendance(){
+  try{
+    const q=await db.collection('staffAttendance').where('staffId','==',me.id).limit(60).get();
+    const rows=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    const rec=rows.find(x=>x.date===today());
+    $('attendanceState').textContent=rec?.checkIn?'Checked In':'Not Marked';
+    $('attPill').textContent=rec?.checkIn?(rec.checkOut?'Completed':'Checked In'):'Today';
+    $('attendanceList').innerHTML=rows.slice(0,10).map(x=>`<div class="item"><b>${esc(x.date||'')}</b><small>In: ${esc(x.checkIn||'—')} · Out: ${esc(x.checkOut||'—')}</small></div>`).join('')||'<div class="empty">No attendance records yet.</div>';
+  }catch(e){
+    $('attendanceState').textContent='Unavailable';
+    $('attendanceList').innerHTML='<div class="empty">Attendance records could not be loaded.</div>';
+  }
+}
+
+async function markAttendance(kind){
+  try{
+    const date=today(),id=me.id+'_'+date,ref=db.collection('staffAttendance').doc(id),old=await ref.get();
+    const data=old.exists?old.data():{staffId:me.id,staffAuthUid:auth.currentUser.uid,date};
+    data.staffId=me.id;data.staffAuthUid=auth.currentUser.uid;data.date=date;
+    if(kind==='in')data.checkIn=new Date().toLocaleTimeString('en-IN');
+    else data.checkOut=new Date().toLocaleTimeString('en-IN');
+    await ref.set(data,{merge:true});
+    showStatus('attendanceMsg','Attendance saved successfully.',true);
+    await loadAttendance();
+  }catch(e){showStatus('attendanceMsg',e.message||'Attendance could not be saved.',false)}
+}
+
+async function loadDuties(){
+  try{
+    const q=await db.collection('aayaDuties').where('staffId','==',me.id).limit(100).get();
+    const rows=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+    $('duties').innerHTML=rows.map(x=>`<div class="item"><b>${esc(x.title||x.duty||x.task||'Assigned Duty')}</b><small>${esc(x.date||x.schedule||'')} ${x.notes?'· '+esc(x.notes):''}</small></div>`).join('')||'<div class="empty">No specific Aaya duties have been assigned in the ERP yet.</div>';
+  }catch(e){$('duties').innerHTML='<div class="empty">Assigned duties could not be loaded.</div>'}
+}
+
+async function submitLeave(){
+  try{
+    const from=$('leaveFrom').value,to=$('leaveTo').value,reason=$('leaveReason').value.trim();
+    if(!from||!to||!reason)throw new Error('Enter From, To and Reason.');
+    if(to<from)throw new Error('To date cannot be before From date.');
+    await db.collection('staffLeaves').add({
+      staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',
+      from,to,reason,decision:'Pending',createdAt:nowISO()
+    });
+    $('leaveReason').value='';
+    showStatus('leaveMsg','Leave application submitted to the school workflow.',true);
+    await loadLeaveList();
+  }catch(e){showStatus('leaveMsg',e.message||'Leave could not be submitted.',false)}
+}
+
+async function loadLeaveList(){
+  try{
+    const q=await db.collection('staffLeaves').where('staffId','==',me.id).limit(30).get();
+    const rows=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+    $('leaveList').innerHTML=rows.slice(0,8).map(x=>`<div class="item"><b>${esc(x.from||'')} → ${esc(x.to||'')} <span class="pill">${esc(x.decision||x.status||'Pending')}</span></b><small>${esc(x.reason||'')}</small></div>`).join('')||'<div class="empty">No leave applications.</div>';
+  }catch(e){$('leaveList').innerHTML='<div class="empty">Leave history could not be loaded.</div>'}
+}
+
+async function loadSchoolUpdates(){
+  const out=$('schoolUpdates');
+  const noticeOut=$('aayaNoticeBody');
+  const calendarOut=$('aayaCalendarBody');
+  try{
+    const [n,c]=await Promise.all([
+      db.collection('notices').limit(60).get(),
+      db.collection('calendar').limit(100).get()
+    ]);
+    const notices=n.docs.map(d=>({id:d.id,...d.data()}));
+    const calendar=c.docs.map(d=>({id:d.id,...d.data()}));
+
+    const dateValue=v=>{
+      if(v?.toDate){try{return v.toDate().getTime()}catch(e){}}
+      if(v?.seconds)return Number(v.seconds)*1000;
+      const t=Date.parse(String(v||''));
+      return Number.isNaN(t)?0:t;
+    };
+    const displayDate=v=>{
+      if(v?.toDate){try{return v.toDate().toLocaleDateString('en-IN')}catch(e){}}
+      if(v?.seconds){try{return new Date(v.seconds*1000).toLocaleDateString('en-IN')}catch(e){}}
+      return String(v||'');
+    };
+
+    const sortedNotices=notices.slice().sort((a,b)=>
+      dateValue(b.date||b.createdDate||b.createdAt)-dateValue(a.date||a.createdDate||a.createdAt)
+    );
+    const sortedCalendar=calendar.slice().sort((a,b)=>
+      dateValue(a.date||a.startDate||a.createdAt)-dateValue(b.date||b.startDate||b.createdAt)
+    );
+
+    /* Student Portal-style full read-only notice view */
+    noticeOut.innerHTML=sortedNotices.map(x=>`<div class="viewonly-row">
+      <b>${esc(x.title||x.heading||'Notice')}</b>
+      <p>${esc(x.message||x.body||x.text||'')}</p>
+      <span class="viewonly-meta">${esc(displayDate(x.date||x.createdDate||x.createdAt||''))}${x.priority?' · '+esc(x.priority):''}</span>
+    </div>`).join('')||'<div class="empty">No notices available.</div>';
+
+    calendarOut.innerHTML=sortedCalendar.map(x=>`<tr>
+      <td>${esc(displayDate(x.date||x.startDate||x.createdAt||''))}</td>
+      <td>${esc(x.event||x.title||x.name||x.description||'')}</td>
+      <td>${esc(x.type||x.eventType||'')}</td>
+    </tr>`).join('')||'<tr><td colspan="3">No calendar events.</td></tr>';
+
+    /* Compact School Updates preview remains exactly where it was in the Aaya dashboard. */
+    const previewNotices=sortedNotices.slice(0,3);
+    const previewCalendar=sortedCalendar.filter(x=>dateValue(x.date||x.startDate)>=Date.now()).slice(0,3);
+    let html='';
+    previewNotices.forEach(x=>html+=`<div class="notice"><b>${esc(x.title||x.heading||'Notice')}</b><small>${esc(displayDate(x.date||x.createdDate||x.createdAt||''))}${x.priority?' · '+esc(x.priority):''}</small></div>`);
+    previewCalendar.forEach(x=>html+=`<div class="notice"><b>${esc(x.event||x.title||x.name||'School Event')}</b><small>${esc(displayDate(x.date||x.startDate||x.createdAt||''))}${x.type?' · '+esc(x.type):''}</small></div>`);
+    out.innerHTML=html||'<div class="empty">No current school updates.</div>';
+  }catch(e){
+    out.innerHTML='<div class="empty">School updates could not be loaded.</div>';
+    noticeOut.innerHTML='<div class="empty">Notices could not be loaded.</div>';
+    calendarOut.innerHTML='<tr><td colspan="3">Calendar could not be loaded.</td></tr>';
+  }
+}
+
+async function submitIncident(){
+  try{
+    const type=$('incidentType').value,severity=$('incidentSeverity').value,location=$('incidentLocation').value.trim();
+    const action=$('incidentAction').value.trim(),description=$('incidentDescription').value.trim();
+    if(!description)throw new Error('Enter a factual description before submitting.');
+    await db.collection('aayaIncidentReports').add({
+      staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',
+      date:today(),category:type,severity,location,immediateAction:action,description,
+      status:'Reported',createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('incidentDescription').value='';$('incidentLocation').value='';$('incidentAction').value='';
+    showStatus('incidentMsg','Concern report submitted to HOI / Admin workflow.',true);
+    await loadIncidents();
+  }catch(e){showStatus('incidentMsg',e.message||'Report could not be submitted.',false)}
+}
+
+async function loadIncidents(){
+  try{
+    const q=await db.collection('aayaIncidentReports').where('staffId','==',me.id).limit(30).get();
+    const rows=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    $('incidentHistory').innerHTML=rows.slice(0,8).map(x=>`<div class="item"><b>${esc(x.category||'Concern')} · ${esc(x.severity||'')}</b><small>${esc(x.date||'')} · ${esc(x.location||'')} · ${esc(x.status||'Reported')}</small></div>`).join('')||'<div class="empty">No previous concern reports.</div>';
+  }catch(e){$('incidentHistory').innerHTML='<div class="empty">Concern history could not be loaded.</div>'}
+}
+
+async function loadHistory(){
+  try{
+    const q=await db.collection('aayaDailyLogs').where('staffId','==',me.id).limit(150).get();
+    const rows=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    const grouped={};
+    rows.forEach(x=>{const k=x.date+'|'+x.category;(grouped[k]??=[]).push(x)});
+    const entries=Object.entries(grouped).slice(0,12);
+    $('history').innerHTML=entries.map(([k,arr])=>{
+      const [date,cat]=k.split('|'),done=arr.filter(x=>x.status==='Completed').length;
+      return `<div class="item"><b>${esc(date)} · ${esc(cat)} <span class="pill ${done===arr.length?'ok':''}">${done}/${arr.length} completed</span></b><small>${esc(arr.find(x=>x.notes)?.notes||'No note')}</small></div>`;
+    }).join('')||'<div class="empty">No Aaya activity saved yet.</div>';
+  }catch(e){$('history').innerHTML='<div class="empty">Activity history could not be loaded.</div>'}
+}
+
+function logout(){
+  [SESSION,ALT_SESSION,'GPSPETHGAM_STAFF_SESSION_V2','GPSPETHGAM_ROLE_SESSION_V1'].forEach(k=>{sessionStorage.removeItem(k);localStorage.removeItem(k);});
+  ['loginRole','schoolLoginRole','staffId','employeeId','staffAuthUid','staffSession'].forEach(k=>sessionStorage.removeItem(k));
+  auth.signOut().finally(()=>location.href='Role-Login.html');
+}
+
+boot();
+</script>
+</body>
+</html>
