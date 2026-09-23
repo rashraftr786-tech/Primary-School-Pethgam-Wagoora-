@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#3f3f91"><title>School ERP — Common Login</title>
+<link rel="icon" href="new-logo.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"><link rel="stylesheet" href="role-dashboard.css">
+</head><body>
+<div class="login-wrap"><div class="login-card">
+<img class="login-logo" src="new-logo.png" alt="School logo">
+<h1 class="login-title">School ERP Login</h1>
+<p class="login-sub">Government Primary School Pethgam Wagoora<br>Choose your role and sign in to your school workspace.</p>
+<div class="role-grid">
+  <div class="role-option"><input checked type="radio" name="role" id="rAdmin" value="ADMIN"><label for="rAdmin"><i class="fa-solid fa-user-shield"></i>HOI / Admin</label></div>
+  <div class="role-option"><input type="radio" name="role" id="rTeacher" value="TEACHER"><label for="rTeacher"><i class="fa-solid fa-chalkboard-user"></i>Teacher</label></div>
+  <div class="role-option"><input type="radio" name="role" id="rAaya" value="AAYA"><label for="rAaya"><i class="fa-solid fa-person-dress"></i>Aaya</label></div>
+  <div class="role-option"><input type="radio" name="role" id="rCook" value="COOK"><label for="rCook"><i class="fa-solid fa-utensils"></i>Cook</label></div>
+</div>
+<div class="login-field"><label id="idLabel">HOI / Administrator Email</label><input id="identifier" type="email" autocomplete="username" placeholder="Enter administrator email"></div>
+<div class="login-field"><label id="pwLabel">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Enter password"></div>
+<button class="login-main" id="loginBtn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+<button class="forgot" id="forgotBtn">Forgot Password / PIN?</button>
+<div class="forgot-box" id="forgotBox"><div class="login-field"><label id="forgotLabel">Administrator Email</label><input id="forgotIdentifier" placeholder="Enter your email or Employee ID"></div><button class="btn" id="sendReset">Send Reset Email</button></div>
+<div class="login-msg" id="msg"></div>
+<p style="text-align:center;color:#9a9eae;font-size:8px;margin:17px 0 0">Secure Firebase Authentication • GPS Pethgam Wagoora</p>
+</div></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+let auth=null,db=null;
+const roles=[...document.querySelectorAll('input[name="role"]')];
+
+function show(t,c){
+  $('msg').textContent=t;
+  $('msg').className='login-msg '+(c||'err');
+}
+function role(){return document.querySelector('input[name="role"]:checked').value}
+function mode(){
+  const r=role(),staff=r!=='ADMIN';
+  $('idLabel').textContent=staff?'Employee ID':'HOI / Administrator Email';
+  $('identifier').type=staff?'text':'email';
+  $('identifier').placeholder=staff?'Enter Employee ID':'Enter administrator email';
+  $('pwLabel').textContent=staff?'PIN':'Password';
+  $('password').placeholder=staff?'Enter PIN':'Enter password';
+  $('forgotLabel').textContent=staff?'Employee ID':'Administrator Email';
+  $('forgotIdentifier').placeholder=staff?'Enter Employee ID':'Enter administrator email';
+}
+roles.forEach(x=>x.addEventListener('change',mode));
+
+function normalizeId(v){
+  return String(v||'').trim().replace(/\s+/g,'');
+}
+function upper(v){return String(v||'').trim().toUpperCase()}
+
+function classify(s){
+  const values=[
+    s.accessRole,s.designation,s.role,s.staffType,s.post,s.category,
+    s.employeeType,s.department
+  ].map(v=>String(v||'').trim().toUpperCase()).filter(Boolean);
+  const joined=values.join(' | ');
+
+  // Explicit role fields first.
+  if(values.some(v=>v==='AAYA'||v.includes('AAYA')||v.includes('AYAH'))) return 'AAYA';
+  if(values.some(v=>v==='COOK'||v.includes('COOK')||v.includes('MID DAY MEAL')||v.includes('MDM'))) return 'COOK';
+  if(values.some(v=>v==='TEACHER'||v.includes('TEACHER'))) return 'TEACHER';
+  if(values.some(v=>v==='HOI'||v==='ADMIN'||v.includes('HEAD OF INSTITUTION'))) return 'ADMIN';
+
+  // Conservative fallback for ordinary teaching staff.
+  if(/TEACHER|TR[-_ ]?\d|MASTER|MISTRESS/.test(joined)) return 'TEACHER';
+  return 'TEACHER';
+}
+
+async function initFirebase(){
+  if(!window.firebase) throw new Error('Firebase SDK did not load. Reload the page.');
+  if(!firebase.apps.length){
+    if(!window.GPS_FIREBASE_CONFIG) throw new Error('firebase-config.js did not load.');
+    firebase.initializeApp(window.GPS_FIREBASE_CONFIG);
+  }
+  auth=auth||firebase.auth();
+  db=db||firebase.firestore();
+  if(!auth || typeof auth.signInWithEmailAndPassword!=='function') throw new Error('Firebase Authentication is unavailable.');
+}
+
+async function findStaffIndex(eid){
+  const raw=normalizeId(eid);
+  if(!raw) return null;
+
+  // First try exact document IDs, including case variants.
+  const keys=[raw,upper(raw),raw.toLowerCase(),raw.replace(/-/g,''),upper(raw).replace(/-/g,'')];
+  for(const key of [...new Set(keys)]){
+    if(!key) continue;
+    const d=await db.collection('staffLoginIndex').doc(key).get();
+    if(d.exists) return {source:'doc',id:d.id,...d.data()};
+  }
+
+  // Then try common field names. These queries are public under the current
+  // Firestore rules for staffLoginIndex and help older Cook records whose
+  // document ID was not normalized.
+  const fields=['employeeId','loginId','staffEmployeeId'];
+  for(const field of fields){
+    try{
+      const q=await db.collection('staffLoginIndex').where(field,'==',raw).limit(1).get();
+      if(!q.empty) return {source:'query',id:q.docs[0].id,...q.docs[0].data()};
+    }catch(_){}
+    try{
+      const q=await db.collection('staffLoginIndex').where(field,'==',upper(raw)).limit(1).get();
+      if(!q.empty) return {source:'query',id:q.docs[0].id,...q.docs[0].data()};
+    }catch(_){}
+  }
+  return null;
+}
+
+async function login(){
+  const selected=role(),id=$('identifier').value.trim(),pw=$('password').value;
+  if(!id||!pw){show('Please enter all required credentials.','err');return}
+  $('loginBtn').disabled=true;
+  show('Connecting to Firebase…','ok');
+
+  try{
+    await initFirebase();
+    await auth.signOut().catch(()=>{});
+
+    if(selected==='ADMIN'){
+      await auth.signInWithEmailAndPassword(id,pw);
+      const u=auth.currentUser;
+      const a=await db.collection('admins').doc(u.uid).get();
+      if(!a.exists||!['admin','hoi'].includes(upper(a.data().role).toLowerCase())||a.data().active!==true){
+        await auth.signOut();
+        throw new Error('This account is not an active school HOI/Administrator account.');
+      }
+      sessionStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify({
+        uid:u.uid,role:'HOI',name:a.data().name||'HOI / Admin',email:u.email,loginAt:new Date().toISOString()
+      }));
+      location.href='index.html';
+      return;
+    }
+
+    show('Finding staff login…','ok');
+    const m=await findStaffIndex(id);
+    if(!m){
+      throw new Error('No staffLoginIndex record was found for Employee ID '+id+'. The Firebase account/PIN was not changed. Ask the HOI to run Repair Staff Login Indexes in Staff Management.');
+    }
+
+    if(!m.authEmail||!m.staffId){
+      throw new Error('The staffLoginIndex record for '+id+' is incomplete (missing authEmail or staffId). Ask the HOI to run Repair Staff Login Indexes.');
+    }
+
+    show('Authenticating staff account…','ok');
+    await auth.signInWithEmailAndPassword(String(m.authEmail).trim().toLowerCase(),pw);
+    const u=auth.currentUser;
+
+    show('Checking staff profile…','ok');
+    const d=await db.collection('staff').doc(m.staffId).get();
+    if(!d.exists){
+      await auth.signOut();
+      throw new Error('Staff record '+m.staffId+' was not found in Firestore.');
+    }
+
+    const s={id:d.id,...d.data()};
+    if(String(s.status||'Active').toLowerCase()==='inactive'||s.loginEnabled===false){
+      await auth.signOut();
+      throw new Error('This staff account is inactive or login is disabled.');
+    }
+    if(s.authUid&&String(s.authUid)!==String(u.uid)){
+      await auth.signOut();
+      throw new Error('Firebase account is not correctly linked to this staff record.');
+    }
+
+    const actual=classify(s);
+    if(actual!==selected){
+      await auth.signOut();
+      throw new Error(
+        'Cook/Aaya/Teacher role mismatch. Selected: '+selected+
+        ' | Staff record resolved as: '+actual+
+        ' | accessRole: '+(s.accessRole||'—')+
+        ' | designation: '+(s.designation||'—')+
+        '. Correct the Cook staff record in Staff Management.'
+      );
+    }
+
+    const now=new Date().toISOString();
+    const sess={
+      uid:u.uid,staffId:s.id,employeeId:s.employeeId||id,
+      name:s.name||'',role:actual,loginAt:now
+    };
+    sessionStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify(sess));
+    sessionStorage.setItem('GPSPETHGAM_COMMON_LOGIN_SESSION_V1',JSON.stringify(sess));
+    localStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify(sess));
+    localStorage.setItem('GPSPETHGAM_COMMON_LOGIN_SESSION_V1',JSON.stringify(sess));
+
+    if(actual==='TEACHER'){
+      sessionStorage.setItem('GPSPETHGAM_STAFF_SESSION_V2',JSON.stringify({
+        staffId:s.id,name:s.name||'',employeeId:s.employeeId||id,
+        role:s.accessRole||'Staff',loginAt:now
+      }));
+      location.href='Staff-Personal-Dashboard-Tr.html';
+    }else if(actual==='AAYA'){
+      location.href='Aaya-Dashboard.html';
+    }else{
+      location.href='Cook-Dashboard.html';
+    }
+  }catch(e){
+    show(e.code?e.code+': '+e.message:(e.message||String(e)),'err');
+  }finally{
+    $('loginBtn').disabled=false;
+  }
+}
+
+async function reset(){
+  const r=role(),id=$('forgotIdentifier').value.trim();
+  if(!id){show('Enter your email or Employee ID first.','err');return}
+  $('sendReset').disabled=true;
+  try{
+    await initFirebase();
+    let email=id;
+    if(r!=='ADMIN'){
+      const m=await findStaffIndex(id);
+      if(!m||!m.authEmail) throw new Error('No Firebase login is linked to this Employee ID.');
+      email=m.authEmail;
+    }
+    await auth.sendPasswordResetEmail(String(email).trim().toLowerCase());
+    show('Password reset email sent to the registered Firebase login address. Check inbox and spam.','ok');
+  }catch(e){
+    show('Could not send reset email: '+(e.message||String(e)),'err');
+  }finally{$('sendReset').disabled=false}
+}
+
+$('loginBtn').onclick=login;
+$('sendReset').onclick=reset;
+$('forgotBtn').onclick=()=>{
+  $('forgotBox').style.display=$('forgotBox').style.display==='block'?'none':'block'
+};
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+try{mode();initFirebase().catch(e=>show(e.message,'err'))}catch(e){show(e.message,'err')}
+})();
+</script></body></html>
