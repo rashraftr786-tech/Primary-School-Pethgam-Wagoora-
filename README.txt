@@ -1,17 +1,14 @@
-Teacher Dashboard – Teacher Access Fix v2
+HOI Dashboard Login Fix
 
-The previous version still contained strict accessRole === TEACHER checks.
-This version fixes all Teacher access checks in the dashboard.
+Problem fixed:
+The old HOI dashboard checked auth.currentUser immediately. Firebase Auth may still be restoring the persisted session after page navigation, so auth.currentUser was temporarily null and the dashboard redirected back to Role-Login.html, appearing as an empty login form.
 
-Teacher is accepted when the staff record has:
-- role = TEACHER, OR
-- accessRole = TEACHER, OR
-- designation / roleDesignation = TEACHER, including the common pattern
-  accessRole = STAFF + designation = Teacher.
+Fix:
+- Waits for Firebase onAuthStateChanged before deciding that the user is logged out.
+- Uses LOCAL Firebase Auth persistence.
+- Verifies admins/{uid} after the authenticated user is restored.
+- Accepts admin/hoi/head of institution role values.
+- Preserves the common ADMIN session.
+- Keeps the original HOI approval queues and actions.
 
-The same check is used during:
-- login
-- session restoration
-- live staff profile listener
-
-Common Login and Firebase authentication are not changed.
+Replace the existing HOI-Dashboard.html with the supplied HOI-Dashboard.html. Keep firebase-config.js in the same folder.
