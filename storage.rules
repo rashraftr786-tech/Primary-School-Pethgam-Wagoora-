@@ -1,0 +1,38 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/(default)/documents/admins/$(request.auth.uid))
+        && get(/databases/(default)/documents/admins/$(request.auth.uid)).data.active == true
+        && get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role in ['admin','hoi'];
+    }
+    function linkedStudent(studentId) {
+      return signedIn()
+        && exists(/databases/(default)/documents/studentAccounts/$(request.auth.uid))
+        && (
+          get(/databases/(default)/documents/studentAccounts/$(request.auth.uid)).data.studentRecordId == studentId
+          || get(/databases/(default)/documents/studentAccounts/$(request.auth.uid)).data.sourceAdmissionId == studentId
+        );
+    }
+
+    match /attachments/student-leaves/{studentId}/{allPaths=**} {
+      allow read: if isAdmin() || linkedStudent(studentId);
+      allow write: if isAdmin() || linkedStudent(studentId);
+    }
+
+    match /attachments/official-applications/{adminUid}/{allPaths=**} {
+      allow read, write: if isAdmin() && request.auth.uid == adminUid;
+    }
+
+    match /student-documents/{studentId}/{allPaths=**} {
+      allow read: if isAdmin() || linkedStudent(studentId);
+      allow write: if isAdmin();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

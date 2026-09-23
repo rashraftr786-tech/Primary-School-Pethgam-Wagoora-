@@ -1,0 +1,404 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ============================================================
+       AUTH / ROLE HELPERS
+       ============================================================ */
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isBootstrapAdmin() {
+      return signedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email == "pspathgam@gmail.com";
+    }
+
+    function isSchoolAdmin() {
+      return signedIn()
+        && (
+          isBootstrapAdmin()
+          || (
+            exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+            && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true
+            && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ["admin", "hoi"]
+          )
+        );
+    }
+
+    function account() {
+      return get(/databases/$(database)/documents/studentAccounts/$(request.auth.uid));
+    }
+
+    function linkedStudent(studentId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/studentAccounts/$(request.auth.uid))
+        && (
+          account().data.studentRecordId == studentId
+          || account().data.sourceAdmissionId == studentId
+        );
+    }
+
+    function linkedStudentByAdmission(admissionNo) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/studentAccounts/$(request.auth.uid))
+        && (
+          account().data.admissionNo == admissionNo
+          || account().data.loginId == admissionNo
+        );
+    }
+
+    function linkedStaff(staffId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/staff/$(staffId))
+        && get(/databases/$(database)/documents/staff/$(staffId)).data.authUid == request.auth.uid
+        && get(/databases/$(database)/documents/staff/$(staffId)).data.status != "Inactive";
+    }
+
+    function staffRole(staffId) {
+      return get(/databases/$(database)/documents/staff/$(staffId)).data.accessRole;
+    }
+
+    function isStaffRole(staffId, roleCode) {
+      return linkedStaff(staffId) && staffRole(staffId) == roleCode;
+    }
+
+    function assignedTeacher(studentId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/students/$(studentId))
+        && get(/databases/$(database)/documents/students/$(studentId)).data.assignedTeacherUids != null
+        && request.auth.uid in get(/databases/$(database)/documents/students/$(studentId)).data.assignedTeacherUids;
+    }
+
+    function teacherOwnDocument(data) {
+      return signedIn()
+        && data.teacherId != null
+        && linkedStaff(data.teacherId)
+        && data.teacherAuthUid == request.auth.uid;
+    }
+
+    function selfStaffDocument(data) {
+      return signedIn()
+        && data.staffId != null
+        && linkedStaff(data.staffId);
+    }
+
+    /* ============================================================
+       ADMINS
+       ============================================================ */
+    match /admins/{id} {
+      allow read: if signedIn() && (request.auth.uid == id || isSchoolAdmin());
+      allow create: if isBootstrapAdmin() || isSchoolAdmin();
+      allow update: if isBootstrapAdmin() || isSchoolAdmin();
+      allow delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       STAFF + STAFF LOGIN INDEX
+       ============================================================ */
+    match /staff/{staffId} {
+      allow read: if isSchoolAdmin() || linkedStaff(staffId);
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    match /staffLoginIndex/{employeeId} {
+      /* Login must resolve the Firebase email before authentication. The
+         index contains only login routing data, never passwords or PINs. */
+      allow read: if true;
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    match /staffAuthIndex/{uid} {
+      allow read: if isSchoolAdmin() || (signedIn() && request.auth.uid == uid);
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       TEACHING ASSIGNMENTS
+       ============================================================ */
+    match /teachingAssignments/{id} {
+      allow create, update, delete: if isSchoolAdmin();
+      allow read: if isSchoolAdmin()
+        || (resource.data.staffId != null && linkedStaff(resource.data.staffId));
+    }
+
+    /* ============================================================
+       STAFF ATTENDANCE / LEAVE
+       ============================================================ */
+    match /staffAttendance/{attendanceId} {
+      allow read: if isSchoolAdmin() || selfStaffDocument(resource.data);
+      allow create: if isSchoolAdmin()
+        || selfStaffDocument(request.resource.data)
+          && request.resource.data.staffAuthUid == request.auth.uid;
+      allow update: if isSchoolAdmin()
+        || selfStaffDocument(resource.data)
+          && resource.data.staffAuthUid == request.auth.uid
+          && request.resource.data.staffId == resource.data.staffId
+          && request.resource.data.staffAuthUid == request.auth.uid;
+      allow delete: if isSchoolAdmin();
+    }
+
+    match /staffLeaves/{leaveId} {
+      allow read: if isSchoolAdmin() || selfStaffDocument(resource.data);
+      allow create: if isSchoolAdmin()
+        || selfStaffDocument(request.resource.data)
+          && request.resource.data.staffAuthUid == request.auth.uid;
+      allow update: if isSchoolAdmin()
+        || selfStaffDocument(resource.data)
+          && resource.data.staffAuthUid == request.auth.uid
+          && resource.data.decision == "Pending"
+          && request.resource.data.staffId == resource.data.staffId
+          && request.resource.data.staffAuthUid == request.auth.uid;
+      allow delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       AAYA DUTIES
+       ============================================================ */
+    match /aayaDuties/{id} {
+      allow read: if isSchoolAdmin()
+        || (resource.data.staffId != null && isStaffRole(resource.data.staffId, "AAYA"));
+      allow create: if isSchoolAdmin()
+        || (request.resource.data.staffId != null
+            && isStaffRole(request.resource.data.staffId, "AAYA")
+            && request.resource.data.staffAuthUid == request.auth.uid);
+      allow update: if isSchoolAdmin()
+        || (resource.data.staffId != null
+            && isStaffRole(resource.data.staffId, "AAYA")
+            && resource.data.staffAuthUid == request.auth.uid
+            && request.resource.data.staffId == resource.data.staffId
+            && request.resource.data.staffAuthUid == request.auth.uid);
+      allow delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       MDM / COOK
+       ============================================================ */
+    match /mdmDaily/{id} {
+      allow read: if isSchoolAdmin()
+        || (resource.data.cookId != null && isStaffRole(resource.data.cookId, "COOK"));
+      allow create: if isSchoolAdmin()
+        || (request.resource.data.cookId != null
+            && isStaffRole(request.resource.data.cookId, "COOK")
+            && request.resource.data.cookAuthUid == request.auth.uid);
+      allow update: if isSchoolAdmin()
+        || (resource.data.cookId != null
+            && isStaffRole(resource.data.cookId, "COOK")
+            && resource.data.cookAuthUid == request.auth.uid
+            && request.resource.data.cookId == resource.data.cookId
+            && request.resource.data.cookAuthUid == request.auth.uid);
+      allow delete: if isSchoolAdmin();
+    }
+
+    match /riceStock/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    match /institution/{id} {
+      allow read: if signedIn();
+      allow write: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       STUDENT ACCOUNTS / LOGIN INDEX
+       ============================================================ */
+    match /studentAccounts/{id} {
+      allow read: if isSchoolAdmin() || (signedIn() && request.auth.uid == id);
+      allow create, delete: if isSchoolAdmin();
+      allow update: if isSchoolAdmin()
+        || (signedIn()
+            && request.auth.uid == id
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["mustChangePassword", "passwordChangedAt"]));
+    }
+
+    match /studentLoginIndex/{admissionNo} {
+      /* Public read is retained solely because Student Portal resolves the
+         login alias before Firebase Authentication. Keep this document
+         limited to non-secret routing fields: loginId + active. */
+      allow read: if true;
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       STUDENTS + CONTROLLED SUBCOLLECTION ACCESS
+       ============================================================ */
+    match /students/{id} {
+      allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
+      allow create, update, delete: if isSchoolAdmin();
+
+      match /attendance/{subId} {
+        allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
+        allow create, update: if isSchoolAdmin() || assignedTeacher(id);
+        allow delete: if isSchoolAdmin();
+      }
+
+      match /results/{subId} {
+        allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
+        allow create, update, delete: if isSchoolAdmin();
+      }
+
+      match /communications/{subId} {
+        allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
+        allow create: if isSchoolAdmin()
+          || (assignedTeacher(id)
+              && request.resource.data.teacherAuthUid == request.auth.uid
+              && request.resource.data.teacherId != null);
+        allow update: if isSchoolAdmin()
+          || (assignedTeacher(id)
+              && resource.data.teacherAuthUid == request.auth.uid
+              && request.resource.data.teacherAuthUid == request.auth.uid
+              && request.resource.data.teacherId == resource.data.teacherId);
+        allow delete: if isSchoolAdmin();
+      }
+
+      match /library/{subId} {
+        allow read: if isSchoolAdmin() || linkedStudent(id);
+        allow create, update, delete: if isSchoolAdmin();
+      }
+
+      match /{subcollection}/{subId} {
+        allow read: if isSchoolAdmin() || linkedStudent(id) || assignedTeacher(id);
+        allow create, update, delete: if isSchoolAdmin();
+      }
+    }
+
+    /* ============================================================
+       RESULTS / MARKSHEETS
+       ============================================================ */
+    match /marksheets/{admissionNo} {
+      allow read: if isSchoolAdmin()
+        || (resource.data.studentRecordId != null && linkedStudent(resource.data.studentRecordId))
+        || linkedStudentByAdmission(admissionNo)
+        || (resource.data.studentRecordId != null && assignedTeacher(resource.data.studentRecordId));
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    match /results/{id} {
+      allow read: if isSchoolAdmin()
+        || (resource.data.studentRecordId != null && linkedStudent(resource.data.studentRecordId))
+        || (resource.data.studentRecordId != null && assignedTeacher(resource.data.studentRecordId));
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       SCHOOL-WIDE READ-ONLY CONTENT
+       ============================================================ */
+    match /notices/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    match /calendar/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    match /timetables/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       LIBRARY
+       ============================================================ */
+    match /libraryBooks/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    match /libraryTransactions/{id} {
+      allow read: if isSchoolAdmin();
+      allow create, update, delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       HOMEWORK / ASSIGNMENTS
+       ============================================================ */
+    match /homework/{id} {
+      allow read: if isSchoolAdmin() || teacherOwnDocument(resource.data);
+      allow create: if isSchoolAdmin() || teacherOwnDocument(request.resource.data);
+      allow update: if isSchoolAdmin()
+        || (teacherOwnDocument(resource.data)
+            && request.resource.data.teacherId == resource.data.teacherId
+            && request.resource.data.teacherAuthUid == request.auth.uid);
+      allow delete: if isSchoolAdmin();
+    }
+
+    match /assignments/{id} {
+      allow read: if isSchoolAdmin() || teacherOwnDocument(resource.data);
+      allow create: if isSchoolAdmin() || teacherOwnDocument(request.resource.data);
+      allow update: if isSchoolAdmin()
+        || (teacherOwnDocument(resource.data)
+            && request.resource.data.teacherId == resource.data.teacherId
+            && request.resource.data.teacherAuthUid == request.auth.uid);
+      allow delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       TEACHER MESSAGES
+       ============================================================ */
+    match /teacherMessages/{id} {
+      allow read: if isSchoolAdmin() || teacherOwnDocument(resource.data);
+      allow create: if isSchoolAdmin() || teacherOwnDocument(request.resource.data);
+      allow update: if isSchoolAdmin()
+        || (teacherOwnDocument(resource.data)
+            && request.resource.data.teacherId == resource.data.teacherId
+            && request.resource.data.teacherAuthUid == request.auth.uid);
+      allow delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       STUDENT LEAVE
+       ============================================================ */
+    match /studentLeaves/{id} {
+      allow read: if isSchoolAdmin()
+        || (resource.data.studentRecordId != null && linkedStudent(resource.data.studentRecordId));
+      allow create: if isSchoolAdmin()
+        || (request.resource.data.studentRecordId != null
+            && linkedStudent(request.resource.data.studentRecordId)
+            && request.resource.data.studentUid == request.auth.uid);
+      allow update: if isSchoolAdmin()
+        || (resource.data.studentRecordId != null
+            && linkedStudent(resource.data.studentRecordId)
+            && resource.data.studentUid == request.auth.uid
+            && resource.data.status == "Modification Required"
+            && request.resource.data.studentRecordId == resource.data.studentRecordId
+            && request.resource.data.studentUid == request.auth.uid);
+      allow delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       OFFICIAL APPLICATIONS / AUDIT HISTORY
+       ============================================================ */
+    match /officialApplications/{id} {
+      allow read, create, update, delete: if isSchoolAdmin();
+    }
+
+    match /auditHistory/{id} {
+      allow read: if isSchoolAdmin();
+      allow create: if isSchoolAdmin();
+      allow update, delete: if false;
+    }
+
+    /* ============================================================
+       TOP-LEVEL LEGACY ATTENDANCE / COMMUNICATIONS
+       ============================================================ */
+    match /attendance/{id} {
+      allow read, write: if isSchoolAdmin();
+    }
+
+    match /communications/{id} {
+      allow read, write: if isSchoolAdmin();
+    }
+
+    /* ============================================================
+       DEFAULT DENY
+       ============================================================ */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
