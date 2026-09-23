@@ -371,6 +371,57 @@ service cloud.firestore {
     }
 
     /* ============================================================
+       AAYA / ECCE / FLN SUPPORT LOGS
+       ============================================================ */
+    match /aayaDailyLogs/{id} {
+      allow read: if isSchoolAdmin()
+        || (
+          resource.data.staffId != null
+          && isStaffRole(resource.data.staffId, "AAYA")
+          && resource.data.staffAuthUid == request.auth.uid
+        );
+      allow create: if isSchoolAdmin()
+        || (
+          request.resource.data.staffId != null
+          && isStaffRole(request.resource.data.staffId, "AAYA")
+          && request.resource.data.staffAuthUid == request.auth.uid
+        );
+      allow update: if isSchoolAdmin()
+        || (
+          resource.data.staffId != null
+          && isStaffRole(resource.data.staffId, "AAYA")
+          && resource.data.staffAuthUid == request.auth.uid
+          && request.resource.data.staffId == resource.data.staffId
+          && request.resource.data.staffAuthUid == request.auth.uid
+        );
+      allow delete: if isSchoolAdmin();
+    }
+
+    match /aayaIncidentReports/{id} {
+      allow read: if isSchoolAdmin()
+        || (
+          resource.data.staffId != null
+          && isStaffRole(resource.data.staffId, "AAYA")
+          && resource.data.staffAuthUid == request.auth.uid
+        );
+      allow create: if isSchoolAdmin()
+        || (
+          request.resource.data.staffId != null
+          && isStaffRole(request.resource.data.staffId, "AAYA")
+          && request.resource.data.staffAuthUid == request.auth.uid
+        );
+      allow update: if isSchoolAdmin()
+        || (
+          resource.data.staffId != null
+          && isStaffRole(resource.data.staffId, "AAYA")
+          && resource.data.staffAuthUid == request.auth.uid
+          && request.resource.data.staffId == resource.data.staffId
+          && request.resource.data.staffAuthUid == request.auth.uid
+        );
+      allow delete: if isSchoolAdmin();
+    }
+
+    /* ============================================================
        OFFICIAL APPLICATIONS / AUDIT HISTORY
        ============================================================ */
     match /officialApplications/{id} {
