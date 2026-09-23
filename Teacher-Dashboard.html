@@ -105,6 +105,13 @@ const today=()=>new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',
 
 function getCommonSession(){try{return JSON.parse(sessionStorage.getItem(COMMON_SESSION)||'null')}catch{return null}}
 
+function isTeacherRecord(s){
+ const role=String(s?.role||'').trim().toUpperCase();
+ const access=String(s?.accessRole||'').trim().toUpperCase();
+ const designation=String(s?.designation||s?.roleDesignation||'').trim().toUpperCase();
+ return role==='TEACHER' || access==='TEACHER' || designation==='TEACHER' || (access==='STAFF' && /TEACHER/.test(designation));
+}
+
 function clearTeacherSession(){
  [COMMON_SESSION,'GPSPETHGAM_ROLE_SESSION_V1','GPSPETHGAM_STAFF_SESSION_V2','loginRole','schoolLoginRole','staffId','employeeId','staffAuthUid','staffSession'].forEach(k=>sessionStorage.removeItem(k));
 }
@@ -150,7 +157,7 @@ async function restoreTeacherSession(user){
   const staff=d.data()||{};
   if(staff.status==='Inactive'||staff.active===false)throw new Error('This teacher account is inactive.');
   if(staff.authUid&&String(staff.authUid)!==String(user.uid))throw new Error('This Firebase account is not linked to this teacher record.');
-  if(String(staff.accessRole||'').trim().toUpperCase()!=='TEACHER')throw new Error('This staff account does not have Teacher access.');
+  const role=String(staff.role||'').trim().toUpperCase(); const accessRole=String(staff.accessRole||'').trim().toUpperCase(); const designation=String(staff.designation||staff.roleDesignation||'').trim(); if(!(role==='TEACHER'||accessRole==='TEACHER'||(accessRole==='STAFF'&&((role==='TEACHER')||/teacher/i.test(designation)))))throw new Error('This staff account does not have Teacher access.');
   me={id:d.id,...staff,authUid:user.uid};
   sessionStorage.setItem(COMMON_SESSION,JSON.stringify({...s,uid:user.uid,staffId:d.id,employeeId:staff.employeeId||s.employeeId||'',name:staff.name||s.name||'',role:'TEACHER',accessRole:'TEACHER'}));
   show();await refreshAll();await listenProfile();return true;
@@ -179,7 +186,7 @@ async function loginStaff(){
   if(!d.exists||d.data().status==='Inactive'){await auth.signOut();return $('msg').textContent='Staff record not found or inactive.'}
   const s={id:d.id,...d.data()};
   if(s.authUid!==u.uid){await auth.signOut();return $('msg').textContent='Firebase account is not correctly linked to this staff record.'}
-  if(String(s.accessRole||'').toUpperCase()!=='TEACHER'){await auth.signOut();return $('msg').textContent='This staff account does not have Teacher access.'}
+  const role=String(s.role||'').trim().toUpperCase(), accessRole=String(s.accessRole||'').trim().toUpperCase(), designation=String(s.designation||s.roleDesignation||'').trim(); if(!(role==='TEACHER'||accessRole==='TEACHER'||(accessRole==='STAFF'&&((role==='TEACHER')||/teacher/i.test(designation))))){await auth.signOut();return $('msg').textContent='This staff account does not have Teacher access.'}
   sessionStorage.setItem(COMMON_SESSION,JSON.stringify({staffId:s.id,name:s.name||'',employeeId:s.employeeId||eid,role:'TEACHER',accessRole:'TEACHER',uid:u.uid,staffAuthUid:u.uid,loginAt:new Date().toISOString()}));
   start({...s,authUid:u.uid});
  }catch(e){$('msg').textContent='Sign in failed: '+esc(e.code?e.code+': '+e.message:e.message)}
@@ -213,7 +220,7 @@ const MODS={
 function openModule(k){const m=MODS[k];if(!m)return;if(k==='homework'){showHomeworkForm();$('homeworkForm').scrollIntoView({behavior:'smooth'});return}if(k==='attendance'){$('myAttendanceCard').scrollIntoView({behavior:'smooth'});return}if(k==='timetable'){$('timetableList').scrollIntoView({behavior:'smooth'});return}if(m[3])location.href=m[3]}
 function renderProfile(){const s=me,classes=arrays(s,'assignedClasses','classes'),subs=arrays(s,'assignedSubjects','subjects');$('welcome').textContent='Welcome, '+(s.name||'Teacher');$('designation').textContent=s.designation||s.role||'Teacher';$('speciality').textContent=s.speciality||'Teaching workspace';$('emp').textContent='Employee ID: '+(s.employeeId||'—');$('qual').textContent='Qualification: '+(s.qualification||'—');$('date').textContent='Joined: '+(s.joiningDate||'—');$('classChips').innerHTML=classes.map(x=>`<span class="chip">${esc(x)}</span>`).join('')||'<span class="chip">No classes assigned yet</span>';if(s.photo||s.photoUrl)$('photoWrap').innerHTML=`<img class="photo" src="${esc(s.photo||s.photoUrl)}" alt="Teacher photo">`;else $('photoWrap').innerHTML=`<div id="fallback" class="fallback">${initials(s.name)}</div>`;$('assignedClasses').innerHTML=classes.map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'No classes assigned';$('assignedSubjects').innerHTML=subs.map(x=>`<span class="tag">${esc(x)}</span>`).join('')||'No subjects assigned';renderModules()}
 function renderModules(){$('modules').innerHTML=permissions().map(k=>{const m=MODS[k];return `<a class="module" href="${m[3]||'#'}" onclick="if('${k}'==='homework'){openModule('homework');return false}"><strong>${m[0]} ${m[1]}</strong><span>${m[2]}</span></a>`}).join('')}
-async function listenProfile(){if(unsub){try{unsub()}catch(e){}}unsub=db.collection(STAFF).doc(me.id).onSnapshot(d=>{if(!d.exists||d.data().status==='Inactive'||String(d.data().accessRole||'').toUpperCase()!=='TEACHER')return logout();me={id:d.id,...d.data(),authUid:auth?.currentUser?.uid||d.data().authUid};renderProfile()})}
+async function listenProfile(){if(unsub){try{unsub()}catch(e){}}unsub=db.collection(STAFF).doc(me.id).onSnapshot(d=>{if(!d.exists||d.data().status==='Inactive')return logout(); const x=d.data()||{}; const role=String(x.role||'').trim().toUpperCase(), accessRole=String(x.accessRole||'').trim().toUpperCase(), designation=String(x.designation||x.roleDesignation||'').trim(); if(!(role==='TEACHER'||accessRole==='TEACHER'||(accessRole==='STAFF'&&((role==='TEACHER')||/teacher/i.test(designation)))))return logout();me={id:d.id,...d.data(),authUid:auth?.currentUser?.uid||d.data().authUid};renderProfile()})}
 async function getAll(c){try{const s=await db.collection(c).get();return s.docs.map(d=>({id:d.id,...d.data()}))}catch{return[]}}
 async function refreshAll(){if(!me||!db)return;renderProfile();await Promise.all([loadStaffAttendance(),loadLeaves(),loadStudents(),loadHomework(),loadMessages(),loadNotices(),loadTimetable()])}
 
