@@ -32,53 +32,99 @@
  function show(t,c){$('msg').textContent=t;$('msg').className='login-msg '+c}
  function mode(){const r=role(),staff=r!=='ADMIN';$('idLabel').textContent=staff?'Employee ID':'HOI / Administrator Email';$('identifier').type=staff?'text':'email';$('identifier').placeholder=staff?'Enter Employee ID':'Enter administrator email';$('pwLabel').textContent=staff?'PIN':'Password';$('password').placeholder=staff?'Enter PIN':'Enter password';$('forgotLabel').textContent=staff?'Employee ID':'Administrator Email';$('forgotIdentifier').placeholder=staff?'Enter Employee ID':'Enter administrator email'}
  roles.forEach(x=>x.addEventListener('change',mode));
- async function idx(e){const d=await db.collection('staffLoginIndex').doc(e).get();return d.exists?d.data():null}
+ async function findStaffIndexVariants(eid){
+  const raw=String(eid||'').trim(),variants=[raw,raw.toUpperCase(),raw.toLowerCase()];
+  for(const key of [...new Set(variants.filter(Boolean))]){
+    const d=await db.collection('staffLoginIndex').doc(key).get();
+    if(d.exists)return {id:d.id,...d.data()};
+  }
+  return null;
+ }
+ async function ensurePrimaryFirebase(){
+  if(!window.firebase)throw new Error('Firebase SDK did not load. Check your internet connection and reload the page.');
+  if(!firebase.apps.length){
+    if(!window.GPS_FIREBASE_CONFIG)throw new Error('Firebase configuration is missing.');
+    firebase.initializeApp(window.GPS_FIREBASE_CONFIG);
+  }
+  if(!auth)auth=firebase.auth();
+  if(!db)db=firebase.firestore();
+  return {auth,db};
+ }
  function classify(s){
   const ar=String(s.accessRole||'').trim().toUpperCase();
-  if(ar==='HOI'||ar==='ADMIN') return 'ADMIN';
-  if(ar==='AAYA') return 'AAYA';
-  if(ar==='COOK') return 'COOK';
-  if(ar==='TEACHER'||ar==='STAFF'||ar==='') return 'TEACHER';
+  if(ar==='HOI'||ar==='ADMIN')return'ADMIN';
+  if(ar==='AAYA')return'AAYA';
+  if(ar==='COOK')return'COOK';
+  if(ar==='TEACHER'||ar==='STAFF'||ar==='')return'TEACHER';
   const t=(s.designation||'')+' '+(s.role||'')+' '+(s.staffType||'');
   if(/cook|cook cum helper/i.test(t))return'COOK';
   if(/aaya|ayah/i.test(t))return'AAYA';
   return'TEACHER';
-}
-function normId(v){return String(v||'').trim();}
-async function findStaffIndexVariants(eid){
-  const raw=normId(eid), variants=[raw,raw.toUpperCase(),raw.toLowerCase()];
-  const unique=[...new Set(variants.filter(Boolean))];
-  for(const key of unique){
-    const d=await db.collection('staffLoginIndex').doc(key).get();
-    if(d.exists) return {id:d.id,...d.data()};
-  }
-  return null;
-}
- async function ensurePrimaryFirebase(){
-  if(!window.firebase) throw new Error('Firebase SDK did not load. Check your internet connection and reload the page.');
-  if(!firebase.apps.length) firebase.initializeApp(CONFIG);
-  if(!auth) auth=firebase.auth();
-  if(!db) db=firebase.firestore();
-  if(!auth || typeof auth.signInWithEmailAndPassword!=="function") throw new Error('Firebase Authentication is not available on this page.');
-  return {auth,db};
-}
-async function login(){const r=role(),id=$('identifier').value.trim(),pw=$('password').value;if(!id||!pw)return show('Please enter all required credentials.','err');$('loginBtn').disabled=true;show('Connecting to Firebase…','ok');try{await ensurePrimaryFirebase();await auth.signOut().catch(()=>{});
+ }
+ function saveStaffSessions(s,u,r,id){
+   const now=new Date().toISOString();
+   const common={uid:u.uid,staffId:s.id,employeeId:s.employeeId||id,name:s.name||'',role:r,loginAt:now};
+   // Keep both session formats because existing staff dashboards use the common key
+   // while some teacher pages use the staff-specific key.
+   sessionStorage.setItem('GPSPETHGAM_COMMON_LOGIN_SESSION_V1',JSON.stringify(common));
+   localStorage.setItem('GPSPETHGAM_COMMON_LOGIN_SESSION_V1',JSON.stringify(common));
+   sessionStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify(common));
+   localStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify(common));
+   sessionStorage.setItem('loginRole',r);
+   sessionStorage.setItem('schoolLoginRole',r);
+   sessionStorage.setItem('staffId',s.id);
+   sessionStorage.setItem('employeeId',s.employeeId||id);
+   sessionStorage.setItem('staffAuthUid',u.uid);
+   sessionStorage.setItem('staffSession',JSON.stringify({staffId:s.id,name:s.name||'',employeeId:s.employeeId||id,role:s.accessRole||r,loginAt:now}));
+   return now;
+ }
+ async function login(){
+  const r=role(),id=$('identifier').value.trim(),pw=$('password').value;
+  if(!id||!pw)return show('Please enter all required credentials.','err');
+  $('loginBtn').disabled=true;show('Connecting to Firebase…','ok');
+  try{
+   await ensurePrimaryFirebase();
+   await auth.signOut().catch(()=>{});
    if(r==='ADMIN'){
-     await auth.signInWithEmailAndPassword(id,pw);const u=auth.currentUser,a=await db.collection('admins').doc(u.uid).get();
-     if(!a.exists||!['admin','hoi'].includes(String(a.data().role||'').toLowerCase())||a.data().active!==true)throw new Error('This account is not an active school HOI/Administrator account.');
-     sessionStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify({uid:u.uid,role:'HOI',name:a.data().name||'HOI / Admin',email:u.email}));location.href='index.html';return;
+     await auth.signInWithEmailAndPassword(id,pw);
+     const u=auth.currentUser,a=await db.collection('admins').doc(u.uid).get();
+     if(!a.exists||!['admin','hoi'].includes(String(a.data().role||'').toLowerCase())||a.data().active!==true)
+       throw new Error('This account is not an active school HOI/Administrator account.');
+     const adminSession={uid:u.uid,role:'HOI',name:a.data().name||'HOI / Admin',email:u.email,loginAt:new Date().toISOString()};
+     sessionStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify(adminSession));
+     localStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify(adminSession));
+     location.href='index.html';return;
    }
-   const m=await findStaffIndexVariants(id);if(!m||!m.authEmail||!m.staffId)throw new Error('Staff login is not configured for this Employee ID. Ask the HOI to create/link the Firebase login.');
-   await auth.signInWithEmailAndPassword(String(m.authEmail).toLowerCase(),pw);const u=auth.currentUser,d=await db.collection('staff').doc(m.staffId).get();
-   if(!d.exists||String(d.data().status||'Active').toLowerCase()==='inactive'||d.data().loginEnabled===false){await auth.signOut();throw new Error('Staff record not found, inactive, or login is disabled.')}
-   const s={id:d.id,...d.data()};if(s.authUid&&s.authUid!==u.uid){await auth.signOut();throw new Error('Firebase account is not correctly linked to this staff record.')}
-   if(classify(s)!==r){await auth.signOut();throw new Error('The selected role does not match the staff record.')}
-   const roleSession={uid:u.uid,staffId:s.id,employeeId:s.employeeId||id,name:s.name||'',role:r,loginAt:new Date().toISOString()};
-   sessionStorage.setItem('GPSPETHGAM_ROLE_SESSION_V1',JSON.stringify(roleSession));
-   if(r==='TEACHER') sessionStorage.setItem('GPSPETHGAM_STAFF_SESSION_V2',JSON.stringify({staffId:s.id,name:s.name||'',employeeId:s.employeeId||id,role:s.accessRole||'Staff',loginAt:roleSession.loginAt}));
+   const m=await findStaffIndexVariants(id);
+   if(!m||!m.authEmail||!m.staffId)throw new Error('Staff login is not configured for this Employee ID. Ask the HOI to create/link the Firebase login.');
+   await auth.signInWithEmailAndPassword(String(m.authEmail).toLowerCase(),pw);
+   const u=auth.currentUser,d=await db.collection('staff').doc(m.staffId).get();
+   if(!d.exists||String(d.data().status||'Active').toLowerCase()==='inactive'||d.data().loginEnabled===false){
+     await auth.signOut();throw new Error('Staff record not found, inactive, or login is disabled.');
+   }
+   const s={id:d.id,...d.data()};
+   if(s.authUid&&s.authUid!==u.uid){await auth.signOut();throw new Error('Firebase account is not correctly linked to this staff record.');}
+   if(classify(s)!==r){await auth.signOut();throw new Error('The selected role does not match the staff record. Stored role: '+classify(s)+'.');}
+   const now=saveStaffSessions(s,u,r,id);
+   if(r==='TEACHER')sessionStorage.setItem('GPSPETHGAM_STAFF_SESSION_V2',JSON.stringify({staffId:s.id,name:s.name||'',employeeId:s.employeeId||id,role:s.accessRole||'Staff',loginAt:now}));
    location.href=r==='AAYA'?'Aaya-Dashboard.html':r==='COOK'?'Cook-Dashboard.html':'Staff-Personal-Dashboard-Tr.html';
- }catch(e){show(e.code?e.code+': '+e.message:e.message,'err')}finally{$('loginBtn').disabled=false}}
- async function reset(){const r=role(),id=$('forgotIdentifier').value.trim();if(!id)return show('Enter your email or Employee ID first.','err');$('sendReset').disabled=true;try{let email=id;if(r!=='ADMIN'){const m=await findStaffIndexVariants(id);if(!m||!m.authEmail)throw new Error('No Firebase login is linked to this Employee ID.');email=m.authEmail}await auth.sendPasswordResetEmail(email);show('Password reset email sent to the registered Firebase login address. Check inbox and spam.','ok')}catch(e){show('Could not send reset email: '+e.message,'err')}finally{$('sendReset').disabled=false}}
+  }catch(e){show(e.code?e.code+': '+e.message:e.message,'err')}finally{$('loginBtn').disabled=false}
+ }
+ async function reset(){
+  const r=role(),id=$('forgotIdentifier').value.trim();
+  if(!id)return show('Enter your email or Employee ID first.','err');
+  $('sendReset').disabled=true;
+  try{
+    let email=id;
+    if(r!=='ADMIN'){
+      const m=await findStaffIndexVariants(id);
+      if(!m||!m.authEmail)throw new Error('No Firebase login is linked to this Employee ID.');
+      email=m.authEmail
+    }
+    await auth.sendPasswordResetEmail(email);
+    show('Password reset email sent to the registered Firebase login address. Check inbox and spam.','ok')
+  }catch(e){show('Could not send reset email: '+e.message,'err')}finally{$('sendReset').disabled=false}
+ }
  $('loginBtn').onclick=login;$('sendReset').onclick=reset;$('forgotBtn').onclick=()=>{$('forgotBox').style.display=$('forgotBox').style.display==='block'?'none':'block'};$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});mode();
 })();
 </script></body></html>
