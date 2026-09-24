@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GPS Pethgam Wagoora — Secure Login</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+body{font-family:Arial,sans-serif;background:#eef3f8;margin:0;color:#17324d}.wrap{max-width:520px;margin:6vh auto;padding:20px}.card{background:#fff;border-radius:18px;padding:26px;box-shadow:0 10px 35px #0001}.logo{width:80px;height:80px;object-fit:contain;display:block;margin:auto}.center{text-align:center}.field{margin:14px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input{width:100%;box-sizing:border-box;padding:13px;border:1px solid #ccd7e3;border-radius:10px;font-size:16px}.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.role{border:1px solid #ccd7e3;border-radius:12px;padding:14px;cursor:pointer;text-align:center;font-weight:800}.role.active{border-color:#1769aa;background:#e9f3fb}.btn{border:0;border-radius:10px;padding:13px 16px;font-weight:800;cursor:pointer}.primary{background:#1769aa;color:#fff;width:100%}.muted{color:#65788c;font-size:13px}.status{margin-top:14px;padding:10px;border-radius:10px;background:#f3f6f9;min-height:20px}.err{color:#a11}.ok{color:#176b38}.small{font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+<div class="center"><img class="logo" src="new-logo.png" onerror="this.style.display='none'"><h1>School ERP Login</h1><p class="muted">Government Primary School Pethgam Wagoora</p></div>
+<div class="roles">
+<div id="studentRole" class="role active" onclick="selectRole('STUDENT')">🎓 Student</div>
+<div id="staffRole" class="role" onclick="selectRole('STAFF')">👨‍🏫 Teacher / Staff</div>
+<div id="hoiRole" class="role" onclick="selectRole('HOI')">🏫 HOI</div>
+<div id="adminRole" class="role" onclick="selectRole('ADMIN')">⚙️ System Admin</div>
+</div>
+<div class="field"><label id="identifierLabel">Admission Number / Student ID</label><input id="identifier" autocomplete="username"></div>
+<div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+<button class="btn primary" onclick="login()">Sign In</button>
+<div id="status" class="status"></div>
+<p class="muted small">Attachments are not stored in Firebase Storage. Applications and approval records are Firestore-only.</p>
+</div></div>
+<script>
+const CONFIG = window.firebaseConfig || window.FIREBASE_CONFIG || (typeof firebaseConfig!=='undefined'?firebaseConfig:null);
+const COMMON_SESSION='GPSPETHGAM_COMMON_LOGIN_SESSION_V1';
+const ROLE_SESSION='GPSPETHGAM_ROLE_SESSION_V1';
+const STAFF_SESSION='GPSPETHGAM_STAFF_SESSION_V2';
+let auth,db,role='STUDENT';
+function $(id){return document.getElementById(id)}
+function norm(v){return String(v||'').trim().replace(/\s+/g,'')}
+function upper(v){return String(v||'').trim().toUpperCase()}
+function lower(v){return String(v||'').trim().toLowerCase()}
+function setStatus(t,cls=''){ $('status').className='status '+cls; $('status').textContent=t; }
+function clearSessions(){
+ ['schoolLoginRole','loginRole','adminUid','studentUid','staffId','employeeId','staffAuthUid','staffSession',COMMON_SESSION,ROLE_SESSION,STAFF_SESSION].forEach(k=>sessionStorage.removeItem(k));
+}
+function selectRole(r){
+ role=r;
+ ['studentRole','staffRole','hoiRole','adminRole'].forEach(x=>$(x).classList.remove('active'));
+ $(r==='STUDENT'?'studentRole':r==='STAFF'?'staffRole':r==='HOI'?'hoiRole':'adminRole').classList.add('active');
+ $('identifierLabel').textContent=r==='STUDENT'?'Admission Number / Student ID':r==='STAFF'?'Employee ID':'Firebase Authentication Email';
+ $('identifier').type=r==='STUDENT'||r==='STAFF'?'text':'email';
+ $('identifier').placeholder=r==='STUDENT'?'e.g. GPSPGW-2021-0004':r==='STAFF'?'e.g. TCH-001':'name@example.com';
+ $('password').placeholder=r==='STAFF'?'Firebase Authentication PIN':'Firebase Authentication password';
+}
+function init(){
+ if(!CONFIG)throw new Error('firebase-config.js did not load.');
+ if(!firebase.apps.length)firebase.initializeApp(CONFIG);
+ auth=firebase.auth();db=firebase.firestore();
+}
+async function findStaffIndex(eid){
+ const raw=norm(eid), keys=[raw,upper(raw),raw.toLowerCase(),raw.replace(/-/g,''),upper(raw).replace(/-/g,'')];
+ for(const key of [...new Set(keys)]){
+  if(!key)continue;
+  const d=await db.collection('staffLoginIndex').doc(key).get();
+  if(d.exists)return {id:d.id,...d.data()};
+ }
+ // Compatibility with older index records whose document ID differs from Employee ID.
+ for(const field of ['employeeId','loginId','staffEmployeeId']){
+  for(const value of [raw,upper(raw)]){
+   try{const q=await db.collection('staffLoginIndex').where(field,'==',value).limit(1).get();if(!q.empty)return {id:q.docs[0].id,...q.docs[0].data()};}catch(_){ }
+  }
+ }
+ return null;
+}
+function classifyStaff(s){
+ const vals=[s.accessRole,s.designation,s.role,s.roleDesignation,s.staffType,s.post,s.category,s.employeeType,s.department]
+  .map(v=>upper(v)).filter(Boolean);
+ const joined=vals.join(' | ');
+ if(vals.some(v=>v==='AAYA'||v.includes('AAYA')||v.includes('AYAH')||v.includes('HELPER')))return 'AAYA';
+ if(vals.some(v=>v==='COOK'||v.includes('COOK')||v.includes('MID DAY MEAL')||v.includes('MDM')))return 'COOK';
+ if(vals.some(v=>v==='TEACHER'||v.includes('TEACHER')))return 'TEACHER';
+ if(/TEACHER|TR[-_ ]?\d|MASTER|MISTRESS/.test(joined))return 'TEACHER';
+ return upper(s.accessRole||s.role||'STAFF')||'STAFF';
+}
+function saveStaffSession(u,sid,s,eid,email,staffRole){
+ const sess={
+  uid:u.uid,staffId:sid,employeeId:s.employeeId||eid,name:s.name||u.displayName||'',
+  designation:s.designation||s.roleDesignation||'',accessRole:s.accessRole||staffRole,
+  role:staffRole,authEmail:email,staffAuthUid:u.uid,loginAt:new Date().toISOString()
+ };
+ sessionStorage.setItem(COMMON_SESSION,JSON.stringify(sess));
+ sessionStorage.setItem(STAFF_SESSION,JSON.stringify(sess));
+ sessionStorage.setItem('loginRole',staffRole);
+ sessionStorage.setItem('schoolLoginRole',staffRole);
+ sessionStorage.setItem('staffId',sid);
+ sessionStorage.setItem('employeeId',String(s.employeeId||eid));
+ sessionStorage.setItem('staffAuthUid',u.uid);
+ sessionStorage.setItem('staffSession',JSON.stringify({...s,id:sid,authUid:u.uid}));
+}
+async function loginStudent(id,pw){
+ const idx=await db.collection('studentLoginIndex').doc(id).get();
+ if(!idx.exists)throw new Error('Student login ID was not found.');
+ const email=String(idx.data().authEmail||'').trim().toLowerCase();
+ if(!email)throw new Error('Student login is not configured. Contact the school.');
+ const c=await auth.signInWithEmailAndPassword(email,pw),a=await db.collection('studentAccounts').doc(c.user.uid).get();
+ if(!a.exists)throw new Error('Student account record is missing.');
+ sessionStorage.setItem('schoolLoginRole','STUDENT');sessionStorage.setItem('studentUid',c.user.uid);
+ location.href='Student-Portal.html';
+}
+async function loginStaff(eid,pw){
+ const m=await findStaffIndex(eid);
+ if(!m)throw new Error('No staffLoginIndex record was found for Employee ID '+eid+'. Repair the staff login index in Staff Management.');
+ const email=String(m.authEmail||'').trim().toLowerCase(),sid=String(m.staffId||'').trim();
+ if(!email||!sid)throw new Error('The staffLoginIndex record is incomplete. It must contain authEmail and staffId.');
+ setStatus('Authenticating staff account…','ok');
+ const c=await auth.signInWithEmailAndPassword(email,pw),u=c.user;
+ const d=await db.collection('staff').doc(sid).get();
+ if(!d.exists){await auth.signOut();throw new Error('Linked staff record was not found.');}
+ const s=d.data()||{};
+ if(s.authUid&&String(s.authUid)!==String(u.uid)){await auth.signOut();throw new Error('Firebase account is not correctly linked to this staff record.');}
+ if(s.status==='Inactive'||s.active===false){await auth.signOut();throw new Error('This staff account is inactive.');}
+ if(s.loginEnabled===false){await auth.signOut();throw new Error('Login is disabled for this staff account.');}
+ const staffRole=classifyStaff(s);
+ if(!['TEACHER','AAYA','COOK'].includes(staffRole)){
+  await auth.signOut();throw new Error('This staff record has no supported dashboard role. Set Access Role/Designation to Teacher, Aaya, or Cook.');
+ }
+ clearSessions();
+ saveStaffSession(u,sid,s,eid,email,staffRole);
+ if(staffRole==='TEACHER')location.href='Teacher-Dashboard.html';
+ else if(staffRole==='AAYA')location.href='Aaya-Dashboard.html';
+ else if(staffRole==='COOK')location.href='Cook-Dashboard.html';
+}
+async function loginAdmin(id,pw){
+ const c=await auth.signInWithEmailAndPassword(id,pw),u=c.user;
+ const snap=await db.collection('admins').doc(u.uid).get();
+ if(!snap.exists){await auth.signOut();throw new Error('Administrator record not found.');}
+ const d=snap.data()||{};
+ const ar=lower(d.role||d.accessRole||d.designation||'');
+ if(d.active===false){await auth.signOut();throw new Error('This administrator account is inactive.');}
+ const isAdmin=['admin','system admin','administrator'].includes(ar);
+ const isHoi=['hoi','head of institution','head-of-institution'].includes(ar);
+ if(role==='HOI' && !(isHoi||isAdmin)){await auth.signOut();throw new Error('This account is not configured for HOI access.');}
+ if(role==='ADMIN' && !isAdmin){await auth.signOut();throw new Error('This account is not configured for System Admin access.');}
+ const finalRole=isAdmin&&role==='ADMIN'?'ADMIN':'HOI';
+ clearSessions();
+ const sess={uid:u.uid,role:finalRole,accessRole:ar,name:d.name||'HOI / Admin',email:u.email||id,loginAt:new Date().toISOString()};
+ sessionStorage.setItem(ROLE_SESSION,JSON.stringify(sess));
+ sessionStorage.setItem('schoolLoginRole',finalRole);sessionStorage.setItem('loginRole',finalRole);sessionStorage.setItem('adminUid',u.uid);
+ // The original ERP admin page is index.html and accepts admins.role === 'admin'.
+ // HOI has its separate HOI-Dashboard.html.
+ if(finalRole==='ADMIN')location.href='index.html';
+ else location.href='HOI-Dashboard.html';
+}
+async function login(){
+ try{
+  setStatus('Signing in…');
+  if(!auth)init();
+  const id=$('identifier').value.trim(),pw=$('password').value;
+  if(!id||!pw)throw new Error('Enter the login details.');
+  if(auth.currentUser)await auth.signOut().catch(()=>{});
+  if(role==='STUDENT'){await loginStudent(id,pw);return;}
+  if(role==='STAFF'){await loginStaff(id,pw);return;}
+  await loginAdmin(id,pw);
+ }catch(e){
+  try{if(auth&&auth.currentUser)await auth.signOut()}catch(_){ }
+  setStatus(e.message||'Login failed.','err');
+ }
+}
+selectRole('STUDENT');
+</script>
+</body>
+</html>
