@@ -1,14 +1,22 @@
-HOI Dashboard Login Fix
+Cook Dashboard — Shared Firebase Config / Deep Fix
 
-Problem fixed:
-The old HOI dashboard checked auth.currentUser immediately. Firebase Auth may still be restoring the persisted session after page navigation, so auth.currentUser was temporarily null and the dashboard redirected back to Role-Login.html, appearing as an empty login form.
+Included files:
+- Cook-Dashboard.html
+- firebase-config.js
+- README.txt
 
-Fix:
-- Waits for Firebase onAuthStateChanged before deciding that the user is logged out.
-- Uses LOCAL Firebase Auth persistence.
-- Verifies admins/{uid} after the authenticated user is restored.
-- Accepts admin/hoi/head of institution role values.
-- Preserves the common ADMIN session.
-- Keeps the original HOI approval queues and actions.
+Changes applied without changing Role-Login.html or login routing:
+1. Removed duplicated Firebase config from the dashboard.
+2. Dashboard now loads the shared firebase-config.js.
+3. Rice Stock reads are strictly scoped to cookId == the logged-in staff document ID.
+4. Monthly MDM Statement now reads only this Cook's riceStock records.
+5. Existing MDM, rice entry, equipment, notices/calendar, attendance and leave workflows are preserved.
+6. Firebase Auth restoration and Common Login session handling are preserved.
 
-Replace the existing HOI-Dashboard.html with the supplied HOI-Dashboard.html. Keep firebase-config.js in the same folder.
+Important Firestore requirement:
+- riceStock documents written by this dashboard contain cookId and cookAuthUid.
+- Firestore Rules must independently enforce that a Cook can only read/write their own records.
+- Do not rely on browser-side filters as the security boundary.
+
+Deployment:
+Keep Cook-Dashboard.html and firebase-config.js in the same directory. If your project already has an approved shared firebase-config.js, use that file instead of the included copy, provided it defines FIREBASE_CONFIG.
