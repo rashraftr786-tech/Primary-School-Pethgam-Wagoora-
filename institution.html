@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3f3f91">
+<title>Institution Settings — GPS Pethgam Wagoora</title>
+<link rel="icon" href="new-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+:root{--primary:#3f3f91;--primary2:#315ee8;--soft:#eef0ff;--bg:#f3f6fb;--card:#fff;--line:#e0e6ef;--text:#26364d;--muted:#718096;--ok:#087d56;--err:#c33354;--warn:#9a6500;--shadow:0 10px 28px rgba(25,35,70,.08)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:14px}.wrap{width:min(1050px,100%);margin:0 auto;padding:0 14px 36px}.top{background:linear-gradient(135deg,#3f3f91,#315ee8);color:#fff;border-radius:0 0 28px 28px;padding:18px 18px 22px;box-shadow:0 10px 30px rgba(45,56,125,.2)}.toprow{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px;min-width:0}.brand img{width:52px;height:52px;object-fit:contain;border-radius:14px;background:#fff;padding:5px}.brand h1{font-size:19px;margin:0;line-height:1.2}.brand p{font-size:10px;margin:4px 0 0;opacity:.85}.top-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.top-actions a,.top-actions button{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.13);color:#fff;text-decoration:none;border-radius:11px;padding:9px 11px;font-weight:800;font-size:11px;cursor:pointer}.hero{margin-top:17px}.hero small{display:block;opacity:.82;font-size:10px;font-weight:700}.hero strong{display:block;font-size:24px;margin-top:3px}.hero span{display:block;font-size:11px;opacity:.85;margin-top:4px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.section{margin-top:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;font-size:16px}.section-title i{color:var(--primary2);margin-right:6px}.sub{color:var(--muted);font-size:11px;line-height:1.55;margin:0 0 12px}.field{margin-top:10px}.field:first-child{margin-top:0}.field label{display:block;font-size:10px;font-weight:850;color:#526075;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;border:1px solid #d6dee9;background:#fff;color:var(--text);border-radius:11px;padding:10px 11px;outline:none;font:inherit;font-size:12px}.field textarea{min-height:82px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#7586e8;box-shadow:0 0 0 3px rgba(63,63,145,.08)}.field small{display:block;color:var(--muted);font-size:9px;margin-top:4px;line-height:1.4}.checkrow{display:flex;align-items:flex-start;gap:9px;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fafbfe}.checkrow input{margin-top:3px}.checkrow b{display:block;font-size:11px}.checkrow span{display:block;color:var(--muted);font-size:9px;margin-top:2px;line-height:1.4}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn{border:0;border-radius:11px;padding:10px 14px;background:var(--primary2);color:#fff;font-weight:850;cursor:pointer;font-size:11px}.btn.secondary{background:#eef2f7;color:#46566e}.btn.success{background:#087d56}.btn.danger{background:#c33354}.btn:disabled{opacity:.55;cursor:not-allowed}.status{margin-top:10px;border:1px solid var(--line);background:#f7f9fc;border-radius:11px;padding:10px;font-size:10px;line-height:1.5}.ok{color:var(--ok);font-weight:800}.err{color:var(--err);font-weight:800}.warn{color:var(--warn);font-weight:800}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:850;background:#eef2f7;color:#56657b}.badge.ok{background:#e9f8f1;color:var(--ok)}.badge.warn{background:#fff4d8;color:var(--warn)}.badge.err{background:#fdecef;color:var(--err)}.stat{padding:12px;border:1px solid var(--line);border-radius:13px;background:#fafbfe}.stat b{display:block;font-size:18px;color:var(--primary)}.stat span{display:block;color:var(--muted);font-size:9px;margin-top:3px}.divider{height:1px;background:var(--line);margin:15px 0}.notice{border-left:4px solid var(--primary2);background:#f5f7ff;border-radius:11px;padding:11px;font-size:10px;line-height:1.55;color:#4f5e75}.danger{border-left-color:var(--err);background:#fff4f6}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;font-size:10px}.table th,.table td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}.table th{font-size:9px;color:var(--muted);white-space:nowrap}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.footer{text-align:center;color:var(--muted);font-size:9px;margin:22px 0}.locked{display:none}.loading{opacity:.7}.backline{margin-top:12px}.backline a{color:#fff;font-size:10px;text-decoration:none;font-weight:800}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.hidden{display:none!important}@media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}.toprow{align-items:flex-start}.brand h1{font-size:16px}.hero strong{font-size:21px}}@media(max-width:460px){.summary{grid-template-columns:1fr}.top-actions{width:100%;justify-content:flex-start}.top-actions a,.top-actions button{flex:1;text-align:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="toprow">
+    <div class="brand">
+      <img src="new-logo.png" alt="School logo" onerror="this.style.display='none'">
+      <div><h1>Government Primary School Pethgam Wagoora</h1><p>School Administration ERP • Zone Wagoora • District Baramulla</p></div>
+    </div>
+    <div class="top-actions">
+      <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+      <button id="signOutBtn" type="button"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+    </div>
+  </div>
+  <div class="hero"><small>SYSTEM ADMINISTRATION</small><strong>Institution Settings</strong><span>Central school identity, contact, academic defaults and attendance security configuration.</span></div>
+  <div class="backline"><a href="index.html"><i class="fa-solid fa-house"></i> Return to the School ERP dashboard</a></div>
+</header>
+
+<section id="loginState" class="section card">
+  <h2 class="section-title"><span><i class="fa-solid fa-lock"></i> Administrator access</span><span class="badge warn">Checking</span></h2>
+  <p class="sub">This settings page uses the same Firebase project and administrator authentication as the linked index.html dashboard. No separate institution login is created here.</p>
+  <div id="accessMsg" class="status loading">Checking Firebase authentication and administrator authorization…</div>
+</section>
+
+<main id="settingsApp" class="locked">
+<section class="section">
+  <div class="summary">
+    <div class="stat"><b id="schoolNameSummary">—</b><span>Institution name</span></div>
+    <div class="stat"><b id="schoolCodeSummary">—</b><span>School code / UDISE</span></div>
+    <div class="stat"><b id="headSummary">—</b><span>Head of Institution</span></div>
+    <div class="stat"><b id="attendanceSummary">—</b><span>Attendance security</span></div>
+  </div>
+</section>
+
+<section class="section grid2">
+  <div class="card">
+    <h2 class="section-title"><span><i class="fa-solid fa-school"></i> School identity</span><span id="profileBadge" class="badge">Loading</span></h2>
+    <p class="sub">These fields are stored in the main institution profile document and can be reused by ERP pages and official documents.</p>
+    <div class="field"><label>Official School Name</label><input id="schoolName" maxlength="180" placeholder="Government Primary School Pethgam Wagoora"></div>
+    <div class="field"><label>School Code</label><input id="schoolCode" maxlength="80" placeholder="School code"></div>
+    <div class="field"><label>UDISE / UDISE+ Code</label><input id="udiseCode" maxlength="80" placeholder="UDISE code"></div>
+    <div class="field"><label>Institution Type</label><select id="institutionType"><option value="Government Primary School">Government Primary School</option><option value="Government School">Government School</option><option value="Primary School">Primary School</option><option value="Middle School">Middle School</option><option value="High School">High School</option><option value="Higher Secondary School">Higher Secondary School</option><option value="Other">Other</option></select></div>
+    <div class="field"><label>Management</label><input id="management" maxlength="120" placeholder="Government"></div>
+    <div class="field"><label>School Category / Level</label><input id="schoolCategory" maxlength="120" placeholder="Primary"></div>
+    <div class="field"><label>Medium of Instruction</label><input id="medium" maxlength="120" placeholder="English / Urdu / Kashmiri / Other"></div>
+    <div class="field"><label>School Motto</label><input id="motto" maxlength="180" placeholder="Learn to Lead"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title"><span><i class="fa-solid fa-location-dot"></i> Location & contact</span><span class="badge">Institution profile</span></h2>
+    <p class="sub">Keep official contact and administrative location information here. Attendance geofence coordinates are configured separately below.</p>
+    <div class="field"><label>Address</label><textarea id="address" placeholder="Full school postal address"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label>Village / Locality</label><input id="village" maxlength="100"></div>
+      <div class="field"><label>PIN Code</label><input id="pinCode" maxlength="20"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Zone</label><input id="zone" maxlength="100" placeholder="Wagoora"></div>
+      <div class="field"><label>District</label><input id="district" maxlength="100" placeholder="Baramulla"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Block</label><input id="block" maxlength="100"></div>
+      <div class="field"><label>Cluster</label><input id="cluster" maxlength="100"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Official Phone</label><input id="phone" type="tel" maxlength="40"></div>
+      <div class="field"><label>Official Email</label><input id="officialEmail" type="email" maxlength="160"></div>
+    </div>
+    <div class="field"><label>Website / Official URL</label><input id="website" type="url" maxlength="240" placeholder="https://…"></div>
+  </div>
+</section>
+
+<section class="section grid2">
+  <div class="card">
+    <h2 class="section-title"><span><i class="fa-solid fa-user-tie"></i> Head of Institution</span></h2>
+    <p class="sub">Administrative identity used for institution records and official documents.</p>
+    <div class="field"><label>Name</label><input id="headName" maxlength="160"></div>
+    <div class="field"><label>Designation</label><input id="headDesignation" maxlength="120" value="Head of Institution"></div>
+    <div class="grid2">
+      <div class="field"><label>Employee ID</label><input id="headEmployeeId" maxlength="80"></div>
+      <div class="field"><label>Official Contact</label><input id="headContact" maxlength="60"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2 class="section-title"><span><i class="fa-solid fa-calendar-days"></i> Academic / ERP defaults</span></h2>
+    <p class="sub">Defaults used by modules that read the institution profile. Individual modules may maintain their own operational settings.</p>
+    <div class="grid2">
+      <div class="field"><label>Academic Session</label><input id="academicSession" maxlength="40" placeholder="2026-27"></div>
+      <div class="field"><label>School Working Days / Week</label><input id="workingDays" type="number" min="1" max="7" value="6"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>School Opening Time</label><input id="openingTime" type="time" value="09:00"></div>
+      <div class="field"><label>School Closing Time</label><input id="closingTime" type="time" value="15:00"></div>
+    </div>
+    <div class="checkrow"><input id="erpActive" type="checkbox" checked><div><b>Institution ERP active</b><span>Keeps the institution profile marked as active for ERP pages that use this flag.</span></div></div>
+  </div>
+</section>
+
+<section class="section card" id="attendanceSecurity">
+  <h2 class="section-title"><span><i class="fa-solid fa-location-crosshairs"></i> Teacher Attendance Security</span><span id="attendanceBadge" class="badge">Loading</span></h2>
+  <p class="sub">This section is based directly on the attendance-security package inspected in the supplied ZIP. Teacher attendance is intended to be accepted only after server-side location validation and WebAuthn user verification. The Cloud Function writes attendance; the teacher browser should not write staffAttendance directly.</p>
+  <div class="notice"><b>Security policy:</b> the backend forces geofence and WebAuthn to remain required. The device chooses the supported user-verification method such as fingerprint, Face ID, Windows Hello, device PIN or another supported authenticator. Raw biometric data is not sent to this page.</div>
+  <div class="grid3" style="margin-top:12px">
+    <div class="field"><label>School Latitude</label><input id="geoLat" type="number" step="any" placeholder="e.g. 34.0000000"></div>
+    <div class="field"><label>School Longitude</label><input id="geoLng" type="number" step="any" placeholder="e.g. 74.8000000"></div>
+    <div class="field"><label>Allowed Radius (metres)</label><input id="geoRadius" type="number" min="20" max="5000" value="100"></div>
+  </div>
+  <div class="grid3">
+    <div class="field"><label>Maximum GPS Accuracy (metres)</label><input id="geoAccuracy" type="number" min="10" max="1000" value="100"></div>
+    <div class="field"><label>Geofence required</label><input id="geoRequired" type="text" readonly value="Required"></div>
+    <div class="field"><label>WebAuthn required</label><input id="webauthnRequired" type="text" readonly value="Required"></div>
+  </div>
+  <div class="divider"></div>
+  <h3 style="font-size:13px;margin:0 0 4px">Attendance timing</h3>
+  <p class="sub">These timing values are read by the Teacher Dashboard from the same <span class="mono">institution/attendanceSettings</span> document.</p>
+  <div class="grid3">
+    <div class="field"><label>Check-in Start</label><input id="checkInStart" type="time" value="09:00"></div>
+    <div class="field"><label>Check-in Cutoff</label><input id="checkInCutoff" type="time" value="09:35"></div>
+    <div class="field"><label>Expected Check-out</label><input id="checkOutExpected" type="time" value="15:00"></div>
+  </div>
+  <div class="grid3">
+    <div class="field"><label>Check-out End</label><input id="checkOutEnd" type="time" value="17:00"></div>
+    <div></div><div></div>
+  </div>
+  <div class="actions">
+    <button class="btn secondary" id="useLocationBtn" type="button"><i class="fa-solid fa-location-crosshairs"></i> Use my current location</button>
+    <button class="btn success" id="saveGeoBtn" type="button"><i class="fa-solid fa-shield-halved"></i> Save Attendance Security</button>
+    <button class="btn secondary" id="refreshGeoBtn" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+  </div>
+  <div id="geoMsg" class="status">Loading attendance settings…</div>
+</section>
+
+<section class="section card">
+  <h2 class="section-title"><span><i class="fa-solid fa-floppy-disk"></i> Save institution profile</span><span id="saveBadge" class="badge">Ready</span></h2>
+  <p class="sub">The profile is saved to <span class="mono">institution/profile</span>. Existing operational attendance settings remain in <span class="mono">institution/attendanceSettings</span>.</p>
+  <div class="actions">
+    <button class="btn" id="saveProfileBtn" type="button"><i class="fa-solid fa-save"></i> Save Institution Settings</button>
+    <button class="btn secondary" id="reloadBtn" type="button"><i class="fa-solid fa-rotate"></i> Reload saved values</button>
+    <button class="btn secondary" id="backBtn" type="button"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+  </div>
+  <div id="profileMsg" class="status">No changes have been saved yet.</div>
+</section>
+
+<section class="section card">
+  <h2 class="section-title"><span><i class="fa-solid fa-circle-info"></i> Configuration status</span></h2>
+  <div class="table-wrap"><table class="table"><thead><tr><th>Configuration</th><th>Document</th><th>Status</th><th>Last updated</th></tr></thead><tbody>
+    <tr><td>Institution profile</td><td class="mono">institution/profile</td><td id="profileStatus">Checking…</td><td id="profileUpdated">—</td></tr>
+    <tr><td>Teacher attendance security</td><td class="mono">institution/attendanceSettings</td><td id="geoStatus">Checking…</td><td id="geoUpdated">—</td></tr>
+  </tbody></table></div>
+</section>
+</main>
+
+<footer class="footer">Government Primary School Pethgam Wagoora • Learn to Lead • School ERP</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const CONFIG=window.GPS_FIREBASE_CONFIG||window.firebaseConfig||window.FIREBASE_CONFIG||(typeof firebaseConfig!=='undefined'?firebaseConfig:null);
+let auth=null,db=null,currentUser=null;
+const PROFILE_DOC='profile';
+const ATT_DOC='attendanceSettings';
+const ADMIN_BOOTSTRAP='pspathgam@gmail.com';
+
+function errorText(e){return e?.message||e?.code||String(e)}
+function safeJson(v){
+  try{
+    if(v==null)return '';
+    if(typeof v==='string')return v;
+    return JSON.stringify(v,null,2);
+  }catch(_){return String(v)}
+}
+function renderBackendError(e,prefix){
+  const code=String(e?.code||'unknown');
+  const message=String(e?.message||'No error message returned.');
+  const details=e?.details;
+  let detailText=safeJson(details);
+  let backendCode='';
+  if(details&&typeof details==='object'&&!Array.isArray(details)){
+    backendCode=details.backendCode||details.code||details.errorCode||'';
+  }
+  const lines=[];
+  lines.push('<div><b>'+esc(prefix||'Operation failed')+'</b></div>');
+  lines.push('<div style="margin-top:6px"><b>Firebase Functions code:</b> <span class="mono">'+esc(code)+'</span></div>');
+  if(backendCode)lines.push('<div><b>Backend error code:</b> <span class="mono">'+esc(backendCode)+'</span></div>');
+  lines.push('<div><b>Message:</b> '+esc(message)+'</div>');
+  if(detailText)lines.push('<details style="margin-top:8px"><summary><b>Backend details</b></summary><pre style="white-space:pre-wrap;overflow:auto;margin:8px 0 0;padding:10px;border:1px solid var(--line);border-radius:8px;background:#f8f9fc;font-size:12px">'+esc(detailText)+'</pre></details>');
+  $('geoMsg').innerHTML='<div class="err">'+lines.join('')+'</div>';
+  console.error('setTeacherAttendanceGeofence failed',{code,message,details:e?.details,name:e?.name,stack:e?.stack});
+}
+function stampText(v){try{if(v?.toDate)return v.toDate().toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'});return v?String(v):'—'}catch{return '—'}}
+function setAccess(t,kind){$('accessMsg').innerHTML='<span class="'+kind+'">'+esc(t)+'</span>'}
+function isAdminRecord(a,u){
+  if(!u)return false;
+  const role=String(a?.role||a?.accessRole||'').trim().toLowerCase();
+  const active=a?.active!==false;
+  const bootstrap=String(u.email||'').trim().toLowerCase()===ADMIN_BOOTSTRAP;
+  return active&&(bootstrap||role==='admin'||role==='hoi'||role==='head of institution');
+}
+async function init(){
+  try{
+    if(!window.firebase)throw new Error('Firebase SDK did not load.');
+    if(!CONFIG)throw new Error('firebase-config.js did not expose a Firebase configuration.');
+    if(!firebase.apps.length)firebase.initializeApp(CONFIG);
+    auth=firebase.auth();db=firebase.firestore();
+    $('signOutBtn').onclick=async()=>{await auth.signOut().catch(()=>{});location.href='index.html'};
+    $('backBtn').onclick=()=>location.href='index.html';
+    $('reloadBtn').onclick=loadAll;
+    $('saveProfileBtn').onclick=saveProfile;
+    $('useLocationBtn').onclick=useLocation;
+    $('saveGeoBtn').onclick=saveGeo;
+    $('refreshGeoBtn').onclick=loadAttendanceSettings;
+    auth.onAuthStateChanged(async u=>{
+      currentUser=u||null;
+      if(!u){$('settingsApp').classList.add('locked');$('loginState').style.display='block';$('loginState').querySelector('.badge').textContent='Sign in required';setAccess('Please sign in through the administrator login on index.html before opening Institution Settings.','err');return}
+      try{
+        const snap=await db.collection('admins').doc(u.uid).get();
+        const a=snap.exists?snap.data()||{}:{};
+        if(!isAdminRecord(a,u))throw new Error('This Firebase account does not have active school administrator / HOI access.');
+        $('loginState').style.display='none';$('settingsApp').classList.remove('locked');$('signOutBtn').style.display='inline-block';
+        await loadAll();
+      }catch(e){$('settingsApp').classList.add('locked');$('loginState').style.display='block';$('loginState').querySelector('.badge').textContent='Access denied';setAccess(errorText(e),'err')}
+    });
+  }catch(e){setAccess(errorText(e),'err')}
+}
+
+const fields={
+ schoolName:'schoolName',schoolCode:'schoolCode',udiseCode:'udiseCode',institutionType:'institutionType',management:'management',schoolCategory:'schoolCategory',medium:'medium',motto:'motto',
+ address:'address',village:'village',pinCode:'pinCode',zone:'zone',district:'district',block:'block',cluster:'cluster',phone:'phone',officialEmail:'officialEmail',website:'website',
+ headName:'headName',headDesignation:'headDesignation',headEmployeeId:'headEmployeeId',headContact:'headContact',academicSession:'academicSession',workingDays:'workingDays',openingTime:'openingTime',closingTime:'closingTime'
+};
+function val(id){return $(id).value.trim()}
+function profilePayload(){
+  return {
+    schoolName:val('schoolName'),schoolCode:val('schoolCode'),udiseCode:val('udiseCode'),institutionType:val('institutionType'),management:val('management'),schoolCategory:val('schoolCategory'),medium:val('medium'),motto:val('motto'),
+    address:val('address'),village:val('village'),pinCode:val('pinCode'),zone:val('zone'),district:val('district'),block:val('block'),cluster:val('cluster'),phone:val('phone'),officialEmail:val('officialEmail'),website:val('website'),
+    headName:val('headName'),headDesignation:val('headDesignation'),headEmployeeId:val('headEmployeeId'),headContact:val('headContact'),academicSession:val('academicSession'),workingDays:Number(val('workingDays')||6),openingTime:val('openingTime'),closingTime:val('closingTime'),active:$('erpActive').checked,
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:currentUser.uid
+  };
+}
+function fillProfile(x){
+  Object.keys(fields).forEach(k=>{$(fields[k]).value=x?.[k]??''});
+  $('workingDays').value=x?.workingDays??6;$('openingTime').value=x?.openingTime||'09:00';$('closingTime').value=x?.closingTime||'15:00';$('erpActive').checked=x?.active!==false;
+  $('schoolNameSummary').textContent=x?.schoolName||'Not configured';$('schoolCodeSummary').textContent=x?.schoolCode||x?.udiseCode||'Not configured';$('headSummary').textContent=x?.headName||'Not configured';
+  $('profileBadge').textContent=x?.schoolName?'Configured':'Not configured';$('profileBadge').className='badge '+(x?.schoolName?'ok':'warn');
+}
+async function loadProfile(){
+  const d=await db.collection('institution').doc(PROFILE_DOC).get();
+  const x=d.exists?d.data()||{}:{};fillProfile(x);
+  $('profileStatus').innerHTML=d.exists?'<span class="ok">Configured</span>':'<span class="warn">Not configured</span>';
+  $('profileUpdated').textContent=stampText(x.updatedAt);
+  $('saveBadge').textContent=d.exists?'Loaded':'New profile';
+}
+async function saveProfile(){
+  if(!currentUser)return;
+  const name=val('schoolName');if(!name){$('profileMsg').innerHTML='<span class="err">Official School Name is required.</span>';return}
+  $('saveProfileBtn').disabled=true;$('saveBadge').textContent='Saving…';
+  try{
+    const payload=profilePayload();
+    await db.collection('institution').doc(PROFILE_DOC).set(payload,{merge:true});
+    $('profileMsg').innerHTML='<span class="ok">✓ Institution profile saved successfully.</span>';
+    $('saveBadge').textContent='Saved';await loadProfile();
+  }catch(e){$('profileMsg').innerHTML='<span class="err">Could not save institution profile: '+esc(errorText(e))+'</span>';$('saveBadge').textContent='Error'}finally{$('saveProfileBtn').disabled=false}
+}
+async function loadAttendanceSettings(){
+  try{
+    const d=await db.collection('institution').doc(ATT_DOC).get(),x=d.exists?d.data()||{}:{};
+    $('geoLat').value=x.geofenceLat??x.latitude??'';$('geoLng').value=x.geofenceLng??x.longitude??'';$('geoRadius').value=x.geofenceRadiusMeters??100;$('geoAccuracy').value=x.maxLocationAccuracyMeters??100;
+    $('checkInStart').value=String(x.checkInStart||'09:00').slice(0,5);$('checkInCutoff').value=String(x.checkInCutoff||'09:35').slice(0,5);$('checkOutExpected').value=String(x.checkOutExpected||'15:00').slice(0,5);$('checkOutEnd').value=String(x.checkOutEnd||'17:00').slice(0,5);
+    $('geoRequired').value=x.requireGeofence===false?'Not required':'Required';$('webauthnRequired').value=x.requireWebAuthn===false?'Not required':'Required';
+    const configured=d.exists&&x.geofenceLat!=null&&x.geofenceLng!=null&&x.requireGeofence!==false&&x.requireWebAuthn!==false;
+    $('attendanceSummary').textContent=configured?'Configured':'Not configured';$('attendanceBadge').textContent=configured?'Configured':'Not configured';$('attendanceBadge').className='badge '+(configured?'ok':'warn');
+    $('geoMsg').innerHTML=d.exists?'Current attendance security configuration loaded.':'attendanceSettings is not configured yet.';
+    $('geoStatus').innerHTML=configured?'<span class="ok">Configured</span>':'<span class="warn">Not configured</span>';$('geoUpdated').textContent=stampText(x.geofenceUpdatedAt);
+  }catch(e){$('attendanceSummary').textContent='Error';$('attendanceBadge').textContent='Error';$('attendanceBadge').className='badge err';$('geoStatus').innerHTML='<span class="err">Read error</span>';$('geoMsg').innerHTML='<span class="err">Could not read attendance settings: '+esc(errorText(e))+'</span>'}
+}
+function useLocation(){
+  if(!navigator.geolocation){$('geoMsg').innerHTML='<span class="err">Location services are not available on this device.</span>';return}
+  $('geoMsg').textContent='Reading current device location…';
+  navigator.geolocation.getCurrentPosition(p=>{$('geoLat').value=Number(p.coords.latitude).toFixed(7);$('geoLng').value=Number(p.coords.longitude).toFixed(7);$('geoMsg').innerHTML='<span class="ok">✓ Current location loaded. Verify that this device is physically at the school before saving.</span>'},e=>$('geoMsg').innerHTML='<span class="err">Location error: '+esc(e.message||String(e))+'</span>',{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+async function saveGeo(){
+  if(!currentUser)return;
+  const lat=Number(val('geoLat')),lng=Number(val('geoLng')),radius=Number(val('geoRadius')),accuracy=Number(val('geoAccuracy'));
+  if(!Number.isFinite(lat)||lat<-90||lat>90||!Number.isFinite(lng)||lng<-180||lng>180){$('geoMsg').innerHTML='<span class="err">Enter a valid school latitude and longitude.</span>';return}
+  if(!Number.isFinite(radius)||radius<20||radius>5000){$('geoMsg').innerHTML='<span class="err">Allowed radius must be between 20 and 5000 metres.</span>';return}
+  if(!Number.isFinite(accuracy)||accuracy<10||accuracy>1000){$('geoMsg').innerHTML='<span class="err">Maximum GPS accuracy must be between 10 and 1000 metres.</span>';return}
+  $('saveGeoBtn').disabled=true;$('geoMsg').textContent='Saving attendance security through the trusted backend…';
+  try{
+    if(!firebase.functions)throw new Error('Firebase Functions SDK is not loaded.');
+    const fn=firebase.functions().httpsCallable('setTeacherAttendanceGeofence');
+    await fn({lat,lng,radiusMeters:radius,maxLocationAccuracyMeters:accuracy});
+    await db.collection('institution').doc(ATT_DOC).set({checkInStart:$('checkInStart').value,checkInCutoff:$('checkInCutoff').value,checkOutExpected:$('checkOutExpected').value,checkOutEnd:$('checkOutEnd').value,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:currentUser.uid},{merge:true});
+    $('geoMsg').innerHTML='<span class="ok">✓ Attendance security saved. Geofence and WebAuthn remain required by the backend.</span>';
+    await loadAttendanceSettings();
+  }catch(e){
+    renderBackendError(e,'Could not save attendance security');
+  }finally{$('saveGeoBtn').disabled=false}
+}
+async function loadAll(){
+  if(!currentUser)return;
+  $('profileMsg').textContent='Loading saved settings…';
+  await Promise.allSettled([loadProfile(),loadAttendanceSettings()]);
+  $('profileMsg').textContent='Saved values loaded from Firebase.';
+}
+window.addEventListener('beforeunload',()=>{});
+init();
+})();
+</script>
+</body>
+</html>
