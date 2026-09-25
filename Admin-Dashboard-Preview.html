@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Dashboard — Preview</title>
+<style>body{font-family:Arial;margin:0;background:#eef3f8;color:#18344f}header{background:#173f63;color:#fff;padding:20px}main{max-width:1200px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:15px;align-items:center}.grid,.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stats{margin-bottom:15px}.card,.tile{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 16px #0001}.tile{text-decoration:none;color:inherit;display:block}.tile span{display:block;color:#6b7d8f;font-size:13px;margin-top:6px}.stat strong{font-size:28px;display:block;margin-top:5px}.muted{color:#6b7d8f;font-size:13px}.preview{background:#fff4c2;color:#6b4b00;border:1px solid #f0d36a;border-radius:10px;padding:11px 13px;margin-bottom:15px;font-weight:700}@media(max-width:800px){.grid,.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.grid,.stats{grid-template-columns:1fr}}</style></head><body>
+<header><div class="top"><div><h1>⚙️ System Admin Dashboard</h1><div>System administration, provisioning and security centre</div></div><button onclick="logout()">Sign out</button></div></header>
+<main>
+<div class="preview">PREVIEW MODE — Firebase Admin authentication is not required for this UI check. No Firebase data is written from this preview.</div>
+<div class="stats"><div class="card stat">Pending Staff Leave<strong id="slc">0</strong></div><div class="card stat">Pending Student Leave<strong id="stlc">0</strong></div><div class="card stat">Pending Certificates<strong id="cc">0</strong></div><div class="card stat">Unread Notifications<strong id="nc">0</strong></div></div>
+<section class="card"><h2>School Operations</h2><div class="grid">
+<a class="tile" href="#staff">📝 Staff Leave<span>Review teacher/staff applications</span></a><a class="tile" href="#student">🎒 Student Leave<span>Review student applications</span></a><a class="tile" href="#cert">📜 Certificates<span>Review student certificate requests</span></a><a class="tile" href="Staff-Attendence.html">🕘 Staff Attendance<span>Attendance records</span></a>
+<a class="tile" href="attendance.html">👥 Student Attendance<span>Attendance management</span></a><a class="tile" href="student-profile.html">🎓 Student Records<span>Student profiles</span></a><a class="tile" href="Staff-Management.html">👨‍🏫 Staff Records<span>Staff master register</span></a><a class="tile" href="notices.html">📢 Notices<span>Notices and circulars</span></a>
+<a class="tile" href="school-calendar.html">📅 Calendar<span>Academic events</span></a><a class="tile" href="library.html">📚 Library<span>Library operations</span></a><a class="tile" href="timetables.html">🕒 Timetable<span>School timetable</span></a><a class="tile" href="HOI-Applications.html">📄 Official Applications<span>Official correspondence</span></a>
+</div></section>
+<section class="card"><h2>System Administration</h2><div class="grid">
+<a class="tile" href="Staff-Management.html">🛠 Staff provisioning<span>Authentication and staff indexes</span></a>
+<a class="tile" href="Student-Account-Setup.html">🔐 Student provisioning<span>Student login administration</span></a>
+<a class="tile" href="audit.html">🛡 Audit<span>Security and audit records</span></a>
+<a class="tile" href="institution.html">🏫 Institution<span>System configuration</span></a>
+</div></section>
+<section class="card"><h2>Preview Notice</h2><div class="muted">This page is only for checking the dashboard layout before an Admin Firebase account is configured. Leave approval, notification, certificate actions and other Firebase operations are disabled in this preview.</div></section>
+</main>
+<script>
+function logout(){location.reload()}
+</script></body></html>
