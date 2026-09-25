@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3f3f91">
+<title>GPS Pethgam Wagoora — School ERP</title>
+<link rel="icon" href="new-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+:root{
+  --primary:#3f3f91;--primary-dark:#303073;--primary-soft:#eeeef9;--accent:#f2a33a;
+  --ink:#252a55;--muted:#7b8197;--bg:#eef3f7;--surface:#fff;--line:#e3e6ee;
+  --success:#299b55;--danger:#c93636;--warning:#a66a00;
+  --shadow:0 5px 16px rgba(39,45,87,.10);--shadow-soft:0 2px 8px rgba(39,45,87,.07);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:82px}
+button,input,select,textarea{font:inherit}a{text-decoration:none;color:inherit}button{cursor:pointer}
+.wrap{width:min(1180px,100%);margin:auto;padding:12px 14px 22px}
+.top{position:relative;overflow:hidden;min-height:225px;color:#fff;background:linear-gradient(145deg,#383882 0%,#46479d 70%,#4a4b9f 100%);border-radius:0 0 42% 42% / 0 0 13% 13%;padding:22px 22px 76px;box-shadow:0 10px 28px rgba(50,51,119,.18)}
+.top:after{content:"";position:absolute;left:-5%;right:-5%;bottom:-58px;height:112px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
+.toprow{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}.brand img{width:66px;height:66px;flex:0 0 66px;object-fit:contain;background:#fff;border-radius:50%;padding:7px;border:3px solid rgba(255,255,255,.35);box-shadow:0 4px 12px rgba(0,0,0,.14)}
+.brand h1{margin:0;font-size:21px;line-height:1.2;font-weight:800;letter-spacing:-.2px}.brand p{margin:5px 0 0;font-size:12px;opacity:.9;line-height:1.45}
+.auth{position:relative;z-index:3;text-align:right;font-size:11px;white-space:nowrap}.auth button,.role-link{border:0;background:#fff;color:var(--primary);border-radius:12px;padding:8px 12px;font-weight:800;margin-top:7px;box-shadow:0 3px 10px rgba(0,0,0,.10)}
+.welcome{margin-top:22px;position:relative;z-index:2}.welcome small{display:block;font-size:13px;opacity:.85}.welcome strong{display:block;font-size:23px;line-height:1.15}.welcome span{display:inline-flex;align-items:center;gap:7px;margin-top:7px;font-size:11px;font-weight:700;opacity:.92}
+.login{position:relative;z-index:5;background:#fff;color:var(--ink);border-radius:18px;padding:16px;margin:0 auto;max-width:520px;box-shadow:var(--shadow);display:none}
+.login-title{display:flex;align-items:center;gap:9px;font-weight:800;margin-bottom:8px}.login-title i{color:var(--primary)}
+.login input{padding:12px 13px;border:1px solid var(--line);border-radius:11px;width:100%;margin:5px 0 8px;font-size:14px;outline:none}.login input:focus{border-color:#898bd0;box-shadow:0 0 0 3px #eeeeff}
+.login-actions{display:flex;gap:8px;flex-wrap:wrap}.login button{padding:11px 14px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:800}.login button.secondary{background:var(--success)}
+.message{margin-top:9px;padding:9px 10px;border-radius:9px;font-size:12px;display:none}.err{background:#fff0f0;color:var(--danger)}.ok{background:#eaf8ef;color:var(--success)}
+#erp{display:none}.dashboard{position:relative;z-index:4;margin-top:-42px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0 0 15px}.stat{background:rgba(255,255,255,.96);border:1px solid rgba(227,230,238,.95);border-radius:16px;padding:12px;box-shadow:var(--shadow-soft)}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.stat i{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:var(--primary-soft);color:var(--primary);font-size:14px}.stat b{font-size:21px;display:block;color:var(--primary);line-height:1.1}.stat span{display:block;margin-top:7px;font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.25px}
+.quick-title,.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:17px 3px 10px}.quick-title h2,.section-head h2{font-size:17px;margin:0;color:var(--ink)}.quick-title h2 i,.section-head h2 i{color:var(--accent);margin-right:7px}.quick-title small,.section-head span{color:var(--muted);font-size:11px}
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.quick-card,.card{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-soft);transition:transform .16s,box-shadow .16s,border-color .16s}.quick-card:hover,.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#d5d7ed}
+.quick-card{min-height:108px;border-radius:17px;padding:13px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.tile-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;margin-bottom:8px;color:var(--primary);background:linear-gradient(145deg,#f0f0fc,#fff);border:1px solid #e1e2f1;font-size:21px}.quick-card strong{font-size:12px;line-height:1.25}.quick-card small{margin-top:3px;font-size:9px;color:var(--muted)}
+.notice-strip{display:flex;align-items:center;gap:10px;background:#fff;border-radius:13px;padding:12px 13px;margin:15px 0 17px;box-shadow:var(--shadow-soft);border:1px solid var(--line);cursor:pointer}.notice-strip .bell{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#f3f3fb;color:var(--primary)}.notice-strip strong{font-size:13px}.notice-strip small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.notice-strip .arrow{margin-left:auto;color:var(--muted)}
+.section{margin:20px 0;scroll-margin-top:15px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.card{min-height:108px;border-radius:16px;padding:13px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.card i{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#f1f1fb;color:var(--primary);font-size:20px;margin-bottom:8px}.card strong{font-size:11.5px;line-height:1.25}.card small{font-size:9.5px;color:var(--muted);margin-top:4px;line-height:1.25}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 11px;box-shadow:var(--shadow-soft);color:var(--ink);font-weight:800;font-size:11px;text-align:center;transition:.16s}.tool:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.tool i{color:var(--primary);margin-right:6px}
+.admin-panel{background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px;box-shadow:var(--shadow-soft);margin:20px 0}.admin-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.admin-title h2{margin:0;font-size:17px}.admin-title small{color:var(--muted);font-size:10px}.admin-metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-bottom:12px}.metric{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fafbfe}.metric b{font-size:20px;color:var(--primary)}.metric span{display:block;color:var(--muted);font-size:9px;font-weight:800;margin-top:4px}.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.admin-box{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.admin-box h3{margin:0 0 8px;font-size:14px}.searchbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}.searchbar input,.searchbar select,.admin-box textarea{padding:9px;border:1px solid var(--line);border-radius:8px;background:#fff;min-width:0}.searchbar input{flex:1}.admin-row{border:1px solid var(--line);border-radius:10px;padding:10px;margin:7px 0}.rowline{display:flex;justify-content:space-between;gap:9px;align-items:flex-start}.muted{color:var(--muted);font-size:11px}.small{font-size:10px;color:var(--muted)}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:800;white-space:nowrap}.pending{background:#fff0c2;color:#765000}.approved{background:#dff4e5;color:#17653a}.rejected{background:#ffe0e0;color:#922222}.info{background:#e5f1ff;color:#145a92}.secure{background:#e6f6ed;color:#17653a}.actions{margin-top:6px}.actions button,.admin-btn{border:0;border-radius:8px;padding:7px 9px;margin:2px;cursor:pointer;font-weight:700;font-size:11px}.approve{background:#dff4e5;color:#17653a}.reject{background:#ffe0e0;color:#922222}.neutral{background:#e7eef5;color:#274b68}.statusbar{display:none;border-radius:9px;padding:9px 10px;margin-bottom:9px;font-size:11px}.statusbar.show{display:block}.statusbar.ok{background:#eaf8ef;color:#17653a}.statusbar.error{background:#fff0f0;color:#922222}.statusbar.info{background:#eaf2ff;color:#145a92}.admin-list{max-height:330px;overflow:auto}.empty{padding:12px;color:var(--muted);border:1px dashed var(--line);border-radius:9px;text-align:center;font-size:11px}.health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.healthbox{border:1px solid var(--line);border-radius:10px;padding:9px}.healthbox strong{display:block;font-size:11px;margin-bottom:4px}.healthbox span{font-size:10px}.identity-box{margin-top:8px;padding:9px;border-radius:9px;background:#f7f8fc;border:1px solid #e4e7ef}.identity-box strong{font-size:11px}.identity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px;margin-top:5px}.identity-grid div{font-size:10px}.identity-label{color:var(--muted);font-weight:700}.health-detail{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fafbfe}.health-detail .health-line{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #edf0f4}.health-detail .health-line:last-child{border-bottom:0}.health-detail b{font-size:10px}.health-detail small{font-size:9px;color:var(--muted);display:block;margin-top:2px;word-break:break-word}.progress{height:7px;background:#e6edf3;border-radius:99px;overflow:hidden;margin-top:7px}.progress i{display:block;height:100%;background:#4d8c68;width:0}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px;border-bottom:1px solid #edf0f4;font-size:10px;vertical-align:top}th{background:#f6f8fb;color:#52677b}
+footer{text-align:center;color:var(--muted);font-size:10px;padding:18px 0 5px}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;height:68px;z-index:50;display:none;background:rgba(255,255,255,.97);border-top:1px solid #e2e4eb;box-shadow:0 -5px 18px rgba(35,40,70,.08);padding:5px max(8px,env(safe-area-inset-left)) max(5px,env(safe-area-inset-bottom))}
+.bottom-nav-inner{max-width:620px;margin:auto;height:100%;display:grid;grid-template-columns:repeat(5,1fr);align-items:center}.nav-btn{border:0;background:transparent;color:#9699a9;height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9px;font-weight:700}.nav-btn i{font-size:19px}.nav-btn.active{color:var(--primary)}
+.menu-panel{position:fixed;left:10px;right:10px;bottom:74px;z-index:60;max-width:600px;margin:auto;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 35px rgba(25,30,65,.18);padding:10px;display:none}.menu-panel.show{display:block}.menu-panel a{display:flex;align-items:center;gap:10px;padding:11px 10px;border-radius:11px;font-size:12px;font-weight:700}.menu-panel a:hover{background:#f4f4fb}.menu-panel a i{width:24px;text-align:center;color:var(--primary)}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(3,1fr)}.tools{grid-template-columns:repeat(2,1fr)}.admin-metrics{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){body{padding-bottom:76px}.wrap{padding:0 9px 20px}.top{min-height:235px;border-radius:0 0 42% 42% / 0 0 11% 11%;padding:18px 16px 75px}.top:after{bottom:-57px;height:108px}.toprow{gap:8px}.brand img{width:52px;height:52px;flex-basis:52px;padding:6px}.brand h1{font-size:16px}.brand p{font-size:9px}.auth{font-size:9px}.auth button,.role-link{padding:7px 9px}.welcome{margin-top:19px}.welcome strong{font-size:20px}.dashboard{margin-top:-43px}.stats{grid-template-columns:repeat(2,1fr);gap:8px}.stat{padding:10px;border-radius:14px}.stat:nth-child(5){grid-column:1/-1}.quick-grid{grid-template-columns:repeat(3,1fr);gap:8px}.quick-card{min-height:103px;border-radius:15px;padding:10px 5px}.tile-icon{width:39px;height:39px;font-size:18px;border-radius:11px}.quick-card strong{font-size:10px}.quick-card small{font-size:8px}.grid{grid-template-columns:repeat(3,1fr);gap:8px}.card{min-height:101px;border-radius:14px;padding:10px 5px}.card i{width:37px;height:37px;font-size:17px;border-radius:11px}.card strong{font-size:9.5px}.card small{font-size:8px}.section{margin:18px 0}.section-head h2{font-size:14px}.section-head span{font-size:8px}.bottom-nav{display:block}.admin-grid{grid-template-columns:1fr}.health-grid{grid-template-columns:1fr}.admin-metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:430px){.brand h1{font-size:14px}.brand p{font-size:8px}.welcome small{font-size:11px}.welcome strong{font-size:18px}.quick-card strong{font-size:9.2px}.card strong{font-size:9px}}
+@media(min-width:701px){.bottom-nav{display:none!important}}
+.top,.dashboard,.section,.notice-strip{overflow-x:hidden}
+</style>
+</head>
+
+<body>
+<main class="wrap">
+<header class="top">
+  <div class="toprow">
+    <div class="brand">
+      <img src="new-logo.png" alt="Government Primary School Pethgam Wagoora logo">
+      <div><h1>Government Primary School Pethgam Wagoora</h1><p>School Administration ERP • Zone Wagoora • District Baramulla</p></div>
+    </div>
+    <div class="auth">
+      <div id="userState">Checking administrator access…</div>
+      <button id="logout" style="display:none"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+      <a class="role-link" href="Role-Login.html" style="display:inline-block;margin-left:5px">Role Login</a>
+    </div>
+  </div>
+  <div class="welcome">
+    <small>Welcome</small><strong>School Administrator</strong>
+    <span><i class="fa-solid fa-shield-halved"></i> Secure school management workspace</span>
+  </div>
+  <div id="loginBox" class="login">
+    <div class="login-title"><i class="fa-solid fa-user-shield"></i> Administrator Login</div>
+    <input id="email" type="email" autocomplete="username" placeholder="Administrator email">
+    <input id="password" type="password" autocomplete="current-password" placeholder="Password">
+    <div class="login-actions">
+      <button id="signIn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+      <button id="bootstrap" class="secondary" style="display:none"><i class="fa-solid fa-shield-check"></i> Initialize Administrator</button>
+    </div>
+    <div id="loginMsg" class="message"></div>
+  </div>
+</header>
+
+<div id="erp" class="dashboard">
+
+<section class="stats" aria-label="Dashboard statistics">
+  <div class="stat"><div class="stat-top"><b id="studentCount">0</b><i class="fa-solid fa-users"></i></div><span>STUDENT RECORDS</span></div>
+  <div class="stat"><div class="stat-top"><b id="activeCount">0</b><i class="fa-solid fa-user-check"></i></div><span>ACTIVE STUDENTS</span></div>
+  <div class="stat"><div class="stat-top"><b id="staffCount">0</b><i class="fa-solid fa-chalkboard-user"></i></div><span>STAFF RECORDS</span></div>
+  <div class="stat"><div class="stat-top"><b id="noticeCount">0</b><i class="fa-solid fa-bell"></i></div><span>SAVED NOTICES</span></div>
+  <div class="stat"><div class="stat-top"><b id="cloudState">—</b><i class="fa-solid fa-cloud"></i></div><span>FIREBASE STATUS</span></div>
+</section>
+
+<div class="quick-title"><h2><i class="fa-solid fa-grid-2"></i> Admin Control Center</h2><small>Integrated administrative functions — no duplicate module links</small></div>
+<section class="quick-grid">
+  <a class="quick-card" href="#admin"><span class="tile-icon"><i class="fa-solid fa-gauge-high"></i></span><strong>Admin Overview</strong><small>Live administrative counts</small></a>
+  <a class="quick-card" href="#adminStaff"><span class="tile-icon"><i class="fa-solid fa-file-pen"></i></span><strong>Staff Leave</strong><small>Review & decide</small></a>
+  <a class="quick-card" href="#adminStudent"><span class="tile-icon"><i class="fa-solid fa-person-walking-arrow-right"></i></span><strong>Student Leave</strong><small>Review & decide</small></a>
+  <a class="quick-card" href="#adminCert"><span class="tile-icon"><i class="fa-solid fa-certificate"></i></span><strong>Certificates</strong><small>Requests & decisions</small></a>
+  <a class="quick-card" href="#adminAttendance"><span class="tile-icon"><i class="fa-solid fa-location-crosshairs"></i></span><strong>Attendance Security</strong><small>Geofence & verification</small></a>
+  <a class="quick-card" href="#adminNotifications"><span class="tile-icon"><i class="fa-solid fa-bell"></i></span><strong>Notifications</strong><small>Live system notices</small></a>
+</section>
+
+<div class="notice-strip" id="noticeStrip">
+  <div class="bell"><i class="fa-regular fa-bell"></i></div>
+  <div><strong>Notifications & Notices</strong><small id="noticeSummary">Open Notices & Circulars to manage school announcements.</small></div>
+  <i class="fa-solid fa-chevron-right arrow"></i>
+</div>
+
+<!-- Integrated Admin Dashboard: uses the same login/authentication above -->
+<section class="admin-panel" id="admin">
+  <div class="admin-title"><h2><i class="fa-solid fa-shield-halved"></i> Integrated Admin Dashboard</h2><small>Same administrator login • same Firebase project • same page</small></div>
+  <div id="adminStatus" class="statusbar"></div>
+  <div class="admin-metrics">
+    <div class="metric"><b id="slc">0</b><span>PENDING STAFF LEAVE</span></div>
+    <div class="metric"><b id="stlc">0</b><span>PENDING STUDENT LEAVE</span></div>
+    <div class="metric"><b id="cc">0</b><span>PENDING CERTIFICATES</span></div>
+    <div class="metric"><b id="nc">0</b><span>UNREAD NOTIFICATIONS</span></div>
+    <div class="metric"><b id="ac">0</b><span>STAFF ATTENDANCE TODAY</span></div>
+    <div class="metric"><b id="hc">—</b><span>ADMIN DATA HEALTH</span></div>
+  </div>
+  <div id="healthDetails" class="health-detail"><b>Firebase data health</b><small>Loading detailed diagnostics…</small></div>
+</section>
+
+<section class="admin-panel" id="adminStaff">
+  <div class="admin-title"><h2>📝 Staff Leave Review</h2><small>All staff leave types are handled here</small></div>
+  <div class="searchbar"><input id="staffSearch" placeholder="Search employee, name, leave type or reason"><select id="staffFilter"><option value="all">All</option><option>Pending</option><option>Approved</option><option>Rejected</option></select></div>
+  <div id="staffRows" class="admin-list"><div class="empty">Loading…</div></div>
+</section>
+
+<section class="admin-panel" id="adminStudent">
+  <div class="admin-title"><h2>🎒 Student Leave Review</h2><small>Student leave and HOI/admin decision history</small></div>
+  <div class="searchbar"><input id="studentSearch" placeholder="Search student or class"><select id="studentFilter"><option value="all">All</option><option>Pending</option><option>Approved</option><option>Rejected</option></select></div>
+  <div id="studentRows" class="admin-list"><div class="empty">Loading…</div></div>
+</section>
+
+<section class="admin-panel" id="adminCert">
+  <div class="admin-title"><h2>📜 Certificate Requests</h2><small>Student certificate applications and decisions</small></div>
+  <div class="searchbar"><select id="certFilter"><option value="all">All</option><option>Pending</option><option>Approved</option><option>Rejected</option></select></div>
+  <div id="certRows" class="admin-list"><div class="empty">Loading…</div></div>
+</section>
+
+<section class="admin-panel" id="adminAttendance">
+  <div class="admin-title"><h2>🕘 Attendance & Security Review</h2><small>Integrated teacher attendance security — no separate settings page required</small></div>
+  <div class="health-grid">
+    <div class="healthbox"><strong>Teacher verification</strong><span class="badge secure">WebAuthn / User Verification</span><div class="muted">Trusted backend verification can require device user verification before attendance is accepted.</div></div>
+    <div class="healthbox"><strong>School geofence</strong><span id="geoBadge" class="badge info">Loading</span><div id="geoText" class="muted">Reading attendance settings…</div></div>
+    <div class="healthbox"><strong>Direct teacher writes</strong><span class="badge secure">Backend controlled</span><div class="muted">Production attendance should remain protected by Cloud Functions and restrictive Firestore Rules.</div></div>
+  </div>
+  <div class="admin-row"><div class="rowline"><div><b>Today's attendance</b><div id="attendanceSummary" class="muted">Loading…</div></div><span class="badge info">Live</span></div><div class="progress"><i id="attendanceProgress"></i></div></div>
+  <div class="admin-row">
+    <b>Attendance configuration</b>
+    <div class="grid" style="margin-top:9px">
+      <div><label class="small">School latitude</label><input id="geoLatInput" type="number" step="any" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:8px" placeholder="e.g. 34.0"></div>
+      <div><label class="small">School longitude</label><input id="geoLngInput" type="number" step="any" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:8px" placeholder="e.g. 74.8"></div>
+      <div><label class="small">Allowed radius (metres)</label><input id="geoRadiusInput" type="number" min="20" max="5000" value="100" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:8px"></div>
+      <div><label class="small">Maximum GPS accuracy (metres)</label><input id="geoAccuracyInput" type="number" min="10" max="1000" value="100" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:8px"></div>
+    </div>
+    <div class="actions">
+      <button class="neutral" onclick="window.useAdminLocation()">📍 Use current device location</button>
+      <button class="approve" onclick="window.saveAdminGeofence()">Save Attendance Security</button>
+      <button class="neutral" onclick="window.loadAdminDashboard()">↻ Refresh</button>
+    </div>
+    <div id="geoSaveMsg" class="small">Use the current device location only after verifying that the device is physically at the school.</div>
+    <div style="margin-top:9px;overflow:auto"><table><tr><th>Control</th><th>Live value</th><th>Purpose</th></tr>
+      <tr><td>School latitude / longitude</td><td id="geoCoords">Not loaded</td><td>School location for attendance geofence.</td></tr>
+      <tr><td>Geofence radius</td><td id="geoRadius">Not loaded</td><td>Permitted attendance area.</td></tr>
+      <tr><td>Maximum GPS accuracy</td><td id="geoAccuracy">Not loaded</td><td>Location precision requirement.</td></tr>
+      <tr><td>User verification</td><td id="geoWebauthn">Not loaded</td><td>Device verification requirement.</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="admin-panel" id="adminNotifications">
+  <div class="admin-title"><h2>🔔 Live Notifications</h2><div><small>Administrative notification records</small> <button class="admin-btn neutral" onclick="window.markAllNotificationsRead()">Mark all read</button></div></div>
+  <div id="notificationRows" class="admin-list"><div class="empty">Loading…</div></div>
+</section>
+
+<!-- ORIGINAL INDEX MODULES RETAINED ONCE ONLY -->
+<section class="section" id="students">
+  <div class="section-head"><h2><i class="fa-solid fa-graduation-cap"></i> Students & Records</h2><span>5 modules</span></div>
+  <div class="grid">
+    <a class="card" href="general_admission_register.html"><i class="fa-solid fa-users"></i><strong>Student Database</strong><small>Master admission register</small></a>
+    <a class="card" href="admission.html"><i class="fa-solid fa-user-plus"></i><strong>Admission Form</strong><small>New admission</small></a>
+    <a class="card" href="student-profile.html"><i class="fa-solid fa-id-card"></i><strong>Student Profile</strong><small>View master profile</small></a>
+    <a class="card" href="promotion.html"><i class="fa-solid fa-arrow-up-right-dots"></i><strong>Promotion</strong><small>Class promotion/history</small></a>
+    <a class="card" href="student-documents.html"><i class="fa-solid fa-folder-open"></i><strong>Student Documents</strong><small>Certificates & documents</small></a>
+  </div>
+</section>
+
+<section class="section" id="attendance">
+  <div class="section-head"><h2><i class="fa-solid fa-clipboard-check"></i> Attendance, Meals & Welfare</h2><span>5 modules</span></div>
+  <div class="grid">
+    <a class="card" href="attendance.html"><i class="fa-solid fa-user-check"></i><strong>Student Attendance</strong><small>Daily & monthly</small></a>
+    <a class="card" href="Staff-Attendence.html"><i class="fa-solid fa-user-clock"></i><strong>Staff Attendance & Leave</strong><small>Register & applications</small></a>
+    <a class="card" href="MDM.html"><i class="fa-solid fa-utensils"></i><strong>PM-POSHAN / MDM</strong><small>Monthly data capture</small></a>
+    <a class="card" href="work-behaviour.html"><i class="fa-solid fa-award"></i><strong>Work & Behaviour</strong><small>Certificate generator</small></a>
+    <a class="card" href="MDM-Rice-Stock-Admin.html"><i class="fa-solid fa-wheat-awn"></i><strong>Rice Stock & Alarm</strong><small>Stock update & low-stock alert</small></a>
+  </div>
+</section>
+
+<section class="section" id="academic">
+  <div class="section-head"><h2><i class="fa-solid fa-book-open-reader"></i> Academic & Assessment</h2><span>5 modules</span></div>
+  <div class="grid">
+    <a class="card" href="results.html"><i class="fa-solid fa-square-poll-vertical"></i><strong>Results & Marksheet</strong><small>Single academic module</small></a>
+    <a class="card" href="timetable.html"><i class="fa-solid fa-table-cells"></i><strong>Timetable</strong><small>Class schedule</small></a>
+    <a class="card" href="school-calendar.html"><i class="fa-solid fa-calendar-days"></i><strong>School Calendar</strong><small>Events & holidays</small></a>
+    <a class="card" href="notices.html"><i class="fa-solid fa-bullhorn"></i><strong>Notices & Circulars</strong><small>School announcements</small></a>
+    <a class="card" href="student-communication.html"><i class="fa-solid fa-comments"></i><strong>Student Communication</strong><small>Messages to students</small></a>
+  </div>
+</section>
+
+<section class="section" id="staff">
+  <div class="section-head"><h2><i class="fa-solid fa-school"></i> Staff & School Administration</h2><span>7 modules</span></div>
+  <div class="grid">
+    <a class="card" href="Staff-Management.html"><i class="fa-solid fa-chalkboard-user"></i><strong>Staff & Teachers</strong><small>Staff master register</small></a>
+    <a class="card" href="Staff-Personal-Dashboard-Tr.html"><i class="fa-solid fa-user-tie"></i><strong>Staff Dashboard</strong><small>Personal workspace</small></a>
+    <a class="card" href="inventory.html"><i class="fa-solid fa-boxes-stacked"></i><strong>Inventory / Stock</strong><small>Items & stock</small></a>
+    <a class="card" href="library.html"><i class="fa-solid fa-book"></i><strong>Library</strong><small>Books & transactions</small></a>
+    <a class="card" href="salary-inc.html"><i class="fa-solid fa-file-invoice-dollar"></i><strong>Salary Increment</strong><small>Official application</small></a>
+    <a class="card" href="#adminAttendance"><i class="fa-solid fa-sliders"></i><strong>Attendance Security</strong><small>Integrated admin configuration</small></a>
+    <a class="card" href="HOI-Applications.html"><i class="fa-solid fa-file-signature"></i><strong>HOI Applications</strong><small>Official applications</small></a>
+  </div>
+</section>
+
+<section class="section" id="documents">
+  <div class="section-head"><h2><i class="fa-solid fa-file-signature"></i> Official Documents</h2><span>4 modules</span></div>
+  <div class="grid">
+    <a class="card" href="bonafide-certificate.html"><i class="fa-solid fa-certificate"></i><strong>Bonafide Certificate</strong><small>Generate certificate</small></a>
+    <a class="card" href="dob-certificate.html"><i class="fa-solid fa-calendar-check"></i><strong>Date of Birth Certificate</strong><small>Generate certificate</small></a>
+    <a class="card" href="duty-certificate.html"><i class="fa-solid fa-file-signature"></i><strong>Duty Certificate</strong><small>Generate certificate</small></a>
+    <a class="card" href="school-letterhead.html"><i class="fa-solid fa-file-lines"></i><strong>School Letterhead</strong><small>Editable official format</small></a>
+  </div>
+</section>
+
+<section class="section" id="system">
+  <div class="section-head"><h2><i class="fa-solid fa-screwdriver-wrench"></i> System Administration</h2><span>5 modules</span></div>
+  <div class="tools">
+    <a class="tool" href="Student-Account-Setup.html"><i class="fa-solid fa-user-lock"></i> Student Account Setup</a>
+    <a class="tool" href="Firebase-Migration.html"><i class="fa-solid fa-cloud-arrow-up"></i> Data Migration</a>
+    <a class="tool" href="audit.html"><i class="fa-solid fa-shield-halved"></i> Audit & Security</a>
+    <a class="tool" href="institution.html"><i class="fa-solid fa-school"></i> Institution Settings</a>
+    <a class="tool" href="#adminAttendance"><i class="fa-solid fa-location-crosshairs"></i> Attendance Security</a>
+  </div>
+</section>
+
+<footer>Government Primary School Pethgam Wagoora • Learn to Lead • School ERP</footer>
+</div>
+
+<nav class="bottom-nav" aria-label="Dashboard navigation">
+  <div class="bottom-nav-inner">
+    <button class="nav-btn active" data-target="home"><i class="fa-solid fa-house"></i><span>HOME</span></button>
+    <button class="nav-btn" data-target="notices"><i class="fa-regular fa-bell"></i><span>NOTICES</span></button>
+    <button class="nav-btn" data-target="staff"><i class="fa-solid fa-users"></i><span>STAFF</span></button>
+    <button class="nav-btn" data-target="system"><i class="fa-solid fa-gear"></i><span>SETTINGS</span></button>
+    <button class="nav-btn" id="menuBtn"><i class="fa-solid fa-bars"></i><span>MENU</span></button>
+  </div>
+</nav>
+<div class="menu-panel" id="menuPanel">
+  <a href="#admin"><i class="fa-solid fa-shield-halved"></i> Admin Control Center</a>
+  <a href="#students"><i class="fa-solid fa-graduation-cap"></i> Students & Records</a>
+  <a href="#attendance"><i class="fa-solid fa-clipboard-check"></i> Attendance, Meals & Welfare</a>
+  <a href="#academic"><i class="fa-solid fa-book-open-reader"></i> Academic & Assessment</a>
+  <a href="#staff"><i class="fa-solid fa-school"></i> Staff & School Administration</a>
+  <a href="#documents"><i class="fa-solid fa-file-signature"></i> Official Documents</a>
+  <a href="#system"><i class="fa-solid fa-screwdriver-wrench"></i> System Administration</a>
+</div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="./cloudinary-upload.js"></script>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+let db=null,auth=null,currentUser=null;
+let staff=[],students=[],certs=[],notifications=[],attendance=[];
+
+function msg(t,c){$('loginMsg').textContent=t;$('loginMsg').className='message '+c;$('loginMsg').style.display='block'}
+function adminMsg(t,c){$('adminStatus').textContent=t;$('adminStatus').className='statusbar show '+c}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function safeArray(key){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch(e){return[]}}
+function localCounts(){
+  try{
+    const a=safeArray('GPSPETHGAM_MASTER_ADMISSION_V1');
+    $('studentCount').textContent=a.length;
+    $('activeCount').textContent=a.filter(x=>{const s=String(x.status||'Active').toLowerCase();return s!=='inactive'&&s!=='left'}).length;
+    $('staffCount').textContent=safeArray('GPSPETHGAM_STAFF_V1').length;
+    const n=safeArray('GPSPETHGAM_SCHOOL_NOTICES_V1');$('noticeCount').textContent=n.length;
+    $('noticeSummary').textContent=n.length?(n.length===1?'1 saved school notice':n.length+' saved school notices'):'No saved notice found. Open Notices & Circulars to publish one.';
+  }catch(e){}
+}
+function normalizeStatus(v){const s=String(v??'Pending').trim().toLowerCase();return s==='approved'||s==='approve'?'Approved':s==='rejected'||s==='reject'?'Rejected':'Pending'}
+function badge(s){const x=normalizeStatus(s);return '<span class="badge '+x.toLowerCase()+'">'+esc(x)+'</span>'}
+function fmtDate(v){if(!v)return'';try{if(v.toDate)return v.toDate().toLocaleString('en-IN')}catch(e){}const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString('en-IN')}
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function recordDate(x){
+  for(const c of [x.date,x.attendanceDate,x.day,x.createdDate])if(c&&String(c).slice(0,10)===todayKey())return true;
+  for(const c of [x.checkInAt,x.checkOutAt,x.createdAt])try{if(c?.toDate){const d=c.toDate();const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(k===todayKey())return true}}catch(e){}
+  return false;
+}
+async function initFirebase(){
+  const CONFIG=window.GPS_FIREBASE_CONFIG||window.firebaseConfig||window.FIREBASE_CONFIG||(typeof firebaseConfig!=='undefined'?firebaseConfig:null);
+  if(!CONFIG)throw new Error('firebase-config.js did not expose a Firebase configuration.');
+  if(!firebase.apps.length)firebase.initializeApp(CONFIG);
+  auth=firebase.auth();db=firebase.firestore();
+}
+const healthChecks={};
+const identityCache={staff:new Map(),student:new Map()};
+function healthRecord(name,status,error){healthChecks[name]={status,error:error||null};}
+function errorText(e){return String(e?.code?e.code+': '+(e.message||e):e?.message||e||'Unknown error')}
+function renderHealthDetails(){
+  const keys=Object.keys(healthChecks);
+  if(!keys.length){$('healthDetails').innerHTML='<b>Firebase data health</b><small>No diagnostics yet.</small>';return}
+  $('healthDetails').innerHTML='<b>Firebase data health — detailed diagnostics</b>'+keys.map(k=>{const h=healthChecks[k],ok=h.status==='ok';return '<div class="health-line"><div><b>'+esc(k)+'</b><small>'+esc(ok?'Loaded successfully':errorText(h.error))+'</small></div><span class="badge '+(ok?'approved':'rejected')+'">'+(ok?'OK':'ERROR')+'</span></div>'}).join('');
+}
+async function getCollection(name){const s=await db.collection(name).get();return s.docs.map(d=>({id:d.id,...d.data()}))}
+async function loadStaff(){try{staff=await getCollection('staffLeaves');healthRecord('Staff Leave','ok');renderStaff()}catch(e){staff=[];healthRecord('Staff Leave','error',e);$('staffRows').innerHTML='<div class="empty">Staff leave data unavailable: '+esc(errorText(e))+'</div>';throw e}}
+async function loadStudents(){try{students=await getCollection('studentLeaves');healthRecord('Student Leave','ok');renderStudent()}catch(e){students=[];healthRecord('Student Leave','error',e);$('studentRows').innerHTML='<div class="empty">Student leave data unavailable: '+esc(errorText(e))+'</div>';throw e}}
+async function loadCerts(){
+  try{
+    const [studentSnap,workSnap]=await Promise.all([
+      db.collection('studentCertificateApplications').get(),
+      db.collection('workBehaviourApplications').get()
+    ]);
+    const merged=[];
+    const seen=new Set();
+    studentSnap.docs.forEach(d=>{const x={id:d.id,...d.data(),_collection:'studentCertificateApplications'};const key='studentCertificateApplications:'+d.id;if(!seen.has(key)){seen.add(key);merged.push(x)}});
+    workSnap.docs.forEach(d=>{const x={id:d.id,...d.data(),_collection:'workBehaviourApplications'};const key='workBehaviourApplications:'+d.id;if(!seen.has(key)){seen.add(key);merged.push(x)}});
+    certs=merged;healthRecord('Certificates','ok');renderCerts();
+  }catch(e){certs=[];healthRecord('Certificates','error',e);$('certRows').innerHTML='<div class="empty">Certificate data unavailable: '+esc(errorText(e))+'</div>';throw e}
+}
+async function loadNotifications(){try{notifications=await getCollection('notifications');healthRecord('Notifications','ok');notifications.sort((a,b)=>String(fmtDate(b.createdAt)).localeCompare(String(fmtDate(a.createdAt))));renderNotifications()}catch(e){notifications=[];healthRecord('Notifications','error',e);$('notificationRows').innerHTML='<div class="empty">Notification data unavailable: '+esc(errorText(e))+'</div>';throw e}}
+async function loadAttendance(){try{attendance=await getCollection('staffAttendance');healthRecord('Staff Attendance','ok');renderAttendance()}catch(e){attendance=[];healthRecord('Staff Attendance','error',e);$('attendanceSummary').textContent='Attendance data unavailable: '+errorText(e);throw e}}
+async function loadSettings(){
+  try{
+    const s=await db.collection('institution').doc('attendanceSettings').get(),x=s.exists?s.data():{};
+    const lat=x.geofenceLat??x.latitude??null,lng=x.geofenceLng??x.longitude??null;
+    $('geoCoords').textContent=lat!=null&&lng!=null?lat+', '+lng:'Not configured';
+    if(lat!=null)$('geoLatInput').value=lat;if(lng!=null)$('geoLngInput').value=lng;
+    $('geoRadius').textContent=x.geofenceRadiusMeters!=null?x.geofenceRadiusMeters+' m':'Not configured';
+    if(x.geofenceRadiusMeters!=null)$('geoRadiusInput').value=x.geofenceRadiusMeters;
+    $('geoAccuracy').textContent=x.maxLocationAccuracyMeters!=null?x.maxLocationAccuracyMeters+' m':'Not configured';
+    if(x.maxLocationAccuracyMeters!=null)$('geoAccuracyInput').value=x.maxLocationAccuracyMeters;
+    $('geoWebauthn').textContent=x.requireWebAuthn===true?'Required':x.requireWebAuthn===false?'Not required':'Not configured';
+    $('geoBadge').textContent=s.exists&&x.requireGeofence!==false?'Configured':'Not configured';
+    $('geoBadge').className='badge '+(s.exists&&x.requireGeofence!==false?'secure':'pending');
+    $('geoText').textContent=s.exists?'Live attendance settings loaded.':'attendanceSettings is not configured.';
+    healthRecord('Attendance Settings','ok');
+  }catch(e){healthRecord('Attendance Settings','error',e);$('geoText').textContent='Attendance settings unavailable: '+errorText(e);throw e}
+}
+function identityValue(x,keys,fallback=''){for(const k of keys){const v=x?.[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim()}return fallback}
+function identityKeysForStudent(x){return [identityValue(x,['studentRecordId','studentId','studentIdRef','studentID']),identityValue(x,['admissionNo','admissionNumber','admissionId','admNo']),identityValue(x,['studentUid','studentAuthUid'])].filter(Boolean)}
+function identityKeysForStaff(x){return [identityValue(x,['staffId','staffRecordId','staffID']),identityValue(x,['employeeId','employeeID']),identityValue(x,['staffAuthUid','authUid'])].filter(Boolean)}
+async function findStudentIdentity(x){
+  const candidates=identityKeysForStudent(x);
+  for(const key of candidates){
+    if(identityCache.student.has(key))return identityCache.student.get(key);
+  }
+  let record=null;
+  for(const key of candidates){
+    try{const direct=await db.collection('students').doc(key).get();if(direct.exists){record={id:direct.id,...direct.data()};break}}catch(e){if(e?.code==='permission-denied')throw e}
+  }
+  if(!record){
+    for(const field of ['admissionNo','admissionNumber']){
+      const key=identityValue(x,['admissionNo','admissionNumber','admissionId','admNo']);
+      if(!key)break;
+      try{const q=await db.collection('students').where(field,'==',key).limit(1).get();if(!q.empty){record={id:q.docs[0].id,...q.docs[0].data()};break}}catch(e){if(e?.code==='permission-denied')throw e}
+    }
+  }
+  if(!record){
+    const uid=identityValue(x,['studentUid','studentAuthUid']);
+    if(uid){
+      for(const field of ['uid','authUid','studentUid']){try{const q=await db.collection('students').where(field,'==',uid).limit(1).get();if(!q.empty){record={id:q.docs[0].id,...q.docs[0].data()};break}}catch(e){if(e?.code==='permission-denied')throw e}}
+      if(!record){
+        try{
+          const a=await db.collection('studentAccounts').doc(uid).get();
+          const rid=a.exists?identityValue(a.data(),['studentRecordId','sourceAdmissionId']):'';
+          if(rid){const master=await db.collection('students').doc(rid).get();if(master.exists)record={id:master.id,...master.data()}}
+        }catch(e){if(e?.code==='permission-denied')throw e}
+      }
+    }
+  }
+  if(record){for(const key of candidates)identityCache.student.set(key,record)}
+  return record;
+}
+async function findStaffIdentity(x){
+  const candidates=identityKeysForStaff(x);
+  for(const key of candidates){if(identityCache.staff.has(key))return identityCache.staff.get(key)}
+  let record=null;
+  for(const key of candidates){
+    try{const direct=await db.collection('staff').doc(key).get();if(direct.exists){record={id:direct.id,...direct.data()};break}}catch(e){if(e?.code==='permission-denied')throw e}
+  }
+  if(!record){
+    const eid=identityValue(x,['employeeId','employeeID']);
+    if(eid){try{const q=await db.collection('staff').where('employeeId','==',eid).limit(1).get();if(!q.empty)record={id:q.docs[0].id,...q.docs[0].data()}}catch(e){if(e?.code==='permission-denied')throw e}}
+  }
+  if(!record){
+    const uid=identityValue(x,['staffAuthUid','authUid']);
+    if(uid){for(const field of ['authUid','staffAuthUid']){try{const q=await db.collection('staff').where(field,'==',uid).limit(1).get();if(!q.empty){record={id:q.docs[0].id,...q.docs[0].data()};break}}catch(e){if(e?.code==='permission-denied')throw e}}}
+  }
+  if(record){for(const key of candidates)identityCache.staff.set(key,record)}
+  return record;
+}
+async function enrichIdentities(){
+  const staffUnique=staff.slice(0,100),studentUnique=[...students,...certs].slice(0,200);
+  await Promise.all(staffUnique.map(async x=>{try{x._identity=await findStaffIdentity(x)}catch(e){x._identityError=e}}));
+  await Promise.all(studentUnique.map(async x=>{try{x._identity=await findStudentIdentity(x)}catch(e){x._identityError=e}}));
+}
+function identityBox(type,x){
+  const r=x._identity;
+  if(!r){
+    const ids=type==='student'?identityKeysForStudent(x):identityKeysForStaff(x);
+    return '<div class="identity-box"><strong>Identity lookup</strong><div class="small">No linked master record was found. Reference: '+esc(ids.join(' / ')||x.id)+'</div>'+(x._identityError?'<div class="small">Lookup error: '+esc(errorText(x._identityError))+'</div>':'')+'</div>';
+  }
+  const name=identityValue(r,['name','studentName','staffName'],type==='student'?'Unnamed student':'Unnamed staff');
+  const admission=identityValue(r,['admissionNo','admissionNumber','admissionId','admNo'],'—');
+  const employee=identityValue(r,['employeeId','employeeID'],'—');
+  const cls=identityValue(r,['className','class','classNameText'],'—');
+  const father=identityValue(r,['fatherName','father','guardianName','parentName'],'—');
+  const uid=identityValue(r,['authUid','uid','studentUid','studentAuthUid','staffAuthUid'],'—');
+  return '<div class="identity-box"><strong>✓ Linked '+(type==='student'?'Student':'Staff')+' identity</strong><div class="identity-grid">'+
+    '<div><span class="identity-label">Name:</span> '+esc(name)+'</div>'+
+    (type==='student'?'<div><span class="identity-label">Admission No:</span> '+esc(admission)+'</div><div><span class="identity-label">Class:</span> '+esc(cls)+'</div><div><span class="identity-label">Father/Guardian:</span> '+esc(father)+'</div>':'<div><span class="identity-label">Employee ID:</span> '+esc(employee)+'</div><div><span class="identity-label">Designation:</span> '+esc(identityValue(r,['designation','roleDesignation','accessRole'],'—'))+'</div>')+
+    '<div><span class="identity-label">Record ID:</span> '+esc(r.id||'—')+'</div><div><span class="identity-label">Auth UID:</span> '+esc(uid)+'</div>'+
+  '</div></div>';
+}
+async function renderIdentityAware(){
+  await enrichIdentities();
+  const identityErrors=[...staff,...students,...certs].filter(x=>x._identityError);
+  healthRecord('Student/Staff Identity Lookup',identityErrors.length?'error':'ok',identityErrors.length?identityErrors[0]._identityError:null);
+  renderStaff();renderStudent();renderCerts();
+}
+
+function renderStaff(){
+  const q=($('staffSearch').value||'').toLowerCase(),f=$('staffFilter').value;
+  const rows=staff.filter(x=>{const s=normalizeStatus(x.decision??x.status);const t=[x.staffName,x.name,x.employeeId,x.leaveType,x.leaveCategory,x.type,x.reason].join(' ').toLowerCase();return(f==='all'||s===f)&&(!q||t.includes(q))});
+  $('staffRows').innerHTML=rows.length?rows.map(x=>{const s=normalizeStatus(x.decision??x.status),type=x.leaveType||x.leaveCategory||x.type||'Leave';return '<div class="admin-row"><div class="rowline"><div><b>'+esc(x._identity?.name||x.staffName||x.name||'Unnamed staff')+'</b> · '+esc(x._identity?.employeeId||x.employeeId||x.staffId||'')+'<div class="muted">'+esc(type)+' · '+esc(x.from||'')+' to '+esc(x.to||'')+' · '+esc(x.reason||'')+'</div>'+(x.adminRemarks?'<div class="small">Admin remarks: '+esc(x.adminRemarks)+'</div>':'')+'</div>'+badge(s)+'</div>'+identityBox('staff',x)+(s==='Pending'?'<div class="actions"><button class="approve" onclick="window.staffDecision(\''+esc(x.id)+'\',\'Approved\')">Approve</button><button class="reject" onclick="window.staffDecision(\''+esc(x.id)+'\',\'Rejected\')">Reject</button></div>':'')+'</div>'}).join(''):'<div class="empty">No matching staff leave applications found.</div>';
+  updateCounts();
+}
+function renderStudent(){
+  const q=($('studentSearch').value||'').toLowerCase(),f=$('studentFilter').value;
+  const rows=students.filter(x=>{const s=normalizeStatus(x.status??x.hoiStatus??x.decision);const t=[x.studentName,x.name,x.className,x.class,x.reason].join(' ').toLowerCase();return(f==='all'||s===f)&&(!q||t.includes(q))});
+  $('studentRows').innerHTML=rows.length?rows.map(x=>{const s=normalizeStatus(x.status??x.hoiStatus??x.decision);return '<div class="admin-row"><div class="rowline"><div><b>'+esc(x._identity?.name||x.studentName||x.name||'Unnamed student')+'</b> · '+esc(x._identity?.className||x.className||x.class||'')+'<div class="muted">'+esc(x.from||'')+' to '+esc(x.to||'')+' · '+esc(x.reason||'')+'</div>'+(x.hoiRemarks?'<div class="small">Remarks: '+esc(x.hoiRemarks)+'</div>':'')+'</div>'+badge(s)+'</div>'+identityBox('student',x)+(s==='Pending'?'<div class="actions"><button class="approve" onclick="window.studentDecision(\''+esc(x.id)+'\',\'Approved\')">Approve</button><button class="reject" onclick="window.studentDecision(\''+esc(x.id)+'\',\'Rejected\')">Reject</button></div>':'')+'</div>'}).join(''):'<div class="empty">No matching student leave applications found.</div>';
+  updateCounts();
+}
+function renderCerts(){
+  const f=$('certFilter').value,rows=certs.filter(x=>{const s=normalizeStatus(x.status??x.hoiStatus);return f==='all'||s===f});
+  $('certRows').innerHTML=rows.length?rows.map(x=>{const s=normalizeStatus(x.status??x.hoiStatus);return '<div class="admin-row"><div class="rowline"><div><b>'+esc(x._identity?.name||x.studentName||x.name||'Unnamed student')+'</b><div class="muted">'+esc(x.certificateType||x.type||'Certificate')+' · Application ID: '+esc(x.id)+'</div></div>'+badge(s)+'</div>'+identityBox('student',x)+(x.hoiRemarks?'<div class="small">Remarks: '+esc(x.hoiRemarks)+'</div>':'')+(s==='Pending'?'<div class="actions"><button class="approve" onclick="window.certDecision(\''+esc(x.id)+'\',\'Approved\')">Approve</button><button class="reject" onclick="window.certDecision(\''+esc(x.id)+'\',\'Rejected\')">Reject</button></div>':'')+'</div>'}).join(''):'<div class="empty">No certificate requests found.</div>';
+  updateCounts();
+}
+function renderNotifications(){
+  const unread=notifications.filter(x=>x.read!==true);$('nc').textContent=unread.length;
+  $('notificationRows').innerHTML=notifications.length?notifications.slice(0,40).map(x=>'<div class="admin-row"><div class="rowline"><div><b>'+esc(x.title||'Notification')+'</b><div class="muted">'+esc(x.message||'')+'</div></div><span class="badge '+(x.read===true?'approved':'info')+'">'+(x.read===true?'Read':'Unread')+'</span></div><div class="small">'+esc(fmtDate(x.createdAt))+'</div></div>').join(''):'<div class="empty">No notifications found.</div>';
+}
+function renderAttendance(){
+  const today=attendance.filter(recordDate),present=today.filter(x=>x.checkIn||x.checkInAt||String(x.status||'').toLowerCase()==='present').length;
+  $('ac').textContent=present;$('attendanceSummary').textContent=today.length?today.length+' attendance record(s) today · '+present+' with check-in':'No attendance records found for today.';
+  $('attendanceProgress').style.width=today.length?Math.min(100,Math.round(present/today.length*100))+'%':'0%';
+}
+function updateCounts(){
+  $('slc').textContent=staff.filter(x=>normalizeStatus(x.decision??x.status)==='Pending').length;
+  $('stlc').textContent=students.filter(x=>normalizeStatus(x.status??x.hoiStatus??x.decision)==='Pending').length;
+  $('cc').textContent=certs.filter(x=>normalizeStatus(x.status??x.hoiStatus)==='Pending').length;
+}
+async function audit(module,action,id,remarks){
+  await db.collection('auditHistory').add({actingUid:currentUser.uid,actingRole:'admin',module,action,documentId:id,remarks:remarks||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
+async function notify(to,title,message,type,id){
+  if(!to)return;
+  await db.collection('notifications').add({recipientUid:to,title,message,type,relatedCollection:type,relatedDocumentId:id,read:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
+window.staffDecision=async function(id,status){
+  const x=staff.find(v=>v.id===id);if(!x)return;
+  const remarks=prompt('Admin remarks (optional):','')??'';if(!confirm('Change staff leave '+id+' to '+status+'?'))return;
+  try{await db.collection('staffLeaves').doc(id).update({decision:status,adminRemarks:remarks,actedBy:currentUser.uid,actedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});await audit('staffLeaves',status,id,remarks);await notify(x.staffAuthUid,'Staff leave '+status,'Your leave application was '+status+'. '+remarks,'staffLeaves',id);adminMsg('Staff leave updated successfully.','ok');await loadStaff()}catch(e){adminMsg('Staff leave update failed: '+e.message,'error')}
+};
+window.studentDecision=async function(id,status){
+  const x=students.find(v=>v.id===id);if(!x)return;
+  const remarks=prompt('Admin/HOI remarks (optional):','')??'';if(!confirm('Change student leave '+id+' to '+status+'?'))return;
+  try{await db.collection('studentLeaves').doc(id).update({status,hoiStatus:status,hoiRemarks:remarks,adminRemarks:remarks,actedBy:currentUser.uid,actedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});await audit('studentLeaves',status,id,remarks);await notify(x.studentUid,'Student leave '+status,'Your leave application was '+status+'. '+remarks,'studentLeaves',id);for(const t of(x.assignedTeacherUids||[]))await notify(t,'Student leave updated',(x.studentName||'Student')+' leave is now '+status,'studentLeaves',id);adminMsg('Student leave updated successfully.','ok');await loadStudents()}catch(e){adminMsg('Student leave update failed: '+e.message,'error')}
+};
+window.certDecision=async function(id,status){
+  const x=certs.find(v=>v.id===id);if(!x)return;
+  const remarks=prompt('Admin/HOI remarks (optional):','')??'';if(!confirm('Change certificate request '+id+' to '+status+'?'))return;
+  try{
+    const collectionName=x._collection||'studentCertificateApplications';
+    await db.collection(collectionName).doc(id).update({status,hoiStatus:status,hoiRemarks:remarks,hoiActedBy:currentUser.uid,hoiActedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    await audit(collectionName,status,id,remarks);
+    await notify(x.studentUid,'Certificate request '+status,'Your '+(x.certificateType||x.type||'certificate')+' request was '+status+'. '+remarks,collectionName,id);
+    for(const t of(x.assignedTeacherUids||[]))await notify(t,'Certificate request updated',(x.studentName||'Student')+' request is now '+status,collectionName,id);
+    adminMsg('Certificate request updated successfully.','ok');await loadCerts();
+  }catch(e){adminMsg('Certificate update failed: '+e.message,'error')}
+};
+window.useAdminLocation=function(){
+  if(!navigator.geolocation){$('geoSaveMsg').textContent='Location services are not available on this device.';return}
+  $('geoSaveMsg').textContent='Reading current device location…';
+  navigator.geolocation.getCurrentPosition(p=>{
+    $('geoLatInput').value=Number(p.coords.latitude).toFixed(7);
+    $('geoLngInput').value=Number(p.coords.longitude).toFixed(7);
+    $('geoSaveMsg').textContent='Current location loaded. Verify the device is physically at the school before saving.';
+  },e=>{$('geoSaveMsg').textContent='Location error: '+(e.message||e)}, {enableHighAccuracy:true,timeout:15000,maximumAge:0});
+};
+window.saveAdminGeofence=async function(){
+  try{
+    if(!currentUser)throw new Error('Administrator authentication is required.');
+    const lat=Number($('geoLatInput').value),lng=Number($('geoLngInput').value),radius=Number($('geoRadiusInput').value),accuracy=Number($('geoAccuracyInput').value);
+    if(!Number.isFinite(lat)||lat<-90||lat>90||!Number.isFinite(lng)||lng<-180||lng>180)throw new Error('Enter a valid latitude and longitude.');
+    if(!Number.isFinite(radius)||radius<20||radius>5000)throw new Error('Radius must be between 20 and 5000 metres.');
+    if(!Number.isFinite(accuracy)||accuracy<10||accuracy>1000)throw new Error('GPS accuracy must be between 10 and 1000 metres.');
+    $('geoSaveMsg').textContent='Saving attendance security settings…';
+    if(!firebase.functions)throw new Error('Firebase Functions SDK is not available.');
+    const fn=firebase.functions().httpsCallable('setTeacherAttendanceGeofence');
+    await fn({lat,lng,radiusMeters:radius,maxLocationAccuracyMeters:accuracy});
+    $('geoSaveMsg').textContent='✓ Attendance security settings saved through the trusted backend.';
+    await loadSettings();
+  }catch(e){$('geoSaveMsg').textContent='Could not save attendance settings: '+(e.message||e)}
+};
+window.markAllNotificationsRead=async function(){
+  try{
+    const unread=notifications.filter(x=>x.read!==true);
+    if(!unread.length){adminMsg('No unread notifications.','info');return}
+    const batch=db.batch();
+    unread.forEach(x=>batch.update(db.collection('notifications').doc(x.id),{read:true,readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:currentUser.uid}));
+    await batch.commit();
+    adminMsg('All visible unread notifications were marked as read.','ok');
+    await loadNotifications();
+  }catch(e){adminMsg('Could not mark notifications as read: '+e.message,'error')}
+};
+async function loadAdminDashboard(){
+  $('hc').textContent='Loading';
+  Object.keys(healthChecks).forEach(k=>delete healthChecks[k]);
+  renderHealthDetails();
+  const results=await Promise.allSettled([loadStaff(),loadStudents(),loadCerts(),loadNotifications(),loadAttendance(),loadSettings()]);
+  try{await renderIdentityAware()}catch(e){healthRecord('Student/Staff Identity Lookup','error',e)}
+  const failed=results.filter(x=>x.status==='rejected');
+  const healthFailed=Object.values(healthChecks).filter(x=>x.status==='error').length;
+  $('hc').textContent=healthFailed?'ERROR':'OK';
+  renderHealthDetails();
+  adminMsg((failed.length||healthFailed)?'Admin data loaded with '+healthFailed+' section error(s). See the detailed diagnostics below.':'Integrated Admin Dashboard refreshed successfully.',(failed.length||healthFailed)?'error':'ok');
+}
+window.loadAdminDashboard=loadAdminDashboard;
+const bootstrap=Array.from(new Set([...(window.GPS_ADMIN_EMAILS||[]),'pspathgam@gmail.com'].map(x=>String(x||'').trim().toLowerCase()).filter(Boolean)));
+$('email').value=bootstrap[0]||'';
+
+try{
+  initFirebase().then(()=>{
+    $('cloudState').textContent='READY';
+    auth.onAuthStateChanged(async user=>{
+      currentUser=user||null;
+      if(!user){
+        $('erp').style.display='none';$('loginBox').style.display='block';$('logout').style.display='none';$('userState').textContent='Administrator sign-in required';$('bootstrap').style.display='none';localCounts();return;
+      }
+      $('email').value=user.email||'';$('userState').textContent='Signed in: '+(user.email||'');$('logout').style.display='inline-block';$('loginBox').style.display='none';
+      try{
+        const snap=await db.collection('admins').doc(user.uid).get(),data=snap.exists?snap.data():{};
+        if(snap.exists&&String(data.role||'').trim().toLowerCase()==='admin'&&data.active===true){
+          $('erp').style.display='block';$('cloudState').textContent='OK';localCounts();await loadAdminDashboard();return;
+        }
+        if(bootstrap.includes(String(user.email||'').trim().toLowerCase())){
+          $('loginBox').style.display='block';$('bootstrap').style.display='inline-block';msg('Authentication succeeded. No active admin record exists for this account. You may initialize this account as the school administrator.','ok');
+        }else{await auth.signOut();msg('This Firebase account is not authorized as a school administrator.','err')}
+      }catch(e){await auth.signOut();msg('Admin verification failed: '+(e.message||e),'err')}
+    });
+  }).catch(e=>{$('cloudState').textContent='ERROR';$('userState').textContent='Firebase could not initialize.';msg('Firebase could not initialize: '+e.message,'err')});
+}catch(e){$('cloudState').textContent='ERROR'}
+
+$('signIn').onclick=async()=>{
+  const email=$('email').value.trim(),pw=$('password').value;if(!email||!pw){msg('Enter email and password.','err');return}
+  $('signIn').disabled=true;try{await auth.signInWithEmailAndPassword(email,pw);$('password').value=''}catch(e){msg((e.code||'auth/error')+': '+(e.message||e),'err')}finally{$('signIn').disabled=false}
+};
+$('bootstrap').onclick=async()=>{
+  const u=auth.currentUser;if(!u||!bootstrap.includes(String(u.email||'').trim().toLowerCase())){msg('Sign in with the configured administrator email first.','err');return}
+  try{await db.collection('admins').doc(u.uid).set({uid:u.uid,email:u.email,role:'admin',active:true,name:'Mohammad Ashraf Rather',school:'Government Primary School Pethgam Wagoora',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});msg('Administrator initialized successfully. Reloading dashboard…','ok');setTimeout(()=>location.reload(),600)}catch(e){msg('Could not initialize administrator: '+(e.message||e),'err')}
+};
+$('logout').onclick=()=>auth.signOut();
+$('staffSearch').oninput=renderStaff;$('staffFilter').onchange=renderStaff;$('studentSearch').oninput=renderStudent;$('studentFilter').onchange=renderStudent;$('certFilter').onchange=renderCerts;
+$('noticeStrip').onclick=()=>{const el=document.querySelector('a[href="notices.html"]');if(el)el.click()};
+const menuBtn=$('menuBtn'),menuPanel=$('menuPanel');menuBtn.addEventListener('click',()=>{menuPanel.classList.toggle('show');menuBtn.classList.toggle('active')});
+document.querySelectorAll('.menu-panel a').forEach(a=>a.addEventListener('click',()=>menuPanel.classList.remove('show')));
+document.querySelectorAll('.nav-btn[data-target]').forEach(btn=>btn.addEventListener('click',()=>{
+  const target=btn.dataset.target;document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');
+  if(target==='home')window.scrollTo({top:0,behavior:'smooth'});else{const el=document.getElementById(target==='notices'?'academic':target);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});if(target==='notices')setTimeout(()=>document.querySelector('.notice-strip')?.scrollIntoView({behavior:'smooth',block:'center'}),120)}
+  menuPanel.classList.remove('show');
+}));
+localCounts();
+})();
+</script>
+</body>
+</html>
