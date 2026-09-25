@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#315ee8">
+<title>Teacher Dashboard — Government Primary School Pethgam Wagoora</title>
+<link rel="icon" href="new-logo.png">
+<style>
+:root{
+  --blue:#315ee8;--blue2:#4b45dd;--purple:#7b3fe4;--green:#12a86f;
+  --orange:#ef9b16;--red:#e84b6b;--ink:#26364d;--muted:#77859a;
+  --bg:#eef3f7;--card:#fff;--line:#e1e7ef;--soft:#f7f9fc;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:linear-gradient(180deg,#eef3f7,#f8fafc 45%,#eef4f8);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+a{text-decoration:none;color:inherit}
+.app{min-height:100vh;padding-bottom:86px}
+.top{
+  position:relative;overflow:hidden;color:#fff;background:linear-gradient(135deg,#3948db,#315ee8 55%,#6543db);
+  border-radius:0 0 30px 30px;padding:16px 16px 30px;box-shadow:0 9px 28px rgba(49,94,232,.2)
+}
+.top:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-60px;top:-75px;background:rgba(255,255,255,.08)}
+.toprow{display:flex;align-items:center;gap:10px;position:relative;z-index:2}
+.iconbtn{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;font-size:20px}
+.brand{text-align:center;flex:1}
+.brand small{display:block;font-size:10px;letter-spacing:.7px;opacity:.9}
+.brand strong{display:block;font-size:18px}
+.logout{font-size:11px;font-weight:800;color:#fff}
+.wrap{width:min(1100px,100%);margin:-12px auto 0;padding:0 14px;position:relative;z-index:3}
+.profile{
+  color:#fff;background:linear-gradient(135deg,#315ee8,#4d46df);border-radius:23px;padding:17px;
+  box-shadow:0 12px 28px rgba(49,94,232,.2);position:relative;overflow:hidden;margin-bottom:14px
+}
+.profile:after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;right:-35px;top:-45px;background:rgba(255,255,255,.08)}
+.profilegrid{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center;position:relative;z-index:1}
+.avatar,.avatarFallback{width:78px;height:78px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,.9);background:#fff}
+.avatarFallback{display:grid;place-items:center;color:#315ee8;font-size:25px;font-weight:900}
+.profile h1{margin:0;font-size:21px}.profile .role{font-size:12px;opacity:.92;margin-top:3px}
+.profile .special{font-size:11px;opacity:.78;margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.1)}
+.section{margin-bottom:15px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px;min-height:88px;box-shadow:0 7px 20px rgba(41,57,82,.06)}
+.stat b{display:block;font-size:21px;color:#3156d8}.stat small{display:block;margin-top:3px;color:var(--muted);font-size:10px;font-weight:800}
+.card{background:#fff;border:1px solid var(--line);border-radius:21px;padding:16px;box-shadow:0 8px 24px rgba(41,57,82,.055)}
+.title{font-size:17px;font-weight:900;margin:0}.sub{font-size:11px;color:var(--muted);margin:4px 0 0;line-height:1.45}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.actiongrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+.action{
+  border:1px solid #e2e8f0;background:#fbfcfe;border-radius:16px;padding:12px 9px;text-align:center;
+  transition:.15s
+}
+.action:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(41,57,82,.07)}
+.action .ico{font-size:23px;display:block;margin-bottom:5px}.action b{font-size:11px}.action small{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.assignment{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #edf0f4}
+.assignment:last-child{border-bottom:0}.assignment b{font-size:12px}.tag{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:#eef2ff;color:#4256c9;font-size:10px;font-weight:800}
+.tag.green{background:#e8faf3;color:#087d56}.tag.orange{background:#fff4df;color:#a46400}.tag.red{background:#ffedf1;color:#c03555}.tag.gray{background:#f0f3f7;color:#657184}
+.notice,.rowitem{padding:10px 0;border-bottom:1px solid #edf0f4}.notice:last-child,.rowitem:last-child{border-bottom:0}
+.notice b,.rowitem b{font-size:12px}.muted{color:var(--muted);font-size:10px;line-height:1.45}
+.empty{padding:14px 8px;text-align:center;color:#8b96a5;font-size:11px}
+.attbox{background:linear-gradient(135deg,#f6f9ff,#fbfdff);border:1px solid #dfe7fb;border-radius:18px;padding:14px}
+.attstatus{display:flex;align-items:center;justify-content:space-between;gap:8px}.attbig{font-size:19px;font-weight:900}
+.times{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.timebox{background:#fff;border:1px solid var(--line);border-radius:13px;padding:9px}.timebox small{display:block;color:var(--muted);font-size:9px}.timebox b{font-size:15px}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.btn{border:0;border-radius:12px;padding:10px 13px;font-weight:850;font-size:11px;background:linear-gradient(135deg,#315ee8,#4b45dd);color:#fff}
+.btn.green{background:linear-gradient(135deg,#12b77a,#089b68)}.btn.light{background:#eef2f7;color:#475569}.btn.red{background:#fee9ee;color:#c33354}
+.status{margin-top:9px;padding:9px 10px;border-radius:11px;background:#f5f8fb;border:1px solid #e2e8ef;font-size:10px;line-height:1.45}
+.ok{color:#087d56;font-weight:800}.err{color:#c33354;font-weight:800}
+.field{margin-top:9px}.field label{display:block;font-size:10px;font-weight:850;color:#526075;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;border:1px solid #d6dee9;background:#fbfcfe;border-radius:11px;padding:10px 11px;outline:none}
+.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#7187ea;box-shadow:0 0 0 3px rgba(49,94,232,.08)}
+.list{max-height:330px;overflow:auto}
+.quicktitle{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.bottom{
+  position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);
+  border-top:1px solid #dfe5ec;display:grid;grid-template-columns:repeat(5,1fr);z-index:50
+}
+.bottom button{border:0;background:none;padding:8px 2px 9px;color:#66758a;font-size:9px;font-weight:800}
+.bottom span{display:block;font-size:19px;margin-bottom:2px}.bottom .active{color:#315ee8}
+.noticecount{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef476f;color:#fff;font-size:9px;display:inline-grid;place-items:center;margin-left:4px}
+@media(max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .actiongrid{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr}
+}
+@media(min-width:900px){
+  .wrap{padding-left:20px;padding-right:20px}.actiongrid{grid-template-columns:repeat(6,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div id="loading" style="min-height:100vh;display:grid;place-items:center;padding:25px;background:#eef3f7">
+  <div class="card" style="width:min(420px,100%);text-align:center">
+    <img src="new-logo.png" style="width:72px;height:72px;object-fit:contain" alt="School logo">
+    <h2 style="margin:10px 0 4px">Opening Teacher Dashboard</h2>
+    <div id="loadingMsg" class="muted">Connecting to your Firebase school account…</div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <header class="top">
+    <div class="toprow">
+      <button class="iconbtn" onclick="scrollToId('home')" aria-label="Home">⌂</button>
+      <div class="brand"><small>GOVERNMENT PRIMARY SCHOOL</small><strong>Pethgam Wagoora</strong></div>
+      <button class="iconbtn" onclick="logout()" aria-label="Sign out">↪</button>
+    </div>
+  </header>
+
+  <main class="wrap" id="home">
+    <section class="profile">
+      <div class="profilegrid">
+        <div id="photoBox" class="avatarFallback">T</div>
+        <div>
+          <h1 id="name">Teacher</h1>
+          <div class="role" id="designation">Teacher</div>
+          <div class="special" id="speciality">Your teaching workspace</div>
+          <div class="chips">
+            <span class="chip" id="employee">Employee ID: —</span>
+            <span class="chip" id="qualification">Qualification: —</span>
+            <span class="chip" id="mobile">Mobile: —</span>
+          </div>
+          <div class="chips" id="classChips"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stats">
+      <div class="stat"><b id="studentCount">—</b><small>Students in my classes</small></div>
+      <div class="stat"><b id="assignmentCount">0</b><small>Teaching assignments</small></div>
+      <div class="stat"><b id="homeworkCount">—</b><small>My homework</small></div>
+      <div class="stat"><b id="leaveCount">—</b><small>Pending leave</small></div>
+    </section>
+
+    <section class="section card">
+      <div class="quicktitle">
+        <div><h2 class="title">Today at a glance</h2><p class="sub" id="todayText">Your daily teacher workspace.</p></div>
+        <span class="tag" id="cloud">Connecting…</span>
+      </div>
+      <div class="actiongrid">
+        <a class="action" href="attendance.html"><span class="ico">🧑‍🎓</span><b>Student Attendance</b><small>Mark / view class attendance</small></a>
+        <button class="action" onclick="scrollToId('homeworkCard')"><span class="ico">📚</span><b>Homework</b><small>Publish work for students</small></button>
+        <a class="action" href="results.html"><span class="ico">📝</span><b>Marks & Results</b><small>Open results module</small></a>
+        <button class="action" onclick="scrollToId('timetableCard')"><span class="ico">🗓️</span><b>Timetable</b><small>View only</small></button>
+        <a class="action" href="student-communication.html"><span class="ico">💬</span><b>Communication</b><small>Contact students/families</small></a>
+        <a class="action" href="notices.html"><span class="ico">📢</span><b>Notices</b><small>School circulars</small></a>
+        <button class="action" onclick="scrollToId('calendarCard')"><span class="ico">📅</span><b>Calendar</b><small>View updated calendar</small></button>
+        <a class="action" href="library.html"><span class="ico">📖</span><b>Library</b><small>Books & transactions</small></a>
+        <a class="action" href="student-profile.html"><span class="ico">👤</span><b>Student Profiles</b><small>Student records</small></a>
+        <a class="action" href="student-documents.html"><span class="ico">📄</span><b>Documents</b><small>Student documents</small></a>
+        <button class="action" onclick="scrollToId('certificateCard')"><span class="ico">🧭</span><b>Work & Behaviour</b><small>Apply for certificate</small></button>
+        <button class="action" onclick="scrollToId('myAttendanceCard')"><span class="ico">🕘</span><b>My Attendance</b><small>Check in / out</small></button>
+      </div>
+    </section>
+
+    <section class="section grid2">
+      <div class="card" id="myClassesCard">
+        <h2 class="title">My teaching assignments</h2>
+        <p class="sub">These come directly from Staff Management. Each class-subject pair is shown separately.</p>
+        <div id="assignments" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <h2 class="title">My students</h2>
+        <p class="sub">Student counts are grouped by the classes assigned to this teacher.</p>
+        <div id="classCounts" style="margin-top:8px"></div>
+      </div>
+    </section>
+
+    <section class="section card" id="myAttendanceCard">
+      <div class="quicktitle">
+        <div><h2 class="title">My staff attendance</h2><p class="sub">Your check-in and check-out use the same staffAttendance collection as the Cook dashboard.</p></div>
+        <span class="tag" id="attState">Loading…</span>
+      </div>
+      <div class="attbox" style="margin-top:11px">
+        <div class="attstatus"><div class="attbig" id="attHeadline">Checking today…</div><span class="tag gray" id="attDate">—</span></div>
+        <div class="times">
+          <div class="timebox"><small>Check In</small><b id="checkIn">—</b><div class="muted" id="lateInfo"></div></div>
+          <div class="timebox"><small>Check Out</small><b id="checkOut">—</b><div class="muted" id="earlyInfo"></div></div>
+        </div>
+        <div class="btnrow">
+          <button class="btn green" id="checkInBtn" onclick="checkIn()">✓ Check In</button>
+          <button class="btn" id="checkOutBtn" onclick="checkOut()">✓ Check Out</button>
+        </div>
+        <div class="status" id="attMsg">Loading attendance timings…</div>
+        <div class="muted" id="attRange" style="margin-top:7px"></div>
+        <div class="security-box" id="secureAttendanceBox" style="margin-top:12px;border:1px solid #e2e8f0;border-radius:14px;padding:12px;background:#f8fafc">
+          <div class="quicktitle"><div><b style="font-size:12px">🔐 Secure attendance verification</b><div class="muted">Check-in/out is verified by this device and the administrator-defined school location.</div></div><span class="tag gray" id="secureState">Checking…</span></div>
+          <div class="grid2" style="margin-top:9px">
+            <div class="rowitem"><b>Device verification</b><div class="muted" id="passkeyState">Checking…</div><button class="btn light" id="registerPasskeyBtn" onclick="registerTeacherAttendancePasskey()" style="margin-top:7px">🔐 Register this device</button></div>
+            <div class="rowitem"><b>School location</b><div class="muted" id="locationState">Checking administrator settings…</div><button class="btn light" onclick="checkTeacherLocation()" style="margin-top:7px">📍 Verify my location</button></div>
+          </div>
+          <div class="status" id="secureAttendanceMsg">Secure attendance is being prepared.</div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <b style="font-size:12px">Recent staff attendance</b>
+        <div class="list" id="attendanceList"></div>
+      </div>
+    </section>
+
+    <section class="section grid2">
+      <div class="card" id="homeworkCard">
+        <div class="quicktitle">
+          <div><h2 class="title">Homework & class work</h2><p class="sub">Publish homework using your assigned class and subject.</p></div>
+          <button class="btn" onclick="toggleHomework()">＋ Add</button>
+        </div>
+        <div id="homeworkForm" class="hidden" style="margin-top:9px">
+          <div class="grid2">
+            <div class="field"><label>Class</label><select id="hwClass"></select></div>
+            <div class="field"><label>Subject</label><select id="hwSubject"></select></div>
+          </div>
+          <div class="field"><label>Due date</label><input id="hwDue" type="date"></div>
+          <div class="field"><label>Homework / instructions</label><textarea id="hwText" placeholder="Write what students should complete…"></textarea></div>
+          <div class="field"><label>Image / PDF attachment</label><input id="hwFiles" type="file" accept="image/*,application/pdf" multiple onchange="showHomeworkFiles()"><div class="muted" style="margin-top:5px">You can attach images or PDF files. Maximum 3 files, up to 10 MB each.</div><div id="hwFileList" class="muted" style="margin-top:5px"></div></div>
+          <div class="btnrow"><button class="btn green" onclick="publishHomework()">Publish</button><button class="btn light" onclick="toggleHomework()">Cancel</button></div>
+          <div id="hwMsg" class="status"></div>
+        </div>
+        <div id="homeworkList" style="margin-top:9px"></div>
+      </div>
+
+      <div class="card" id="communicationCard">
+        <div class="quicktitle">
+          <div><h2 class="title">Student communication</h2><p class="sub">Send a focused message and keep a recent communication trail.</p></div>
+          <button class="btn" onclick="toggleMessage()">＋ Message</button>
+        </div>
+        <div id="messageForm" class="hidden" style="margin-top:9px">
+          <div class="field"><label>Student ID / Admission No.</label><input id="msgStudent" placeholder="Student identifier"></div>
+          <div class="grid2">
+            <div class="field"><label>Type</label><select id="msgType"><option>Academic</option><option>Homework</option><option>Attendance</option><option>General</option></select></div>
+            <div class="field"><label>Priority</label><select id="msgPriority"><option>Normal</option><option>Important</option><option>Urgent</option></select></div>
+          </div>
+          <div class="field"><label>Message</label><textarea id="msgText" placeholder="Write your message…"></textarea></div>
+          <div class="btnrow"><button class="btn green" onclick="sendMessage()">Send</button><button class="btn light" onclick="toggleMessage()">Cancel</button></div>
+          <div id="messageMsg" class="status"></div>
+        </div>
+        <div id="messageList" style="margin-top:9px"></div>
+      </div>
+    </section>
+
+    <section class="section grid2">
+      <div class="card" id="timetableCard">
+        <div class="quicktitle"><div><h2 class="title">My timetable</h2><p class="sub">Entries matched to your staff ID, name, classes and subjects.</p></div><span class="tag gray">View only</span></div>
+        <div id="timetable" style="margin-top:9px"></div>
+      </div>
+      <div class="card">
+        <div class="quicktitle"><div><h2 class="title">School notices</h2><p class="sub">Latest circulars and announcements available to signed-in staff.</p></div><a class="tag" href="notices.html">All notices</a></div>
+        <div id="notices" style="margin-top:9px"></div>
+      </div>
+    </section>
+
+    <section class="section grid2">
+      <div class="card" id="calendarCard">
+        <div class="quicktitle"><div><h2 class="title">Updated school calendar</h2><p class="sub">View holidays, school events, examinations, meetings and working days published by the school. Teachers cannot edit this calendar.</p></div><span class="tag gray">View only</span></div>
+        <div id="calendarList" style="margin-top:9px"></div>
+      </div>
+      <div class="card" id="certificateCard">
+        <div class="quicktitle"><div><h2 class="title">Work & Behaviour Certificate</h2><p class="sub">Apply to the HOI. The teacher does not generate or issue the certificate directly.</p></div><span class="tag orange">Application</span></div>
+        <div class="field"><label>Certificate type</label><select id="certificateType"><option>Work & Behaviour Certificate</option><option>Work Certificate</option><option>Behaviour Certificate</option></select></div>
+        <div class="field"><label>Purpose / requirement</label><textarea id="certificatePurpose" placeholder="State the purpose for which the certificate is required…"></textarea></div>
+        <div class="field"><label>Additional remarks (optional)</label><textarea id="certificateRemarks" placeholder="Any additional information for the HOI…"></textarea></div>
+        <div class="btnrow"><button class="btn" onclick="applyCertificate()">Submit Application</button></div>
+        <div id="certificateMsg" class="status"></div>
+        <div style="margin-top:12px"><b style="font-size:12px">My certificate applications</b><div id="certificateList"></div></div>
+      </div>
+    </section>
+
+    <section class="section grid2">
+      <div class="card">
+        <h2 class="title">Leave & personal records</h2>
+        <p class="sub">Apply for Casual, First Half, Second Half, Medical, Earned, Special or Other leave and track its decision status.</p>
+        <div class="grid2">
+          <div class="field"><label>Leave type</label><select id="leaveType"><option value="Casual Leave">Casual Leave</option><option value="First Half">First Half</option><option value="Second Half">Second Half</option><option value="Medical Leave">Medical Leave</option><option value="Earned Leave">Earned Leave</option><option value="Special Leave">Special Leave</option><option value="Other">Other</option></select></div>
+          <div class="field"><label>Session</label><select id="leaveSession"><option value="Full Day">Full Day</option><option value="First Half">First Half</option><option value="Second Half">Second Half</option></select></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>From</label><input id="leaveFrom" type="date"></div>
+          <div class="field"><label>To</label><input id="leaveTo" type="date"></div>
+        </div>
+        <div class="field"><label>Reason</label><textarea id="leaveReason" placeholder="Reason for leave"></textarea></div>
+        <div class="field"><label>Remarks (optional)</label><textarea id="leaveRemarks" placeholder="Additional information for the HOI…"></textarea></div>
+        <div class="btnrow"><button class="btn" onclick="applyLeave()">Submit Leave</button><a class="btn light" href="Staff-Attendence.html">Staff Attendance</a></div>
+        <div id="leaveMsg" class="status"></div>
+        <div id="leaveList" style="margin-top:9px"></div>
+      </div>
+      <div class="card">
+        <h2 class="title">My teacher profile</h2>
+        <p class="sub">Information below is read from your staff record. Changes are managed by the HOI.</p>
+        <div class="rowitem"><b>Employee ID</b><div class="muted" id="pEmployee">—</div></div>
+        <div class="rowitem"><b>Designation</b><div class="muted" id="pDesignation">—</div></div>
+        <div class="rowitem"><b>Qualification</b><div class="muted" id="pQualification">—</div></div>
+        <div class="rowitem"><b>Joining date</b><div class="muted" id="pJoining">—</div></div>
+        <div class="rowitem"><b>Firebase account</b><div class="muted" id="pAuth">Verified</div></div>
+        <div class="status"><span class="ok">✓</span> Signed in through the Common Role Login and linked to this staff record.</div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom">
+    <button class="active" onclick="scrollToId('home')"><span>⌂</span>Home</button>
+    <button onclick="scrollToId('myAttendanceCard')"><span>🕘</span>Attendance</button>
+    <button onclick="scrollToId('homeworkCard')"><span>📚</span>Homework</button>
+    <button onclick="scrollToId('communicationCard')"><span>💬</span>Messages</button>
+    <button onclick="logout()"><span>↪</span>Sign out</button>
+  </nav>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+<script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+// Common Role Login session used by all staff dashboards.
+const SESSION='GPSPETHGAM_COMMON_LOGIN_SESSION_V1';
+const LEGACY_SESSION='GPSPETHGAM_ROLE_SESSION_V1';
+const STAFF_SESSION='GPSPETHGAM_STAFF_SESSION_V2';
+const ROLE='TEACHER';
+const STAFF='staff';
+const ATT='staffAttendance';
+const LEAVE='staffLeaves';
+
+let auth=null,db=null,storage=null,me=null,session=null;
+let attendanceSettings={checkInStart:'09:00',checkInCutoff:'09:30',checkOutExpected:'15:00',checkOutEnd:'16:00'};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const today=()=>new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const initials=n=>String(n||'Teacher').trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase()||'T';
+const arr=(a,b)=>Array.isArray(me?.[a])&&me[a].length?me[a]:Array.isArray(me?.[b])?me[b]:[];
+const showError=e=>String(e?.code?e.code+': '+e.message:e?.message||e);
+
+function scrollToId(id){$(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+window.scrollToId=scrollToId;
+
+function sessionData(){
+  try{
+    const current=JSON.parse(sessionStorage.getItem(SESSION)||'null');
+    if(current) return current;
+    const legacy=JSON.parse(sessionStorage.getItem(LEGACY_SESSION)||'null');
+    return legacy||null;
+  }catch{return null}
+}
+
+function roleMatches(data){
+  const role=String(data?.role||'').trim().toUpperCase();
+  const accessRole=String(data?.accessRole||'').trim().toUpperCase();
+  const designation=String(data?.designation||data?.roleDesignation||'').trim();
+  if(role==='TEACHER'||accessRole==='TEACHER') return true;
+  if(accessRole==='STAFF' && (role==='TEACHER'||/teacher/i.test(designation))) return true;
+  return false;
+}
+
+async function loadStaffRecord(){
+  const s=sessionData();
+  if(!s?.staffId) throw new Error('Teacher session is missing. Please sign in again.');
+  const d=await db.collection(STAFF).doc(s.staffId).get();
+  if(!d.exists) throw new Error('Teacher staff record could not be found.');
+  const data=d.data()||{};
+  if(String(data.status||'Active').toLowerCase()==='inactive'||data.loginEnabled===false) throw new Error('This teacher account is inactive or login is disabled.');
+  if(!roleMatches(data)) throw new Error('This staff account is not configured as a Teacher (role must be Teacher).');
+  if(data.authUid&&data.authUid!==auth.currentUser.uid) throw new Error('Firebase account is not correctly linked to this teacher record.');
+  me={id:d.id,...data,authUid:auth.currentUser.uid};
+  session={...s,role:ROLE,loginRole:ROLE,schoolLoginRole:ROLE,staffAuthUid:auth.currentUser.uid};
+  try{
+    sessionStorage.setItem(SESSION,JSON.stringify(session));
+    sessionStorage.removeItem(LEGACY_SESSION);
+    sessionStorage.removeItem(STAFF_SESSION);
+  }catch(e){}
+}
+
+function renderProfile(){
+  $('name').textContent=me.name||'Teacher';
+  $('designation').textContent=me.designation||me.role||'Teacher';
+  $('speciality').textContent=me.speciality||me.role||'Teaching workspace';
+  $('employee').textContent='Employee ID: '+(me.employeeId||session.employeeId||'—');
+  $('qualification').textContent='Qualification: '+(me.qualification||'—');
+  $('mobile').textContent='Mobile: '+(me.mobile||'—');
+  $('pEmployee').textContent=me.employeeId||'—';
+  $('pDesignation').textContent=me.designation||me.role||'Teacher';
+  $('pQualification').textContent=me.qualification||'—';
+  $('pJoining').textContent=me.joiningDate||'—';
+  const photo=me.photoUrl||me.photo||'';
+  if(photo) $('photoBox').outerHTML='<img id="photoBox" class="avatar" src="'+esc(photo)+'" alt="Teacher photo">';
+  else $('photoBox').textContent=initials(me.name);
+  const classes=arr('assignedClasses','classes');
+  $('classChips').innerHTML=classes.map(x=>'<span class="chip">Class: '+esc(x)+'</span>').join('');
+  $('assignmentCount').textContent=(Array.isArray(me.teachingAssignments)?me.teachingAssignments.length:Math.max(classes.length,arr('assignedSubjects','subjects').length));
+}
+
+function normalizeAssignments(){
+  let rows=Array.isArray(me.teachingAssignments)?me.teachingAssignments:[];
+  if(!rows.length&&Array.isArray(me.classSubjectAssignments))rows=me.classSubjectAssignments;
+  rows=rows.map(x=>({className:x.className||x.class||x.classNameText||'',subject:x.subject||x.subjectName||''}))
+    .filter(x=>x.className||x.subject);
+  if(!rows.length){
+    const cs=arr('assignedClasses','classes'),ss=arr('assignedSubjects','subjects');
+    rows=cs.map((c,i)=>({className:c,subject:ss[i]||ss[0]||'General'}));
+  }
+  return rows;
+}
+
+function renderAssignments(){
+  const rows=normalizeAssignments();
+  $('assignments').innerHTML=rows.map(x=>'<div class="assignment"><div><b>'+esc(x.className||'Class')+'</b><div class="muted">'+esc(x.subject||'General subject')+'</div></div><span class="tag">'+esc(x.subject||'Subject')+'</span></div>').join('')
+    ||'<div class="empty">No teaching assignments have been recorded yet. Ask the HOI to add your class-subject assignments in Staff Management.</div>';
+}
+
+async function loadStudentCounts(){
+  const classes=arr('assignedClasses','classes');
+  if(!classes.length){$('studentCount').textContent='0';$('classCounts').innerHTML='<div class="empty">No classes are assigned to this teacher.</div>';return}
+  try{
+    const snap=await db.collection('students').get();
+    const counts={};classes.forEach(c=>counts[String(c)]=0);
+    snap.forEach(d=>{
+      const s=d.data()||{},c=String(s.classJoining||s.class||s.className||'').trim();
+      if(Object.prototype.hasOwnProperty.call(counts,c))counts[c]++;
+    });
+    $('studentCount').textContent=Object.values(counts).reduce((a,b)=>a+b,0);
+    $('classCounts').innerHTML=Object.entries(counts).map(([c,n])=>'<div class="assignment"><div><b>'+esc(c)+'</b><div class="muted">Students currently in this class</div></div><span class="tag">'+n+'</span></div>').join('');
+  }catch(e){
+    $('studentCount').textContent='—';
+    $('classCounts').innerHTML='<div class="empty">Student count could not be loaded.</div>';
+  }
+}
+
+function minutes(v){const m=String(v||'').match(/(\d{1,2}):(\d{2})/);return m?Number(m[1])*60+Number(m[2]):null}
+function nowTime(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function timeText(v){if(!v)return'—';const m=String(v).match(/(\d{1,2}):(\d{2})/);if(!m)return String(v);let h=Number(m[1]);const ap=h>=12?'PM':'AM';h=h%12||12;return String(h).padStart(2,'0')+':'+m[2]+' '+ap}
+function delta(a,b){const x=minutes(a),y=minutes(b);return x==null||y==null?null:x-y}
+function attendanceId(){return me.id+'_'+today()}
+function expectedIn(x){return String(x.expectedCheckIn||attendanceSettings.checkInStart).slice(0,5)}
+function expectedOut(x){return String(x.expectedCheckOut||attendanceSettings.checkOutExpected).slice(0,5)}
+
+async function loadAttendanceSettings(){
+  try{
+    const d=await db.collection('institution').doc('attendanceSettings').get();
+    if(d.exists) attendanceSettings={...attendanceSettings,...d.data()};
+  }catch(e){}
+}
+
+function attendanceMessage(){
+  const n=minutes(nowTime()),a=minutes(attendanceSettings.checkInStart),b=minutes(attendanceSettings.checkInCutoff),c=minutes(attendanceSettings.checkOutExpected),d=minutes(attendanceSettings.checkOutEnd);
+  if(n<a)return'Check In opens at '+timeText(attendanceSettings.checkInStart)+'.';
+  if(n<=b)return'Check In is open until '+timeText(attendanceSettings.checkInCutoff)+'.';
+  if(n<c)return'Late Check In remains available. Expected Check Out: '+timeText(attendanceSettings.checkOutExpected)+'.';
+  if(n<=d)return'Check Out is open until '+timeText(attendanceSettings.checkOutEnd)+'.';
+  return'Today’s attendance window is closed.';
+}
+
+function renderAttendance(t){
+  t=t||{};
+  const cin=String(t.checkIn||''),cout=String(t.checkOut||'');
+  const late=delta(cin,expectedIn(t)),early=delta(cout,expectedOut(t));
+  $('checkIn').textContent=timeText(cin);$('checkOut').textContent=timeText(cout);
+  $('attDate').textContent=today();
+  $('lateInfo').textContent=cin?(late>0?'Late by '+late+' min':late===0?'On time':'Early by '+Math.abs(late)+' min'):'Expected: '+timeText(attendanceSettings.checkInStart)+'–'+timeText(attendanceSettings.checkInCutoff);
+  $('earlyInfo').textContent=cout?(early<0?'Early by '+Math.abs(early)+' min':early===0?'On time':'After expected by '+early+' min'):'Expected: '+timeText(attendanceSettings.checkOutExpected);
+  const n=minutes(nowTime()),open=n>=minutes(attendanceSettings.checkInStart),out=n<=minutes(attendanceSettings.checkOutEnd);
+  $('checkInBtn').disabled=!!cin||!open;
+  $('checkOutBtn').disabled=!cin||!!cout||!out;
+  if(!cin){$('attState').textContent='Not Marked';$('attState').className='tag orange';$('attHeadline').textContent='Not checked in';}
+  else if(!cout){$('attState').textContent='Checked In';$('attState').className='tag green';$('attHeadline').textContent='You are checked in';}
+  else{$('attState').textContent='Completed';$('attState').className='tag green';$('attHeadline').textContent='Attendance completed';}
+  $('attMsg').textContent=attendanceMessage();
+  $('attRange').textContent='Admin timing: Check-in '+timeText(attendanceSettings.checkInStart)+'–'+timeText(attendanceSettings.checkInCutoff)+' · Expected Check-out '+timeText(attendanceSettings.checkOutExpected)+' · Close '+timeText(attendanceSettings.checkOutEnd);
+}
+
+async function loadAttendance(){
+  await loadAttendanceSettings();
+  const snap=await db.collection(ATT).where('staffId','==',me.id).get();
+  const rows=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  const todayRow=rows.find(x=>String(x.date||'')===today())||{};
+  renderAttendance(todayRow);
+  $('attendanceList').innerHTML=rows.slice(0,8).map(x=>{
+    const late=delta(x.checkIn,expectedIn(x)),early=delta(x.checkOut,expectedOut(x));
+    const note=[late>0?'Late '+late+' min':'',early<0?'Early '+Math.abs(early)+' min':''].filter(Boolean).join(' · ');
+    return '<div class="rowitem"><b>'+esc(x.date||'—')+'</b> <span class="tag '+(x.checkOut?'green':x.checkIn?'orange':'gray')+'">'+esc(x.checkOut?'Completed':x.checkIn?'Checked In':'Not Marked')+'</span><div class="muted">'+esc(timeText(x.checkIn))+' → '+esc(timeText(x.checkOut))+(note?' · '+esc(note):'')+'</div></div>';
+  }).join('')||'<div class="empty">No staff attendance records yet.</div>';
+}
+
+async function saveAttendance(patch){
+  throw new Error('Direct teacher attendance writes are disabled. Use Secure Attendance verification.');
+}
+
+let attendanceFunctions=null,secureSettings=null;
+function attendanceCallable(name){
+  if(!attendanceFunctions)attendanceFunctions=firebase.functions();
+  return attendanceFunctions.httpsCallable(name);
+}
+function backendErrorDetails(e){
+  const code=String(e?.code||e?.details?.code||'').trim();
+  const message=String(e?.message||e?.details?.message||e||'Unknown error').trim();
+  const details=e?.details&&typeof e.details==='object'?JSON.stringify(e.details):String(e?.details||'').trim();
+  return (code?code+' · ':'')+message+(details&&details!=='[object Object]'&&details!==message?' · Details: '+details:'');
+}
+function secureMsg(text,ok=false){
+  const e=$('secureAttendanceMsg');
+  if(!e)return;
+  const cls=ok?'ok':'err';
+  e.innerHTML='<span class="'+cls+'">'+(ok?'✓ ':'')+esc(String(text))+'</span>';
+}
+
+function haversineMeters(lat1,lon1,lat2,lon2){const r=n=>n*Math.PI/180,R=6371000,dLat=r(lat2-lat1),dLon=r(lon2-lon1),a=Math.sin(dLat/2)**2+Math.cos(r(lat1))*Math.cos(r(lat2))*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
+function getCurrentPosition(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('This browser does not provide location services.'));navigator.geolocation.getCurrentPosition(resolve,e=>reject(new Error(e.code===1?'Location permission was denied.':e.code===2?'Current location could not be determined.':e.code===3?'Location request timed out.':'Location could not be read.')),{enableHighAccuracy:true,maximumAge:0,timeout:15000})})}
+async function loadSecureAttendanceSettings(){
+  const d=await db.collection('institution').doc('attendanceSettings').get();secureSettings=d.exists?d.data()||{}:{};
+  const lat=Number(secureSettings.geofenceLat),lng=Number(secureSettings.geofenceLng),radius=Number(secureSettings.geofenceRadiusMeters||100),accuracy=Number(secureSettings.maxLocationAccuracyMeters||100);
+  $('secureState').textContent=(Number.isFinite(lat)&&Number.isFinite(lng))?'Configured':'Not configured';$('secureState').className='tag '+(Number.isFinite(lat)&&Number.isFinite(lng)?'green':'orange');
+  $('locationState').textContent=Number.isFinite(lat)&&Number.isFinite(lng)?('Allowed '+Math.round(radius)+' m · GPS accuracy ≤ '+Math.round(accuracy)+' m'):'Administrator must configure the school location.';
+  return secureSettings;
+}
+async function updatePasskeyState(){
+  try{
+    const b=window.SimpleWebAuthnBrowser;
+    if(!b?.browserSupportsWebAuthn?.()){ $('passkeyState').innerHTML='<span class="err">WebAuthn is not supported in this browser.</span>';return false; }
+    const platform=b.platformAuthenticatorIsAvailable?await b.platformAuthenticatorIsAvailable():false;
+    $('passkeyState').innerHTML=platform?'<span class="ok">Platform verification available. The device may use fingerprint, Face ID, Windows Hello or another supported user-verification method.</span>':'<span class="err">No platform authenticator detected. A supported passkey/security key is required.</span>';
+    return true;
+  }catch(e){$('passkeyState').textContent=e.message||String(e);return false}
+}
+async function registerTeacherAttendancePasskey(){
+  const btn=$('registerPasskeyBtn');btn.disabled=true;
+  try{
+    if(!auth.currentUser)throw new Error('Firebase authentication has ended. Please sign in again.');
+    const b=window.SimpleWebAuthnBrowser;if(!b?.startRegistration)throw new Error('Secure device authentication library did not load.');
+    secureMsg('Starting secure device registration…',true);
+    const begin=await attendanceCallable('beginTeacherAttendancePasskeyRegistration')();
+    const response=await b.startRegistration({optionsJSON:begin.data});
+    const finish=await attendanceCallable('finishTeacherAttendancePasskeyRegistration')({response});
+    if(!finish.data?.verified)throw new Error('The device security registration could not be verified.');
+    $('passkeyState').innerHTML='<span class="ok">✓ This device is registered for secure attendance.</span>';
+    secureMsg('This device is now registered. You will still be asked to verify it at every attendance action.',true);
+  }catch(e){secureMsg(backendErrorDetails(e),false)}finally{btn.disabled=false}
+}
+async function checkTeacherLocation(){
+  try{
+    await loadSecureAttendanceSettings();
+    const lat=Number(secureSettings?.geofenceLat),lng=Number(secureSettings?.geofenceLng),radius=Number(secureSettings?.geofenceRadiusMeters||100),max=Number(secureSettings?.maxLocationAccuracyMeters||100);
+    if(!Number.isFinite(lat)||!Number.isFinite(lng))throw new Error('Administrator has not configured the school attendance location.');
+    const p=await getCurrentPosition(),c=p.coords,d=haversineMeters(c.latitude,c.longitude,lat,lng);
+    if(c.accuracy>max)throw new Error('GPS accuracy is '+Math.round(c.accuracy)+' m; the school requires '+Math.round(max)+' m or better.');
+    if(d>radius)throw new Error('You are about '+Math.round(d)+' m from school; allowed range is '+Math.round(radius)+' m.');
+    $('locationState').innerHTML='<span class="ok">✓ Inside range: '+Math.round(d)+' m from school · accuracy '+Math.round(c.accuracy)+' m.</span>';
+    return p;
+  }catch(e){$('locationState').innerHTML='<span class="err">'+esc(e.message||String(e))+'</span>';throw e}
+}
+async function secureAttendanceAction(action){
+  const btn=$(action==='checkin'?'checkInBtn':'checkOutBtn');btn.disabled=true;
+  try{
+    if(!auth.currentUser)throw new Error('Firebase authentication has ended. Please sign in again.');
+    await loadSecureAttendanceSettings();
+    const p=await checkTeacherLocation();
+    if(!window.SimpleWebAuthnBrowser?.startAuthentication)throw new Error('Secure device authentication library did not load.');
+    secureMsg('Location verified. Requesting device verification…',true);
+    const begin=await attendanceCallable('beginTeacherAttendanceVerification')();
+    const assertion=await SimpleWebAuthnBrowser.startAuthentication({optionsJSON:begin.data});
+    const result=await attendanceCallable('secureTeacherAttendance')({action,position:{lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy},webauthnResponse:assertion});
+    secureMsg((action==='checkin'?'Check In':'Check Out')+' recorded securely at '+result.data.time+'.',true);
+    await loadAttendance();
+  }catch(e){const detail=backendErrorDetails(e);secureMsg(detail,false);$('attMsg').innerHTML='<span class="err">Secure attendance failed: '+esc(detail)+'</span>'}finally{btn.disabled=false}
+}
+async function checkIn(){return secureAttendanceAction('checkin')}
+async function checkOut(){return secureAttendanceAction('checkout')}
+
+
+function populateHomeworkForm(){
+  const cs=arr('assignedClasses','classes'),ss=arr('assignedSubjects','subjects');
+  $('hwClass').innerHTML=(cs.length?cs:['No assigned class']).map(x=>'<option>'+esc(x)+'</option>').join('');
+  $('hwSubject').innerHTML=(ss.length?ss:['General']).map(x=>'<option>'+esc(x)+'</option>').join('');
+}
+function toggleHomework(){populateHomeworkForm();$('homeworkForm').classList.toggle('hidden')}
+function showHomeworkFiles(){
+  const files=Array.from($('hwFiles')?.files||[]);
+  if(files.length>3){$('hwMsg').innerHTML='<span class="err">Select a maximum of 3 files.</span>';$('hwFiles').value='';$('hwFileList').textContent='';return}
+  const bad=files.find(f=>!(f.type==='application/pdf'||String(f.type||'').startsWith('image/'))||f.size>10*1024*1024);
+  if(bad){$('hwMsg').innerHTML='<span class="err">Only images/PDF files up to 10 MB each are allowed.</span>';$('hwFiles').value='';$('hwFileList').textContent='';return}
+  $('hwFileList').innerHTML=files.map(f=>'• '+esc(f.name)+' ('+Math.round(f.size/1024)+' KB)').join('<br>');
+  $('hwMsg').textContent='';
+}
+async function uploadHomeworkFiles(){
+  const files=Array.from($('hwFiles')?.files||[]);
+  if(!files.length)return [];
+  if(!storage)throw new Error('Firebase Storage is not available.');
+  if(files.length>3)throw new Error('Select a maximum of 3 files.');
+  const out=[];
+  for(const file of files){
+    if(!(file.type==='application/pdf'||String(file.type||'').startsWith('image/')))throw new Error('Only image and PDF files can be attached.');
+    if(file.size>10*1024*1024)throw new Error(file.name+' is larger than 10 MB.');
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]+/g,'_');
+    const path='homework/'+me.id+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'_'+safeName;
+    const ref=storage.ref().child(path);
+    await ref.put(file,{contentType:file.type||'application/octet-stream'});
+    const url=await ref.getDownloadURL();
+    out.push({name:file.name,type:file.type||'',size:file.size,url,path});
+  }
+  return out;
+}
+function homeworkAttachments(x){
+  const a=Array.isArray(x.attachments)?x.attachments:[];
+  return a.length?'<div class="muted" style="margin-top:5px">Attachments: '+a.map(f=>'<a href="'+esc(f.url||'')+'" target="_blank" rel="noopener" style="color:#315ee8;font-weight:800">📎 '+esc(f.name||'Attachment')+'</a>').join(' · ')+'</div>':'';
+}
+async function loadHomework(){
+  let rows=[];
+  try{const s=await db.collection('homework').where('teacherId','==',me.id).get();rows=s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}
+  if(!rows.length)try{const s=await db.collection('assignments').where('teacherId','==',me.id).get();rows=s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}
+  rows.sort((a,b)=>String(b.date||b.createdAt||'').localeCompare(String(a.date||a.createdAt||'')));
+  $('homeworkCount').textContent=rows.length;
+  $('homeworkList').innerHTML=rows.slice(0,7).map(x=>'<div class="rowitem"><b>'+esc(x.title||x.subject||'Homework')+'</b> <span class="tag">'+esc(x.class||x.className||'Class')+'</span><div class="muted">'+esc(x.text||x.description||x.question||x.instructions||'')+'</div><div class="muted">Due: '+esc(x.dueDate||x.due||'—')+'</div>'+homeworkAttachments(x)+'</div>').join('')||'<div class="empty">No homework published yet.</div>';
+}
+async function publishHomework(){
+  const text=$('hwText').value.trim(),cls=$('hwClass').value,subject=$('hwSubject').value,due=$('hwDue').value;
+  const files=Array.from($('hwFiles')?.files||[]);
+  if(!text&&!files.length)return $('hwMsg').innerHTML='<span class="err">Write the homework or attach an image/PDF first.</span>';
+  if(cls==='No assigned class')return $('hwMsg').innerHTML='<span class="err">Ask the HOI to assign a class first.</span>';
+  const btn=document.querySelector('#homeworkForm .btn.green');if(btn)btn.disabled=true;
+  try{
+    $('hwMsg').innerHTML='<span class="muted">Uploading attachments and publishing…</span>';
+    const attachments=await uploadHomeworkFiles();
+    await db.collection('homework').add({
+      teacherId:me.id,teacherAuthUid:auth.currentUser.uid,teacherName:me.name||'',
+      class:cls,subject,dueDate:due,text,status:'Published',attachments,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('hwMsg').innerHTML='<span class="ok">✓ Homework published'+(attachments.length?' with '+attachments.length+' attachment(s).':' .')+'</span>';
+    $('hwText').value='';$('hwDue').value='';$('hwFiles').value='';$('hwFileList').textContent='';$('homeworkForm').classList.add('hidden');await loadHomework();
+  }catch(e){$('hwMsg').innerHTML='<span class="err">Could not publish: '+esc(showError(e))+'</span>'}
+  finally{if(btn)btn.disabled=false}
+}
+
+function toggleMessage(){$('messageForm').classList.toggle('hidden')}
+async function findStudentRecord(identifier){
+  const key=String(identifier||'').trim();
+  if(!key) return null;
+  const direct=await db.collection('students').doc(key).get();
+  if(direct.exists) return {id:direct.id,...direct.data()};
+  const q=await db.collection('students').where('admissionNo','==',key).limit(1).get();
+  if(!q.empty) return {id:q.docs[0].id,...q.docs[0].data()};
+  return null;
+}
+
+async function loadMessages(){
+  let rows=[];
+  try{
+    const s=await db.collectionGroup('communications').where('teacherAuthUid','==',auth.currentUser.uid).get();
+    rows=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>String(x.teacherId||'')===String(me.id));
+  }catch(e){
+    // Keep legacy top-level messages visible if the collection-group query is unavailable.
+  }
+  try{
+    const s=await db.collection('teacherMessages').where('teacherId','==',me.id).get();
+    rows=rows.concat(s.docs.map(d=>({id:d.id,...d.data()})));
+  }catch(e){}
+  const seen=new Set();
+  rows=rows.filter(x=>{const k=String(x.id)+'|'+String(x.studentId||x.admissionNo||'')+'|'+String(x.message||'');if(seen.has(k))return false;seen.add(k);return true});
+  rows.sort((a,b)=>String(b.date||b.createdAt||'').localeCompare(String(a.date||a.createdAt||'')));
+  $('messageList').innerHTML=rows.slice(0,7).map(x=>'<div class="rowitem"><b>'+esc(x.type||x.messageType||'Message')+'</b> <span class="tag '+(x.priority==='Urgent'?'red':'gray')+'">'+esc(x.priority||'Normal')+'</span><div class="muted">To: '+esc(x.studentId||x.admissionNo||x.recipientId||'Student')+'</div><div>'+esc(x.message||x.text||x.body||'')+'</div></div>').join('')||'<div class="empty">No recent teacher messages.</div>';
+}
+
+async function sendMessage(){
+  const studentKey=$('msgStudent').value.trim(),text=$('msgText').value.trim();
+  if(!studentKey||!text)return $('messageMsg').innerHTML='<span class="err">Enter the student Admission No. or student record ID and message.</span>';
+  try{
+    $('messageMsg').innerHTML='<span class="muted">Finding student record…</span>';
+    const student=await findStudentRecord(studentKey);
+    if(!student) return $('messageMsg').innerHTML='<span class="err">Student record not found. Check the Admission No. or student record ID.</span>';
+    await db.collection('students').doc(student.id).collection('communications').add({
+      teacherId:me.id,teacherAuthUid:auth.currentUser.uid,teacherName:me.name||'',
+      studentId:student.id,admissionNo:student.admissionNo||studentKey,
+      type:$('msgType').value,priority:$('msgPriority').value,subject:$('msgType').value,
+      message:text,date:today(),status:'Sent',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('messageMsg').innerHTML='<span class="ok">✓ Message sent to '+esc(student.name||student.admissionNo||'student')+'.</span>';
+    $('msgText').value='';$('msgStudent').value='';$('messageForm').classList.add('hidden');await loadMessages();
+  }catch(e){$('messageMsg').innerHTML='<span class="err">Could not send: '+esc(showError(e))+'</span>'}
+}
+
+async function loadLeaves(){
+  try{
+    const s=await db.collection(LEAVE).where('staffId','==',me.id).get();
+    const rows=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.from||b.createdAt||'').localeCompare(String(a.from||a.createdAt||'')));
+    $('leaveCount').textContent=rows.filter(x=>String(x.decision||'Pending')==='Pending').length;
+    $('leaveList').innerHTML=rows.slice(0,8).map(x=>'<div class="rowitem"><b>'+esc(x.leaveType||'Leave')+' · '+esc(x.from||'—')+' → '+esc(x.to||'—')+'</b> <span class="tag '+(x.decision==='Approved'?'green':x.decision==='Rejected'?'red':'orange')+'">'+esc(x.decision||'Pending')+'</span><div class="muted">'+esc(x.session||'Full Day')+' · '+esc(x.reason||'')+(x.remarks?' · '+esc(x.remarks):'')+'</div></div>').join('')||'<div class="empty">No leave applications.</div>';
+  }catch(e){$('leaveCount').textContent='—';$('leaveList').innerHTML='<div class="empty">Leave data unavailable.</div>'}
+}
+async function applyLeave(){
+  const type=$('leaveType').value,sessionType=$('leaveSession').value,from=$('leaveFrom').value,to=$('leaveTo').value,reason=$('leaveReason').value.trim(),remarks=$('leaveRemarks').value.trim();
+  if(!from||!to||!reason)return $('leaveMsg').innerHTML='<span class="err">Select the leave type, dates and enter the reason.</span>';
+  if(to<from)return $('leaveMsg').innerHTML='<span class="err">To date cannot be before From date.</span>';
+  const halfType=type==='First Half'||type==='Second Half';
+  if(halfType && (to!==from || sessionType!==type))return $('leaveMsg').innerHTML='<span class="err">First Half / Second Half leave must use the same From and To date and matching session.</span>';
+  try{
+    if(!auth.currentUser)throw new Error('Firebase authentication has ended. Please sign in again.');
+    await db.collection(LEAVE).add({
+      staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',employeeId:me.employeeId||'',
+      leaveType:type,session:halfType?type:sessionType,from,to,reason,remarks,decision:'Pending',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('leaveMsg').innerHTML='<span class="ok">✓ Leave application submitted for HOI review.</span>';
+    $('leaveFrom').value='';$('leaveTo').value='';$('leaveReason').value='';$('leaveRemarks').value='';await loadLeaves();
+  }catch(e){$('leaveMsg').innerHTML='<span class="err">Could not submit leave: '+esc(showError(e))+'</span>'}
+}
+
+async function loadNotices(){
+  try{
+    const s=await db.collection('notices').get();
+    const rows=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||b.createdAt||'').localeCompare(String(a.date||a.createdAt||'')));
+    $('notices').innerHTML=rows.slice(0,6).map(x=>'<div class="notice"><b>'+esc(x.title||x.heading||x.subject||'School Notice')+'</b><div class="muted">'+esc(x.message||x.body||x.text||'')+'</div><div class="muted">'+esc(x.date||'')+'</div></div>').join('')||'<div class="empty">No notices available.</div>';
+  }catch(e){$('notices').innerHTML='<div class="empty">Notices unavailable.</div>'}
+}
+
+async function loadTimetable(){
+  try{
+    const snap=await db.collection('timetables').get();
+    const classes=arr('assignedClasses','classes').map(String);
+    const subjects=arr('assignedSubjects','subjects').map(String);
+    const teacherId=String(me.id||'');
+    const employeeId=String(me.employeeId||'');
+    const teacherName=String(me.name||'').trim().toLowerCase();
+    const rows=[];
+
+    snap.docs.forEach(doc=>{
+      const x=doc.data()||{};
+      if(x.status && String(x.status).toLowerCase()!=='active') return;
+      if(x.timetableType==='teacher-matrix' && Array.isArray(x.teachers) && Array.isArray(x.periods)){
+        const teacher=x.teachers.find(t=>String(t.id||'')===teacherId || String(t.employeeId||'')===employeeId || String(t.number||'')===employeeId || String(t.name||'').trim().toLowerCase()===teacherName);
+        if(!teacher) return;
+        const teacherKey=String(teacher.id||'');
+        x.periods.forEach(p=>{
+          const a=(p.assignments&&p.assignments[teacherKey])||null;
+          if(!a) return;
+          const assignedClasses=Array.isArray(a.classes)&&a.classes.length?a.classes:[a.className||a.class||''];
+          const assignedSubjects=[String(a.subject||a.subjectName||'')].filter(Boolean);
+          const classMatch=!classes.length || assignedClasses.some(c=>classes.includes(String(c)));
+          const subjectMatch=!subjects.length || assignedSubjects.some(sub=>subjects.includes(String(sub)));
+          if(!classMatch||!subjectMatch) return;
+          rows.push({day:p.day||p.weekday||'',period:p.number||p.period||'',time:(p.startTime&&p.endTime)?String(p.startTime)+'–'+String(p.endTime):p.time||'',subject:a.subject||a.subjectName||'',className:assignedClasses.filter(Boolean).join(', '),room:a.room||'',mode:a.mode||''});
+        });
+        return;
+      }
+      // Compatibility with older one-row-per-timetable documents.
+      const teacher=String(x.teacherId||x.teacher||x.staffId||x.teacherName||'');
+      const c=String(x.class||x.className||x.classJoining||'');
+      const sub=String(x.subject||x.subjectName||'');
+      const match=teacher===teacherId||teacher===employeeId||teacher.toLowerCase()===teacherName||(classes.includes(c)&&(!subjects.length||subjects.includes(sub)));
+      if(match) rows.push({day:x.day||x.weekday||'',period:x.period||'',time:x.time||'',subject:sub,className:c,room:x.room||'',mode:x.mode||''});
+    });
+
+    const dayOrder={monday:1,tuesday:2,wednesday:3,thursday:4,friday:5,saturday:6,sunday:7};
+    rows.sort((a,b)=>(dayOrder[String(a.day).toLowerCase()]||99)-(dayOrder[String(b.day).toLowerCase()]||99)||Number(a.period||0)-Number(b.period||0)||String(a.time||'').localeCompare(String(b.time||'')));
+    $('timetable').innerHTML=rows.slice(0,15).map(x=>'<div class="rowitem"><b>'+esc(x.day||'Day')+' · Period '+esc(x.period||'—')+'</b> <span class="tag">'+esc(x.subject||'Subject')+'</span><div class="muted">Time: '+esc(x.time||'—')+' · Class: '+esc(x.className||'—')+' · Room: '+esc(x.room||'—')+(x.mode?' · '+esc(x.mode):'')+'</div></div>').join('')||'<div class="empty">No timetable entries currently match your teacher assignment.</div>';
+  }catch(e){$('timetable').innerHTML='<div class="empty">Timetable unavailable: '+esc(showError(e))+'</div>'}
+}
+
+async function loadCalendar(){
+  try{
+    const s=await db.collection('calendar').get();
+    const rows=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+    $('calendarList').innerHTML=rows.slice(0,20).map(x=>'<div class="rowitem"><b>'+esc(x.date||'—')+'</b> <span class="tag">'+esc(x.type||'School date')+'</span><div><b>'+esc(x.title||'School event')+'</b></div><div class="muted">Session: '+esc(x.session||'—')+(x.notes?' · '+esc(x.notes):'')+'</div></div>').join('')||'<div class="empty">No calendar entries have been published yet.</div>';
+  }catch(e){$('calendarList').innerHTML='<div class="empty">School calendar unavailable.</div>'}
+}
+async function loadCertificateApplications(){
+  try{
+    const s=await db.collection('workBehaviourApplications').where('staffId','==',me.id).get();
+    const rows=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+    $('certificateList').innerHTML=rows.slice(0,8).map(x=>'<div class="rowitem"><b>'+esc(x.certificateType||'Work & Behaviour Certificate')+'</b> <span class="tag '+(x.status==='Approved'?'green':x.status==='Rejected'?'red':'orange')+'">'+esc(x.status||'Pending')+'</span><div class="muted">Purpose: '+esc(x.purpose||'—')+'</div><div class="muted">Applied: '+esc(x.applicationDate||'—')+'</div></div>').join('')||'<div class="empty">No certificate applications submitted.</div>';
+  }catch(e){$('certificateList').innerHTML='<div class="empty">Certificate application history unavailable.</div>'}
+}
+async function applyCertificate(){
+  const type=$('certificateType').value,purpose=$('certificatePurpose').value.trim(),remarks=$('certificateRemarks').value.trim();
+  if(!purpose)return $('certificateMsg').innerHTML='<span class="err">Enter the purpose for the certificate.</span>';
+  try{
+    await db.collection('workBehaviourApplications').add({
+      staffId:me.id,staffAuthUid:auth.currentUser.uid,staffName:me.name||'',employeeId:me.employeeId||'',
+      certificateType:type,purpose,remarks,status:'Pending',applicationDate:today(),
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('certificateMsg').innerHTML='<span class="ok">✓ Application submitted to the HOI. The certificate will be handled by the school administration.</span>';
+    $('certificatePurpose').value='';$('certificateRemarks').value='';await loadCertificateApplications();
+  }catch(e){$('certificateMsg').innerHTML='<span class="err">Could not submit application: '+esc(showError(e))+'</span>'}
+}
+
+async function loadCloud(){
+  $('cloud').textContent='Firebase connected';
+  await Promise.allSettled([loadStudentCounts(),loadAttendance(),loadHomework(),loadMessages(),loadLeaves(),loadNotices(),loadTimetable(),loadCalendar(),loadCertificateApplications()]);
+}
+
+async function start(){
+  session=sessionData();
+  if(!session?.staffId) throw new Error('No active Teacher session was found. Please use the Common Role Login.');
+  const sessionRole=String(session.role||session.loginRole||session.schoolLoginRole||'').trim().toUpperCase();
+  if(sessionRole && sessionRole!==ROLE) throw new Error('The current login session is not a Teacher session.');
+  await loadStaffRecord();
+  renderProfile();renderAssignments();
+  $('todayText').textContent=new Intl.DateTimeFormat('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
+  $('app').classList.remove('hidden');$('loading').classList.add('hidden');
+  await loadCloud();
+  await Promise.allSettled([loadSecureAttendanceSettings(),updatePasskeyState()]);
+}
+
+async function boot(){
+  try{
+    if(!window.firebase)throw new Error('Firebase SDK did not load.');
+    if(!window.GPS_FIREBASE_CONFIG)throw new Error('Firebase configuration was not loaded from firebase-config.js.');
+    if(!firebase.apps.length)firebase.initializeApp(window.GPS_FIREBASE_CONFIG);
+    auth=firebase.auth();db=firebase.firestore();storage=firebase.storage();
+    auth.onAuthStateChanged(async user=>{
+      if(!user){
+        $('loadingMsg').textContent='Waiting for Firebase authentication…';
+        return;
+      }
+      try{
+        await start();
+      }catch(e){
+        $('loadingMsg').innerHTML='<span class="err">'+esc(showError(e))+'</span><br><br><a class="btn" href="Role-Login.html">Return to Common Login</a>';
+        sessionStorage.removeItem(SESSION);
+        sessionStorage.removeItem(LEGACY_SESSION);
+        sessionStorage.removeItem(STAFF_SESSION);
+        setTimeout(()=>{ if(document.visibilityState!=='hidden') location.href='Role-Login.html'; },2200);
+      }
+    });
+  }catch(e){
+    $('loadingMsg').innerHTML='<span class="err">Firebase initialization failed: '+esc(showError(e))+'</span><br><br><a class="btn" href="Role-Login.html">Return to Common Login</a>';
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem(SESSION);
+  sessionStorage.removeItem(LEGACY_SESSION);
+  sessionStorage.removeItem(STAFF_SESSION);
+  if(auth)auth.signOut().finally(()=>location.href='Role-Login.html');
+  else location.href='Role-Login.html';
+}
+
+boot();
+window.logout=logout;
+window.checkIn=checkIn;
+window.checkOut=checkOut;
+window.registerTeacherAttendancePasskey=registerTeacherAttendancePasskey;
+window.checkTeacherLocation=checkTeacherLocation;
+window.toggleHomework=toggleHomework;
+window.showHomeworkFiles=showHomeworkFiles;
+window.publishHomework=publishHomework;
+window.applyCertificate=applyCertificate;
+window.toggleMessage=toggleMessage;
+window.sendMessage=sendMessage;
+window.applyLeave=applyLeave;
+})();
+</script>
+</body>
+</html>
