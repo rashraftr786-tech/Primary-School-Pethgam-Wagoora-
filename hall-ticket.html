@@ -634,21 +634,80 @@
 
 <!-- ============================ FIREBASE + LOGIC ============================ -->
 <!-- Load your existing Firebase config (module) -->
-<script type="module">
-    // ---------- Import your existing Firebase setup ----------
-    // Your repo has firebase-config.js — this imports its initialized exports.
-    let fb = null;
-    try {
-        fb = await import('./firebase-config.js');
-    } catch (e) {
-        console.warn('[HallTicket] firebase-config.js not found — running in offline/manual mode.', e);
+<script>
+/* ============================================================
+   ROBUST FIREBASE LOADER
+   Tries every common pattern used in school ERP projects.
+   If all fail, enables OFFLINE DEMO MODE so you can still
+   print hall tickets.
+   ============================================================ */
+window.__fb = { ready: false, mode: 'pending', db: null };
+
+(async function bootFirebase() {
+    const log = (m, ...a) => console.log('[HallTicket/FB]', m, ...a);
+    const err = (m, ...a) => console.warn('[HallTicket/FB]', m, ...a);
+
+    // --- 0. Are we even on http(s)? ---
+    if (location.protocol === 'file:') {
+        err('Running from file:// — Firebase & ES modules will not work.');
+        err('Run a local server:  python3 -m http.server  →  http://localhost:8000/hall-ticket.html');
+        window.__fb.mode = 'offline';
+        window.dispatchEvent(new Event('fb-ready'));
+        return;
     }
 
-    // Expose to non-module script below
-    window.__fb = fb;
-    window.dispatchEvent(new Event('fb-ready'));
-</script>
+    // --- 1. Try ES module import (preferred) ---
+    const candidates = ['./firebase-config.js', './js/firebase-config.js', 'firebase-config.js'];
+    for (const path of candidates) {
+        try {
+            const mod = await import(path);
+            log('Imported as ES module:', path, Object.keys(mod));
+            if (mod.db && mod.collection && mod.getDocs) {
+                window.__fb = { ...window.__fb, ...mod, ready: true, mode: 'module' };
+                window.dispatchEvent(new Event('fb-ready'));
+                return;
+            }
+        } catch (e) { err('Module import failed for', path, e.message); }
+    }
 
+    // --- 2. Try loading as a classic <script> (window.db pattern) ---
+    for (const path of candidates) {
+        try {
+            await new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = path;
+                s.onload = resolve;
+                s.onerror = () => reject(new Error('404'));
+                document.head.appendChild(s);
+            });
+            log('Loaded as classic script:', path);
+
+            // Look for whatever the script exposed
+            const db = window.db || window.firestore || (window.firebase && window.firebase.firestore && window.firebase.firestore());
+            const lib = window.firebaseLib || window.firebase?.firestore || window;
+
+            if (db) {
+                window.__fb = {
+                    ready: true, mode: 'classic', db,
+                    collection: lib.collection,
+                    getDocs:    lib.getDocs,
+                    query:      lib.query,
+                    where:      lib.where
+                };
+                log('Found window.db — classic mode ready.');
+                window.dispatchEvent(new Event('fb-ready'));
+                return;
+            }
+        } catch (e) { err('Classic load failed for', path); }
+    }
+
+    // --- 3. Give up → OFFLINE DEMO MODE ---
+    err('All Firebase load strategies failed → OFFLINE DEMO MODE enabled.');
+    window.__fb.mode = 'offline';
+    window.__fb.ready = true;
+    window.dispatchEvent(new Event('fb-ready'));
+})();
+</script>
 <script>
 // ============================================================
 //  CONSTANTS — sourced from your repo's school metadata
@@ -749,12 +808,17 @@ async function loadStudentsFromDatabase() {
     const cls = document.getElementById('classFilter').value.trim();
     const sec = document.getElementById('sectionFilter').value.trim();
 
-    if (!cls) { showStatus('Please select a class to filter students.', 'error'); return; }
-    if (!window.__fb || !window.__fb.db) {
-        showStatus('Firebase not available. Use the manual entry or ensure firebase-config.js is loaded.', 'error');
+    if (!cls) { showStatus('Please select a class first.', 'error'); return; }
+
+    // ---- OFFLINE DEMO MODE ----
+    if (window.__fb.mode === 'offline') {
+        roster = getDemoRoster(cls, sec);
+        showStatus(`⚠️ Firebase unavailable — loaded ${roster.length} DEMO students for Class ${cls}. ` +
+                   `Fix firebase-config.js (see console) or run from http://localhost.`, 'info');
         return;
     }
 
+    // ---- LIVE FIRESTORE MODE ----
     try {
         showStatus('Fetching students from database…', 'info');
         const { db, collection, getDocs, query, where } = window.__fb;
@@ -762,39 +826,34 @@ async function loadStudentsFromDatabase() {
         const clauses = [ where('class', '==', cls) ];
         if (sec) clauses.push(where('section', '==', sec));
 
-        const q = query(collection(db, 'students'), ...clauses);
+        const q    = query(collection(db, 'students'), ...clauses);
         const snap = await getDocs(q);
 
         roster = [];
-        snap.forEach(doc => roster.push(mapFirestoreStudent(doc.id, doc.data())));
+        snap.forEach(d => roster.push(mapFirestoreStudent(d.id, d.data())));
 
-        if (roster.length === 0) {
+        if (!roster.length) {
             showStatus(`No students found for Class ${cls}${sec ? ' Section ' + sec : ''}.`, 'error');
             return;
         }
-        showStatus(`✅ Loaded ${roster.length} student(s) from Class ${cls}${sec ? '-' + sec : ''}.`, 'success');
-    } catch (err) {
-        console.error(err);
-        showStatus('❌ Failed to load students: ' + err.message, 'error');
+        showStatus(`✅ Loaded ${roster.length} student(s) for Class ${cls}${sec ? '-' + sec : ''}.`, 'success');
+    } catch (e) {
+        console.error(e);
+        showStatus('❌ Firestore query failed: ' + e.message + ' — using demo data.', 'error');
+        roster = getDemoRoster(cls, sec);
     }
 }
 
-/**
- * Map a Firestore document to the hall-ticket schema.
- * >>> EDIT THIS if your Firestore fields differ. <<<
- */
-function mapFirestoreStudent(id, data) {
-    return {
-        id,
-        name:        data.name || data.studentName || data.fullName || '—',
-        parentName:  data.fatherName || data.parentName || data.motherName || '—',
-        cls:         data.class || data.className || '—',
-        section:     data.section || '—',
-        rollNo:      String(data.rollNo || data.roll || '').padStart(3, '0') || '—',
-        admissionNo: data.admissionNo || data.admNo || id,
-        dob:         data.dob || data.dateOfBirth || '—',
-        photoURL:    data.photoURL || data.photo || null
-    };
+/* Sample roster so the ticket generator always works, even without Firebase. */
+function getDemoRoster(cls, sec) {
+    const s = sec || 'A';
+    return [
+        { name:'Aadil Ahmad Rather',  parentName:'Mohammad Ashraf Rather', cls, section:s, rollNo:'001', admissionNo:'ADM-2026-001', dob:'15-03-2016', photoURL:null },
+        { name:'Bilal Hussain Mir',   parentName:'Ghulam Hussain Mir',     cls, section:s, rollNo:'002', admissionNo:'ADM-2026-002', dob:'22-07-2015', photoURL:null },
+        { name:'Faisal Nazir Wani',   parentName:'Nazir Ahmad Wani',       cls, section:s, rollNo:'003', admissionNo:'ADM-2026-003', dob:'09-11-2016', photoURL:null },
+        { name:'Hamid Yousuf Sheikh', parentName:'Yousuf Ali Sheikh',      cls, section:s, rollNo:'004', admissionNo:'ADM-2026-004', dob:'30-01-2016', photoURL:null },
+        { name:'Insha Jan',           parentName:'Mohammad Ramzan Jan',    cls, section:s, rollNo:'005', admissionNo:'ADM-2026-005', dob:'12-05-2016', photoURL:null }
+    ];
 }
 
 function clearStudents() {
