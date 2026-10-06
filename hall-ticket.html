@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hall Ticket Generator - Govt. Primary School Pethgam Wagoora</title>
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Barcode Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.1/dist/JsBarcode.all.min.js"></script>
+    <!-- PDF Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1a3a6b;
+            --light-blue: #e8f0fe;
+            --border-blue: #2b5aa7;
+            --text-dark: #1a1a1a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        /* --- Control Panel --- */
+        .control-panel {
+            max-width: 1200px;
+            margin: 0 auto 24px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .control-panel h1 {
+            color: var(--primary-blue);
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        .control-panel .subtitle {
+            color: #555;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-grid label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .form-grid input,
+        .form-grid select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        .form-grid input:focus,
+        .form-grid select:focus {
+            outline: none;
+            border-color: var(--border-blue);
+            box-shadow: 0 0 0 3px rgba(43, 90, 167, 0.15);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .btn-primary:hover { background: #142d54; }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-blue);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #666;
+            border: 1px solid #ccc;
+        }
+
+        .btn-outline:hover { background: #f0f0f0; }
+
+        /* --- Schedule Builder --- */
+        .schedule-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .schedule-section h3 {
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .schedule-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
+            gap: 6px;
+            margin-bottom: 6px;
+            align-items: center;
+        }
+
+        .schedule-row input {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: inherit;
+        }
+
+        .schedule-row .remove-btn {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        /* --- Hall Ticket Output --- */
+        #ticket-output {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .hall-ticket {
+            width: 148mm;   /* A5 width */
+            min-height: 210mm; /* A5 height */
+            background: #fff;
+            border: 3px solid var(--primary-blue);
+            border-radius: 4px;
+            padding: 0;
+            position: relative;
+            font-size: 10px;
+            line-height: 1.35;
+            overflow: hidden;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* Inner double-line border */
+        .hall-ticket-inner {
+            border: 1.5px solid var(--border-blue);
+            margin: 5px;
+            min-height: calc(210mm - 16px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .ticket-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .ticket-header .logo-box {
+            width: 52px;
+            height: 52px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 700;
+            text-align: center;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .ticket-header .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .ticket-header .school-info {
+            flex: 1;
+        }
+
+        .ticket-header .school-info h2 {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .ticket-header .school-info .school-sub {
+            font-size: 8px;
+            opacity: 0.9;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        /* Exam Title Bar */
+        .exam-title-bar {
+            background: var(--light-blue);
+            border-bottom: 2px solid var(--primary-blue);
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        .exam-title-bar h3 {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .exam-title-bar .session {
+            font-size: 9px;
+            color: #444;
+            margin-top: 2px;
+        }
+
+        /* Student particulars & photo */
+        .student-section {
+            display: flex;
+            gap: 10px;
+            padding: 10px 12px;
+        }
+
+        .student-details {
+            flex: 1;
+        }
+
+        .student-details table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+
+        .student-details td {
+            padding: 3px 2px;
+            vertical-align: top;
+        }
+
+        .student-details td:first-child {
+            font-weight: 600;
+            color: var(--primary-blue);
+            width: 38%;
+            white-space: nowrap;
+        }
+
+        .student-details td:last-child {
+            border-bottom: 1px dotted #aaa;
+            padding-left: 4px;
+        }
+
+        .photo-box {
+            width: 80px;
+            height: 100px;
+            border: 2px solid var(--primary-blue);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            color: #888;
+            text-align: center;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: #f9f9f9;
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Examination Schedule Table */
+        .schedule-table-wrap {
+            padding: 0 12px 8px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+        }
+
+        .schedule-table th {
+            background: var(--primary-blue);
+            color: #fff;
+            padding: 4px 3px;
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-size: 7px;
+        }
+
+        .schedule-table td {
+            border: 1px solid #c5d5e8;
+            padding: 3px;
+            text-align: center;
+            font-size: 8px;
+        }
+
+        .schedule-table tr:nth-child(even) {
+            background: #f5f9ff;
+        }
+
+        /* Verification Section */
+        .verification-section {
+            padding: 8px 12px;
+            border-top: 2px dashed var(--primary-blue);
+            margin-top: auto;
+        }
+
+        .verification-label {
+            font-size: 8px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .verification-flex {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .qr-container {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .qr-container #qrcode {
+            display: inline-block;
+        }
+
+        .qr-container #qrcode img,
+        .qr-container #qrcode canvas {
+            width: 70px !important;
+            height: 70px !important;
+        }
+
+        .qr-caption {
+            font-size: 6px;
+            color: #555;
+            margin-top: 2px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .barcode-container {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .barcode-container svg,
+        .barcode-container canvas,
+        .barcode-container img {
+            max-width: 100%;
+        }
+
+        .barcode-caption {
+            font-size: 6px;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        .hall-ticket-no {
+            font-size: 8px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+
+        /* Instructions */
+        .instructions {
+            padding: 6px 12px 4px;
+            border-top: 1px solid #c5d5e8;
+        }
+
+        .instructions h4 {
+            font-size: 7px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .instructions ol {
+            padding-left: 14px;
+            font-size: 6.5px;
+            color: #333;
+            line-height: 1.45;
+        }
+
+        .instructions ol li {
+            margin-bottom: 1px;
+        }
+
+        /* Signatures */
+        .signature-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px 4px;
+            gap: 6px;
+        }
+
+        .signature-box {
+            flex: 1;
+            text-align: center;
+            font-size: 6.5px;
+        }
+
+        .signature-box .sig-line {
+            border-top: 1px solid #333;
+            margin-bottom: 2px;
+            padding-top: 14px;
+        }
+
+        .signature-box .sig-label {
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-size: 6px;
+        }
+
+        .signature-box .hoi-name {
+            font-size: 6px;
+            color: #444;
+            margin-top: 1px;
+        }
+
+        /* Footer */
+        .ticket-footer {
+            background: var(--primary-blue);
+            color: #fff;
+            text-align: center;
+            padding: 3px;
+            font-size: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: #fff; padding: 0; }
+            .control-panel { display: none; }
+            #ticket-output { gap: 0; }
+            .hall-ticket {
+                border: 2px solid #000;
+                page-break-after: always;
+                box-shadow: none;
+            }
+            .hall-ticket:last-child { page-break-after: auto; }
+        }
+
+        /* Screen preview */
+        .hall-ticket {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-msg {
+            display: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+
+        .status-msg.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-msg.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- ===== CONTROL PANEL ===== -->
+<div class="control-panel" id="controlPanel">
+    <h1>🎓 Hall Ticket Generator</h1>
+    <p class="subtitle">Government Primary School Pethgam Wagoora — Summative Assessment / Annual Examination 2026</p>
+
+    <!-- School Logo Upload -->
+    <div class="form-grid">
+        <div>
+            <label>School Logo</label>
+            <input type="file" id="logoUpload" accept="image/*">
+        </div>
+        <div>
+            <label>Student Photo</label>
+            <input type="file" id="photoUpload" accept="image/*">
+        </div>
+    </div>
+
+    <!-- Student Details -->
+    <div class="form-grid">
+        <div>
+            <label>Student Name</label>
+            <input type="text" id="studentName" placeholder="e.g. Aadil Ahmad Rather">
+        </div>
+        <div>
+            <label>Father's / Mother's Name</label>
+            <input type="text" id="parentName" placeholder="e.g. Mohammad Ashraf Rather">
+        </div>
+        <div>
+            <label>Class</label>
+            <input type="text" id="studentClass" placeholder="e.g. 5th">
+        </div>
+        <div>
+            <label>Section</label>
+            <input type="text" id="studentSection" placeholder="e.g. A">
+        </div>
+        <div>
+            <label>Roll No.</label>
+            <input type="text" id="rollNo" placeholder="e.g. 12">
+        </div>
+        <div>
+            <label>Admission No.</label>
+            <input type="text" id="admissionNo" placeholder="e.g. ADM-2026-045">
+        </div>
+        <div>
+            <label>Date of Birth</label>
+            <input type="text" id="dob" placeholder="e.g. 15-03-2016">
+        </div>
+        <div>
+            <label>Issue Date</label>
+            <input type="text" id="issueDate" value="">
+        </div>
+    </div>
+
+    <!-- Examination Schedule -->
+    <div class="schedule-section">
+        <h3>📅 Examination Schedule</h3>
+        <div id="scheduleContainer">
+            <!-- rows added dynamically -->
+        </div>
+        <button class="btn btn-outline" type="button" onclick="addScheduleRow()" style="margin-top:8px;font-size:0.8rem;">+ Add Subject</button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-row">
+        <button class="btn btn-primary" onclick="generateTicket()">🖨️ Generate Hall Ticket</button>
+        <button class="btn btn-secondary" onclick="downloadPDF()">⬇️ Download as PDF (A5)</button>
+        <button class="btn btn-outline" onclick="printTicket()">🖨️ Print (A4 – 2 per sheet)</button>
+        <button class="btn btn-outline" onclick="bulkGenerate()">📦 Bulk Generate (Class-wise)</button>
+    </div>
+
+    <div id="statusMsg" class="status-msg"></div>
+</div>
+
+<!-- ===== TICKET OUTPUT ===== -->
+<div id="ticket-output">
+    <!-- Hall tickets will be injected here -->
+</div>
+
+<script>
+// =============================================
+//  CONFIGURATION
+// =============================================
+const SCHOOL = {
+    name: "GOVERNMENT PRIMARY SCHOOL",
+    campus: "PETHGAM WAGOORA",
+    address: "Wagoora Babareshi Road, Near ZEO Office Wagoora",
+    zone: "Zone Wagoora | District Baramulla",
+    udise: "01022202207",
+    email: "pspethgam@gmail.com"
+};
+
+const EXAM_SESSION = "Summative Assessment / Annual Examination – 2026";
+const TICKET_PREFIX = "PSPW-2026";
+
+// =============================================
+//  INITIALISE – Default schedule rows
+// =============================================
+document.addEventListener('DOMContentLoaded', function () {
+    // Set today's date as issue date
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    document.getElementById('issueDate').value = `${dd}-${mm}-${yyyy}`;
+
+    // Add default schedule rows
+    const defaults = [
+        { subject: 'English', date: '05-04-2026', day: 'Monday', time: '10:00 AM – 01:00 PM', room: 'Room 1' },
+        { subject: 'Mathematics', date: '07-04-2026', day: 'Wednesday', time: '10:00 AM – 01:00 PM', room: 'Room 1' },
+        { subject: 'EVS / Science', date: '09-04-2026', day: 'Friday', time: '10:00 AM – 12:30 PM', room: 'Room 1' },
+        { subject: 'Urdu / Hindi', date: '11-04-2026', day: 'Sunday', time: '10:00 AM – 01:00 PM', room: 'Room 1' },
+        { subject: 'Social Studies', date: '13-04-2026', day: 'Tuesday', time: '10:00 AM – 12:30 PM', room: 'Room 1' }
+    ];
+    defaults.forEach(d => addScheduleRow(d.subject, d.date, d.day, d.time, d.room));
+});
+
+// =============================================
+//  SCHEDULE BUILDER
+// =============================================
+function addScheduleRow(subject = '', date = '', day = '', time = '', room = '') {
+    const container = document.getElementById('scheduleContainer');
+    const row = document.createElement('div');
+    row.className = 'schedule-row';
+    row.innerHTML = `
+        <input type="text" placeholder="Subject" value="${subject}" class="sched-subject">
+        <input type="text" placeholder="Date (DD-MM-YYYY)" value="${date}" class="sched-date">
+        <input type="text" placeholder="Day" value="${day}" class="sched-day">
+        <input type="text" placeholder="Time" value="${time}" class="sched-time">
+        <input type="text" placeholder="Room" value="${room}" class="sched-room">
+        <button class="remove-btn" type="button" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(row);
+}
+
+function getScheduleData() {
+    const rows = document.querySelectorAll('#scheduleContainer .schedule-row');
+    const schedule = [];
+    rows.forEach(row => {
+        const subject = row.querySelector('.sched-subject').value.trim();
+        const date = row.querySelector('.sched-date').value.trim();
+        const day = row.querySelector('.sched-day').value.trim();
+        const time = row.querySelector('.sched-time').value.trim();
+        const room = row.querySelector('.sched-room').value.trim();
+        if (subject) {
+            schedule.push({ subject, date, day, time, room });
+        }
+    });
+    return schedule;
+}
+
+// =============================================
+//  UNIQUE HALL TICKET ID GENERATOR
+// =============================================
+function generateHallTicketId(rollNo) {
+    const classCode = 'CL' + (document.getElementById('studentClass').value.trim() || '0');
+    const roll = rollNo.toString().padStart(3, '0');
+    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `${TICKET_PREFIX}-${classCode}-${roll}-${randomSuffix}`;
+}
+
+// =============================================
+//  VALIDATION
+// =============================================
+function validateForm() {
+    const name = document.getElementById('studentName').value.trim();
+    const roll = document.getElementById('rollNo').value.trim();
+    const adm = document.getElementById('admissionNo').value.trim();
+    const cls = document.getElementById('studentClass').value.trim();
+
+    const errors = [];
+    if (!name) errors.push('Student Name is required.');
+    if (!roll) errors.push('Roll No. is required.');
+    if (!adm) errors.push('Admission No. is required.');
+    if (!cls) errors.push('Class is required.');
+
+    if (errors.length > 0) {
+        showStatus(errors.join(' '), 'error');
+        return false;
+    }
+    return true;
+}
+
+function showStatus(msg, type) {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className = 'status-msg ' + type;
+    setTimeout(() => { el.className = 'status-msg'; el.textContent = ''; }, 5000);
+}
+
+// =============================================
+//  BUILD HALL TICKET HTML
+// =============================================
+function buildTicketHTML(student, schedule, hallTicketNo, qrPayload) {
+    const logoHTML = student.logoDataURL
+        ? `<img src="${student.logoDataURL}" alt="School Logo">`
+        : `<span>LOGO</span>`;
+
+    const photoHTML = student.photoDataURL
+        ? `<img src="${student.photoDataURL}" alt="Student Photo">`
+        : `<div>Paste<br>Photo</div><div style="font-size:6px;margin-top:2px;">Recent<br>passport-<br>size photo</div>`;
+
+    // Schedule rows
+    let scheduleRows = '';
+    schedule.forEach(s => {
+        scheduleRows += `
+            <tr>
+                <td>${s.subject}</td>
+                <td>${s.date}</td>
+                <td>${s.day}</td>
+                <td>${s.time}</td>
+                <td>${s.room}</td>
+            </tr>`;
+    });
+
+    return `
+    <div class="hall-ticket" data-ticket-id="${hallTicketNo}">
+        <div class="hall-ticket-inner">
+
+            <!-- HEADER -->
+            <div class="ticket-header">
+                <div class="logo-box">${logoHTML}</div>
+                <div class="school-info">
+                    <h2>${SCHOOL.name}</h2>
+                    <div class="school-sub">${SCHOOL.campus}<br>${SCHOOL.address}<br>${SCHOOL.zone}<br>UDISE: ${SCHOOL.udise} | ${SCHOOL.email}</div>
+                </div>
+            </div>
+
+            <!-- EXAM TITLE -->
+            <div class="exam-title-bar">
+                <h3>Examination Hall Ticket</h3>
+                <div class="session">${EXAM_SESSION}</div>
+            </div>
+
+            <!-- STUDENT PARTICULARS -->
+            <div class="student-section">
+                <div class="student-details">
+                    <table>
+                        <tr><td>Student Name</td><td>${student.name}</td></tr>
+                        <tr><td>Father's / Mother's Name</td><td>${student.parentName}</td></tr>
+                        <tr><td>Class</td><td>${student.cls}</td></tr>
+                        <tr><td>Section</td><td>${student.section}</td></tr>
+                        <tr><td>Roll No.</td><td>${student.rollNo}</td></tr>
+                        <tr><td>Admission No.</td><td>${student.admissionNo}</td></tr>
+                        <tr><td>Date of Birth</td><td>${student.dob}</td></tr>
+                    </table>
+                </div>
+                <div class="photo-box">${photoHTML}</div>
+            </div>
+
+            <!-- EXAMINATION SCHEDULE -->
+            <div class="schedule-table-wrap">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Room</th>
+                        </tr>
+                    </thead>
+                    <tbody>${scheduleRows}</tbody>
+                </table>
+            </div>
+
+            <!-- VERIFICATION: QR + BARCODE -->
+            <div class="verification-section">
+                <div class="verification-label">Hall Ticket Verification</div>
+                <div class="hall-ticket-no">Hall Ticket No.: ${hallTicketNo}</div>
+                <div class="verification-flex">
+                    <div class="qr-container">
+                        <div id="qrcode-${hallTicketNo}"></div>
+                        <div class="qr-caption">SCAN TO VERIFY<br>QR payload: Hall Ticket ID,<br>Admission No., Roll No.,<br>Examination Session</div>
+                    </div>
+                    <div class="barcode-container">
+                        <svg id="barcode-${hallTicketNo}"></svg>
+                        <div class="barcode-caption">CODE 128 — HALL TICKET NUMBER</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INSTRUCTIONS -->
+            <div class="instructions">
+                <h4>Important Instructions</h4>
+                <ol>
+                    <li>Bring this Hall Ticket on every examination day.</li>
+                    <li>Report to the examination room at least 15 minutes before the scheduled time.</li>
+                    <li>Produce the Hall Ticket whenever required by the invigilator.</li>
+                    <li>Bring only permitted stationery; mobile phones and unauthorised electronic devices are prohibited.</li>
+                    <li>Report any discrepancy to the Head of Institution (HOI) immediately.</li>
+                    <li>This ticket is valid only for the examination session stated above.</li>
+                </ol>
+            </div>
+
+            <!-- SIGNATURES -->
+            <div class="signature-row">
+                <div class="signature-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-label">Student Signature</div>
+                </div>
+                <div class="signature-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-label">Class Teacher</div>
+                </div>
+                <div class="signature-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-label">HOI / Headmaster</div>
+                    <div class="hoi-name">Mohammad Ashraf Rather</div>
+                </div>
+                <div class="signature-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-label">School Seal</div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="ticket-footer">
+                Computer-generated Hall Ticket • ${SCHOOL.name} ${SCHOOL.campus}
+            </div>
+
+        </div>
+    </div>`;
+}
+
+// =============================================
+//  GENERATE SINGLE TICKET
+// =============================================
+async function generateTicket() {
+    if (!validateForm()) return;
+
+    const student = {
+        name: document.getElementById('studentName').value.trim(),
+        parentName: document.getElementById('parentName').value.trim(),
+        cls: document.getElementById('studentClass').value.trim(),
+        section: document.getElementById('studentSection').value.trim() || '—',
+        rollNo: document.getElementById('rollNo').value.trim(),
+        admissionNo: document.getElementById('admissionNo').value.trim(),
+        dob: document.getElementById('dob').value.trim() || '—',
+        logoDataURL: await fileToDataURL(document.getElementById('logoUpload')),
+        photoDataURL: await fileToDataURL(document.getElementById('photoUpload'))
+    };
+
+    const schedule = getScheduleData();
+    const hallTicketNo = generateHallTicketId(student.rollNo);
+
+    // QR payload — minimal necessary identifiers only
+    const qrPayload = JSON.stringify({
+        ht: hallTicketNo,
+        adm: student.admissionNo,
+        roll: student.rollNo,
+        sess: 'SA-2026'
+    });
+
+    // Build and inject ticket
+    const output = document.getElementById('ticket-output');
+    output.innerHTML = buildTicketHTML(student, schedule, hallTicketNo, qrPayload);
+
+    // Render QR code
+    new QRCode(document.getElementById(`qrcode-${hallTicketNo}`), {
+        text: qrPayload,
+        width: 70,
+        height: 70,
+        colorDark: '#1a3a6b',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+    });
+
+    // Render Code 128 barcode
+    JsBarcode(`#barcode-${hallTicketNo}`, hallTicketNo, {
+        format: 'CODE128',
+        width: 1.2,
+        height: 35,
+        displayValue: true,
+        fontSize: 7,
+        font: 'Arial',
+        textMargin: 2,
+        margin: 0
+    });
+
+    showStatus('✅ Hall ticket generated successfully. Ready to print or download.', 'success');
+}
+
+// =============================================
+//  BULK GENERATE (multiple students)
+// =============================================
+async function bulkGenerate() {
+    if (!validateForm()) return;
+
+    const output = document.getElementById('ticket-output');
+    output.innerHTML = '';
+
+    const logoDataURL = await fileToDataURL(document.getElementById('logoUpload'));
+    const photoDataURL = await fileToDataURL(document.getElementById('photoUpload'));
+    const schedule = getScheduleData();
+
+    // For demonstration, generate 3 sample tickets.
+    // In production, this loop would iterate over your master student database.
+    const sampleStudents = [
+        { name: document.getElementById('studentName').value.trim(), parentName: document.getElementById('parentName').value.trim(), cls: document.getElementById('studentClass').value.trim(), section: document.getElementById('studentSection').value.trim(), rollNo: document.getElementById('rollNo').value.trim(), admissionNo: document.getElementById('admissionNo').value.trim(), dob: document.getElementById('dob').value.trim() },
+        // Add more students from your database here...
+    ];
+
+    // For demo, duplicate the entered student 3 times with different roll numbers
+    for (let i = 0; i < 3; i++) {
+        const s = { ...sampleStudents[0] };
+        s.rollNo = String(parseInt(s.rollNo) + i).padStart(3, '0');
+        const hallTicketNo = generateHallTicketId(s.rollNo);
+        const qrPayload = JSON.stringify({ ht: hallTicketNo, adm: s.admissionNo, roll: s.rollNo, sess: 'SA-2026' });
+        output.innerHTML += buildTicketHTML({ ...s, logoDataURL, photoDataURL }, schedule, hallTicketNo, qrPayload);
+    }
+
+    // Render QR + barcodes for each ticket
+    document.querySelectorAll('.hall-ticket').forEach(ticket => {
+        const htNo = ticket.getAttribute('data-ticket-id');
+        const student = {
+            rollNo: htNo.split('-')[2] || '000',
+            admissionNo: document.getElementById('admissionNo').value.trim()
+        };
+        const qrPayload = JSON.stringify({ ht: htNo, adm: student.admissionNo, roll: student.rollNo, sess: 'SA-2026' });
+
+        const qrDiv = ticket.querySelector(`[id^="qrcode-"]`);
+        if (qrDiv) {
+            new QRCode(qrDiv, { text: qrPayload, width: 70, height: 70, colorDark: '#1a3a6b', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+        }
+
+        const barcodeSvg = ticket.querySelector(`[id^="barcode-"]`);
+        if (barcodeSvg) {
+            JsBarcode(barcodeSvg, htNo, { format: 'CODE128', width: 1.2, height: 35, displayValue: true, fontSize: 7, font: 'Arial', textMargin: 2, margin: 0 });
+        }
+    });
+
+    showStatus(`✅ ${document.querySelectorAll('.hall-ticket').length} hall tickets generated (bulk).`, 'success');
+}
+
+// =============================================
+//  DOWNLOAD PDF (A5)
+// =============================================
+function downloadPDF() {
+    const tickets = document.querySelectorAll('.hall-ticket');
+    if (tickets.length === 0) {
+        showStatus('⚠️ Please generate at least one hall ticket first.', 'error');
+        return;
+    }
+
+    // Create a wrapper for PDF export
+    const wrapper = document.createElement('div');
+    wrapper.style.width = '148mm';
+
+    tickets.forEach(ticket => {
+        const clone = ticket.cloneNode(true);
+        clone.style.width = '148mm';
+        clone.style.minHeight = '210mm';
+        wrapper.appendChild(clone);
+    });
+
+    const opt = {
+        margin: 0,
+        filename: 'Hall_Ticket_PSPW_2026.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(wrapper).save().then(() => {
+        showStatus('✅ PDF downloaded successfully.', 'success');
+    }).catch(err => {
+        showStatus('❌ PDF generation failed: ' + err.message, 'error');
+    });
+}
+
+// =============================================
+//  PRINT (A4 – two tickets per sheet)
+// =============================================
+function printTicket() {
+    const tickets = document.querySelectorAll('.hall-ticket');
+    if (tickets.length === 0) {
+        showStatus('⚠️ Please generate at least one hall ticket first.', 'error');
+        return;
+    }
+    window.print();
+}
+
+// =============================================
+//  UTILITY: File to Data URL
+// =============================================
+function fileToDataURL(fileInput) {
+    return new Promise((resolve) => {
+        if (!fileInput.files || !fileInput.files[0]) {
+            resolve(null);
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(fileInput.files[0]);
+    });
+}
+</script>
+
+</body>
+</html>
