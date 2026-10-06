@@ -29,14 +29,13 @@
 #gpsUserBar{position:fixed;right:14px;top:14px;z-index:9999;background:#fff;border:1px solid #d9e0e8;border-radius:10px;padding:7px 10px;font-size:12px;display:none}
 #gpsUserBar button{margin-left:8px;border:0;background:#eef3f8;border-radius:7px;padding:5px 8px;cursor:pointer}
 body.gps-locked .top,body.gps-locked .wrap{display:none}
-
 .sched-row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.4fr 1fr auto;gap:6px;margin-bottom:6px}
 .sched-row input{padding:6px 8px;border:1px solid #ddd;border-radius:4px;font:inherit;font-size:.8rem}
 .sched-row button{background:#e74c3c;color:#fff;border:0;border-radius:4px;padding:6px 10px;cursor:pointer;font-size:.8rem}
-
-#ticketOutput{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;padding:10px 0}
-.ticket{width:148mm;min-height:210mm;background:#fff;border:3px solid var(--blue);border-radius:4px;font-size:10px;line-height:1.35;overflow:hidden;page-break-inside:avoid;break-inside:avoid;box-shadow:0 4px 20px rgba(0,0,0,.12)}
-.ticket-inner{border:1.5px solid #2b5aa7;margin:5px;min-height:calc(210mm - 16px);display:flex;flex-direction:column}
+#ticketOutput{display:block;padding:10px 0}
+.sheet{display:flex;gap:0;justify-content:flex-start}
+.ticket{width:148mm;height:210mm;background:#fff;border:3px solid var(--blue);border-radius:4px;font-size:10px;line-height:1.35;overflow:hidden;position:relative;flex-shrink:0}
+.ticket-inner{border:1.5px solid #2b5aa7;margin:5px;height:calc(210mm - 16px);display:flex;flex-direction:column}
 .t-head{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--blue);color:#fff}
 .t-logo{width:52px;height:52px;border:2px solid #fff;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:2px}
 .t-logo img{width:100%;height:100%;object-fit:contain}
@@ -76,13 +75,21 @@ body.gps-locked .top,body.gps-locked .wrap{display:none}
 .sbox .lbl{font-weight:600;color:var(--blue);font-size:6px}
 .sbox .hoi{font-size:6px;color:#444;margin-top:1px}
 .t-foot{background:var(--blue);color:#fff;text-align:center;padding:3px;font-size:6px;letter-spacing:.5px;text-transform:uppercase}
+.t-issue{font-size:6.5px;color:#444;text-align:right;padding:0 12px 4px}
+
+@media screen and (max-width:520px){
+  .sheet{flex-direction:column;align-items:center}
+  .ticket{transform:scale(.7);transform-origin:top center;margin-bottom:-60px}
+}
 
 @media print{
+  @page{size:A4 landscape;margin:5mm}
   body{background:#fff;padding:0}
   .top,.panel,.sched-row,#gpsUserBar,#gpsAuthGate{display:none!important}
-  #ticketOutput{gap:0}
-  .ticket{border:2px solid #000;page-break-after:always;box-shadow:none}
-  .ticket:last-child{page-break-after:auto}
+  #ticketOutput{padding:0}
+  .sheet{page-break-after:always;break-after:page;gap:0}
+  .sheet:last-child{page-break-after:auto;break-after:auto}
+  .ticket{border:2px solid #000;box-shadow:none}
 }
 </style>
 </head>
@@ -107,11 +114,9 @@ body.gps-locked .top,body.gps-locked .wrap{display:none}
 </header>
 
 <main class="wrap">
-
   <section class="panel">
     <h1>🎓 Hall Ticket Generator</h1>
-    <p class="sub2">Pull approved students from the master admission register, then print on A5 or two tickets per A4 sheet.</p>
-
+    <p class="sub2">Pull approved students from the master admission register. Print as A5 (one per page) or A4 landscape (two per sheet).</p>
     <div class="row">
       <div>
         <label>Class</label>
@@ -129,13 +134,11 @@ body.gps-locked .top,body.gps-locked .wrap{display:none}
         <input id="issueDate" type="date">
       </div>
     </div>
-
     <button class="btn success" id="btnLoad" onclick="loadStudents()">📥 Load Approved Students</button>
     <button class="btn primary" id="btnGen" onclick="generateAll()" disabled>🖨️ Generate All Tickets</button>
     <button class="btn light" onclick="downloadPDF()">⬇️ Download PDF (A5)</button>
     <button class="btn light" onclick="printTickets()">🖨️ Print (A4 · 2 per sheet)</button>
     <button class="btn danger" onclick="reset()">🗑️ Clear</button>
-
     <div id="status" class="status"></div>
   </section>
 
@@ -144,126 +147,93 @@ body.gps-locked .top,body.gps-locked .wrap{display:none}
     <div id="schedContainer"></div>
     <button class="btn light" onclick="addSchedRow()">+ Add Subject</button>
   </section>
-
 </main>
 
 <div id="ticketOutput"></div>
 
-<!-- ===== FIREBASE COMPAT (same as your other pages) ===== -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-
-<!-- QR + Barcode + PDF -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.1/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
-/* ============================================================
-   Firebase init — matches general_admission_register.html exactly
-   ============================================================ */
+/* ---------- Firebase ---------- */
 let GPS_DB = null;
 try {
-  if (window.GPS_FIREBASE_CONFIG
-      && window.GPS_FIREBASE_CONFIG.apiKey
+  if (window.GPS_FIREBASE_CONFIG && window.GPS_FIREBASE_CONFIG.apiKey
       && window.GPS_FIREBASE_CONFIG.apiKey !== "PASTE_NEW_FIREBASE_API_KEY_HERE") {
     if (!firebase.apps.length) firebase.initializeApp(window.GPS_FIREBASE_CONFIG);
     GPS_DB = firebase.firestore();
-    console.log('[HallTicket] Firebase connected:', window.GPS_FIREBASE_CONFIG.projectId);
-  } else {
-    console.warn('[HallTicket] GPS_FIREBASE_CONFIG missing or placeholder.');
+    console.log('[HallTicket] Firebase ready:', window.GPS_FIREBASE_CONFIG.projectId);
   }
-} catch (e) {
-  console.warn('[HallTicket] Firebase init failed:', e);
-}
+} catch (e) { console.warn('[HallTicket] Firebase init failed:', e); }
 
-/* ============================================================
-   Auth gate — mirrors your register page
-   ============================================================ */
-function unlockUI(email) {
+/* ---------- Auth ---------- */
+function unlockUI(email){
   document.body.classList.remove('gps-locked');
-  document.getElementById('gpsAuthGate').style.display = 'none';
-  const bar = document.getElementById('gpsUserBar');
-  bar.style.display = 'block';
-  document.getElementById('gpsUserEmail').textContent = email || '';
+  document.getElementById('gpsAuthGate').style.display='none';
+  document.getElementById('gpsUserBar').style.display='block';
+  document.getElementById('gpsUserEmail').textContent=email||'';
 }
-function lockUI() {
+function lockUI(){
   document.body.classList.add('gps-locked');
-  document.getElementById('gpsAuthGate').style.display = 'flex';
-  document.getElementById('gpsUserBar').style.display = 'none';
+  document.getElementById('gpsAuthGate').style.display='flex';
+  document.getElementById('gpsUserBar').style.display='none';
 }
 document.getElementById('gpsAuthBtn').addEventListener('click', async () => {
-  const em = document.getElementById('gpsAuthEmail').value.trim();
-  const pw = document.getElementById('gpsAuthPassword').value;
-  const msg = document.getElementById('gpsAuthMsg');
-  msg.textContent = '';
-  if (!em || !pw) { msg.textContent = 'Enter email and password.'; return; }
-  try {
-    await firebase.auth().signInWithEmailAndPassword(em, pw);
-  } catch (e) {
-    msg.textContent = e.message || 'Sign in failed.';
-  }
+  const em=document.getElementById('gpsAuthEmail').value.trim();
+  const pw=document.getElementById('gpsAuthPassword').value;
+  const msg=document.getElementById('gpsAuthMsg');
+  msg.textContent='';
+  if(!em||!pw){msg.textContent='Enter email and password.';return;}
+  try{ await firebase.auth().signInWithEmailAndPassword(em,pw); }
+  catch(e){ msg.textContent=e.message||'Sign in failed.'; }
 });
-document.getElementById('gpsSignOutBtn').addEventListener('click', () => firebase.auth().signOut());
+document.getElementById('gpsSignOutBtn').addEventListener('click',()=>firebase.auth().signOut());
 if (window.firebase && firebase.auth) {
   firebase.auth().onAuthStateChanged(u => u ? unlockUI(u.email) : lockUI());
-} else {
-  // If Firebase is truly unavailable, unlock so offline demo still works
-  unlockUI('offline');
+} else { unlockUI('offline'); }
+
+/* ---------- Constants ---------- */
+const SCHOOL={name:"GOVERNMENT PRIMARY SCHOOL",campus:"PETHGAM WAGOORA",
+  address:"Wagoora Babareshi Road, Near ZEO Office Wagoora",
+  zone:"Zone Wagoora | District Baramulla",udise:"01022202207",
+  email:"pspethgam@gmail.com",logo:"new-logo.png",hoi:"Mohammad Ashraf Rather"};
+const COLLECTION="students";
+const REGISTER_KEY="GPSPETHGAM_MASTER_ADMISSION_V1";
+const TICKET_PREFIX="PSPW26";
+let EXAM_SESSION="Summative Assessment / Annual Examination – 2026";
+let roster=[];
+let logoDataURL=null;
+
+/* ---------- Helpers ---------- */
+function fullName(r,p){return [r[p+'First'],r[p+'Middle'],r[p+'Last']].filter(Boolean).join(' ').trim();}
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d=new Date(iso);
+  if(isNaN(d)) return iso;
+  return String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();
+}
+function showStatus(m,t='info'){const el=document.getElementById('status');el.textContent=m;el.className='status show '+t;}
+function hideStatus(){document.getElementById('status').className='status';}
+
+/* ---------- Deterministic HT ID (FIX #1) ---------- */
+function buildHTNo(s){
+  const cls = String(s.cls||'X').replace(/[^0-9a-zA-Z]/g,'') || 'X';
+  const roll = String(s.rollNo||'0').padStart(3,'0');
+  const adm = String(s.admissionNo||'').replace(/[^0-9a-zA-Z]/g,'');
+  return `${TICKET_PREFIX}-C${cls}-R${roll}-${adm}`;
 }
 
-/* ============================================================
-   Constants
-   ============================================================ */
-const SCHOOL = {
-  name: "GOVERNMENT PRIMARY SCHOOL",
-  campus: "PETHGAM WAGOORA",
-  address: "Wagoora Babareshi Road, Near ZEO Office Wagoora",
-  zone: "Zone Wagoora | District Baramulla",
-  udise: "01022202207",
-  email: "pspethgam@gmail.com",
-  logo: "new-logo.png",
-  hoi: "Mohammad Ashraf Rather"
-};
-const COLLECTION = "students";              // <-- change if your sync uses a different collection name
-const TICKET_PREFIX = "PSPW-2026";
-let EXAM_SESSION = "Summative Assessment / Annual Examination – 2026";
-let roster = [];
-let logoDataURL = null;
-
-/* ============================================================
-   Helpers
-   ============================================================ */
-function fullName(r, prefix) {
-  return [r[prefix+'First'], r[prefix+'Middle'], r[prefix+'Last']].filter(Boolean).join(' ').trim();
-}
-function fmtDate(iso) {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  if (isNaN(d)) return iso;
-  const dd = String(d.getDate()).padStart(2,'0');
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  return `${dd}-${mm}-${d.getFullYear()}`;
-}
-function showStatus(msg, type='info') {
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  el.className = 'status show ' + type;
-}
-function hideStatus() {
-  document.getElementById('status').className = 'status';
-}
-
-/* ============================================================
-   Schedule
-   ============================================================ */
-function addSchedRow(subject='', date='', day='', time='', room='') {
-  const c = document.getElementById('schedContainer');
-  const row = document.createElement('div');
-  row.className = 'sched-row';
-  row.innerHTML = `
+/* ---------- Schedule ---------- */
+function addSchedRow(subject='',date='',day='',time='',room=''){
+  const c=document.getElementById('schedContainer');
+  const row=document.createElement('div');
+  row.className='sched-row';
+  row.innerHTML=`
     <input type="text" placeholder="Subject" value="${subject}" class="sc-sub">
     <input type="text" placeholder="Date" value="${date}" class="sc-date">
     <input type="text" placeholder="Day" value="${day}" class="sc-day">
@@ -272,116 +242,119 @@ function addSchedRow(subject='', date='', day='', time='', room='') {
     <button type="button" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(row);
 }
-function getSchedule() {
-  const out = [];
-  document.querySelectorAll('#schedContainer .sched-row').forEach(r => {
-    const s = r.querySelector('.sc-sub').value.trim();
-    if (!s) return;
-    out.push({
-      subject: s,
-      date: r.querySelector('.sc-date').value.trim(),
-      day: r.querySelector('.sc-day').value.trim(),
-      time: r.querySelector('.sc-time').value.trim(),
-      room: r.querySelector('.sc-room').value.trim()
-    });
+function getSchedule(){
+  const out=[];
+  document.querySelectorAll('#schedContainer .sched-row').forEach(r=>{
+    const s=r.querySelector('.sc-sub').value.trim();
+    if(!s) return;
+    out.push({subject:s,date:r.querySelector('.sc-date').value.trim(),
+      day:r.querySelector('.sc-day').value.trim(),time:r.querySelector('.sc-time').value.trim(),
+      room:r.querySelector('.sc-room').value.trim()});
   });
   return out;
 }
 
-/* ============================================================
-   Init
-   ============================================================ */
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('issueDate').value = new Date().toISOString().slice(0,10);
-
-  // Preload logo as data URL for PDF export
-  fetch(SCHOOL.logo)
-    .then(r => r.ok ? r.blob() : Promise.reject())
-    .then(b => { const fr = new FileReader(); fr.onload = e => logoDataURL = e.target.result; fr.readAsDataURL(b); })
-    .catch(() => {});
-
-  // Default schedule
-  [
-    ['English','05-04-2026','Monday','10:00 AM – 01:00 PM','Room 1'],
-    ['Mathematics','07-04-2026','Wednesday','10:00 AM – 01:00 PM','Room 1'],
-    ['EVS / Science','09-04-2026','Friday','10:00 AM – 12:30 PM','Room 1'],
-    ['Urdu / Hindi','11-04-2026','Sunday','10:00 AM – 01:00 PM','Room 1'],
-    ['Social Studies','13-04-2026','Tuesday','10:00 AM – 12:30 PM','Room 1']
-  ].forEach(a => addSchedRow(...a));
+/* ---------- Init ---------- */
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('issueDate').value=new Date().toISOString().slice(0,10);
+  fetch(SCHOOL.logo).then(r=>r.ok?r.blob():Promise.reject())
+    .then(b=>{const fr=new FileReader();fr.onload=e=>logoDataURL=e.target.result;fr.readAsDataURL(b);})
+    .catch(()=>{});
+  [['English','05-04-2026','Monday','10:00 AM – 01:00 PM','Room 1'],
+   ['Mathematics','07-04-2026','Wednesday','10:00 AM – 01:00 PM','Room 1'],
+   ['EVS / Science','09-04-2026','Friday','10:00 AM – 12:30 PM','Room 1'],
+   ['Urdu / Hindi','11-04-2026','Sunday','10:00 AM – 01:00 PM','Room 1'],
+   ['Social Studies','13-04-2026','Tuesday','10:00 AM – 12:30 PM','Room 1']
+  ].forEach(a=>addSchedRow(...a));
 });
 
-/* ============================================================
-   Load students from Firestore (compat API)
-   ============================================================ */
-async function loadStudents() {
-  const cls = document.getElementById('classFilter').value.trim();
-  if (!cls) { showStatus('Please select a class.', 'err'); return; }
-  if (!GPS_DB) { showStatus('Firebase not initialised. Check firebase-config.js.', 'err'); return; }
+/* ---------- Load students (no composite index — FIX #2) ---------- */
+async function loadStudents(){
+  const cls=document.getElementById('classFilter').value.trim();
+  if(!cls){showStatus('Please select a class.','err');return;}
+  document.getElementById('btnLoad').disabled=true;
+  showStatus('Searching…','info');
+  let found=[]; let source='';
 
-  document.getElementById('btnLoad').disabled = true;
-  showStatus('Fetching approved students…', 'info');
-
-  try {
-    const snap = await GPS_DB.collection(COLLECTION)
-      .where('classJoining', '==', cls)
-      .where('status', '==', 'Approved')
-      .get();
-
-    roster = [];
-    snap.forEach(doc => {
-      const d = doc.data();
-      roster.push({
-        id: doc.id,
-        name: fullName(d, 'student') || '—',
-        parentName: fullName(d, 'father') || fullName(d, 'mother') || '—',
-        cls: d.classJoining || cls,
-        section: 'A',
-        admissionNo: d.admissionNo || doc.id,
-        dob: fmtDate(d.dob),
-        photoURL: d.photoUrl || d.photo || null,
-        gender: d.gender || ''
-      });
-    });
-
-    // Sort alphabetically, then assign roll numbers 001..
-    roster.sort((a, b) => a.name.localeCompare(b.name));
-    roster.forEach((s, i) => s.rollNo = String(i + 1).padStart(3, '0'));
-
-    if (!roster.length) {
-      showStatus(`No approved students found in Class ${cls}. Approve admissions first in the register.`, 'err');
-      document.getElementById('btnGen').disabled = true;
-      return;
+  /* Firestore — query only by classJoining, filter status client-side */
+  if(GPS_DB){
+    for(const coll of [COLLECTION,'admissions','masterAdmissions','studentMaster','Students','Admissions']){
+      try{
+        const snap=await GPS_DB.collection(coll).where('classJoining','==',cls).get();
+        if(snap.empty) continue;
+        snap.forEach(doc=>{
+          const d=doc.data();
+          if(String(d.status||'').toLowerCase()==='approved'){
+            found.push(shapeRecord(doc.id,d,cls));
+          }
+        });
+        if(found.length){source=`Firestore → ${coll}`;break;}
+      }catch(e){ console.warn('[HallTicket] query',coll,'failed:',e.message); }
     }
-    showStatus(`✅ Loaded ${roster.length} approved student(s) from Class ${cls}.`, 'ok');
-    document.getElementById('btnGen').disabled = false;
-  } catch (e) {
-    console.error(e);
-    showStatus('❌ Firestore error: ' + e.message, 'err');
-  } finally {
-    document.getElementById('btnLoad').disabled = false;
   }
+
+  /* Local browser cache */
+  if(!found.length){
+    try{
+      const raw=localStorage.getItem(REGISTER_KEY);
+      if(raw){
+        const local=JSON.parse(raw);
+        const approved=local.filter(r=>r.classJoining===cls && r.status==='Approved');
+        if(approved.length){
+          found=approved.map(r=>shapeRecord(r.id,r,cls));
+          source=`Local browser cache (${approved.length} approved)`;
+        } else {
+          const anyStatus=local.filter(r=>r.classJoining===cls);
+          if(anyStatus.length){
+            found=anyStatus.map(r=>shapeRecord(r.id,r,cls));
+            source=`Local cache (${anyStatus.length} records, none Approved)`;
+          }
+        }
+      }
+    }catch(e){ console.warn('[HallTicket] local cache failed:',e); }
+  }
+
+  document.getElementById('btnLoad').disabled=false;
+
+  if(!found.length){
+    showStatus(`No records for Class ${cls}. Open the Admission Register on this device, approve students, then tap "Sync Local → Firebase".`,'err');
+    document.getElementById('btnGen').disabled=true;
+    return;
+  }
+
+  roster=found.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  roster.forEach((s,i)=>{
+    s.rollNo=String(i+1).padStart(3,'0');
+    s.htNo=buildHTNo(s);        /* compute HTNo ONCE and store it */
+  });
+
+  showStatus(`✅ Loaded ${roster.length} student(s) from: ${source}`,'ok');
+  document.getElementById('btnGen').disabled=false;
 }
 
-/* ============================================================
-   Hall ticket ID + HTML
-   ============================================================ */
-function makeHTNo(cls, rollNo) {
-  const cl = 'CL' + String(cls || '0').replace(/\D/g, '') || 'CL0';
-  const rl = String(rollNo || '0').padStart(3, '0');
-  const rd = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `${TICKET_PREFIX}-${cl}-${rl}-${rd}`;
+function shapeRecord(id,d,cls){
+  return {
+    id,
+    name:[d.studentFirst,d.studentMiddle,d.studentLast].filter(Boolean).join(' ')||d.name||'—',
+    parentName:[d.fatherFirst,d.fatherMiddle,d.fatherLast].filter(Boolean).join(' ')
+             ||[d.motherFirst,d.motherMiddle,d.motherLast].filter(Boolean).join(' ')
+             ||d.fatherName||d.parentName||'—',
+    cls:d.classJoining||d.class||d.className||cls,
+    section:d.section||'A',
+    admissionNo:d.admissionNo||d.admNo||id,
+    dob:fmtDate(d.dob||d.dateOfBirth),
+    photoURL:d.photoUrl||d.photoURL||d.photo||null,   /* prefer Cloudinary */
+    gender:d.gender||'',
+    status:d.status||''
+  };
 }
 
-function buildTicket(s, schedule, htNo, qrPayload) {
-  const logoHTML = logoDataURL
-    ? `<img src="${logoDataURL}" alt="Logo">`
-    : `<span style="font-size:9px;font-weight:700;color:#0b5cab;">GPS</span>`;
-  const photoHTML = s.photoURL
-    ? `<img src="${s.photoURL}" alt="Photo" onerror="this.replaceWith(document.createTextNode('Paste Photo'))">`
-    : `Paste<br>Photo`;
-  const schedRows = schedule.map(x => `
-    <tr><td>${x.subject}</td><td>${x.date}</td><td>${x.day}</td><td>${x.time}</td><td>${x.room}</td></tr>`).join('');
-
+/* ---------- Ticket HTML ---------- */
+function buildTicket(s,schedule,htNo,qrPayload,issueDate){
+  const logoHTML=logoDataURL?`<img src="${logoDataURL}" alt="Logo">`
+    :`<span style="font-size:9px;font-weight:700;color:#0b5cab;">GPS</span>`;
+  const photoHTML=s.photoURL?`<img src="${s.photoURL}" alt="Photo" onerror="this.replaceWith(document.createTextNode('Paste Photo'))">`:'Paste<br>Photo';
+  const schedRows=schedule.map(x=>`<tr><td>${x.subject}</td><td>${x.date}</td><td>${x.day}</td><td>${x.time}</td><td>${x.room}</td></tr>`).join('');
   return `
   <div class="ticket" data-ht="${htNo}">
     <div class="ticket-inner">
@@ -439,6 +412,7 @@ function buildTicket(s, schedule, htNo, qrPayload) {
           <li>This ticket is valid only for the examination session stated above.</li>
         </ol>
       </div>
+      <div class="t-issue">Issue Date: ${issueDate}</div>
       <div class="t-sign">
         <div class="sbox"><div class="line"></div><div class="lbl">Student Signature</div></div>
         <div class="sbox"><div class="line"></div><div class="lbl">Class Teacher</div></div>
@@ -450,75 +424,84 @@ function buildTicket(s, schedule, htNo, qrPayload) {
   </div>`;
 }
 
-function renderCodes(ticketEl, htNo, qrPayload) {
-  const q = ticketEl.querySelector(`#qr-${CSS.escape(htNo)}`);
-  if (q) new QRCode(q, { text: qrPayload, width: 70, height: 70, colorDark: '#0b5cab', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-  const b = ticketEl.querySelector(`#bar-${CSS.escape(htNo)}`);
-  if (b) JsBarcode(b, htNo, { format: 'CODE128', width: 1.2, height: 35, displayValue: true, fontSize: 7, font: 'Arial', textMargin: 2, margin: 0 });
+function renderCodes(ticketEl,htNo,qrPayload){
+  const q=ticketEl.querySelector(`#qr-${CSS.escape(htNo)}`);
+  if(q) new QRCode(q,{text:qrPayload,width:70,height:70,colorDark:'#0b5cab',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  const b=ticketEl.querySelector(`#bar-${CSS.escape(htNo)}`);
+  if(b) JsBarcode(b,htNo,{format:'CODE128',width:1.2,height:35,displayValue:true,fontSize:7,font:'Arial',textMargin:2,margin:0});
 }
 
-/* ============================================================
-   Generate all tickets
-   ============================================================ */
-function generateAll() {
-  if (!roster.length) { showStatus('Load students first.', 'err'); return; }
-  EXAM_SESSION = document.getElementById('examSession').value.trim() || EXAM_SESSION;
-  const schedule = getSchedule();
-  const out = document.getElementById('ticketOutput');
-  out.innerHTML = '';
+/* ---------- Generate all (pairs on A4 landscape — FIX #3) ---------- */
+function generateAll(){
+  if(!roster.length){showStatus('Load students first.','err');return;}
+  EXAM_SESSION=document.getElementById('examSession').value.trim()||EXAM_SESSION;
+  const issueDate=document.getElementById('issueDate').value||new Date().toISOString().slice(0,10);
+  const schedule=getSchedule();
+  const out=document.getElementById('ticketOutput');
+  out.innerHTML='';
 
-  roster.forEach(s => {
-    const htNo = makeHTNo(s.cls, s.rollNo);
-    const qr = JSON.stringify({ ht: htNo, adm: s.admissionNo, roll: s.rollNo, sess: 'SA-2026' });
-    out.insertAdjacentHTML('beforeend', buildTicket(s, schedule, htNo, qr));
+  const ticketsHTML=roster.map(s=>{
+    const qr=JSON.stringify({ht:s.htNo,adm:s.admissionNo,roll:s.rollNo,sess:'SA-2026'});
+    return buildTicket(s,schedule,s.htNo,qr,issueDate);
   });
 
-  out.querySelectorAll('.ticket').forEach(el => {
-    const htNo = el.dataset.ht;
-    const stu = roster.find(s => makeHTNo(s.cls, s.rollNo) === htNo) || {};
-    const qr = JSON.stringify({ ht: htNo, adm: stu.admissionNo || '', roll: stu.rollNo || '', sess: 'SA-2026' });
-    renderCodes(el, htNo, qr);
+  /* Wrap pairs in .sheet */
+  for(let i=0;i<ticketsHTML.length;i+=2){
+    const sheet=document.createElement('div');
+    sheet.className='sheet';
+    sheet.innerHTML=ticketsHTML[i]+(ticketsHTML[i+1]||'<div class="ticket" style="visibility:hidden"></div>');
+    out.appendChild(sheet);
+  }
+
+  /* Render QR/barcodes */
+  out.querySelectorAll('.ticket[data-ht]').forEach(el=>{
+    const htNo=el.dataset.ht;
+    const stu=roster.find(s=>s.htNo===htNo);
+    if(!stu) return;
+    const qr=JSON.stringify({ht:htNo,adm:stu.admissionNo,roll:stu.rollNo,sess:'SA-2026'});
+    renderCodes(el,htNo,qr);
   });
 
-  showStatus(`✅ Generated ${roster.length} hall ticket(s). Scroll down to preview.`, 'ok');
-  document.getElementById('ticketOutput').scrollIntoView({ behavior: 'smooth' });
+  showStatus(`✅ Generated ${roster.length} hall ticket(s) — printed as ${Math.ceil(roster.length/2)} A4 sheet(s).`,'ok');
+  out.scrollIntoView({behavior:'smooth'});
 }
 
-/* ============================================================
-   PDF + Print
-   ============================================================ */
-function downloadPDF() {
-  const tickets = document.querySelectorAll('.ticket');
-  if (!tickets.length) { showStatus('Generate tickets first.', 'err'); return; }
-  const wrap = document.createElement('div');
-  wrap.style.width = '148mm';
-  tickets.forEach(t => wrap.appendChild(t.cloneNode(true)));
-  // Re-render codes in cloned tickets
-  wrap.querySelectorAll('.ticket').forEach(el => {
-    const htNo = el.dataset.ht;
-    const stu = roster.find(s => makeHTNo(s.cls, s.rollNo) === htNo) || {};
-    const qr = JSON.stringify({ ht: htNo, adm: stu.admissionNo || '', roll: stu.rollNo || '', sess: 'SA-2026' });
-    renderCodes(el, htNo, qr);
+/* ---------- PDF ---------- */
+function downloadPDF(){
+  const sheets=document.querySelectorAll('.sheet');
+  if(!sheets.length){showStatus('Generate tickets first.','err');return;}
+  const wrap=document.createElement('div');
+  wrap.style.width='297mm';
+  sheets.forEach(s=>{
+    const clone=s.cloneNode(true);
+    wrap.appendChild(clone);
+  });
+  /* Re-render codes in clones (deterministic htNo means we can find them) */
+  wrap.querySelectorAll('.ticket[data-ht]').forEach(el=>{
+    const htNo=el.dataset.ht;
+    const stu=roster.find(s=>s.htNo===htNo);
+    if(!stu) return;
+    const qr=JSON.stringify({ht:htNo,adm:stu.admissionNo,roll:stu.rollNo,sess:'SA-2026'});
+    renderCodes(el,htNo,qr);
   });
   html2pdf().set({
-    margin: 0, filename: 'Hall_Ticket_PSPW_2026.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 3, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+    margin:0,filename:'Hall_Ticket_PSPW_2026.pdf',
+    image:{type:'jpeg',quality:.98},
+    html2canvas:{scale:2,useCORS:true,windowWidth:1123},
+    jsPDF:{unit:'mm',format:'a4',orientation:'landscape'}
   }).from(wrap).save()
-    .then(() => showStatus('✅ PDF downloaded.', 'ok'))
-    .catch(e => showStatus('❌ PDF error: ' + e.message, 'err'));
+   .then(()=>showStatus('✅ PDF downloaded.','ok'))
+   .catch(e=>showStatus('❌ PDF error: '+e.message,'err'));
 }
 
-function printTickets() {
-  if (!document.querySelectorAll('.ticket').length) { showStatus('Generate tickets first.', 'err'); return; }
+function printTickets(){
+  if(!document.querySelectorAll('.ticket[data-ht]').length){showStatus('Generate tickets first.','err');return;}
   window.print();
 }
-
-function reset() {
-  roster = [];
-  document.getElementById('ticketOutput').innerHTML = '';
-  document.getElementById('btnGen').disabled = true;
+function reset(){
+  roster=[];
+  document.getElementById('ticketOutput').innerHTML='';
+  document.getElementById('btnGen').disabled=true;
   hideStatus();
 }
 </script>
