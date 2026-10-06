@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hall Ticket Generator - Govt. Primary School Pethgam Wagoora</title>
-    <!-- QR Code Library -->
+    <title>Hall Ticket Generator — Govt. Primary School Pethgam Wagoora</title>
+
+    <!-- Reuse your existing module styles -->
+    <link rel="stylesheet" href="module-common.css">
+
+    <!-- QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <!-- Barcode Library -->
+    <!-- Code 128 Barcode -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.1/dist/JsBarcode.all.min.js"></script>
-    <!-- PDF Generation Library -->
+    <!-- PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         :root {
             --primary-blue: #1a3a6b;
@@ -27,7 +32,7 @@
             color: var(--text-dark);
         }
 
-        /* --- Control Panel --- */
+        /* ---------- Control Panel ---------- */
         .control-panel {
             max-width: 1200px;
             margin: 0 auto 24px;
@@ -49,6 +54,40 @@
             margin-bottom: 20px;
         }
 
+        .school-header-strip {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: var(--light-blue);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .school-header-strip img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--primary-blue);
+            padding: 2px;
+        }
+
+        .school-header-strip .school-meta h2 {
+            font-size: 1rem;
+            color: var(--primary-blue);
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+
+        .school-header-strip .school-meta p {
+            font-size: 0.72rem;
+            color: #555;
+            line-height: 1.4;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -58,7 +97,7 @@
 
         .form-grid label {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
             color: #444;
             text-transform: uppercase;
@@ -94,18 +133,14 @@
             padding: 10px 22px;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
             font-family: inherit;
         }
 
-        .btn-primary {
-            background: var(--primary-blue);
-            color: #fff;
-        }
-
+        .btn-primary { background: var(--primary-blue); color: #fff; }
         .btn-primary:hover { background: #142d54; }
 
         .btn-secondary {
@@ -113,20 +148,18 @@
             color: var(--primary-blue);
             border: 2px solid var(--primary-blue);
         }
-
-        .btn-secondary:hover {
-            background: var(--light-blue);
-        }
+        .btn-secondary:hover { background: var(--light-blue); }
 
         .btn-outline {
             background: transparent;
-            color: #666;
+            color: #555;
             border: 1px solid #ccc;
         }
-
         .btn-outline:hover { background: #f0f0f0; }
 
-        /* --- Schedule Builder --- */
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ---------- Schedule Builder ---------- */
         .schedule-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -165,7 +198,7 @@
             font-size: 0.75rem;
         }
 
-        /* --- Hall Ticket Output --- */
+        /* ---------- Hall Ticket ---------- */
         #ticket-output {
             display: flex;
             flex-wrap: wrap;
@@ -175,8 +208,8 @@
         }
 
         .hall-ticket {
-            width: 148mm;   /* A5 width */
-            min-height: 210mm; /* A5 height */
+            width: 148mm;
+            min-height: 210mm;
             background: #fff;
             border: 3px solid var(--primary-blue);
             border-radius: 4px;
@@ -187,9 +220,9 @@
             overflow: hidden;
             page-break-inside: avoid;
             break-inside: avoid;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
         }
 
-        /* Inner double-line border */
         .hall-ticket-inner {
             border: 1.5px solid var(--border-blue);
             margin: 5px;
@@ -198,7 +231,6 @@
             flex-direction: column;
         }
 
-        /* Header */
         .ticket-header {
             display: flex;
             align-items: center;
@@ -216,25 +248,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
-            font-weight: 700;
-            text-align: center;
             flex-shrink: 0;
-            background: rgba(255,255,255,0.15);
-            color: #fff;
+            background: #fff;
             overflow: hidden;
+            padding: 2px;
         }
 
         .ticket-header .logo-box img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 50%;
         }
 
-        .ticket-header .school-info {
-            flex: 1;
-        }
+        .ticket-header .school-info { flex: 1; }
 
         .ticket-header .school-info h2 {
             font-size: 13px;
@@ -245,12 +272,11 @@
 
         .ticket-header .school-info .school-sub {
             font-size: 8px;
-            opacity: 0.9;
+            opacity: 0.92;
             margin-top: 2px;
             line-height: 1.3;
         }
 
-        /* Exam Title Bar */
         .exam-title-bar {
             background: var(--light-blue);
             border-bottom: 2px solid var(--primary-blue);
@@ -272,16 +298,13 @@
             margin-top: 2px;
         }
 
-        /* Student particulars & photo */
         .student-section {
             display: flex;
             gap: 10px;
             padding: 10px 12px;
         }
 
-        .student-details {
-            flex: 1;
-        }
+        .student-details { flex: 1; }
 
         .student-details table {
             width: 100%;
@@ -329,10 +352,7 @@
             object-fit: cover;
         }
 
-        /* Examination Schedule Table */
-        .schedule-table-wrap {
-            padding: 0 12px 8px;
-        }
+        .schedule-table-wrap { padding: 0 12px 8px; }
 
         .schedule-table {
             width: 100%;
@@ -358,11 +378,8 @@
             font-size: 8px;
         }
 
-        .schedule-table tr:nth-child(even) {
-            background: #f5f9ff;
-        }
+        .schedule-table tr:nth-child(even) { background: #f5f9ff; }
 
-        /* Verification Section */
         .verification-section {
             padding: 8px 12px;
             border-top: 2px dashed var(--primary-blue);
@@ -391,12 +408,11 @@
             flex-shrink: 0;
         }
 
-        .qr-container #qrcode {
-            display: inline-block;
-        }
+        .qr-container #qrcode,
+        .qr-container [id^="qrcode-"] { display: inline-block; }
 
-        .qr-container #qrcode img,
-        .qr-container #qrcode canvas {
+        .qr-container [id^="qrcode-"] img,
+        .qr-container [id^="qrcode-"] canvas {
             width: 70px !important;
             height: 70px !important;
         }
@@ -418,11 +434,7 @@
             align-items: center;
         }
 
-        .barcode-container svg,
-        .barcode-container canvas,
-        .barcode-container img {
-            max-width: 100%;
-        }
+        .barcode-container svg { max-width: 100%; }
 
         .barcode-caption {
             font-size: 6px;
@@ -437,7 +449,6 @@
             margin-bottom: 4px;
         }
 
-        /* Instructions */
         .instructions {
             padding: 6px 12px 4px;
             border-top: 1px solid #c5d5e8;
@@ -459,11 +470,8 @@
             line-height: 1.45;
         }
 
-        .instructions ol li {
-            margin-bottom: 1px;
-        }
+        .instructions ol li { margin-bottom: 1px; }
 
-        /* Signatures */
         .signature-row {
             display: flex;
             justify-content: space-between;
@@ -495,7 +503,6 @@
             margin-top: 1px;
         }
 
-        /* Footer */
         .ticket-footer {
             background: var(--primary-blue);
             color: #fff;
@@ -506,7 +513,21 @@
             text-transform: uppercase;
         }
 
-        /* Print styles */
+        /* ---------- Status messages ---------- */
+        .status-msg {
+            display: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+        .status-msg.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-msg.error   { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-msg.info    { display: block; background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        .hidden { display: none !important; }
+
+        /* ---------- Print ---------- */
         @media print {
             body { background: #fff; padding: 0; }
             .control-panel { display: none; }
@@ -518,159 +539,174 @@
             }
             .hall-ticket:last-child { page-break-after: auto; }
         }
-
-        /* Screen preview */
-        .hall-ticket {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .status-msg {
-            display: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            margin-top: 12px;
-        }
-
-        .status-msg.success {
-            display: block;
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-msg.error {
-            display: block;
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<!-- ===== CONTROL PANEL ===== -->
+<!-- ============================ CONTROL PANEL ============================ -->
 <div class="control-panel" id="controlPanel">
-    <h1>🎓 Hall Ticket Generator</h1>
-    <p class="subtitle">Government Primary School Pethgam Wagoora — Summative Assessment / Annual Examination 2026</p>
 
-    <!-- School Logo Upload -->
-    <div class="form-grid">
-        <div>
-            <label>School Logo</label>
-            <input type="file" id="logoUpload" accept="image/*">
-        </div>
-        <div>
-            <label>Student Photo</label>
-            <input type="file" id="photoUpload" accept="image/*">
+    <!-- School strip with logo loaded from new-logo.png -->
+    <div class="school-header-strip">
+        <img src="new-logo.png" alt="School Logo"
+             onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2248%22 fill=%22%231a3a6b%22/><text x=%2250%22 y=%2258%22 font-size=%2230%22 fill=%22white%22 text-anchor=%22middle%22 font-family=%22Arial%22>GPS</text></svg>';">
+        <div class="school-meta">
+            <h2>Government Primary School Pethgam Wagoora</h2>
+            <p>Wagoora Babareshi Road, Near ZEO Office Wagoora &nbsp;|&nbsp; Zone Wagoora, District Baramulla<br>
+               UDISE: 01022202207 &nbsp;|&nbsp; pspethgam@gmail.com</p>
         </div>
     </div>
 
-    <!-- Student Details -->
+    <h1>🎓 Hall Ticket Generator — 2026</h1>
+    <p class="subtitle">Summative Assessment / Annual Examination 2026 · Print on A5 or two tickets per A4 sheet</p>
+
+    <!-- Class filter + fetch from Firestore -->
     <div class="form-grid">
         <div>
-            <label>Student Name</label>
-            <input type="text" id="studentName" placeholder="e.g. Aadil Ahmad Rather">
+            <label>Class Filter (for database fetch)</label>
+            <select id="classFilter">
+                <option value="">— Select Class —</option>
+                <option value="1st">1st</option>
+                <option value="2nd">2nd</option>
+                <option value="3rd">3rd</option>
+                <option value="4th">4th</option>
+                <option value="5th">5th</option>
+            </select>
         </div>
         <div>
-            <label>Father's / Mother's Name</label>
-            <input type="text" id="parentName" placeholder="e.g. Mohammad Ashraf Rather">
+            <label>Section (optional)</label>
+            <input type="text" id="sectionFilter" placeholder="e.g. A">
         </div>
         <div>
-            <label>Class</label>
-            <input type="text" id="studentClass" placeholder="e.g. 5th">
-        </div>
-        <div>
-            <label>Section</label>
-            <input type="text" id="studentSection" placeholder="e.g. A">
-        </div>
-        <div>
-            <label>Roll No.</label>
-            <input type="text" id="rollNo" placeholder="e.g. 12">
-        </div>
-        <div>
-            <label>Admission No.</label>
-            <input type="text" id="admissionNo" placeholder="e.g. ADM-2026-045">
-        </div>
-        <div>
-            <label>Date of Birth</label>
-            <input type="text" id="dob" placeholder="e.g. 15-03-2016">
+            <label>Exam Session</label>
+            <input type="text" id="examSession" value="Summative Assessment / Annual Examination – 2026">
         </div>
         <div>
             <label>Issue Date</label>
-            <input type="text" id="issueDate" value="">
+            <input type="text" id="issueDate">
         </div>
     </div>
+
+    <div class="btn-row" style="margin-bottom:20px;">
+        <button class="btn btn-secondary" id="btnLoadStudents" onclick="loadStudentsFromDatabase()">
+            📥 Load Students from Database
+        </button>
+        <button class="btn btn-outline" onclick="clearStudents()">🗑️ Clear Loaded Roster</button>
+    </div>
+
+    <!-- Optional manual override / single entry -->
+    <details style="margin-bottom:16px;">
+        <summary style="cursor:pointer;font-weight:600;color:var(--primary-blue);font-size:0.85rem;">
+            ➕ Manually enter a single student (optional)
+        </summary>
+        <div class="form-grid" style="margin-top:12px;">
+            <div><label>Student Name</label><input type="text" id="studentName" placeholder="e.g. Aadil Ahmad Rather"></div>
+            <div><label>Father's / Mother's Name</label><input type="text" id="parentName" placeholder="e.g. Mohammad Ashraf Rather"></div>
+            <div><label>Class</label><input type="text" id="studentClass" placeholder="e.g. 5th"></div>
+            <div><label>Section</label><input type="text" id="studentSection" placeholder="e.g. A"></div>
+            <div><label>Roll No.</label><input type="text" id="rollNo" placeholder="e.g. 12"></div>
+            <div><label>Admission No.</label><input type="text" id="admissionNo" placeholder="e.g. ADM-2026-045"></div>
+            <div><label>Date of Birth</label><input type="text" id="dob" placeholder="e.g. 15-03-2016"></div>
+        </div>
+    </details>
 
     <!-- Examination Schedule -->
     <div class="schedule-section">
         <h3>📅 Examination Schedule</h3>
-        <div id="scheduleContainer">
-            <!-- rows added dynamically -->
-        </div>
-        <button class="btn btn-outline" type="button" onclick="addScheduleRow()" style="margin-top:8px;font-size:0.8rem;">+ Add Subject</button>
+        <div id="scheduleContainer"></div>
+        <button class="btn btn-outline" type="button" onclick="addScheduleRow()"
+                style="margin-top:8px;font-size:0.8rem;">+ Add Subject</button>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Actions -->
     <div class="btn-row">
-        <button class="btn btn-primary" onclick="generateTicket()">🖨️ Generate Hall Ticket</button>
-        <button class="btn btn-secondary" onclick="downloadPDF()">⬇️ Download as PDF (A5)</button>
-        <button class="btn btn-outline" onclick="printTicket()">🖨️ Print (A4 – 2 per sheet)</button>
-        <button class="btn btn-outline" onclick="bulkGenerate()">📦 Bulk Generate (Class-wise)</button>
+        <button class="btn btn-primary" onclick="generateSingleTicket()">🖨️ Generate (Single)</button>
+        <button class="btn btn-primary" onclick="generateAllTickets()">🖨️ Generate All (Roster)</button>
+        <button class="btn btn-secondary" onclick="downloadPDF()">⬇️ Download PDF (A5)</button>
+        <button class="btn btn-outline" onclick="printTicket()">🖨️ Print (A4 · 2 per sheet)</button>
     </div>
 
     <div id="statusMsg" class="status-msg"></div>
 </div>
 
-<!-- ===== TICKET OUTPUT ===== -->
-<div id="ticket-output">
-    <!-- Hall tickets will be injected here -->
-</div>
+<!-- ============================ TICKET OUTPUT ============================ -->
+<div id="ticket-output"></div>
+
+<!-- ============================ FIREBASE + LOGIC ============================ -->
+<!-- Load your existing Firebase config (module) -->
+<script type="module">
+    // ---------- Import your existing Firebase setup ----------
+    // Your repo has firebase-config.js — this imports its initialized exports.
+    let fb = null;
+    try {
+        fb = await import('./firebase-config.js');
+    } catch (e) {
+        console.warn('[HallTicket] firebase-config.js not found — running in offline/manual mode.', e);
+    }
+
+    // Expose to non-module script below
+    window.__fb = fb;
+    window.dispatchEvent(new Event('fb-ready'));
+</script>
 
 <script>
-// =============================================
-//  CONFIGURATION
-// =============================================
+// ============================================================
+//  CONSTANTS — sourced from your repo's school metadata
+// ============================================================
 const SCHOOL = {
-    name: "GOVERNMENT PRIMARY SCHOOL",
-    campus: "PETHGAM WAGOORA",
+    name:    "GOVERNMENT PRIMARY SCHOOL",
+    campus:  "PETHGAM WAGOORA",
     address: "Wagoora Babareshi Road, Near ZEO Office Wagoora",
-    zone: "Zone Wagoora | District Baramulla",
-    udise: "01022202207",
-    email: "pspethgam@gmail.com"
+    zone:    "Zone Wagoora | District Baramulla",
+    udise:   "01022202207",
+    email:   "pspethgam@gmail.com",
+    logo:    "new-logo.png",           // <-- loaded from repo root
+    hoi:     "Mohammad Ashraf Rather"
 };
 
-const EXAM_SESSION = "Summative Assessment / Annual Examination – 2026";
 const TICKET_PREFIX = "PSPW-2026";
+let EXAM_SESSION    = "Summative Assessment / Annual Examination – 2026";
 
-// =============================================
-//  INITIALISE – Default schedule rows
-// =============================================
-document.addEventListener('DOMContentLoaded', function () {
-    // Set today's date as issue date
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    document.getElementById('issueDate').value = `${dd}-${mm}-${yyyy}`;
+// ============================================================
+//  STATE
+// ============================================================
+let roster = [];            // students pulled from Firestore
+let logoDataURL = null;     // cached base64 of new-logo.png for PDF export
 
-    // Add default schedule rows
+// ============================================================
+//  INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Issue date = today
+    const t = new Date();
+    document.getElementById('issueDate').value =
+        `${String(t.getDate()).padStart(2,'0')}-${String(t.getMonth()+1).padStart(2,'0')}-${t.getFullYear()}`;
+
+    // Pre-load logo as data URL for embedding in PDF
+    fetch(SCHOOL.logo)
+        .then(r => r.ok ? r.blob() : Promise.reject('logo not found'))
+        .then(blob => {
+            const reader = new FileReader();
+            reader.onload = e => { logoDataURL = e.target.result; };
+            reader.readAsDataURL(blob);
+        })
+        .catch(() => { /* fallback SVG is used inside buildTicketHTML */ });
+
+    // Default schedule rows
     const defaults = [
-        { subject: 'English', date: '05-04-2026', day: 'Monday', time: '10:00 AM – 01:00 PM', room: 'Room 1' },
-        { subject: 'Mathematics', date: '07-04-2026', day: 'Wednesday', time: '10:00 AM – 01:00 PM', room: 'Room 1' },
-        { subject: 'EVS / Science', date: '09-04-2026', day: 'Friday', time: '10:00 AM – 12:30 PM', room: 'Room 1' },
-        { subject: 'Urdu / Hindi', date: '11-04-2026', day: 'Sunday', time: '10:00 AM – 01:00 PM', room: 'Room 1' },
-        { subject: 'Social Studies', date: '13-04-2026', day: 'Tuesday', time: '10:00 AM – 12:30 PM', room: 'Room 1' }
+        { subject:'English',        date:'05-04-2026', day:'Monday',    time:'10:00 AM – 01:00 PM', room:'Room 1' },
+        { subject:'Mathematics',    date:'07-04-2026', day:'Wednesday', time:'10:00 AM – 01:00 PM', room:'Room 1' },
+        { subject:'EVS / Science',  date:'09-04-2026', day:'Friday',    time:'10:00 AM – 12:30 PM', room:'Room 1' },
+        { subject:'Urdu / Hindi',   date:'11-04-2026', day:'Sunday',    time:'10:00 AM – 01:00 PM', room:'Room 1' },
+        { subject:'Social Studies', date:'13-04-2026', day:'Tuesday',   time:'10:00 AM – 12:30 PM', room:'Room 1' }
     ];
     defaults.forEach(d => addScheduleRow(d.subject, d.date, d.day, d.time, d.room));
 });
 
-// =============================================
+// ============================================================
 //  SCHEDULE BUILDER
-// =============================================
-function addScheduleRow(subject = '', date = '', day = '', time = '', room = '') {
+// ============================================================
+function addScheduleRow(subject='', date='', day='', time='', room='') {
     const container = document.getElementById('scheduleContainer');
     const row = document.createElement('div');
     row.className = 'schedule-row';
@@ -687,104 +723,159 @@ function addScheduleRow(subject = '', date = '', day = '', time = '', room = '')
 
 function getScheduleData() {
     const rows = document.querySelectorAll('#scheduleContainer .schedule-row');
-    const schedule = [];
-    rows.forEach(row => {
-        const subject = row.querySelector('.sched-subject').value.trim();
-        const date = row.querySelector('.sched-date').value.trim();
-        const day = row.querySelector('.sched-day').value.trim();
-        const time = row.querySelector('.sched-time').value.trim();
-        const room = row.querySelector('.sched-room').value.trim();
-        if (subject) {
-            schedule.push({ subject, date, day, time, room });
-        }
+    const out = [];
+    rows.forEach(r => {
+        const subject = r.querySelector('.sched-subject').value.trim();
+        if (!subject) return;
+        out.push({
+            subject,
+            date: r.querySelector('.sched-date').value.trim(),
+            day:  r.querySelector('.sched-day').value.trim(),
+            time: r.querySelector('.sched-time').value.trim(),
+            room: r.querySelector('.sched-room').value.trim()
+        });
     });
-    return schedule;
+    return out;
 }
 
-// =============================================
-//  UNIQUE HALL TICKET ID GENERATOR
-// =============================================
-function generateHallTicketId(rollNo) {
-    const classCode = 'CL' + (document.getElementById('studentClass').value.trim() || '0');
-    const roll = rollNo.toString().padStart(3, '0');
-    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${TICKET_PREFIX}-${classCode}-${roll}-${randomSuffix}`;
-}
+// ============================================================
+//  FIREBASE — Load students
+//  Requires firebase-config.js to export at least:
+//    { db, collection, getDocs, query, where }
+//  Adjust the import in the module block above if your
+//  firebase-config.js uses different names (e.g. window.db).
+// ============================================================
+async function loadStudentsFromDatabase() {
+    const cls = document.getElementById('classFilter').value.trim();
+    const sec = document.getElementById('sectionFilter').value.trim();
 
-// =============================================
-//  VALIDATION
-// =============================================
-function validateForm() {
-    const name = document.getElementById('studentName').value.trim();
-    const roll = document.getElementById('rollNo').value.trim();
-    const adm = document.getElementById('admissionNo').value.trim();
-    const cls = document.getElementById('studentClass').value.trim();
-
-    const errors = [];
-    if (!name) errors.push('Student Name is required.');
-    if (!roll) errors.push('Roll No. is required.');
-    if (!adm) errors.push('Admission No. is required.');
-    if (!cls) errors.push('Class is required.');
-
-    if (errors.length > 0) {
-        showStatus(errors.join(' '), 'error');
-        return false;
+    if (!cls) { showStatus('Please select a class to filter students.', 'error'); return; }
+    if (!window.__fb || !window.__fb.db) {
+        showStatus('Firebase not available. Use the manual entry or ensure firebase-config.js is loaded.', 'error');
+        return;
     }
+
+    try {
+        showStatus('Fetching students from database…', 'info');
+        const { db, collection, getDocs, query, where } = window.__fb;
+
+        const clauses = [ where('class', '==', cls) ];
+        if (sec) clauses.push(where('section', '==', sec));
+
+        const q = query(collection(db, 'students'), ...clauses);
+        const snap = await getDocs(q);
+
+        roster = [];
+        snap.forEach(doc => roster.push(mapFirestoreStudent(doc.id, doc.data())));
+
+        if (roster.length === 0) {
+            showStatus(`No students found for Class ${cls}${sec ? ' Section ' + sec : ''}.`, 'error');
+            return;
+        }
+        showStatus(`✅ Loaded ${roster.length} student(s) from Class ${cls}${sec ? '-' + sec : ''}.`, 'success');
+    } catch (err) {
+        console.error(err);
+        showStatus('❌ Failed to load students: ' + err.message, 'error');
+    }
+}
+
+/**
+ * Map a Firestore document to the hall-ticket schema.
+ * >>> EDIT THIS if your Firestore fields differ. <<<
+ */
+function mapFirestoreStudent(id, data) {
+    return {
+        id,
+        name:        data.name || data.studentName || data.fullName || '—',
+        parentName:  data.fatherName || data.parentName || data.motherName || '—',
+        cls:         data.class || data.className || '—',
+        section:     data.section || '—',
+        rollNo:      String(data.rollNo || data.roll || '').padStart(3, '0') || '—',
+        admissionNo: data.admissionNo || data.admNo || id,
+        dob:         data.dob || data.dateOfBirth || '—',
+        photoURL:    data.photoURL || data.photo || null
+    };
+}
+
+function clearStudents() {
+    roster = [];
+    document.getElementById('ticket-output').innerHTML = '';
+    showStatus('Roster cleared.', 'info');
+}
+
+// ============================================================
+//  ID GENERATION
+// ============================================================
+function generateHallTicketId(cls, rollNo) {
+    const classCode = 'CL' + String(cls || '0').replace(/\D/g, '');
+    const roll      = String(rollNo || '0').padStart(3, '0');
+    const rand      = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `${TICKET_PREFIX}-${classCode}-${roll}-${rand}`;
+}
+
+// ============================================================
+//  VALIDATION
+// ============================================================
+function validateSingleForm() {
+    const errs = [];
+    if (!document.getElementById('studentName').value.trim())  errs.push('Student Name');
+    if (!document.getElementById('rollNo').value.trim())        errs.push('Roll No.');
+    if (!document.getElementById('admissionNo').value.trim())   errs.push('Admission No.');
+    if (!document.getElementById('studentClass').value.trim())  errs.push('Class');
+    if (errs.length) { showStatus('Missing: ' + errs.join(', '), 'error'); return false; }
     return true;
 }
 
-function showStatus(msg, type) {
+function showStatus(msg, type = 'info') {
     const el = document.getElementById('statusMsg');
     el.textContent = msg;
     el.className = 'status-msg ' + type;
-    setTimeout(() => { el.className = 'status-msg'; el.textContent = ''; }, 5000);
 }
 
-// =============================================
-//  BUILD HALL TICKET HTML
-// =============================================
-function buildTicketHTML(student, schedule, hallTicketNo, qrPayload) {
-    const logoHTML = student.logoDataURL
-        ? `<img src="${student.logoDataURL}" alt="School Logo">`
-        : `<span>LOGO</span>`;
+// ============================================================
+//  TICKET HTML BUILDER
+// ============================================================
+function buildTicketHTML(student, schedule, hallTicketNo, qrPayload, examSession) {
+    const logoHTML = (student.logoDataURL || logoDataURL)
+        ? `<img src="${student.logoDataURL || logoDataURL}" alt="School Logo">`
+        : `<span style="font-size:8px;font-weight:700;color:#1a3a6b;">GPS</span>`;
 
-    const photoHTML = student.photoDataURL
-        ? `<img src="${student.photoDataURL}" alt="Student Photo">`
+    const photoHTML = student.photoDataURL || student.photoURL
+        ? `<img src="${student.photoDataURL || student.photoURL}" alt="Student Photo"
+               onerror="this.replaceWith(Object.assign(document.createElement('div'),{innerHTML:'Paste<br>Photo',style:'font-size:7px;color:%23888;text-align:center;'}))">`
         : `<div>Paste<br>Photo</div><div style="font-size:6px;margin-top:2px;">Recent<br>passport-<br>size photo</div>`;
 
-    // Schedule rows
-    let scheduleRows = '';
-    schedule.forEach(s => {
-        scheduleRows += `
-            <tr>
-                <td>${s.subject}</td>
-                <td>${s.date}</td>
-                <td>${s.day}</td>
-                <td>${s.time}</td>
-                <td>${s.room}</td>
-            </tr>`;
-    });
+    const scheduleRows = schedule.map(s => `
+        <tr>
+            <td>${s.subject}</td>
+            <td>${s.date}</td>
+            <td>${s.day}</td>
+            <td>${s.time}</td>
+            <td>${s.room}</td>
+        </tr>`).join('');
 
     return `
     <div class="hall-ticket" data-ticket-id="${hallTicketNo}">
         <div class="hall-ticket-inner">
 
-            <!-- HEADER -->
             <div class="ticket-header">
                 <div class="logo-box">${logoHTML}</div>
                 <div class="school-info">
                     <h2>${SCHOOL.name}</h2>
-                    <div class="school-sub">${SCHOOL.campus}<br>${SCHOOL.address}<br>${SCHOOL.zone}<br>UDISE: ${SCHOOL.udise} | ${SCHOOL.email}</div>
+                    <div class="school-sub">
+                        ${SCHOOL.campus}<br>
+                        ${SCHOOL.address}<br>
+                        ${SCHOOL.zone}<br>
+                        UDISE: ${SCHOOL.udise} | ${SCHOOL.email}
+                    </div>
                 </div>
             </div>
 
-            <!-- EXAM TITLE -->
             <div class="exam-title-bar">
                 <h3>Examination Hall Ticket</h3>
-                <div class="session">${EXAM_SESSION}</div>
+                <div class="session">${examSession}</div>
             </div>
 
-            <!-- STUDENT PARTICULARS -->
             <div class="student-section">
                 <div class="student-details">
                     <table>
@@ -800,23 +891,15 @@ function buildTicketHTML(student, schedule, hallTicketNo, qrPayload) {
                 <div class="photo-box">${photoHTML}</div>
             </div>
 
-            <!-- EXAMINATION SCHEDULE -->
             <div class="schedule-table-wrap">
                 <table class="schedule-table">
                     <thead>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Date</th>
-                            <th>Day</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                        </tr>
+                        <tr><th>Subject</th><th>Date</th><th>Day</th><th>Time</th><th>Room</th></tr>
                     </thead>
                     <tbody>${scheduleRows}</tbody>
                 </table>
             </div>
 
-            <!-- VERIFICATION: QR + BARCODE -->
             <div class="verification-section">
                 <div class="verification-label">Hall Ticket Verification</div>
                 <div class="hall-ticket-no">Hall Ticket No.: ${hallTicketNo}</div>
@@ -832,7 +915,6 @@ function buildTicketHTML(student, schedule, hallTicketNo, qrPayload) {
                 </div>
             </div>
 
-            <!-- INSTRUCTIONS -->
             <div class="instructions">
                 <h4>Important Instructions</h4>
                 <ol>
@@ -845,207 +927,143 @@ function buildTicketHTML(student, schedule, hallTicketNo, qrPayload) {
                 </ol>
             </div>
 
-            <!-- SIGNATURES -->
             <div class="signature-row">
-                <div class="signature-box">
-                    <div class="sig-line"></div>
-                    <div class="sig-label">Student Signature</div>
-                </div>
-                <div class="signature-box">
-                    <div class="sig-line"></div>
-                    <div class="sig-label">Class Teacher</div>
-                </div>
-                <div class="signature-box">
-                    <div class="sig-line"></div>
-                    <div class="sig-label">HOI / Headmaster</div>
-                    <div class="hoi-name">Mohammad Ashraf Rather</div>
-                </div>
-                <div class="signature-box">
-                    <div class="sig-line"></div>
-                    <div class="sig-label">School Seal</div>
-                </div>
+                <div class="signature-box"><div class="sig-line"></div><div class="sig-label">Student Signature</div></div>
+                <div class="signature-box"><div class="sig-line"></div><div class="sig-label">Class Teacher</div></div>
+                <div class="signature-box"><div class="sig-line"></div><div class="sig-label">HOI / Headmaster</div><div class="hoi-name">${SCHOOL.hoi}</div></div>
+                <div class="signature-box"><div class="sig-line"></div><div class="sig-label">School Seal</div></div>
             </div>
 
-            <!-- FOOTER -->
             <div class="ticket-footer">
                 Computer-generated Hall Ticket • ${SCHOOL.name} ${SCHOOL.campus}
             </div>
-
         </div>
     </div>`;
 }
 
-// =============================================
-//  GENERATE SINGLE TICKET
-// =============================================
-async function generateTicket() {
-    if (!validateForm()) return;
+// ============================================================
+//  RENDER QR + BARCODE inside a ticket element
+// ============================================================
+function renderCodes(ticketEl, hallTicketNo, qrPayload) {
+    const qrDiv = ticketEl.querySelector(`#qrcode-${CSS.escape(hallTicketNo)}`);
+    if (qrDiv) {
+        new QRCode(qrDiv, {
+            text: qrPayload,
+            width: 70, height: 70,
+            colorDark: '#1a3a6b', colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+    const svg = ticketEl.querySelector(`#barcode-${CSS.escape(hallTicketNo)}`);
+    if (svg) {
+        JsBarcode(svg, hallTicketNo, {
+            format: 'CODE128', width: 1.2, height: 35,
+            displayValue: true, fontSize: 7, font: 'Arial',
+            textMargin: 2, margin: 0
+        });
+    }
+}
+
+// ============================================================
+//  GENERATE — SINGLE (manual entry)
+// ============================================================
+async function generateSingleTicket() {
+    if (!validateSingleForm()) return;
+
+    EXAM_SESSION = document.getElementById('examSession').value.trim() || EXAM_SESSION;
 
     const student = {
-        name: document.getElementById('studentName').value.trim(),
-        parentName: document.getElementById('parentName').value.trim(),
-        cls: document.getElementById('studentClass').value.trim(),
-        section: document.getElementById('studentSection').value.trim() || '—',
-        rollNo: document.getElementById('rollNo').value.trim(),
+        name:        document.getElementById('studentName').value.trim(),
+        parentName:  document.getElementById('parentName').value.trim(),
+        cls:         document.getElementById('studentClass').value.trim(),
+        section:     document.getElementById('studentSection').value.trim() || '—',
+        rollNo:      document.getElementById('rollNo').value.trim(),
         admissionNo: document.getElementById('admissionNo').value.trim(),
-        dob: document.getElementById('dob').value.trim() || '—',
-        logoDataURL: await fileToDataURL(document.getElementById('logoUpload')),
-        photoDataURL: await fileToDataURL(document.getElementById('photoUpload'))
+        dob:         document.getElementById('dob').value.trim() || '—',
+        logoDataURL: logoDataURL
     };
 
     const schedule = getScheduleData();
-    const hallTicketNo = generateHallTicketId(student.rollNo);
+    const htNo     = generateHallTicketId(student.cls, student.rollNo);
+    const qr       = JSON.stringify({ ht: htNo, adm: student.admissionNo, roll: student.rollNo, sess: 'SA-2026' });
 
-    // QR payload — minimal necessary identifiers only
-    const qrPayload = JSON.stringify({
-        ht: hallTicketNo,
-        adm: student.admissionNo,
-        roll: student.rollNo,
-        sess: 'SA-2026'
-    });
-
-    // Build and inject ticket
     const output = document.getElementById('ticket-output');
-    output.innerHTML = buildTicketHTML(student, schedule, hallTicketNo, qrPayload);
+    output.innerHTML = buildTicketHTML(student, schedule, htNo, qr, EXAM_SESSION);
+    renderCodes(output.querySelector('.hall-ticket'), htNo, qr);
 
-    // Render QR code
-    new QRCode(document.getElementById(`qrcode-${hallTicketNo}`), {
-        text: qrPayload,
-        width: 70,
-        height: 70,
-        colorDark: '#1a3a6b',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-    });
-
-    // Render Code 128 barcode
-    JsBarcode(`#barcode-${hallTicketNo}`, hallTicketNo, {
-        format: 'CODE128',
-        width: 1.2,
-        height: 35,
-        displayValue: true,
-        fontSize: 7,
-        font: 'Arial',
-        textMargin: 2,
-        margin: 0
-    });
-
-    showStatus('✅ Hall ticket generated successfully. Ready to print or download.', 'success');
+    showStatus('✅ Hall ticket generated.', 'success');
 }
 
-// =============================================
-//  BULK GENERATE (multiple students)
-// =============================================
-async function bulkGenerate() {
-    if (!validateForm()) return;
-
+// ============================================================
+//  GENERATE — ALL (roster from database)
+// ============================================================
+async function generateAllTickets() {
+    if (!roster.length) {
+        showStatus('No roster loaded. Click "Load Students from Database" first.', 'error');
+        return;
+    }
+    EXAM_SESSION = document.getElementById('examSession').value.trim() || EXAM_SESSION;
+    const schedule = getScheduleData();
     const output = document.getElementById('ticket-output');
     output.innerHTML = '';
 
-    const logoDataURL = await fileToDataURL(document.getElementById('logoUpload'));
-    const photoDataURL = await fileToDataURL(document.getElementById('photoUpload'));
-    const schedule = getScheduleData();
-
-    // For demonstration, generate 3 sample tickets.
-    // In production, this loop would iterate over your master student database.
-    const sampleStudents = [
-        { name: document.getElementById('studentName').value.trim(), parentName: document.getElementById('parentName').value.trim(), cls: document.getElementById('studentClass').value.trim(), section: document.getElementById('studentSection').value.trim(), rollNo: document.getElementById('rollNo').value.trim(), admissionNo: document.getElementById('admissionNo').value.trim(), dob: document.getElementById('dob').value.trim() },
-        // Add more students from your database here...
-    ];
-
-    // For demo, duplicate the entered student 3 times with different roll numbers
-    for (let i = 0; i < 3; i++) {
-        const s = { ...sampleStudents[0] };
-        s.rollNo = String(parseInt(s.rollNo) + i).padStart(3, '0');
-        const hallTicketNo = generateHallTicketId(s.rollNo);
-        const qrPayload = JSON.stringify({ ht: hallTicketNo, adm: s.admissionNo, roll: s.rollNo, sess: 'SA-2026' });
-        output.innerHTML += buildTicketHTML({ ...s, logoDataURL, photoDataURL }, schedule, hallTicketNo, qrPayload);
-    }
-
-    // Render QR + barcodes for each ticket
-    document.querySelectorAll('.hall-ticket').forEach(ticket => {
-        const htNo = ticket.getAttribute('data-ticket-id');
-        const student = {
-            rollNo: htNo.split('-')[2] || '000',
-            admissionNo: document.getElementById('admissionNo').value.trim()
-        };
-        const qrPayload = JSON.stringify({ ht: htNo, adm: student.admissionNo, roll: student.rollNo, sess: 'SA-2026' });
-
-        const qrDiv = ticket.querySelector(`[id^="qrcode-"]`);
-        if (qrDiv) {
-            new QRCode(qrDiv, { text: qrPayload, width: 70, height: 70, colorDark: '#1a3a6b', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-        }
-
-        const barcodeSvg = ticket.querySelector(`[id^="barcode-"]`);
-        if (barcodeSvg) {
-            JsBarcode(barcodeSvg, htNo, { format: 'CODE128', width: 1.2, height: 35, displayValue: true, fontSize: 7, font: 'Arial', textMargin: 2, margin: 0 });
-        }
+    roster.forEach(stu => {
+        const htNo = generateHallTicketId(stu.cls, stu.rollNo);
+        const qr = JSON.stringify({ ht: htNo, adm: stu.admissionNo, roll: stu.rollNo, sess: 'SA-2026' });
+        output.insertAdjacentHTML('beforeend',
+            buildTicketHTML({ ...stu, logoDataURL: logoDataURL }, schedule, htNo, qr, EXAM_SESSION));
     });
 
-    showStatus(`✅ ${document.querySelectorAll('.hall-ticket').length} hall tickets generated (bulk).`, 'success');
+    // Render QR/barcodes after DOM is in place
+    output.querySelectorAll('.hall-ticket').forEach(el => {
+        const htNo = el.getAttribute('data-ticket-id');
+        const stu = roster.find(s => generateHallTicketId(s.cls, s.rollNo) === htNo) || {};
+        const qr = JSON.stringify({ ht: htNo, adm: stu.admissionNo || '', roll: stu.rollNo || '', sess: 'SA-2026' });
+        renderCodes(el, htNo, qr);
+    });
+
+    showStatus(`✅ Generated ${roster.length} hall ticket(s).`, 'success');
 }
 
-// =============================================
-//  DOWNLOAD PDF (A5)
-// =============================================
+// ============================================================
+//  PDF EXPORT (A5)
+// ============================================================
 function downloadPDF() {
     const tickets = document.querySelectorAll('.hall-ticket');
-    if (tickets.length === 0) {
-        showStatus('⚠️ Please generate at least one hall ticket first.', 'error');
-        return;
-    }
+    if (!tickets.length) { showStatus('Generate at least one hall ticket first.', 'error'); return; }
 
-    // Create a wrapper for PDF export
     const wrapper = document.createElement('div');
     wrapper.style.width = '148mm';
+    tickets.forEach(t => wrapper.appendChild(t.cloneNode(true)));
 
-    tickets.forEach(ticket => {
-        const clone = ticket.cloneNode(true);
-        clone.style.width = '148mm';
-        clone.style.minHeight = '210mm';
-        wrapper.appendChild(clone);
+    // QR codes are <img> inside the original; cloning loses the canvas → re-draw
+    const cloned = wrapper.querySelectorAll('.hall-ticket');
+    cloned.forEach((el, i) => {
+        const htNo = el.getAttribute('data-ticket-id');
+        const stu = roster.find(s => generateHallTicketId(s.cls, s.rollNo) === htNo) || {};
+        const qr = JSON.stringify({ ht: htNo, adm: stu.admissionNo || '', roll: stu.rollNo || '', sess: 'SA-2026' });
+        renderCodes(el, htNo, qr);
     });
 
-    const opt = {
+    html2pdf().set({
         margin: 0,
         filename: 'Hall_Ticket_PSPW_2026.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 3, useCORS: true, letterRendering: true },
         jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(wrapper).save().then(() => {
-        showStatus('✅ PDF downloaded successfully.', 'success');
-    }).catch(err => {
-        showStatus('❌ PDF generation failed: ' + err.message, 'error');
-    });
+    }).from(wrapper).save()
+      .then(() => showStatus('✅ PDF downloaded.', 'success'))
+      .catch(e => showStatus('❌ PDF error: ' + e.message, 'error'));
 }
 
-// =============================================
-//  PRINT (A4 – two tickets per sheet)
-// =============================================
+// ============================================================
+//  PRINT
+// ============================================================
 function printTicket() {
-    const tickets = document.querySelectorAll('.hall-ticket');
-    if (tickets.length === 0) {
-        showStatus('⚠️ Please generate at least one hall ticket first.', 'error');
-        return;
+    if (!document.querySelectorAll('.hall-ticket').length) {
+        showStatus('Generate at least one hall ticket first.', 'error'); return;
     }
     window.print();
-}
-
-// =============================================
-//  UTILITY: File to Data URL
-// =============================================
-function fileToDataURL(fileInput) {
-    return new Promise((resolve) => {
-        if (!fileInput.files || !fileInput.files[0]) {
-            resolve(null);
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsDataURL(fileInput.files[0]);
-    });
 }
 </script>
 
