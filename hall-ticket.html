@@ -1219,119 +1219,185 @@ async function generateAll() {
 }
 
 /* ============================================================
+/* ============================================================
    PDF + Print
    ============================================================ */
 async function downloadPDF() {
-  const tickets=[...document.querySelectorAll('.ticket')].filter(t=>t.classList.contains('print-selected'));
-  if(!tickets.length){showStatus('Select at least one hall ticket for PDF.','err');return;}
-  if(typeof html2canvas==='undefined' || typeof window.jspdf==='undefined'){
-    showStatus('❌ PDF libraries are unavailable. Check your internet connection.','err');return;
+  const tickets = [...document.querySelectorAll('.ticket')]
+    .filter(t => t.classList.contains('print-selected'));
+  if (!tickets.length) { showStatus('Select at least one hall ticket for PDF.', 'err'); return; }
+  if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+    showStatus('❌ PDF libraries are unavailable. Check your internet connection.', 'err'); return;
   }
 
-  EXAM_SESSION=document.getElementById('examSession').value.trim()||EXAM_SESSION;
-  showStatus('Preparing A4 landscape PDF — 4 hall tickets per sheet…','info');
+  EXAM_SESSION = document.getElementById('examSession').value.trim() || EXAM_SESSION;
+  showStatus('Preparing A4 landscape PDF — 4 hall tickets per sheet…', 'info');
 
-  const exportRoot=document.createElement('div');
-  exportRoot.id='pdfExportRoot';
-  exportRoot.style.cssText='position:absolute;left:0;top:0;width:148.5mm;background:#fff;z-index:999999;padding:0;margin:0;visibility:visible;pointer-events:none;contain:layout paint;';
+  /* ------------------------------------------------------------------
+     html2canvas measures the element with getBoundingClientRect()
+     (viewport coordinates) but renders a clone of the *document*.
+     If the page is scrolled, the two coordinate systems disagree, the
+     crop rectangle falls outside the rendered clone, and every page
+     comes out blank.  Scrolling to the top first keeps them aligned.
+     ------------------------------------------------------------------ */
+  const prevX = window.pageXOffset;
+  const prevY = window.pageYOffset;
+  window.scrollTo(0, 0);
+  await new Promise(r => requestAnimationFrame(r));
+
+  const exportRoot = document.createElement('div');
+  exportRoot.id = 'pdfExportRoot';
+  exportRoot.style.cssText =
+    'position:absolute;left:0;top:0;width:148.5mm;background:#ffffff;' +
+    'z-index:2147483647;padding:0;margin:0;visibility:visible;opacity:1;' +
+    'pointer-events:none;';           // <- no `contain: layout paint`
   document.body.appendChild(exportRoot);
 
-  // Build clean export copies. The full-page min-height is removed so the
-  // blue footer is the actual end of the ticket; no blank area is exported.
-  const clones=[];
-  for(const t of tickets){
-    const clone=t.cloneNode(true);
-    clone.classList.add('pdf-ticket');
-    const sel=clone.querySelector('.ticket-select'); if(sel) sel.remove();
-    const inner=clone.querySelector('.ticket-inner');
-    if(inner){ inner.style.minHeight='0'; inner.style.height='auto'; }
-    clone.style.cssText='position:relative;width:148.5mm;height:auto;min-height:0;margin:0;border:1.2px solid #000;border-radius:0;box-shadow:none;overflow:hidden;background:#fff;display:block;';
-    exportRoot.appendChild(clone);
-    clones.push(clone);
+  const clones = [];
+
+  try {
+    /* Build clean export copies — full-page min-height removed so the
+       blue footer is the true end of the ticket. */
+    tickets.forEach(t => {
+      const clone = t.cloneNode(true);
+      clone.classList.add('pdf-ticket');
+      clone.classList.remove('print-selected');
+      const sel = clone.querySelector('.ticket-select'); if (sel) sel.remove();
+      const inner = clone.querySelector('.ticket-inner');
+      if (inner) { inner.style.minHeight = '0'; inner.style.height = 'auto'; }
+      clone.style.cssText =
+        'position:relative;display:block;width:148.5mm;height:auto;' +
+        'min-height:0;max-height:none;margin:0;border:1.2px solid #000;' +
+        'border-radius:0;box-shadow:none;overflow:hidden;background:#ffffff;';
+      exportRoot.appendChild(clone);
+      clones.push(clone);
+    });
+
+    /* Let the browser lay the clones out, then freeze each to its real
+       content height. */
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    clones.forEach(clone => {
+      const inner = clone.querySelector('.ticket-inner');
+      const h = Math.ceil(Math.max(inner ? inner.scrollHeight : 0, clone.scrollHeight));
+      if (h > 0) {
+        clone.style.height = h + 'px';
+        clone.style.minHeight = '0';
+        if (inner) inner.style.height = 'auto';
+      }
+    });
+    await new Promise(r => requestAnimationFrame(r));
+
+    /* Re-draw QR + barcode inside the clones: cloning a <canvas> loses
+       its pixels, so codes must be regenerated in the clone's own DOM. */
+    for (let i = 0; i < clones.length; i++) {
+      const clone = clones[i];
+      const htNo = clone.dataset.ht;
+      const student = roster.find(st => makeHTNo(st.cls, st.rollNo) === htNo);
+      if (!student) continue;
+      const payload = JSON.stringify({
+        school: SCHOOL.name + ' ' + SCHOOL.campus,
+        ht: htNo,
+        adm: student.admissionNo,
+        roll: student.rollNo,
+        student: student.name,
+        class: student.cls,
+        sess: EXAM_SESSION
+      });
+      renderCodes(clone, htNo, payload);
+    }
+
+    await new Promise(r => setTimeout(r, 350));   // fonts / images settle
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape', compress: true });
+    const PAGE_W = 297, PAGE_H = 210, CELL_W = 148.5, CELL_H = 105;
+
+    let placed = 0;
+
+    for (let i = 0; i < clones.length; i += 4) {
+      if (i > 0) pdf.addPage('a4', 'landscape');
+      const batch = clones.slice(i, i + 4);
+
+      for (let j = 0; j < batch.length; j++) {
+        const el   = batch[j];
+        const rect = el.getBoundingClientRect();
+        const capW = Math.max(1, Math.ceil(rect.width));
+        const capH = Math.max(1, Math.ceil(rect.height));
+
+        /* NOTE: scrollX / scrollY are deliberately NOT overridden here.
+           html2canvas must use the real page scroll (0 after scrollTo
+           above) so its crop rectangle lines up with the clone. */
+        const canvas = await html2canvas(el, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: '#ffffff',
+          logging: false,
+          imageTimeout: 15000,
+          width: capW,
+          height: capH,
+          windowWidth:  Math.max(document.documentElement.clientWidth,  capW),
+          windowHeight: Math.max(document.documentElement.clientHeight, capH)
+        });
+
+        if (!canvas || !canvas.width || !canvas.height) {
+          console.warn('[HallTicket] Empty canvas for', el.dataset.ht);
+          continue;
+        }
+
+        /* Rotate the captured portrait ticket 90° clockwise into its own
+           canvas (result is srcH × srcW). */
+        const srcW = canvas.width, srcH = canvas.height;
+        const rotated = document.createElement('canvas');
+        rotated.width  = srcH;
+        rotated.height = srcW;
+        const ctx = rotated.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, rotated.width, rotated.height);
+        ctx.translate(srcH, 0);
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(canvas, 0, 0);
+
+        /* The captured ticket is 148.5 mm wide in real life — use that as
+           the px→mm scale so the rotated copy keeps its aspect ratio. */
+        const pxPerMm = srcW / CELL_W;
+        const rotWMm   = srcH / pxPerMm;
+        const rotHMm   = srcW / pxPerMm;
+        const fit      = Math.min(CELL_W / rotWMm, CELL_H / rotHMm);
+        const drawW    = rotWMm * fit;
+        const drawH    = rotHMm * fit;
+
+        const col = j % 2;
+        const row = Math.floor(j / 2);
+        const x = col * CELL_W + (CELL_W - drawW) / 2;
+        const y = row * CELL_H + (CELL_H - drawH) / 2;
+
+        pdf.addImage(rotated.toDataURL('image/jpeg', 0.95), 'JPEG',
+                     x, y, drawW, drawH, undefined, 'FAST');
+        placed++;
+      }
+    }
+
+    if (!placed) {
+      showStatus('❌ Nothing could be rendered for the PDF. Please try again.', 'err');
+      return;
+    }
+
+    pdf.save('Hall_Ticket_PSPW_2026_A4_4_Per_Sheet.pdf');
+    showStatus(
+      `✅ PDF downloaded — ${placed} hall ticket(s), 4 per A4 landscape sheet, ` +
+      `blank space below the blue footer removed.`,
+      'ok'
+    );
+  } catch (e) {
+    console.error('[HallTicket] PDF error:', e);
+    showStatus('❌ PDF error: ' + (e.message || e), 'err');
+  } finally {
+    exportRoot.remove();
+    window.scrollTo(prevX, prevY);   // restore the user's scroll position
   }
-
-  // Force a real layout pass while the export root is inside the viewport.
-  // This is important on mobile browsers: html2canvas can return a blank canvas
-  // when its source element is positioned far outside the viewport.
-  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-  clones.forEach(clone=>{
-    const inner=clone.querySelector('.ticket-inner');
-    const h=Math.ceil(Math.max(inner ? inner.scrollHeight : 0, clone.scrollHeight));
-    if(h>0){
-      clone.style.height=h+'px';
-      clone.style.minHeight='0';
-      if(inner) inner.style.height='auto';
-    }
-  });
-
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'landscape',compress:true});
-  const pageW=297, pageH=210, cellW=148.5, cellH=105;
-  const margin=0;
-
-  try{
-    for(let i=0;i<clones.length;i++){
-      const clone=clones[i];
-      const htNo=clone.dataset.ht;
-      const student=roster.find(st=>makeHTNo(st.cls,st.rollNo)===htNo);
-      if(student){
-        const payload=JSON.stringify({
-          school:SCHOOL.name+' '+SCHOOL.campus,ht:htNo,adm:student.admissionNo,
-          roll:student.rollNo,student:student.name,class:student.cls,sess:EXAM_SESSION
-        });
-        renderCodes(clone,htNo,payload);
-      }
-    }
-
-    // Let fonts, photos, QR and barcode finish rendering before capture.
-    await new Promise(r=>setTimeout(r,250));
-
-    for(let i=0;i<clones.length;i+=4){
-      if(i>0) pdf.addPage('a4','landscape');
-
-      const batch=clones.slice(i,i+4);
-      for(let j=0;j<batch.length;j++){
-        const el=batch[j];
-        const rect=el.getBoundingClientRect();
-        const canvas=await html2canvas(el,{
-          scale:2,
-          useCORS:true,
-          allowTaint:false,
-          backgroundColor:'#fff',
-          logging:false,
-          imageTimeout:15000,
-          width:Math.ceil(rect.width),
-          height:Math.ceil(rect.height),
-          scrollX:0,
-          scrollY:0,
-          windowWidth:Math.max(document.documentElement.clientWidth, Math.ceil(rect.width)),
-          windowHeight:Math.max(document.documentElement.clientHeight, Math.ceil(rect.height))
-        });
-
-        // Rotate the captured portrait ticket 90° clockwise and scale it
-        // proportionally to fit inside one 148.5 × 105 mm quadrant.
-        const srcW=canvas.width, srcH=canvas.height;
-        const captureScale=2;
-        const cssPxPerMm=srcW / 148.5;
-        const pxPerMm=cssPxPerMm*captureScale;
-        const fitScale=Math.min(cellW/(srcH/pxPerMm), cellH/(srcW/pxPerMm));
-        const outW=Math.max(1,Math.round(srcH*fitScale));
-        const outH=Math.max(1,Math.round(srcW*fitScale));
-        const rotated=document.createElement('canvas');
-        rotated.width=outW; rotated.height=outH;
-        const ctx=rotated.getContext('2d');
-        ctx.fillStyle='#fff'; ctx.fillRect(0,0,outW,outH);
-        ctx.translate(outW,0);
-        ctx.rotate(Math.PI/2);
-        ctx.drawImage(canvas,0,0,srcW,srcH,0,0,outH,outW);
-
-        const col=j%2, row=Math.floor(j/2);
-        const slotX=col*cellW, slotY=row*cellH;
-        const imgW=outW/pxPerMm, imgH=outH/pxPerMm;
-        const x=slotX+(cellW-imgW)/2, y=slotY+(cellH-imgH)/2;
-        pdf.addImage(rotated.toDataURL('image/jpeg',0.98),'JPEG',x,y,imgW,imgH,undefined,'FAST');
-      }
-    }
+}
+          
 
     pdf.save('Hall_Ticket_PSPW_2026_A4_4_Per_Sheet.pdf');
     showStatus('✅ PDF downloaded — 4 hall tickets per A4 landscape sheet, with the blank area below the blue footer removed.','ok');
